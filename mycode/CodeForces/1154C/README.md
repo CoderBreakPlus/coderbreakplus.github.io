@@ -1,3 +1,5 @@
+[Prev](https://coderbreakplus.github.io/website/mycode/CodeForces/)
+
 ```cpp
 #include<bits/stdc++.h>
 using namespace std;
@@ -30,5 +32,3 @@ int main(){
     cout<<ans<<endl;
 }
 ```
-
-#### [返回上一页](https://coderbreakplus.github.io/website/mycode/CodeForces/)
