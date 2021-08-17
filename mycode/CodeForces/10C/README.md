@@ -1,3 +1,5 @@
+[Prev](https://coderbreakplus.github.io/website/mycode/CodeForces/)
+
 ```cpp
 #include<cstdio>
 using namespace std;
@@ -25,5 +27,3 @@ int main(){
     printf("%lld\n",ans);
 }// 感觉还不太理解……
 ```
-
-#### [返回上一页](https://coderbreakplus.github.io/website/mycode/CodeForces/)
