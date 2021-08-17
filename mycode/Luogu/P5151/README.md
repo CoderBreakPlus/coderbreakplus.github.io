@@ -1,4 +1,4 @@
-[Prev](https://coderbreakplus.github.io/website/mycode/Luogu/)
+[Prev](https://coderbreakplus.github.io/mycode/Luogu/)
 
 ```cpp
 #include<bits/stdc++.h>
