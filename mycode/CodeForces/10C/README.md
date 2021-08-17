@@ -1,4 +1,4 @@
-[Prev](https://coderbreakplus.github.io/website/mycode/CodeForces/)
+[Prev](https://coderbreakplus.github.io/mycode/CodeForces/)
 
 ```cpp
 #include<cstdio>
