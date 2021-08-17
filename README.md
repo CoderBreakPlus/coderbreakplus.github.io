@@ -1,5 +1,3 @@
-## BreakPlus' Website
-
 欢迎来到 BreakPlus 的个人网站！
 
 是个小白，请多多指教（
