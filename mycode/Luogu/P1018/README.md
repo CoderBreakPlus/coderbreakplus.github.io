@@ -1,3 +1,5 @@
+[返回上一页](https://coderbreakplus.github.io/mycode/Luogu/)
+
 ```cpp
 #include<cstdio>
 #include<cstring>
@@ -92,5 +94,3 @@ signed main() {
 	return 0;
 }
 ```
-
-#### [返回上一页](https://coderbreakplus.github.io/website/mycode/Luogu/)
