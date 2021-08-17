@@ -1,4 +1,4 @@
-[返回上一页](https://coderbreakplus.github.io/mycode/)
+[Prev](https://coderbreakplus.github.io/mycode/)
 
 ### Luogu 代码
 
