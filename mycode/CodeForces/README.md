@@ -1,4 +1,4 @@
-[Prev](https://coderbreakplus.github.io/website/mycode/)
+[Prev](https://coderbreakplus.github.io/mycode/)
 
 ### Code Forces 代码
 
