@@ -1,3 +1,5 @@
+[Prev](https://coderbreakplus.github.io/website/mycode/CodeForces/)
+
 ```cpp
 #include<iostream>
 #include<cstring>
@@ -19,5 +21,3 @@ signed main(){
     cout<<dfs(n,n)-dfs(n,h-1);
 }
 ```
-
-#### [返回上一页](https://coderbreakplus.github.io/website/mycode/CodeForces/)
