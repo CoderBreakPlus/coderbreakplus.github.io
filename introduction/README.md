@@ -7,13 +7,8 @@
 2. LibreOJ: [BreakPlus](https://loj.ac/u/BreakPlus) and [SpecialKertain](https://loj.ac/u/SpecialKertain)。
 3. UOJ: [BreakPlus](https://uoj.ac/user/profile/BreakPlus)
 4. AtCoder: [BPqwq](https://atcoder.jp/users/BPqwq) and [BreakPlus](https://atcoder.jp/users/BreakPlus)（其它lj号比赛打得太烂就不放了）
-5. CodeForces:
-
-[![](https://cfrating.ihcr.top/?user=BreakPlus)](https://codeforces.ml/profile/BreakPlus)
-
-[![](https://cfrating.ihcr.top/?user=hardworking501)](https://codeforces.ml/profile/hardworking501)
-
-7. 简书: [BreakPlus](https://www.jianshu.com/u/ad2d91ad7e86)
+5. CodeForces:[![](https://cfrating.ihcr.top/?user=BreakPlus)](https://codeforces.ml/profile/BreakPlus) [![](https://cfrating.ihcr.top/?user=hardworking501)](https://codeforces.ml/profile/hardworking501)
+6. 简书: [BreakPlus](https://www.jianshu.com/u/ad2d91ad7e86)
 
 ### 链接备注
 
