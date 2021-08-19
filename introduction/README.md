@@ -5,7 +5,7 @@
 ### 各大平台账号/个人信息
 
 1. Email: [breakplus@foxmail.com](mailto:breakplus@foxmail.com)
-1. 洛谷: [BreakPlus](/) and [BPqwq](/user/536471) 。
+1. 洛谷: [BreakPlus](https://www.luogu.com.cn/user/334727) and [BPqwq](https://www.luogu.com.cn/user/536471) 。
 2. LibreOJ: [BreakPlus](https://loj.ac/u/BreakPlus) and [SpecialKertain](https://loj.ac/u/SpecialKertain)。
 3. UOJ: [BreakPlus](https://uoj.ac/user/profile/BreakPlus)
 4. AtCoder: [BPqwq](https://atcoder.jp/users/BPqwq) and [BreakPlus](https://atcoder.jp/users/BreakPlus)（其它lj号比赛打得太烂就不放了）
