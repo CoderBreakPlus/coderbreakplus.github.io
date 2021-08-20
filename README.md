@@ -5,8 +5,9 @@
 -------
 
 1. [个人简介](https://coderbreakplus.github.io/introduction/)
-2. [个人代码（for 阅读、参考）](https://coderbreakplus.github.io/mycode/)
-3. [个人代表作（在 Luogu 等平台发布过）](https://coderbreakplus.github.io/blogs/)
+2. [友联](https://coderbreakplus.github.io/friends/)
+3. [个人代码（for 阅读、参考）](https://coderbreakplus.github.io/mycode/)
+4. [个人代表作（在 Luogu 等平台发布过）](https://coderbreakplus.github.io/blogs/)
 
 --------
 ## Change destiny with faith.
