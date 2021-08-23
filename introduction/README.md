@@ -25,6 +25,8 @@
 8. [那 Lemon 的旋律伴着对 OI 的激情](https://www.bilibili.com/video/BV1m4411x7uj)
 ### 个人名片
 
+![](https://luogu-card-qinyihao.vercel.app/about?id=334727)
+
 ![](https://api.xecades.xyz/api?img=2&quote=Change+destiny+with+faith.&color=214%2C114%2C33%2C1&bg=23%2C26%2C217%2C0&luogu=BreakPlus&jianshu=BreakPlus&codeforces=BreakPlus&qq=1289494791&wechat=breakplus-501334&email=breakplus@foxmail.com)
 
 ![](https://statcard.vercel.app/practice?id=334727)
