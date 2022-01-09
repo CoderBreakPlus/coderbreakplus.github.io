@@ -8,8 +8,8 @@
 1. 洛谷: [BreakPlus](https://www.luogu.com.cn/user/334727) and [BPqwq](https://www.luogu.com.cn/user/536471) 。
 2. LibreOJ: [BreakPlus](https://loj.ac/u/BreakPlus) and [SpecialKertain](https://loj.ac/u/SpecialKertain)。
 3. UOJ: [BreakPlus](https://uoj.ac/user/profile/BreakPlus)
-4. AtCoder: [BPqwq](https://atcoder.jp/users/BPqwq) and [BreakPlus](https://atcoder.jp/users/BreakPlus)（其它lj号比赛打得太烂就不放了）
-5. CodeForces:[![](https://img.shields.io/badge/BreakPlus-Pupil%20%201369-008000.svg?longCache=true&style=for-the-badge&logo=Codeforces&link=https://codeforces.com/profile/BreakPlus)](https://codeforces.ml/profile/BreakPlus) [![](https://img.shields.io/badge/hardworking501-Newbie%20%20594-808080.svg?longCache=true&style=for-the-badge&logo=Codeforces&link=https://codeforces.com/profile/hardworking501)](https://codeforces.ml/profile/hardworking501)
+4. AtCoder: [![](https://codeforces.ml/api/BreakPlus)](https://codeforces.ml/profile/BreakPlus)[![](https://atcoder.swift-zym.workers.dev/BreakPlus)](https://atcoder.jp/users/BreakPlus)[![](https://atcoder.swift-zym.workers.dev/Black_BreakPlus)](https://atcoder.jp/users/Black_BreakPlus)
+5. CodeForces:[![](https://img.shields.io/badge/BreakPlus-Expert%20%201677-0000ff.svg?longCache=true&style=for-the-badge&logo=Codeforces&link=https://codeforces.com/profile/BreakPlus)](https://codeforces.com/profile/BreakPlus)
 6. 简书: [BreakPlus](https://www.jianshu.com/u/ad2d91ad7e86)
 
 ### 链接备注
