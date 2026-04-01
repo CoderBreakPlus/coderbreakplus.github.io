@@ -1,1 +1,6 @@
 remote_theme: pages-themes/cayman  # 或其他你喜欢的主题
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
