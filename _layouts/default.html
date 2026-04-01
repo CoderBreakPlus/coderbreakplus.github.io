@@ -18,29 +18,57 @@
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>
   
-  <!-- 添加居中样式 -->
+  <!-- 居中样式 -->
   <style>
     body {
-      max-width: 800px;      /* 限制最大宽度，避免太长 */
-      margin: 0 auto;        /* 水平居中 */
-      padding: 20px;         /* 添加内边距，避免贴边 */
-      line-height: 1.6;      /* 增加行高，更易读 */
-    }
-    
-    /* 可选：让图片也居中 */
-    img {
-      display: block;
+      max-width: 800px;
       margin: 0 auto;
-      max-width: 100%;
+      padding: 20px;
+      line-height: 1.6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     
-    /* 可选：表格居中 */
-    table {
+    /* 返回按钮样式 */
+    .back-button {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 8px 16px;
+      background-color: #f0f0f0;
+      color: #0366d6;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    
+    .back-button:hover {
+      background-color: #e0e0e0;
+      text-decoration: none;
+    }
+    
+    /* 返回按钮容器 */
+    .nav-container {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    img {
+      max-width: 100%;
+      display: block;
       margin: 0 auto;
     }
   </style>
 </head>
 <body>
+  <!-- 返回按钮区域 -->
+  <div class="nav-container">
+    <a href="javascript:history.back()" class="back-button">← 返回上一页</a>
+    {% if page.url != "/" %}
+      <a href="{{ site.baseurl }}/" class="back-button">🏠 返回首页</a>
+    {% endif %}
+  </div>
+  
   <main>
     {{ content }}
   </main>
