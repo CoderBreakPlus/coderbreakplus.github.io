@@ -26,13 +26,8 @@ class FileOrganizer:
         # 排除的关键词（包含这些关键词的文件不会被移动）
         self.exclude_keywords = ['gen', 'brute', 'test', 'sb', 'duipai']
         
-        # 可执行文件扩展名（Windows和Linux）
-        self.executable_extensions = {
-            '.exe', '.out', '.bin',  # Windows/Linux可执行文件
-            '.o', '.obj',            # 编译中间文件
-            '.a', '.so', '.dll',     # 库文件
-            '.pyc', '.pyo'           # Python编译文件
-        }
+        # 需要保留的文件扩展名（即使有执行权限也不删除）
+        self.preserve_extensions = {'.cpp', '.md', '.conf', '.py', '.sh', '.bash', '.txt', '.json', '.xml', '.yml', '.yaml'}
         
         # 统计信息
         self.stats = {
@@ -78,54 +73,74 @@ class FileOrganizer:
     def is_executable(self, file_path: Path) -> bool:
         """
         判断文件是否为可执行文件
-        检查方法：1. 扩展名 2. Linux/Mac 执行权限
+        
+        规则：
+        1. 在Windows上，检查扩展名是否为 .exe
+        2. 在Linux/Mac上，检查是否有执行权限，并且：
+           - 没有扩展名，或者
+           - 扩展名不在保留列表中（即使有执行权限也保留某些文件如 .sh）
         """
-        # 检查扩展名
-        if file_path.suffix.lower() in self.executable_extensions:
-            return True
+        # Windows 系统
+        if sys.platform == 'win32':
+            # Windows 上可执行文件通常是 .exe
+            return file_path.suffix.lower() == '.exe'
         
-        # 检查是否有执行权限（Linux/Mac）
-        if sys.platform != 'win32':
-            try:
-                # 获取文件状态
-                file_stat = file_path.stat()
-                # 检查是否有执行权限（所有者、组或其他用户的执行位）
-                is_exec = (file_stat.st_mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)) != 0
-                if is_exec:
-                    return True
-            except:
-                pass
-        
-        return False
-    
-    def delete_executable(self, file_path: Path, file_type: str) -> bool:
-        """删除可执行文件"""
+        # Linux/Mac 系统
         try:
-            file_path.unlink()
-            print(f"   🗑️  已删除 [{file_type}]: {file_path.name}")
+            # 检查是否有执行权限
+            file_stat = file_path.stat()
+            has_exec = (file_stat.st_mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)) != 0
+            
+            if not has_exec:
+                return False
+            
+            # 有执行权限，进一步判断
+            suffix = file_path.suffix.lower()
+            
+            # 如果没有扩展名，视为可执行文件（如编译出的二进制文件）
+            if not suffix:
+                return True
+            
+            # 如果有扩展名，检查是否在保留列表中
+            if suffix in self.preserve_extensions:
+                # 保留这些文件（如 .sh 脚本虽然可执行，但需要保留）
+                return False
+            
+            # 其他有执行权限的文件，视为可执行文件
             return True
-        except Exception as e:
-            print(f"   ❌ 删除失败 [{file_type}]: {file_path.name} - {e}")
+            
+        except Exception:
             return False
     
-    def scan_and_delete_executables(self, directory: Path) -> int:
+    def delete_executable(self, file_path: Path) -> bool:
+        """删除可执行文件"""
+        try:
+            # 显示文件信息
+            if file_path.suffix:
+                file_desc = f"可执行文件{file_path.suffix}"
+            else:
+                file_desc = "可执行文件(无后缀)"
+            
+            file_path.unlink()
+            print(f"   🗑️  已删除 [{file_desc}]: {file_path.name}")
+            return True
+        except Exception as e:
+            print(f"   ❌ 删除失败: {file_path.name} - {e}")
+            return False
+    
+    def scan_and_delete_executables(self, directory: Path, show_header: bool = True) -> int:
         """扫描并删除目录下的可执行文件"""
         if not directory.exists():
             return 0
         
-        deleted_count = 0
-        print(f"\n🔍 扫描 {directory.relative_to(self.current_dir)} 目录中的可执行文件...")
+        if show_header:
+            print(f"\n🔍 扫描 {directory.relative_to(self.current_dir)} 目录中的可执行文件...")
         
+        deleted_count = 0
         for file_path in directory.iterdir():
             if file_path.is_file() and self.is_executable(file_path):
-                # 确定文件类型
-                if file_path.suffix.lower() in self.executable_extensions:
-                    file_type = f"可执行文件{file_path.suffix}"
-                else:
-                    file_type = "可执行文件(有执行权限)"
-                
                 print(f"  发现: {file_path.name}")
-                if self.delete_executable(file_path, file_type):
+                if self.delete_executable(file_path):
                     deleted_count += 1
         
         return deleted_count
@@ -333,6 +348,8 @@ class FileOrganizer:
         print("\n" + "="*50)
         print("🗑️  清理可执行文件")
         print("="*50)
+        print("规则: 有执行权限且无后缀的文件被视为可执行文件")
+        print("      .sh、.py 等脚本文件即使有执行权限也会被保留")
         
         # 清理 code 目录
         code_deleted = self.scan_and_delete_executables(self.code_dir)
@@ -512,7 +529,10 @@ class FileOrganizer:
                             print(f"  ✅ [移动] {file_type}: {filename}")
                 elif self.is_executable(file_path):
                     files_found = True
-                    print(f"  🗑️  [删除] 可执行文件: {file_path.name}")
+                    if file_path.suffix:
+                        print(f"  🗑️  [删除] 可执行文件{file_path.suffix}: {file_path.name}")
+                    else:
+                        print(f"  🗑️  [删除] 可执行文件(无后缀): {file_path.name}")
         
         if not files_found:
             print("  ⚠️  没有找到任何文件")
@@ -526,7 +546,10 @@ class FileOrganizer:
             if directory.exists():
                 for file_path in directory.iterdir():
                     if file_path.is_file() and self.is_executable(file_path):
-                        print(f"  🗑️  [将删除] {directory.relative_to(self.current_dir)}/{file_path.name}")
+                        if file_path.suffix:
+                            print(f"  🗑️  [将删除] {directory.relative_to(self.current_dir)}/{file_path.name} (可执行文件{file_path.suffix})")
+                        else:
+                            print(f"  🗑️  [将删除] {directory.relative_to(self.current_dir)}/{file_path.name} (可执行文件-无后缀)")
 
 
 def main():
@@ -537,6 +560,15 @@ def main():
         description='移动 code 目录中的 .cpp、.md、.conf 文件到 data 目录，删除可执行文件，并运行 run.py',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
+可执行文件识别规则:
+  - Windows: .exe 文件
+  - Linux/Mac: 有执行权限且满足以下任一条件的文件:
+    1. 没有文件扩展名（如编译出的二进制文件 a.out 实际上有 .out 后缀，会被保留）
+       注意: .out 后缀的文件会被保留，因为它是编译输出文件
+    2. 有扩展名但不在保留列表中（.sh、.py 等脚本文件会被保留）
+    
+  保留的文件类型: .cpp, .md, .conf, .py, .sh, .bash, .txt, .json, .xml, .yml, .yaml
+
 示例:
   %(prog)s                    # 移动文件，清理可执行文件，并交互式询问是否运行 run.py
   %(prog)s --auto-run         # 移动文件后自动运行 run.py
