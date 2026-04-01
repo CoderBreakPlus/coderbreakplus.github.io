@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codeforces - 题目整理索引</title>
+    <style>
+        :root { --primary: #1a73e8; --bg: #f4f5f7; --text: #333; --border: #e0e0e0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        h1, h2, h3 { color: #202124; margin-bottom: 10px; }
+        
+        /* 导航与跳转 */
+        .nav-bar { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+        .nav-bar a { color: var(--primary); text-decoration: none; font-weight: 500; margin-right: 15px; }
+        .nav-bar a:hover { text-decoration: underline; }
+        .quick-jump { background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9em; }
+        .quick-jump a { display: inline-block; margin: 4px 12px 4px 0; color: #5f6368; text-decoration: none; }
+        .quick-jump a:hover { color: var(--primary); }
+        
+        /* 统计栏与排序 */
+        .stats-bar { display: flex; justify-content: space-between; align-items: center; background: #e8f0fe; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .stats-info span { margin-right: 15px; font-size: 0.95em; color: #174ea6; font-weight: 500; }
+        .sort-btns button { background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; transition: 0.2s; margin-left: 5px; }
+        .sort-btns button:hover { background: #f1f3f4; }
+
+        /* 比赛分组折叠 */
+        .contest-wrapper { margin-bottom: 20px; }
+        .contest-header { background: #fafafa; padding: 12px 15px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+        .contest-header:hover { background: #f1f3f4; }
+        .arrow { transition: transform 0.3s ease; display: inline-block; }
+        
+        /* 表格样式 */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: top; }
+        th { background: #f8f9fa; color: #5f6368; font-weight: 600; }
+        tr:hover { background-color: #fcfcfc; }
+        
+        /* 标签与链接 */
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; min-width: 45px; text-align: center; margin-right: 8px; }
+        .tag-easy { background: #e6f4ea; color: #1e8e3e; }
+        .tag-hard { background: #fce8e6; color: #d93025; }
+        .tag-normal { background: #f1f3f4; color: #5f6368; }
+        .file-link { color: var(--primary); text-decoration: none; margin-right: 12px; font-size: 0.95em; }
+        .file-link:hover { text-decoration: underline; }
+        .version-row { margin-bottom: 6px; display: flex; align-items: center; }
+        .version-row:last-child { margin-bottom: 0; }
+        
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #80868b; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <a href="index.html">🏠 返回首页</a>
+            <span style="color:#aaa;">|</span>
+            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">支持 Easy/Hard Version 自动合并显示</span>
+        </div>
+        
+        <h1>Codeforces</h1>
+        
+        
+        <div class="stats-bar">
+            <div class="stats-info">
+        <span>📁 题目组数: 1</span>
+        <span>📄 总版本数: 1</span>
+        <span>📝 有代码: 1</span>
+        <span>💡 有题解: 1</span>
+        <span>⚙️ 有配置: 0</span>
+    <span>🏆 比赛数: 1</span></div>
+            
+        <div class="sort-btns">
+            <button onclick="sortContests('count')">按题目数降序</button>
+            <button onclick="sortContests('name')">按字典序排列</button>
+        </div>
+        </div>
+        
+        <div class="quick-jump"><strong>快速跳转：</strong><br><a href="#contest-0">📍 Codeforces Round 1310 (1)</a></div>
+        
+        <div id="contests-container">
+            
+            <div class="contest-wrapper" data-name="Codeforces Round 1310" data-count="1">
+                <div class="contest-header" onclick="toggleContest(this)" id="contest-0">
+                    <span>Codeforces Round 1310 (1 题)</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <table class="contest-table" style="display: table;">
+                    <tr>
+                        <th width="20%">题目编号</th>
+                        <th width="25%">题目链接</th>
+                        <th width="40%">代码/题解/配置</th>
+                        <th width="15%">备注</th>
+                    </tr>
+                    <tr>
+                        <td><b>C</b></td>
+                        <td style="word-break: break-all;"><a href="https://codeforces.com/problemset/problem/1310/C" target="_blank">https://codeforces.com/problemset/proble...</a></td>
+                        <td><div class="version-row"><a href="data/cf1310c.cpp" class="file-link">📝 代码</a><a href="data/cf1310c.md" class="file-link">💡 题解</a></div></td>
+                        <td></td>
+                    </tr></table></div>
+        </div>
+        
+        <div class="footer">
+            生成时间: 2026-04-01 10:22:01 | 题目整理工具自动生成
+        </div>
+    </div>
+
+    <script>
+        function toggleContest(header) {
+            const content = header.nextElementSibling;
+            const arrow = header.querySelector('.arrow');
+            if (content.style.display === 'none') {
+                content.style.display = 'table';
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                content.style.display = 'none';
+                arrow.style.transform = 'rotate(-90deg)';
+            }
+        }
+
+        function sortContests(type) {
+            const container = document.getElementById('contests-container');
+            const wrappers = Array.from(container.getElementsByClassName('contest-wrapper'));
+            wrappers.sort((a, b) => {
+                if (type === 'count') {
+                    return parseInt(b.dataset.count) - parseInt(a.dataset.count);
+                } else {
+                    return a.dataset.name.localeCompare(b.dataset.name);
+                }
+            });
+            wrappers.forEach(w => container.appendChild(w));
+        }
+    </script>
+</body>
+</html>
