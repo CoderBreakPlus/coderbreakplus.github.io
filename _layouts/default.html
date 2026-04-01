@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page.title | default: site.title }}</title>
   
-  <!-- MathJax 配置 - LaTeX 渲染核心 -->
+  <!-- MathJax 配置 -->
   <script>
     MathJax = {
       tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],   // 行内公式
-        displayMath: [['$$', '$$'], ['\\[', '\\]']] // 块级公式
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
       },
       svg: {
         fontCache: 'global'
@@ -20,12 +20,43 @@
       }
     };
   </script>
-  <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+  
+  <!-- 多 CDN 备用方案 -->
+  <script>
+    (function() {
+      // CDN 列表，按优先级排列
+      var cdnList = [
+        'https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js',
+        'https://unpkg.com/mathjax@3/es5/tex-chtml.js',
+        'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js'
+      ];
+      
+      function loadScript(src, fallbackIndex) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.id = 'MathJax-script';
+        script.async = true;
+        script.src = src;
+        
+        if (fallbackIndex !== undefined) {
+          script.onerror = function() {
+            if (fallbackIndex < cdnList.length) {
+              loadScript(cdnList[fallbackIndex], fallbackIndex + 1);
+            } else {
+              console.error('所有 MathJax CDN 都加载失败');
+            }
+          };
+        }
+        
+        document.head.appendChild(script);
+      }
+      
+      loadScript(cdnList[0], 1);
+    })();
   </script>
   
   <style>
-    /* 全局样式 - 内容居中 */
+    /* 样式保持不变 */
     body {
       max-width: 900px;
       margin: 0 auto;
@@ -37,7 +68,6 @@
       background-color: #fff;
     }
     
-    /* 导航容器 */
     .nav-container {
       margin-bottom: 30px;
       padding-bottom: 15px;
@@ -47,7 +77,6 @@
       flex-wrap: wrap;
     }
     
-    /* 返回按钮样式 */
     .back-button {
       display: inline-block;
       padding: 6px 14px;
@@ -64,10 +93,8 @@
     .back-button:hover {
       background-color: #f0f3f6;
       border-color: #0969da;
-      text-decoration: none;
     }
     
-    /* 标题样式 */
     h1 {
       font-size: 2em;
       border-bottom: 1px solid #eaecef;
@@ -84,18 +111,10 @@
       margin-bottom: 16px;
     }
     
-    h3 {
-      font-size: 1.25em;
-      margin-top: 24px;
-      margin-bottom: 16px;
-    }
-    
-    /* 段落 */
     p {
       margin-bottom: 1.2em;
     }
     
-    /* 链接样式 */
     a {
       color: #0969da;
       text-decoration: none;
@@ -105,7 +124,6 @@
       text-decoration: underline;
     }
     
-    /* 图片居中 */
     img {
       max-width: 100%;
       height: auto;
@@ -114,14 +132,12 @@
       border-radius: 4px;
     }
     
-    /* 代码块 */
     pre {
       background-color: #f6f8fa;
       padding: 16px;
       border-radius: 6px;
       overflow-x: auto;
       font-size: 14px;
-      line-height: 1.45;
     }
     
     code {
@@ -129,7 +145,6 @@
       padding: 0.2em 0.4em;
       border-radius: 3px;
       font-size: 85%;
-      font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
     }
     
     pre code {
@@ -137,7 +152,6 @@
       padding: 0;
     }
     
-    /* 引用块 */
     blockquote {
       border-left: 4px solid #d0d7de;
       padding-left: 1em;
@@ -145,7 +159,6 @@
       color: #57606a;
     }
     
-    /* 表格 */
     table {
       border-collapse: collapse;
       width: 100%;
@@ -164,24 +177,17 @@
       background-color: #f6f8fa;
     }
     
-    /* 列表 */
     ul, ol {
       padding-left: 2em;
       margin-bottom: 1.2em;
     }
     
-    li {
-      margin: 0.25em 0;
-    }
-    
-    /* 水平分割线 */
     hr {
       border: none;
       border-top: 1px solid #eaecef;
       margin: 24px 0;
     }
     
-    /* 浮动返回顶部按钮 */
     .float-buttons {
       position: fixed;
       bottom: 24px;
@@ -215,7 +221,6 @@
       transform: translateY(-2px);
     }
     
-    /* 响应式设计 - 移动端适配 */
     @media (max-width: 768px) {
       body {
         padding: 16px;
@@ -234,7 +239,6 @@
       }
     }
     
-    /* MathJax 公式样式微调 */
     mjx-container {
       overflow-x: auto;
       overflow-y: hidden;
@@ -243,7 +247,6 @@
   </style>
 </head>
 <body>
-  <!-- 顶部导航栏 - 返回按钮 -->
   <div class="nav-container">
     <a href="javascript:history.back()" class="back-button" title="返回上一页">
       ← 返回上一页
@@ -253,12 +256,10 @@
     </a>
   </div>
   
-  <!-- 主要内容区域 -->
   <main>
     {{ content }}
   </main>
   
-  <!-- 浮动按钮组 -->
   <div class="float-buttons">
     <a href="javascript:history.back()" class="float-btn" title="返回上一页">
       ←
@@ -267,16 +268,5 @@
       ↑
     </a>
   </div>
-  
-  <!-- 确保 MathJax 在页面加载后重新渲染动态内容 -->
-  <script>
-    // 如果页面有动态加载的内容，可以调用此函数重新渲染公式
-    if (typeof MathJax !== 'undefined') {
-      MathJax.startup = MathJax.startup || {};
-      MathJax.startup.pageReady = function() {
-        return MathJax.typesetPromise();
-      };
-    }
-  </script>
 </body>
 </html>
