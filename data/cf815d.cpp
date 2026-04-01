@@ -48,7 +48,7 @@ void pushdown(int p,int l,int r){
 	if(~tag[p]){
 		upd(p<<1,l,mid,tag[p]);
 		upd(p<<1|1,mid+1,r,tag[p]);
-		tag[p]=0;
+		tag[p]=-1;
 	}
 }
 void build(int l,int r,int p){
@@ -103,7 +103,6 @@ void procedure(){
 			update(1,q,1,b,r-c,1);
 		}
 		ll val=query(1,q,b[pt]+1,q,r-c[pt],1);
-		// cout<<"i="<<i<<" "<<val<<endl;
 		ans+=val;
 	}
 	printf("%lld\n",ans);
