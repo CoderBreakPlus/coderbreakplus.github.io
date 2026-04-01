@@ -21,16 +21,20 @@
         .sort-btns button { background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; transition: 0.2s; margin-left: 5px; font-weight: 500; }
         .sort-btns button:hover { background: #f1f3f4; }
 
+        .quick-jump { background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.95em; line-height: 2; }
+        .quick-jump a { display: inline-block; margin: 0 12px 0 0; color: #1a73e8; text-decoration: none; background: #fff; border: 1px solid #d2e3fc; padding: 2px 10px; border-radius: 12px; font-size: 0.9em; }
+        .quick-jump a:hover { background: #e8f0fe; }
+
         /* ------------------ 
            简约风格矩阵大表格 
            ------------------ */
         .matrix-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .matrix-table thead { background: #f8f9fa; }
         .matrix-table th { padding: 12px 10px; border-bottom: 2px solid var(--border); color: #5f6368; font-weight: 600; text-align: center; white-space: nowrap; }
-        .matrix-table td { padding: 10px; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: center; vertical-align: middle; }
+        .matrix-table td { padding: 10px; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: center; vertical-align: top; }
         .matrix-table td:last-child { border-right: none; }
         .matrix-table tbody tr:hover { background-color: #fcfcfc; }
-        .contest-name-cell { text-align: left !important; font-weight: 600; color: #333; min-width: 150px; }
+        .contest-name-cell { text-align: left !important; font-weight: 600; color: #333; min-width: 150px; vertical-align: middle !important; }
         
         /* 单元格内的题目模块 */
         .prob-cell { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }
@@ -42,7 +46,7 @@
         .prob-note:hover { filter: none; opacity: 1; transform: scale(1.1); }
         
         /* 单元格内的微型版本控制 (Code/Md/Conf) */
-        .mini-version-row { display: flex; align-items: center; gap: 5px; font-size: 1.05em; margin-bottom: 2px; }
+        .mini-version-row { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 1.05em; margin-bottom: 2px; }
         .mini-tag { font-size: 0.7em; padding: 1px 4px; border-radius: 3px; font-weight: bold; line-height: 1; }
         .mini-tag-easy { background: #e6f4ea; color: #1e8e3e; }
         .mini-tag-hard { background: #fce8e6; color: #d93025; }
@@ -50,7 +54,7 @@
         .mini-file-link:hover { transform: scale(1.15); }
         
         /* 杂题的常规表格样式 */
-        .normal-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .normal-table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 30px; }
         .normal-table th, .normal-table td { border: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: middle; }
         .normal-table th { background: #f8f9fa; color: #5f6368; font-weight: 600; }
         .normal-table tr:hover { background-color: #fcfcfc; }
@@ -71,18 +75,18 @@
         <div class="nav-bar">
             <a href="index.html">🏠 返回首页</a>
             <span style="color:#aaa;">|</span>
-            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">矩阵视图模式，题目状态一目了然</span>
+            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">矩阵视图与智能标签归类</span>
         </div>
         
         <h1>首页索引</h1>
         
-    <div style="background: #e8f0fe; color: #174ea6; padding: 12px 18px; border-radius: 6px; margin-bottom: 25px; font-size: 0.95em; border: 1px solid #d2e3fc;">
-        <strong>📝 .conf 配置文件写法（固定5行）：</strong>
-        第1行: 比赛归类(oi/xcpc/xcpc+) &nbsp;|&nbsp;
-        第2行: 完整URL链接 &nbsp;|&nbsp;
-        第3行: 比赛名称 &nbsp;|&nbsp;
-        第4行: 题目编号 &nbsp;|&nbsp;
-        第5行: 备注说明
+    <div style="background: #e8f0fe; color: #174ea6; padding: 16px 20px; border-radius: 6px; margin-bottom: 25px; font-size: 0.95em; border: 1px solid #d2e3fc; line-height: 1.8;">
+        <strong>📝 任何题目均可添加 .conf 配置文件（固定 5 行，不需要的信息可直接留空换行）：</strong><br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 1 行:</span> 比赛分类 (<code>oi</code> / <code>xcpc</code> / <code>xcpc+</code>)。留空则保留系统自动识别，或默认归至杂题。<br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 2 行:</span> 完整 URL 链接。CF/AT 等留空仍可自动生成官方链接。<br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 3 行:</span> 比赛名称。留空表示无所属具体赛事。<br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 4 行:</span> 题目编号 (如 A, B, C...)。<br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 5 行:</span> 标签/关键词。多个 tag 用空格隔开。<strong>所有含有标签的题目将全部被汇聚至“杂题”内作为知识点索引归类！</strong>
     </div>
     
         
@@ -91,42 +95,44 @@
             
         </div>
         
+        
+        
         <div id="contests-container">
             <div style='display:flex; flex-wrap:wrap; gap:20px;'>
         <div style="background:#fff; border:1px solid #e0e0e0; padding:20px; border-radius:8px; width:calc(33% - 20px); min-width:250px; box-sizing:border-box; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
             <h2 style="margin-top:0; color:#1a73e8; margin-bottom: 10px;">Codeforces</h2>
-            <p style="color:#5f6368; font-size:0.95em;">3 个比赛，8 个题目组</p>
+            <p style="color:#5f6368; font-size:0.95em;">共 3 场比赛，包含 8 个题目组</p>
             <a href="Codeforces.html" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1a73e8; color:#fff; text-decoration:none; border-radius:4px; font-size:0.9em;">进入分类 →</a>
         </div>
         <div style="background:#fff; border:1px solid #e0e0e0; padding:20px; border-radius:8px; width:calc(33% - 20px); min-width:250px; box-sizing:border-box; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
             <h2 style="margin-top:0; color:#1a73e8; margin-bottom: 10px;">AtCoder</h2>
-            <p style="color:#5f6368; font-size:0.95em;">1 个比赛，1 个题目组</p>
+            <p style="color:#5f6368; font-size:0.95em;">共 1 场比赛，包含 1 个题目组</p>
             <a href="AtCoder.html" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1a73e8; color:#fff; text-decoration:none; border-radius:4px; font-size:0.9em;">进入分类 →</a>
         </div>
         <div style="background:#fff; border:1px solid #e0e0e0; padding:20px; border-radius:8px; width:calc(33% - 20px); min-width:250px; box-sizing:border-box; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
             <h2 style="margin-top:0; color:#1a73e8; margin-bottom: 10px;">oi</h2>
-            <p style="color:#5f6368; font-size:0.95em;">0 个比赛，0 个题目组</p>
+            <p style="color:#5f6368; font-size:0.95em;">共 0 场比赛，包含 0 个题目组</p>
             <a href="oi.html" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1a73e8; color:#fff; text-decoration:none; border-radius:4px; font-size:0.9em;">进入分类 →</a>
         </div>
         <div style="background:#fff; border:1px solid #e0e0e0; padding:20px; border-radius:8px; width:calc(33% - 20px); min-width:250px; box-sizing:border-box; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
             <h2 style="margin-top:0; color:#1a73e8; margin-bottom: 10px;">xcpc</h2>
-            <p style="color:#5f6368; font-size:0.95em;">1 个比赛，1 个题目组</p>
+            <p style="color:#5f6368; font-size:0.95em;">共 1 场比赛，包含 1 个题目组</p>
             <a href="xcpc.html" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1a73e8; color:#fff; text-decoration:none; border-radius:4px; font-size:0.9em;">进入分类 →</a>
         </div>
         <div style="background:#fff; border:1px solid #e0e0e0; padding:20px; border-radius:8px; width:calc(33% - 20px); min-width:250px; box-sizing:border-box; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
             <h2 style="margin-top:0; color:#1a73e8; margin-bottom: 10px;">xcpc+</h2>
-            <p style="color:#5f6368; font-size:0.95em;">0 个比赛，0 个题目组</p>
+            <p style="color:#5f6368; font-size:0.95em;">共 0 场比赛，包含 0 个题目组</p>
             <a href="xcpc+.html" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1a73e8; color:#fff; text-decoration:none; border-radius:4px; font-size:0.9em;">进入分类 →</a>
         </div>
         <div style="background:#fff; border:1px solid #e0e0e0; padding:20px; border-radius:8px; width:calc(33% - 20px); min-width:250px; box-sizing:border-box; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
             <h2 style="margin-top:0; color:#1a73e8; margin-bottom: 10px;">杂题</h2>
-            <p style="color:#5f6368; font-size:0.95em;">0 个杂题组</p>
+            <p style="color:#5f6368; font-size:0.95em;">包含 2 个关键词标签，共 1 个相关题目组</p>
             <a href="杂题.html" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1a73e8; color:#fff; text-decoration:none; border-radius:4px; font-size:0.9em;">进入分类 →</a>
         </div></div>
         </div>
         
         <div class="footer">
-            生成时间: 2026-04-01 20:30:20 | 题目整理工具自动生成
+            生成时间: 2026-04-02 07:18:49 | 题目整理工具自动生成
         </div>
     </div>
 
