@@ -268,9 +268,17 @@ def generate_versions_html(group, rel_path):
                 else: tag = '<span class="tag tag-normal">Normal</span>'
             
             links = []
-            if v.files['cpp']: links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link">📝 代码</a>')
-            if v.files['md']: links.append(f'<a href="{rel_path}/{v.files["md"]}" class="file-link">💡 题解</a>')
-            if v.files['conf']: links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link">⚙️ 配置</a>')
+            if v.files['cpp']: 
+                links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link">📝 代码</a>')
+            
+            if v.files['md']: 
+                # 这里移除 .md 后缀
+                md_filename = v.files['md']
+                md_href = md_filename[:-3] if md_filename.endswith('.md') else md_filename
+                links.append(f'<a href="{rel_path}/{md_href}" class="file-link">💡 题解</a>')
+                
+            if v.files['conf']: 
+                links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link">⚙️ 配置</a>')
             
             v_htmls.append(f'<div class="version-row">{tag}{"".join(links)}</div>')
     
