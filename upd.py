@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-文件整理工具 - 自动移动代码、题解和配置文件到data目录，并运行run.py
+文件整理工具 - 自动移动代码、题解和配置文件到data目录，删除可执行文件，并运行run.py
 支持重名文件交互式选择
 """
 
@@ -9,6 +9,7 @@ import os
 import shutil
 import subprocess
 import sys
+import stat
 from pathlib import Path
 from typing import List, Tuple, Set, Optional
 
@@ -25,6 +26,14 @@ class FileOrganizer:
         # 排除的关键词（包含这些关键词的文件不会被移动）
         self.exclude_keywords = ['gen', 'brute', 'test', 'sb', 'duipai']
         
+        # 可执行文件扩展名（Windows和Linux）
+        self.executable_extensions = {
+            '.exe', '.out', '.bin',  # Windows/Linux可执行文件
+            '.o', '.obj',            # 编译中间文件
+            '.a', '.so', '.dll',     # 库文件
+            '.pyc', '.pyo'           # Python编译文件
+        }
+        
         # 统计信息
         self.stats = {
             'cpp_moved': 0,
@@ -36,6 +45,7 @@ class FileOrganizer:
             'conf_moved': 0,
             'conf_skipped': 0,
             'conf_overwritten': 0,
+            'executables_deleted': 0,
             'errors': 0
         }
         
@@ -64,6 +74,61 @@ class FileOrganizer:
             if keyword in filename_lower:
                 return True
         return False
+    
+    def is_executable(self, file_path: Path) -> bool:
+        """
+        判断文件是否为可执行文件
+        检查方法：1. 扩展名 2. Linux/Mac 执行权限
+        """
+        # 检查扩展名
+        if file_path.suffix.lower() in self.executable_extensions:
+            return True
+        
+        # 检查是否有执行权限（Linux/Mac）
+        if sys.platform != 'win32':
+            try:
+                # 获取文件状态
+                file_stat = file_path.stat()
+                # 检查是否有执行权限（所有者、组或其他用户的执行位）
+                is_exec = (file_stat.st_mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)) != 0
+                if is_exec:
+                    return True
+            except:
+                pass
+        
+        return False
+    
+    def delete_executable(self, file_path: Path, file_type: str) -> bool:
+        """删除可执行文件"""
+        try:
+            file_path.unlink()
+            print(f"   🗑️  已删除 [{file_type}]: {file_path.name}")
+            return True
+        except Exception as e:
+            print(f"   ❌ 删除失败 [{file_type}]: {file_path.name} - {e}")
+            return False
+    
+    def scan_and_delete_executables(self, directory: Path) -> int:
+        """扫描并删除目录下的可执行文件"""
+        if not directory.exists():
+            return 0
+        
+        deleted_count = 0
+        print(f"\n🔍 扫描 {directory.relative_to(self.current_dir)} 目录中的可执行文件...")
+        
+        for file_path in directory.iterdir():
+            if file_path.is_file() and self.is_executable(file_path):
+                # 确定文件类型
+                if file_path.suffix.lower() in self.executable_extensions:
+                    file_type = f"可执行文件{file_path.suffix}"
+                else:
+                    file_type = "可执行文件(有执行权限)"
+                
+                print(f"  发现: {file_path.name}")
+                if self.delete_executable(file_path, file_type):
+                    deleted_count += 1
+        
+        return deleted_count
     
     def get_file_type_name(self, suffix: str) -> str:
         """获取文件类型名称"""
@@ -263,12 +328,36 @@ class FileOrganizer:
         
         return True
     
+    def clean_executables(self):
+        """清理所有可执行文件"""
+        print("\n" + "="*50)
+        print("🗑️  清理可执行文件")
+        print("="*50)
+        
+        # 清理 code 目录
+        code_deleted = self.scan_and_delete_executables(self.code_dir)
+        self.stats['executables_deleted'] += code_deleted
+        
+        # 清理 data 目录（如果存在）
+        if self.data_dir.exists():
+            data_deleted = self.scan_and_delete_executables(self.data_dir)
+            self.stats['executables_deleted'] += data_deleted
+        
+        # 清理当前目录
+        current_deleted = self.scan_and_delete_executables(self.current_dir)
+        self.stats['executables_deleted'] += current_deleted
+        
+        if self.stats['executables_deleted'] == 0:
+            print("\n✅ 没有找到可执行文件")
+    
     def show_stats(self):
         """显示移动统计信息"""
         print("\n" + "="*50)
-        print("📊 移动统计:")
+        print("📊 统计报告:")
         print("="*50)
         
+        # 文件移动统计
+        print("\n📁 文件移动:")
         if self.stats['cpp_moved'] > 0 or self.stats['cpp_overwritten'] > 0:
             print(f"  .cpp 文件:")
             print(f"    ✅ 新移动: {self.stats['cpp_moved']}")
@@ -294,13 +383,20 @@ class FileOrganizer:
         total_overwritten = self.stats['cpp_overwritten'] + self.stats['md_overwritten'] + self.stats['conf_overwritten']
         total_skipped = self.stats['cpp_skipped'] + self.stats['md_skipped'] + self.stats['conf_skipped']
         
-        print(f"\n  📈 总计:")
+        print(f"\n  📈 文件移动总计:")
         print(f"    ✅ 新移动: {total_moved}")
         if total_overwritten > 0:
             print(f"    🔄 覆盖: {total_overwritten}")
         print(f"    ⏭️  跳过: {total_skipped}")
+        
+        # 可执行文件删除统计
+        if self.stats['executables_deleted'] > 0:
+            print(f"\n🗑️  可执行文件清理:")
+            print(f"    🗑️  已删除: {self.stats['executables_deleted']} 个")
+        
         if self.stats['errors'] > 0:
-            print(f"    ❌ 错误: {self.stats['errors']}")
+            print(f"\n❌ 错误数: {self.stats['errors']}")
+        
         print("="*50)
     
     def run_py_script(self):
@@ -335,10 +431,17 @@ class FileOrganizer:
             print(f"\n❌ 执行 run.py 时出错: {e}")
             return False
     
-    def run(self, auto_run: bool = False, dry_run: bool = False):
-        """主运行函数"""
+    def run(self, auto_run: bool = False, dry_run: bool = False, skip_clean: bool = False):
+        """
+        主运行函数
+        
+        Args:
+            auto_run: 是否自动运行 run.py
+            dry_run: 是否模拟运行
+            skip_clean: 是否跳过清理可执行文件
+        """
         print("="*50)
-        print("📁 文件整理工具 v3.0")
+        print("📁 文件整理工具 v4.0")
         print("="*50)
         print(f"当前目录: {self.current_dir}")
         print(f"code 目录: {self.code_dir}")
@@ -347,7 +450,7 @@ class FileOrganizer:
         print(f"排除关键词: {', '.join(self.exclude_keywords)}")
         
         if dry_run:
-            print("\n🔍 模拟运行模式 - 不会实际移动文件")
+            print("\n🔍 模拟运行模式 - 不会实际移动或删除文件")
         
         # 检查目录
         if not self.check_directories():
@@ -361,6 +464,12 @@ class FileOrganizer:
             if not self.scan_and_process():
                 return
             self.show_stats()
+        
+        # 清理可执行文件（如果不是模拟运行且没有跳过）
+        if not dry_run and not skip_clean:
+            self.clean_executables()
+            if self.stats['executables_deleted'] > 0:
+                print(f"\n✅ 已删除 {self.stats['executables_deleted']} 个可执行文件")
         
         # 询问是否运行 run.py
         if not auto_run and not dry_run:
@@ -378,34 +487,46 @@ class FileOrganizer:
         print("\n✨ 完成!")
     
     def dry_run(self):
-        """模拟运行，只显示会移动的文件"""
+        """模拟运行，只显示会移动和删除的文件"""
         print("\n📁 模拟扫描 code 目录...")
         
         files_found = False
         conflicts = []
         
         for file_path in self.code_dir.iterdir():
-            if file_path.is_file() and file_path.suffix in self.supported_extensions:
-                files_found = True
-                filename = file_path.name
-                file_suffix = file_path.suffix
-                file_type = self.get_file_type_name(file_suffix)
-                
-                if self.should_exclude(filename):
-                    print(f"  ⏭️  [跳过] {file_type}: {filename} (包含排除关键词)")
-                else:
-                    dest_path = self.data_dir / filename
-                    if dest_path.exists():
-                        conflicts.append(filename)
-                        print(f"  ⚠️  [冲突] {file_type}: {filename} (目标文件已存在)")
+            if file_path.is_file():
+                if file_path.suffix in self.supported_extensions:
+                    files_found = True
+                    filename = file_path.name
+                    file_suffix = file_path.suffix
+                    file_type = self.get_file_type_name(file_suffix)
+                    
+                    if self.should_exclude(filename):
+                        print(f"  ⏭️  [跳过] {file_type}: {filename} (包含排除关键词)")
                     else:
-                        print(f"  ✅ [移动] {file_type}: {filename}")
+                        dest_path = self.data_dir / filename
+                        if dest_path.exists():
+                            conflicts.append(filename)
+                            print(f"  ⚠️  [冲突] {file_type}: {filename} (目标文件已存在)")
+                        else:
+                            print(f"  ✅ [移动] {file_type}: {filename}")
+                elif self.is_executable(file_path):
+                    files_found = True
+                    print(f"  🗑️  [删除] 可执行文件: {file_path.name}")
         
         if not files_found:
-            print("  ⚠️  没有找到 .cpp、.md 或 .conf 文件")
+            print("  ⚠️  没有找到任何文件")
         elif conflicts:
             print(f"\n  ⚠️  发现 {len(conflicts)} 个重名冲突文件")
             print("  实际运行时会询问如何处理")
+        
+        # 模拟清理其他目录
+        print("\n🔍 模拟清理其他目录的可执行文件...")
+        for directory in [self.data_dir, self.current_dir]:
+            if directory.exists():
+                for file_path in directory.iterdir():
+                    if file_path.is_file() and self.is_executable(file_path):
+                        print(f"  🗑️  [将删除] {directory.relative_to(self.current_dir)}/{file_path.name}")
 
 
 def main():
@@ -413,14 +534,15 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(
-        description='移动 code 目录中的 .cpp、.md、.conf 文件到 data 目录，并运行 run.py',
+        description='移动 code 目录中的 .cpp、.md、.conf 文件到 data 目录，删除可执行文件，并运行 run.py',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 示例:
-  %(prog)s                    # 移动文件并交互式询问是否运行 run.py
+  %(prog)s                    # 移动文件，清理可执行文件，并交互式询问是否运行 run.py
   %(prog)s --auto-run         # 移动文件后自动运行 run.py
   %(prog)s --no-run           # 只移动文件，不运行 run.py
-  %(prog)s --dry-run          # 模拟运行，只显示会移动哪些文件
+  %(prog)s --skip-clean       # 跳过清理可执行文件
+  %(prog)s --dry-run          # 模拟运行，只显示会移动和删除哪些文件
   
 重名处理说明:
   当目标文件已存在时，会询问:
@@ -437,8 +559,10 @@ def main():
                         help='移动文件后自动运行 run.py（不询问）')
     parser.add_argument('--no-run', action='store_true', 
                         help='移动文件后不运行 run.py')
+    parser.add_argument('--skip-clean', action='store_true', 
+                        help='跳过清理可执行文件')
     parser.add_argument('--dry-run', action='store_true', 
-                        help='模拟运行，不实际移动文件')
+                        help='模拟运行，不实际移动或删除文件')
     
     args = parser.parse_args()
     
@@ -454,7 +578,7 @@ def main():
     if args.no_run:
         auto_run = False
     
-    organizer.run(auto_run=auto_run, dry_run=args.dry_run)
+    organizer.run(auto_run=auto_run, dry_run=args.dry_run, skip_clean=args.skip_clean)
 
 
 if __name__ == "__main__":
