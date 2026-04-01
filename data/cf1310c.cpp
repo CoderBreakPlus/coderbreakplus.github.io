@@ -29,19 +29,75 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,m,k,lcp[1005][1005];
-
-char s[1005];
+int n,m,lcp[1005][1005];
+ll k;
+char str[1005];
 pair<int,int> s[600005];
 
-ll dp[1005][1005];
+bool cmp(pair<int,int> A,pair<int,int> B){
+	auto [l,r]=A; auto [s,t]=B;
+	int la=r-l+1, lb=t-s+1;
+	int x=lcp[l][s];
+	if(x<min(la,lb)) return str[l+x]<str[s+x];
+	else return la<lb;
+}
+ll dp[1005][1005],g[1005][1005];
+int pt[1005];
 
+inline ll add(ll &a,ll b){ return a = min(k, a+b); }
+
+void print(int l,int r){
+	for(int i=l;i<=r;i++) putchar(str[i]);
+	puts("");
+}
+ll solve(int l,int r){
+	// print(l,r);
+	for(int i=1;i<=n;i++){
+		pt[i]=-1;
+		for(int j=i;j<=n;j++){
+			if(!cmp({i,j},{l,r})){
+				pt[i]=j;
+				break;
+			}
+		}
+		// cout<<i<<" pt="<<pt[i]<<endl;
+	}
+	memset(dp,0,sizeof(dp));
+	memset(g,0,sizeof(g));
+	dp[0][0]=1;
+
+	for(int i=1;i<=n;i++){
+		if(~pt[i])
+			for(int j=0;j<m;j++) add(g[pt[i]][j+1], dp[i-1][j]);
+		for(int j=0;j<=m;j++) dp[i][j] = add(g[i][j], g[i-1][j]);
+
+		// for(int j=0;j<=m;j++) cout<<dp[i][j]<<" ";cout<<endl;
+	}
+	// cout<<"ans="<<dp[n][m]<<endl;
+	return dp[n][m];
+}
 void procedure(){
 	n=read(),m=read(),k=read();
-	scanf("%s",s+1);
+	scanf("%s",str+1);
 	for(int i=n;i>=1;i--)
 		for(int j=n;j>=1;j--)
-			if(s[i]==s[j]) lcp[i][j]=1+lcp[i+1][j+1];
+			if(str[i]==str[j]) lcp[i][j]=1+lcp[i+1][j+1];
+
+	int t=0;
+	for(int l=1;l<=n;l++)
+		for(int r=l;r<=n;r++) s[++t]={l,r};
+
+	sort(s+1,s+t+1,cmp);
+	
+	int l=1,r=t,ans=t;
+	while(l<=r){
+		int mid=(l+r)>>1;
+		if(solve(s[mid].fi,s[mid].se)>=k){
+			ans=mid;
+			l=mid+1;
+		}else r=mid-1;
+	}
+	print(s[ans].fi,s[ans].se);
 }
 int main(){
 	#ifdef LOCAL
