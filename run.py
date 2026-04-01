@@ -36,19 +36,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .quick-jump a:hover {{ background: #e8f0fe; }}
 
         /* ------------------ 
-           简约风格矩阵大表格 
+           矩阵大表格与常规表格通用自适应属性
            ------------------ */
-        .matrix-table {{ width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }}
+        table {{ width: 100%; border-collapse: collapse; table-layout: auto; }}
+        th, td {{ height: auto; width: auto; }}
+
+        /* 简约风格矩阵大表格 */
+        .matrix-table {{ background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }}
         .matrix-table thead {{ background: #f8f9fa; }}
-        .matrix-table th {{ padding: 12px 10px; border-bottom: 2px solid var(--border); color: #5f6368; font-weight: 600; text-align: center; white-space: nowrap; }}
-        .matrix-table td {{ padding: 10px; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: center; vertical-align: top; }}
+        .matrix-table th {{ padding: 12px 15px; border-bottom: 2px solid var(--border); color: #5f6368; font-weight: 600; text-align: center; white-space: nowrap; }}
+        .matrix-table td {{ padding: 12px 15px; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: center; vertical-align: middle; }}
         .matrix-table td:last-child {{ border-right: none; }}
         .matrix-table tbody tr:hover {{ background-color: #fcfcfc; }}
-        .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #333; min-width: 150px; vertical-align: middle !important; }}
+        /* 强制比赛名称不被过度挤压 */
+        .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #333; white-space: nowrap; padding-right: 25px !important; }}
         
         /* 单元格内的题目模块 */
-        .prob-cell {{ display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }}
-        .prob-link-wrap {{ font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 4px; background: #f1f3f4; padding: 3px 10px; border-radius: 12px; transition: background 0.2s; }}
+        .prob-cell {{ display: inline-flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }}
+        .prob-link-wrap {{ font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 4px; background: #f1f3f4; padding: 4px 12px; border-radius: 12px; transition: background 0.2s; white-space: nowrap; }}
         .prob-link-wrap:hover {{ background: #e8eaed; }}
         .prob-link-wrap a {{ color: var(--primary); text-decoration: none; font-weight: bold; }}
         .prob-link-wrap a:hover {{ text-decoration: underline; }}
@@ -56,23 +61,26 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .prob-note:hover {{ filter: none; opacity: 1; transform: scale(1.1); }}
         
         /* 单元格内的微型版本控制 (Code/Md/Conf) */
-        .mini-version-row {{ display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 1.05em; margin-bottom: 2px; }}
-        .mini-tag {{ font-size: 0.7em; padding: 1px 4px; border-radius: 3px; font-weight: bold; line-height: 1; }}
+        .mini-version-row {{ display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; margin-bottom: 2px; }}
+        .mini-tag {{ font-size: 0.7em; padding: 2px 5px; border-radius: 3px; font-weight: bold; line-height: 1; }}
         .mini-tag-easy {{ background: #e6f4ea; color: #1e8e3e; }}
         .mini-tag-hard {{ background: #fce8e6; color: #d93025; }}
         .mini-file-link {{ text-decoration: none; display: inline-block; transition: transform 0.1s; line-height: 1; }}
         .mini-file-link:hover {{ transform: scale(1.15); }}
         
         /* 杂题的常规表格样式 */
-        .normal-table {{ width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 30px; }}
-        .normal-table th, .normal-table td {{ border: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: middle; }}
+        .normal-table {{ margin-top: 10px; margin-bottom: 30px; }}
+        .normal-table th, .normal-table td {{ border: 1px solid var(--border); padding: 15px; text-align: left; vertical-align: middle; }}
         .normal-table th {{ background: #f8f9fa; color: #5f6368; font-weight: 600; }}
         .normal-table tr:hover {{ background-color: #fcfcfc; }}
-        .version-row {{ margin-bottom: 6px; display: flex; align-items: center; }}
+        /* 让题目名称列包裹内容，不要占据多余空间 */
+        .normal-table td:first-child {{ white-space: nowrap; width: 1%; padding-right: 30px; }}
+        
+        .version-row {{ margin-bottom: 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }}
         .version-row:last-child {{ margin-bottom: 0; }}
-        .file-link {{ color: var(--primary); text-decoration: none; margin-right: 12px; font-size: 0.95em; }}
+        .file-link {{ color: var(--primary); text-decoration: none; margin-right: 8px; font-size: 0.95em; white-space: nowrap; }}
         .file-link:hover {{ text-decoration: underline; }}
-        .tag {{ display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; min-width: 45px; text-align: center; margin-right: 8px; }}
+        .tag {{ display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; min-width: 45px; text-align: center; margin-right: 4px; }}
         .tag-easy {{ background: #e6f4ea; color: #1e8e3e; }}
         .tag-hard {{ background: #fce8e6; color: #d93025; }}
         .tag-normal {{ background: #f1f3f4; color: #5f6368; }}
@@ -85,7 +93,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="nav-bar">
             <a href="index.html">🏠 返回首页</a>
             <span style="color:#aaa;">|</span>
-            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">矩阵视图与智能标签归类</span>
+            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">矩阵视图与智能标签归类（行列宽高自适应调节）</span>
         </div>
         
         <h1>{title}</h1>
@@ -251,7 +259,7 @@ def apply_categories_and_links(groups, data_dir):
                     lines.append('')
                     
                 cat_conf = lines[0].lower()
-                if cat_conf in ['oi', 'xcpc', 'xcpc+']:
+                if cat_conf in['oi', 'xcpc', 'xcpc+']:
                     group.category = cat_conf
                 elif cat_conf:
                     # 如果填写了不认识的类别，归并至杂题
@@ -307,7 +315,7 @@ def generate_versions_html(group, rel_path, minimal=False):
                     elif v_name == 'Hard': tag = '<span class="tag tag-hard">Hard</span>'
                     else: tag = '<span class="tag tag-normal">Normal</span>'
                 
-                links = []
+                links =[]
                 if v.files['cpp']: 
                     links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link">📝 代码</a>')
                 if v.files['md']: 
@@ -332,12 +340,10 @@ def build_category_page(title, groups_dict, out_path, rel_path, is_flat=False):
     unique_groups = set()
     
     if is_flat:
-        # 杂题页面的 groups_dict 结构是 { 'Tag1':[g1, g2], 'Tag2': [g2, g3] }
         for gs in groups_dict.values():
             for g in gs:
                 unique_groups.add(g)
     else:
-        # 比赛页面的 groups_dict 结构是 { 'ContestName':[g1, g2] }
         for gs in groups_dict.values():
             for g in gs:
                 unique_groups.add(g)
@@ -376,7 +382,7 @@ def build_category_page(title, groups_dict, out_path, rel_path, is_flat=False):
         sorted_tags = sorted(groups_dict.keys(), key=lambda x: (x == '无标签杂题', x))
         
         # 1. 生成顶部快速跳转锚点
-        jump_links = []
+        jump_links =[]
         for idx, tag in enumerate(sorted_tags):
             if not groups_dict[tag]: continue
             c_id = f"tag-{idx}"
@@ -393,9 +399,11 @@ def build_category_page(title, groups_dict, out_path, rel_path, is_flat=False):
             c_id = f"tag-{idx}"
             icon = "🏷️" if tag != "无标签杂题" else "📂"
             content_html += f"<h2 id='{c_id}' style='margin-top:30px; color:#1a73e8; padding-bottom: 5px; border-bottom: 2px solid var(--border);'>{icon} {tag} <span style='font-size:0.6em; color:#888; font-weight:normal;'>({len(tag_groups)} 题)</span></h2>"
+            
+            # 去除了原来强制写的 width 属性，交由浏览器自适应计算
             content_html += """
             <table class="normal-table">
-                <tr><th width="30%">题目名称</th><th width="70%">代码/题解/配置</th></tr>"""
+                <tr><th>题目名称</th><th>代码/题解/配置</th></tr>"""
             
             for g in sorted(tag_groups, key=lambda x: x.base_name):
                 v_html = generate_versions_html(g, rel_path, minimal=False)
@@ -444,13 +452,13 @@ def build_category_page(title, groups_dict, out_path, rel_path, is_flat=False):
             
             content_html += f'<tr data-name="{contest}" data-count="{len(c_groups)}">'
             
-            # 第一列：比赛名
+            # 第一列：比赛名 (自适应宽度并防止换行挤压)
             display_contest = contest if contest else "未归档/无名比赛"
             content_html += f'<td class="contest-name-cell">{display_contest} <br><span style="font-size:0.85em; color:#888; font-weight:normal;">({len(c_groups)} 题)</span></td>'
             
-            # 填充各题目列
+            # 填充各题目列 (通过CSS中的 vertical-align: middle 和 flexbox 实现完美居中)
             for pid in sorted_pids:
-                content_html += '<td style="vertical-align: middle;">'
+                content_html += '<td>'
                 if pid in pid_map:
                     # 将该 PID 下关联的所有题目铺在这一个格子里
                     for g in sorted(pid_map[pid], key=lambda x: x.base_name):
@@ -489,8 +497,7 @@ def build_index_page(categories, out_path):
     stats =[]
     for cat, data in categories.items():
         if cat == '杂题':
-            # data 是 { 'tagA': [...], 'tagB': [...], '无标签杂题': [...] }
-            # 需要先用 set 去重求真实题目数，以免跨标签导致重复计数
+            # 需要先用 set 去重求真实题目数
             unique_groups = set()
             for gs in data.values():
                 for g in gs:
