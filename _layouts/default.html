@@ -5,23 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page.title | default: site.title }}</title>
   
-  <!-- 你的主题原有样式（如果使用 remote_theme 会自动引入，但为了完整性保留） -->
-  {% if site.remote_theme %}
-    <!-- 自动引入主题样式，通常不需要额外配置 -->
-  {% endif %}
-  
-  <!-- MathJax 配置 - 这是核心！ -->
+  <!-- MathJax 配置 -->
   <script>
     MathJax = {
       tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],   // 行内公式
-        displayMath: [['$$', '$$'], ['\\[', '\\]']] // 块级公式
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
       }
     };
   </script>
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>
+  
+  <!-- 添加居中样式 -->
+  <style>
+    body {
+      max-width: 800px;      /* 限制最大宽度，避免太长 */
+      margin: 0 auto;        /* 水平居中 */
+      padding: 20px;         /* 添加内边距，避免贴边 */
+      line-height: 1.6;      /* 增加行高，更易读 */
+    }
+    
+    /* 可选：让图片也居中 */
+    img {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+    }
+    
+    /* 可选：表格居中 */
+    table {
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
   <main>
