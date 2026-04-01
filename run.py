@@ -31,16 +31,20 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .sort-btns button {{ background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; transition: 0.2s; margin-left: 5px; font-weight: 500; }}
         .sort-btns button:hover {{ background: #f1f3f4; }}
 
+        .quick-jump {{ background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.95em; line-height: 2; }}
+        .quick-jump a {{ display: inline-block; margin: 0 12px 0 0; color: #1a73e8; text-decoration: none; background: #fff; border: 1px solid #d2e3fc; padding: 2px 10px; border-radius: 12px; font-size: 0.9em; }}
+        .quick-jump a:hover {{ background: #e8f0fe; }}
+
         /* ------------------ 
            简约风格矩阵大表格 
            ------------------ */
         .matrix-table {{ width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }}
         .matrix-table thead {{ background: #f8f9fa; }}
         .matrix-table th {{ padding: 12px 10px; border-bottom: 2px solid var(--border); color: #5f6368; font-weight: 600; text-align: center; white-space: nowrap; }}
-        .matrix-table td {{ padding: 10px; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: center; vertical-align: middle; }}
+        .matrix-table td {{ padding: 10px; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: center; vertical-align: top; }}
         .matrix-table td:last-child {{ border-right: none; }}
         .matrix-table tbody tr:hover {{ background-color: #fcfcfc; }}
-        .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #333; min-width: 150px; }}
+        .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #333; min-width: 150px; vertical-align: middle !important; }}
         
         /* 单元格内的题目模块 */
         .prob-cell {{ display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }}
@@ -52,7 +56,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .prob-note:hover {{ filter: none; opacity: 1; transform: scale(1.1); }}
         
         /* 单元格内的微型版本控制 (Code/Md/Conf) */
-        .mini-version-row {{ display: flex; align-items: center; gap: 5px; font-size: 1.05em; margin-bottom: 2px; }}
+        .mini-version-row {{ display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 1.05em; margin-bottom: 2px; }}
         .mini-tag {{ font-size: 0.7em; padding: 1px 4px; border-radius: 3px; font-weight: bold; line-height: 1; }}
         .mini-tag-easy {{ background: #e6f4ea; color: #1e8e3e; }}
         .mini-tag-hard {{ background: #fce8e6; color: #d93025; }}
@@ -60,7 +64,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .mini-file-link:hover {{ transform: scale(1.15); }}
         
         /* 杂题的常规表格样式 */
-        .normal-table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+        .normal-table {{ width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 30px; }}
         .normal-table th, .normal-table td {{ border: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: middle; }}
         .normal-table th {{ background: #f8f9fa; color: #5f6368; font-weight: 600; }}
         .normal-table tr:hover {{ background-color: #fcfcfc; }}
@@ -81,7 +85,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="nav-bar">
             <a href="index.html">🏠 返回首页</a>
             <span style="color:#aaa;">|</span>
-            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">矩阵视图模式，题目状态一目了然</span>
+            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">矩阵视图与智能标签归类</span>
         </div>
         
         <h1>{title}</h1>
@@ -91,6 +95,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="stats-info">{stats_html}</div>
             {sort_html}
         </div>
+        
+        {quick_jump_html}
         
         <div id="contests-container">
             {content_html}
@@ -137,7 +143,7 @@ class ProblemGroup:
         self.contest_name = ""
         self.problem_id = ""
         self.link = "#"
-        self.note = ""
+        self.tags =[]      # 存储标签/关键词
         self.versions = {}
         self.version_order =['Normal', 'Easy', 'Hard']
 
@@ -164,7 +170,7 @@ def scan_and_group_files(data_dir):
             continue
         
         name, ext = os.path.splitext(f)
-        if ext not in ['.cpp', '.md', '.conf']:
+        if ext not in['.cpp', '.md', '.conf']:
             continue
 
         base_name = None
@@ -209,6 +215,26 @@ def scan_and_group_files(data_dir):
 
 def apply_categories_and_links(groups, data_dir):
     for group in groups.values():
+        
+        # 1. 首先无论有无配置，都尝试按照正则执行默认初始化 (CF/AC 等)
+        m_cf = re.match(r'^cf(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
+        m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
+        
+        if m_cf:
+            group.category = 'Codeforces'
+            group.contest_name = f"Codeforces Round {m_cf.group(1)}"
+            group.problem_id = m_cf.group(2).upper()
+            group.link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{m_cf.group(2).upper()}"
+        elif m_ac:
+            group.category = 'AtCoder'
+            c_type = m_ac.group(1).upper()
+            c_num = m_ac.group(2)
+            group.contest_name = f"{c_type} {c_num}"
+            group.problem_id = m_ac.group(3).upper()
+            c_name_lower = f"{c_type.lower()}{c_num}"
+            group.link = f"https://atcoder.jp/contests/{c_name_lower}/tasks/{c_name_lower}_{group.problem_id.lower()}"
+
+        # 2. 如果存在配置文件，则进行安全覆盖
         conf_file = None
         for v in group.versions.values():
             if v.files['conf']:
@@ -219,37 +245,28 @@ def apply_categories_and_links(groups, data_dir):
             try:
                 with open(os.path.join(data_dir, conf_file), 'r', encoding='utf-8') as f:
                     lines =[line.strip() for line in f.readlines()]
-                if len(lines) >= 5:
-                    cat = lines[0].lower()
-                    group.category = cat if cat in['oi', 'xcpc', 'xcpc+'] else '杂题'
-                    group.link = lines[1] if lines[1] else '#'
-                    group.contest_name = lines[2]
-                    group.problem_id = lines[3]
-                    group.note = lines[4]
-                else:
+                
+                # 安全填充防越界 (确保至少 5 行)
+                while len(lines) < 5:
+                    lines.append('')
+                    
+                cat_conf = lines[0].lower()
+                if cat_conf in ['oi', 'xcpc', 'xcpc+']:
+                    group.category = cat_conf
+                elif cat_conf:
+                    # 如果填写了不认识的类别，归并至杂题
                     group.category = '杂题'
+                # 若 cat_conf 为空，则保留原 category (如果是 CF/AC 则保留，否则默认为 杂题)
+
+                if lines[1]: group.link = lines[1]
+                if lines[2]: group.contest_name = lines[2]
+                if lines[3]: group.problem_id = lines[3]
+                if lines[4]: 
+                    # 用空格分割获得全部关键词/标签
+                    group.tags = [t for t in lines[4].split() if t]
+                    
             except Exception as e:
-                print(f"读取 {conf_file} 失败: {e}")
-                group.category = '杂题'
-        else:
-            m_cf = re.match(r'^cf(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
-            m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
-            
-            if m_cf:
-                group.category = 'Codeforces'
-                group.contest_name = f"Codeforces Round {m_cf.group(1)}"
-                group.problem_id = m_cf.group(2).upper()
-                group.link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{m_cf.group(2).upper()}"
-            elif m_ac:
-                group.category = 'AtCoder'
-                c_type = m_ac.group(1).upper()
-                c_num = m_ac.group(2)
-                group.contest_name = f"{c_type} {c_num}"
-                group.problem_id = m_ac.group(3).upper()
-                c_name_lower = f"{c_type.lower()}{c_num}"
-                group.link = f"https://atcoder.jp/contests/{c_name_lower}/tasks/{c_name_lower}_{group.problem_id.lower()}"
-            else:
-                group.category = '杂题'
+                print(f"读取配置 {conf_file} 时警告: {e}")
 
 # =======================
 #   HTML 生成逻辑
@@ -311,15 +328,22 @@ def build_category_page(title, groups_dict, out_path, rel_path, is_flat=False):
     has_md = 0
     has_conf = 0
     
-    all_groups =[]
+    # 因为杂题里可能跨 Tag 重复存放相同的题目，去重统计能确保上方统计栏数据精准
+    unique_groups = set()
+    
     if is_flat:
-        all_groups = groups_dict
-    else:
+        # 杂题页面的 groups_dict 结构是 { 'Tag1':[g1, g2], 'Tag2': [g2, g3] }
         for gs in groups_dict.values():
-            all_groups.extend(gs)
-            
-    total_groups = len(all_groups)
-    for g in all_groups:
+            for g in gs:
+                unique_groups.add(g)
+    else:
+        # 比赛页面的 groups_dict 结构是 { 'ContestName':[g1, g2] }
+        for gs in groups_dict.values():
+            for g in gs:
+                unique_groups.add(g)
+                
+    total_groups = len(unique_groups)
+    for g in unique_groups:
         total_versions += len(g.versions)
         if any(v.files['cpp'] for v in g.versions.values()): has_cpp += 1
         if any(v.files['md'] for v in g.versions.values()): has_md += 1
@@ -344,21 +368,47 @@ def build_category_page(title, groups_dict, out_path, rel_path, is_flat=False):
         sort_html = ""
 
     content_html = ""
+    quick_jump_html = ""
     
-    # 【杂题】保持标准列表风格
+    # 【杂题与标签页面】采用标准分类列表风格
     if is_flat:
-        content_html += """
-        <table class="normal-table">
-            <tr><th width="30%">题目名称</th><th width="70%">代码/题解/配置</th></tr>"""
-        for g in sorted(all_groups, key=lambda x: x.base_name):
-            v_html = generate_versions_html(g, rel_path, minimal=False)
-            content_html += f"""
-            <tr>
-                <td><b>{g.base_name}</b></td>
-                <td>{v_html}</td>
-            </tr>"""
-        content_html += "</table>"
+        # 对 Tags 进行排序，确保 "无标签杂题" 排在最后
+        sorted_tags = sorted(groups_dict.keys(), key=lambda x: (x == '无标签杂题', x))
         
+        # 1. 生成顶部快速跳转锚点
+        jump_links = []
+        for idx, tag in enumerate(sorted_tags):
+            if not groups_dict[tag]: continue
+            c_id = f"tag-{idx}"
+            display_tag = tag if tag != '无标签杂题' else '无标签杂题'
+            jump_links.append(f'<a href="#{c_id}">📍 {display_tag} ({len(groups_dict[tag])})</a>')
+            
+        quick_jump_html = f'<div class="quick-jump" style="background:#fff; border:1px solid var(--border);"><strong>🏷️ 标签快速跳转索引：</strong><br>{"".join(jump_links)}</div>'
+
+        # 2. 按 Tag 渲染对应表格
+        for idx, tag in enumerate(sorted_tags):
+            tag_groups = groups_dict[tag]
+            if not tag_groups: continue
+            
+            c_id = f"tag-{idx}"
+            icon = "🏷️" if tag != "无标签杂题" else "📂"
+            content_html += f"<h2 id='{c_id}' style='margin-top:30px; color:#1a73e8; padding-bottom: 5px; border-bottom: 2px solid var(--border);'>{icon} {tag} <span style='font-size:0.6em; color:#888; font-weight:normal;'>({len(tag_groups)} 题)</span></h2>"
+            content_html += """
+            <table class="normal-table">
+                <tr><th width="30%">题目名称</th><th width="70%">代码/题解/配置</th></tr>"""
+            
+            for g in sorted(tag_groups, key=lambda x: x.base_name):
+                v_html = generate_versions_html(g, rel_path, minimal=False)
+                # 若题目自身来自某个明确的比赛，在题目名后补个来源说明
+                origin = f"<br><span style='font-size:0.8em; color:#888; font-weight:normal;'>来源: {g.category} - {g.contest_name}</span>" if g.contest_name else ""
+                
+                content_html += f"""
+                <tr>
+                    <td><b>{g.base_name}</b>{origin}</td>
+                    <td>{v_html}</td>
+                </tr>"""
+            content_html += "</table>"
+            
     # 【比赛类型】采用二维大表格矩阵风格
     else:
         # 1. 收集并排序所有存在的题目编号 (A, B, C...)
@@ -368,59 +418,54 @@ def build_category_page(title, groups_dict, out_path, rel_path, is_flat=False):
                 pid = g.problem_id.strip() if g.problem_id else "未知"
                 all_pids.add(pid)
                 
-        # 阿尔法+数字智能排序方法 (确保 10 在 2 之后，A在B之前)
         def alnum_key(s):
             return[int(c) if c.isdigit() else c.lower() for c in re.split('([0-9]+)', s)]
-        sorted_pids = sorted(list(all_pids), key=alnum_key)
+        # "未知" 排在最后
+        sorted_pids = sorted(list(all_pids), key=lambda x: ([float('inf')] if x == '未知' else alnum_key(x)))
 
         # 2. 构建二维表格
         content_html += '<div style="overflow-x: auto;">'
         content_html += '<table class="matrix-table" id="contest-table">'
         
-        # 表头：比赛名称 + 题目编号
         content_html += '<thead><tr>'
         content_html += '<th style="text-align: left;">比赛名称</th>'
         for pid in sorted_pids:
             content_html += f'<th>{pid}</th>'
-        content_html += '</tr></thead>'
+        content_html += '</tr></thead><tbody>'
         
-        # 表身：各比赛的数据填充
-        content_html += '<tbody>'
         sorted_contests = sorted(groups_dict.items(), key=lambda x: len(x[1]), reverse=True)
         
         for contest, c_groups in sorted_contests:
-            # 建立本场比赛的 PID 映射字典
-            pid_map = { (g.problem_id.strip() if g.problem_id else "未知"): g for g in c_groups }
+            # 有时一场比赛可能没填 PID 造成多人同 PID("未知")，需用 list 防止覆盖
+            pid_map = defaultdict(list)
+            for g in c_groups:
+                pid = g.problem_id.strip() if g.problem_id else "未知"
+                pid_map[pid].append(g)
             
             content_html += f'<tr data-name="{contest}" data-count="{len(c_groups)}">'
             
             # 第一列：比赛名
-            content_html += f'<td class="contest-name-cell">{contest} <br><span style="font-size:0.85em; color:#888; font-weight:normal;">({len(c_groups)} 题)</span></td>'
+            display_contest = contest if contest else "未归档/无名比赛"
+            content_html += f'<td class="contest-name-cell">{display_contest} <br><span style="font-size:0.85em; color:#888; font-weight:normal;">({len(c_groups)} 题)</span></td>'
             
             # 填充各题目列
             for pid in sorted_pids:
+                content_html += '<td style="vertical-align: middle;">'
                 if pid in pid_map:
-                    g = pid_map[pid]
-                    # 极简模式产生代码题解文件链接
-                    v_html = generate_versions_html(g, rel_path, minimal=True)
-                    
-                    # 挂链接的超链接按钮
-                    link_html = f'<a href="{g.link}" target="_blank">🔗题目</a>' if g.link != '#' else '<span style="color:#999; font-size:0.9em; font-weight:bold;">-</span>'
-                    
-                    # 悬浮备注
-                    note_icon = f'<span class="prob-note" title="备注: {g.note}">💭</span>' if g.note else ''
-                    
-                    # 组合渲染单元格
-                    content_html += f"""
-                    <td>
-                        <div class="prob-cell">
+                    # 将该 PID 下关联的所有题目铺在这一个格子里
+                    for g in sorted(pid_map[pid], key=lambda x: x.base_name):
+                        v_html = generate_versions_html(g, rel_path, minimal=True)
+                        link_html = f'<a href="{g.link}" target="_blank">🔗题目</a>' if g.link != '#' else '<span style="color:#999; font-size:0.9em; font-weight:bold;">-</span>'
+                        
+                        # 悬浮备注升级为悬浮标签
+                        note_icon = f'<span class="prob-note" title="标签: {", ".join(g.tags)}">🏷️</span>' if g.tags else ''
+                        
+                        content_html += f"""
+                        <div class="prob-cell" style="margin-bottom:6px;">
                             <div class="prob-link-wrap">{link_html}{note_icon}</div>
                             {v_html}
-                        </div>
-                    </td>"""
-                else:
-                    # 本场比赛没有这个题号，留空
-                    content_html += '<td></td>'
+                        </div>"""
+                content_html += '</td>'
                     
             content_html += '</tr>'
         
@@ -431,6 +476,7 @@ def build_category_page(title, groups_dict, out_path, rel_path, is_flat=False):
         subtitle="",  # 子页面无副标题
         stats_html=stats_html,
         sort_html=sort_html,
+        quick_jump_html=quick_jump_html,
         content_html=content_html,
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
@@ -443,22 +489,30 @@ def build_index_page(categories, out_path):
     stats =[]
     for cat, data in categories.items():
         if cat == '杂题':
-            count = len(data)
-            stats.append((cat, count, f"{count} 个杂题组"))
+            # data 是 { 'tagA': [...], 'tagB': [...], '无标签杂题': [...] }
+            # 需要先用 set 去重求真实题目数，以免跨标签导致重复计数
+            unique_groups = set()
+            for gs in data.values():
+                for g in gs:
+                    unique_groups.add(g.base_name)
+                    
+            tag_count = len([k for k in data.keys() if k != '无标签杂题' and data[k]])
+            p_count = len(unique_groups)
+            stats.append((cat, p_count, f"包含 {tag_count} 个关键词标签，共 {p_count} 个相关题目组"))
         else:
             c_count = len(data)
             p_count = sum(len(gs) for gs in data.values())
-            stats.append((cat, p_count, f"{c_count} 个比赛，{p_count} 个题目组"))
+            stats.append((cat, p_count, f"共 {c_count} 场比赛，包含 {p_count} 个题目组"))
             
-    # 首页独有的“第二行” .conf 配置文件说明副标题
+    # 首页独有的配置说明区块
     subtitle_html = """
-    <div style="background: #e8f0fe; color: #174ea6; padding: 12px 18px; border-radius: 6px; margin-bottom: 25px; font-size: 0.95em; border: 1px solid #d2e3fc;">
-        <strong>📝 .conf 配置文件写法（固定5行）：</strong>
-        第1行: 比赛归类(oi/xcpc/xcpc+) &nbsp;|&nbsp;
-        第2行: 完整URL链接 &nbsp;|&nbsp;
-        第3行: 比赛名称 &nbsp;|&nbsp;
-        第4行: 题目编号 &nbsp;|&nbsp;
-        第5行: 备注说明
+    <div style="background: #e8f0fe; color: #174ea6; padding: 16px 20px; border-radius: 6px; margin-bottom: 25px; font-size: 0.95em; border: 1px solid #d2e3fc; line-height: 1.8;">
+        <strong>📝 任何题目均可添加 .conf 配置文件（固定 5 行，不需要的信息可直接留空换行）：</strong><br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 1 行:</span> 比赛分类 (<code>oi</code> / <code>xcpc</code> / <code>xcpc+</code>)。留空则保留系统自动识别，或默认归至杂题。<br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 2 行:</span> 完整 URL 链接。CF/AT 等留空仍可自动生成官方链接。<br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 3 行:</span> 比赛名称。留空表示无所属具体赛事。<br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 4 行:</span> 题目编号 (如 A, B, C...)。<br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 5 行:</span> 标签/关键词。多个 tag 用空格隔开。<strong>所有含有标签的题目将全部被汇聚至“杂题”内作为知识点索引归类！</strong>
     </div>
     """
 
@@ -477,6 +531,7 @@ def build_index_page(categories, out_path):
         subtitle=subtitle_html,
         stats_html="<span>👋 欢迎使用题目自动整理工具</span>",
         sort_html="",
+        quick_jump_html="",
         content_html=content,
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
@@ -504,24 +559,35 @@ def main():
     
     apply_categories_and_links(groups, data_dir)
 
+    # 对于杂题，其底层结构升级为：按照 Tag 为 Key 建立的字典
     categories = {
         'Codeforces': defaultdict(list),
         'AtCoder': defaultdict(list),
         'oi': defaultdict(list),
         'xcpc': defaultdict(list),
         'xcpc+': defaultdict(list),
-        '杂题':[]
+        '杂题': defaultdict(list)
     }
 
     for g in groups.values():
-        if g.category == '杂题':
-            categories['杂题'].append(g)
-        else:
+        
+        # 1. 投放到所属的大类与比赛中 (除了纯正的无归属杂题外)
+        if g.category != '杂题':
             categories[g.category][g.contest_name].append(g)
+
+        # 2. 【知识点索引投递】
+        # 只要题目有 Tag，无论它是 CF/AT 还是 XCPC，都在“杂题”里为其建立跨越分类的 Tag 索引副本
+        if g.tags:
+            for tag in g.tags:
+                categories['杂题'][tag].append(g)
+        # 如果既没有 Tag 又是纯正的一道毫无归属的杂题，则投放到无标签的收容所里
+        elif g.category == '杂题':
+            categories['杂题']['无标签杂题'].append(g)
 
     print(f"🛠️ 正在生成 HTML 到 '{out_dir}' (当前目录)...")
     for cat in categories:
         if cat == '杂题':
+            # 杂题启用扁平化标签页构建
             build_category_page(cat, categories[cat], os.path.join(out_dir, f"{cat}.html"), rel_data_path, is_flat=True)
         else:
             build_category_page(cat, categories[cat], os.path.join(out_dir, f"{cat}.html"), rel_data_path, is_flat=False)
