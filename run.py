@@ -17,45 +17,62 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <style>
         :root {{ --primary: #1a73e8; --bg: #f4f5f7; --text: #333; --border: #e0e0e0; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }}
-        .container {{ max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }}
+        .container {{ max-width: 1400px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; }}
         h1, h2, h3 {{ color: #202124; margin-bottom: 10px; }}
         
         /* 导航与跳转 */
         .nav-bar {{ margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }}
         .nav-bar a {{ color: var(--primary); text-decoration: none; font-weight: 500; margin-right: 15px; }}
         .nav-bar a:hover {{ text-decoration: underline; }}
-        .quick-jump {{ background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9em; }}
-        .quick-jump a {{ display: inline-block; margin: 4px 12px 4px 0; color: #5f6368; text-decoration: none; }}
-        .quick-jump a:hover {{ color: var(--primary); }}
         
         /* 统计栏与排序 */
         .stats-bar {{ display: flex; justify-content: space-between; align-items: center; background: #e8f0fe; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }}
         .stats-info span {{ margin-right: 15px; font-size: 0.95em; color: #174ea6; font-weight: 500; }}
-        .sort-btns button {{ background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; transition: 0.2s; margin-left: 5px; }}
+        .sort-btns button {{ background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; transition: 0.2s; margin-left: 5px; font-weight: 500; }}
         .sort-btns button:hover {{ background: #f1f3f4; }}
 
-        /* 比赛分组折叠 */
-        .contest-wrapper {{ margin-bottom: 20px; }}
-        .contest-header {{ background: #fafafa; padding: 12px 15px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }}
-        .contest-header:hover {{ background: #f1f3f4; }}
-        .arrow {{ transition: transform 0.3s ease; display: inline-block; }}
+        /* ------------------ 
+           简约风格矩阵大表格 
+           ------------------ */
+        .matrix-table {{ width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }}
+        .matrix-table thead {{ background: #f8f9fa; }}
+        .matrix-table th {{ padding: 12px 10px; border-bottom: 2px solid var(--border); color: #5f6368; font-weight: 600; text-align: center; white-space: nowrap; }}
+        .matrix-table td {{ padding: 10px; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: center; vertical-align: middle; }}
+        .matrix-table td:last-child {{ border-right: none; }}
+        .matrix-table tbody tr:hover {{ background-color: #fcfcfc; }}
+        .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #333; min-width: 150px; }}
         
-        /* 表格样式 */
-        table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-        th, td {{ border: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: top; }}
-        th {{ background: #f8f9fa; color: #5f6368; font-weight: 600; }}
-        tr:hover {{ background-color: #fcfcfc; }}
+        /* 单元格内的题目模块 */
+        .prob-cell {{ display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }}
+        .prob-link-wrap {{ font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 4px; background: #f1f3f4; padding: 3px 10px; border-radius: 12px; transition: background 0.2s; }}
+        .prob-link-wrap:hover {{ background: #e8eaed; }}
+        .prob-link-wrap a {{ color: var(--primary); text-decoration: none; font-weight: bold; }}
+        .prob-link-wrap a:hover {{ text-decoration: underline; }}
+        .prob-note {{ cursor: help; filter: grayscale(1); opacity: 0.6; font-size: 0.9em; transition: 0.2s; }}
+        .prob-note:hover {{ filter: none; opacity: 1; transform: scale(1.1); }}
         
-        /* 标签与链接 */
+        /* 单元格内的微型版本控制 (Code/Md/Conf) */
+        .mini-version-row {{ display: flex; align-items: center; gap: 5px; font-size: 1.05em; margin-bottom: 2px; }}
+        .mini-tag {{ font-size: 0.7em; padding: 1px 4px; border-radius: 3px; font-weight: bold; line-height: 1; }}
+        .mini-tag-easy {{ background: #e6f4ea; color: #1e8e3e; }}
+        .mini-tag-hard {{ background: #fce8e6; color: #d93025; }}
+        .mini-file-link {{ text-decoration: none; display: inline-block; transition: transform 0.1s; line-height: 1; }}
+        .mini-file-link:hover {{ transform: scale(1.15); }}
+        
+        /* 杂题的常规表格样式 */
+        .normal-table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+        .normal-table th, .normal-table td {{ border: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: middle; }}
+        .normal-table th {{ background: #f8f9fa; color: #5f6368; font-weight: 600; }}
+        .normal-table tr:hover {{ background-color: #fcfcfc; }}
+        .version-row {{ margin-bottom: 6px; display: flex; align-items: center; }}
+        .version-row:last-child {{ margin-bottom: 0; }}
+        .file-link {{ color: var(--primary); text-decoration: none; margin-right: 12px; font-size: 0.95em; }}
+        .file-link:hover {{ text-decoration: underline; }}
         .tag {{ display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; min-width: 45px; text-align: center; margin-right: 8px; }}
         .tag-easy {{ background: #e6f4ea; color: #1e8e3e; }}
         .tag-hard {{ background: #fce8e6; color: #d93025; }}
         .tag-normal {{ background: #f1f3f4; color: #5f6368; }}
-        .file-link {{ color: var(--primary); text-decoration: none; margin-right: 12px; font-size: 0.95em; }}
-        .file-link:hover {{ text-decoration: underline; }}
-        .version-row {{ margin-bottom: 6px; display: flex; align-items: center; }}
-        .version-row:last-child {{ margin-bottom: 0; }}
-        
+
         .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #80868b; font-size: 0.85em; }}
     </style>
 </head>
@@ -64,7 +81,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="nav-bar">
             <a href="index.html">🏠 返回首页</a>
             <span style="color:#aaa;">|</span>
-            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">支持 Easy/Hard Version 自动合并显示</span>
+            <span style="margin-left: 15px; font-size: 0.9em; color: #666;">矩阵视图模式，题目状态一目了然</span>
         </div>
         
         <h1>{title}</h1>
@@ -74,8 +91,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="stats-info">{stats_html}</div>
             {sort_html}
         </div>
-        
-        {quick_jump_html}
         
         <div id="contests-container">
             {content_html}
@@ -87,29 +102,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     </div>
 
     <script>
-        function toggleContest(header) {{
-            const content = header.nextElementSibling;
-            const arrow = header.querySelector('.arrow');
-            if (content.style.display === 'none') {{
-                content.style.display = 'table';
-                arrow.style.transform = 'rotate(0deg)';
-            }} else {{
-                content.style.display = 'none';
-                arrow.style.transform = 'rotate(-90deg)';
-            }}
-        }}
-
+        // 针对二维矩阵表格的行排序逻辑
         function sortContests(type) {{
-            const container = document.getElementById('contests-container');
-            const wrappers = Array.from(container.getElementsByClassName('contest-wrapper'));
-            wrappers.sort((a, b) => {{
+            const tbody = document.querySelector('#contest-table tbody');
+            if (!tbody) return;
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a, b) => {{
                 if (type === 'count') {{
                     return parseInt(b.dataset.count) - parseInt(a.dataset.count);
                 }} else {{
                     return a.dataset.name.localeCompare(b.dataset.name);
                 }}
             }});
-            wrappers.forEach(w => container.appendChild(w));
+            rows.forEach(r => tbody.appendChild(r));
         }}
     </script>
 </body>
@@ -165,9 +170,7 @@ def scan_and_group_files(data_dir):
         base_name = None
         version = 'Normal'
         
-        # A. CF 正则匹配 (如 cf1336e1)
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
-        # B. AtCoder 正则匹配 (如 abc001a1)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
 
         if m_cf:
@@ -177,7 +180,6 @@ def scan_and_group_files(data_dir):
             base_name = f"{m_ac.group(1).lower()}{m_ac.group(2)}{m_ac.group(3).lower()}"
             version = 'Easy' if m_ac.group(4) == '1' else ('Hard' if m_ac.group(4) == '2' else 'Normal')
         else:
-            # C. 匹配已知 conf 的题目组
             matched_conf_base = None
             for cb in sorted(conf_bases, key=len, reverse=True):
                 if name == cb:
@@ -193,7 +195,6 @@ def scan_and_group_files(data_dir):
             if matched_conf_base:
                 base_name = matched_conf_base
             else:
-                # D. 杂题/其他格式回退匹配
                 if name.endswith('_e1'): base_name, version = name[:-3], 'Easy'
                 elif name.endswith('_e2'): base_name, version = name[:-3], 'Hard'
                 elif name.endswith('1'): base_name, version = name[:-1], 'Easy'
@@ -254,33 +255,52 @@ def apply_categories_and_links(groups, data_dir):
 #   HTML 生成逻辑
 # =======================
 
-def generate_versions_html(group, rel_path):
+def generate_versions_html(group, rel_path, minimal=False):
     v_htmls =[]
     has_multiple = len(group.versions) > 1
     
     for v_name in group.version_order:
         if v_name in group.versions:
             v = group.versions[v_name]
-            tag = ""
-            if has_multiple:
-                if v_name == 'Easy': tag = '<span class="tag tag-easy">Easy</span>'
-                elif v_name == 'Hard': tag = '<span class="tag tag-hard">Hard</span>'
-                else: tag = '<span class="tag tag-normal">Normal</span>'
             
-            links = []
-            if v.files['cpp']: 
-                links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link">📝 代码</a>')
-            
-            if v.files['md']: 
-                # 这里移除 .md 后缀
-                md_filename = v.files['md']
-                md_href = md_filename[:-3] if md_filename.endswith('.md') else md_filename
-                links.append(f'<a href="{rel_path}/{md_href}" class="file-link">💡 题解</a>')
+            # -------- 极简矩阵样式 (用于比赛页) --------
+            if minimal:
+                tag = ""
+                if has_multiple:
+                    if v_name == 'Easy': tag = '<span class="mini-tag mini-tag-easy">E</span>'
+                    elif v_name == 'Hard': tag = '<span class="mini-tag mini-tag-hard">H</span>'
                 
-            if v.files['conf']: 
-                links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link">⚙️ 配置</a>')
+                links =[]
+                if v.files['cpp']: 
+                    links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="mini-file-link" title="代码">📝</a>')
+                if v.files['md']: 
+                    md_filename = v.files['md']
+                    md_href = md_filename[:-3] if md_filename.endswith('.md') else md_filename
+                    links.append(f'<a href="{rel_path}/{md_href}" class="mini-file-link" title="题解">💡</a>')
+                if v.files['conf']: 
+                    links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="mini-file-link" title="配置">⚙️</a>')
+                
+                v_htmls.append(f'<div class="mini-version-row">{tag}{"".join(links)}</div>')
             
-            v_htmls.append(f'<div class="version-row">{tag}{"".join(links)}</div>')
+            # -------- 传统列表样式 (用于杂题页) --------
+            else:
+                tag = ""
+                if has_multiple:
+                    if v_name == 'Easy': tag = '<span class="tag tag-easy">Easy</span>'
+                    elif v_name == 'Hard': tag = '<span class="tag tag-hard">Hard</span>'
+                    else: tag = '<span class="tag tag-normal">Normal</span>'
+                
+                links = []
+                if v.files['cpp']: 
+                    links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link">📝 代码</a>')
+                if v.files['md']: 
+                    md_filename = v.files['md']
+                    md_href = md_filename[:-3] if md_filename.endswith('.md') else md_filename
+                    links.append(f'<a href="{rel_path}/{md_href}" class="file-link">💡 题解</a>')
+                if v.files['conf']: 
+                    links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link">⚙️ 配置</a>')
+                
+                v_htmls.append(f'<div class="version-row">{tag}{"".join(links)}</div>')
     
     return "".join(v_htmls)
 
@@ -318,68 +338,99 @@ def build_category_page(title, groups_dict, out_path, rel_path, is_flat=False):
         sort_html = """
         <div class="sort-btns">
             <button onclick="sortContests('count')">按题目数降序</button>
-            <button onclick="sortContests('name')">按字典序排列</button>
+            <button onclick="sortContests('name')">按比赛名字典序</button>
         </div>"""
     else:
         sort_html = ""
 
     content_html = ""
-    quick_jump_html = ""
     
+    # 【杂题】保持标准列表风格
     if is_flat:
         content_html += """
-        <table>
+        <table class="normal-table">
             <tr><th width="30%">题目名称</th><th width="70%">代码/题解/配置</th></tr>"""
         for g in sorted(all_groups, key=lambda x: x.base_name):
-            v_html = generate_versions_html(g, rel_path)
+            v_html = generate_versions_html(g, rel_path, minimal=False)
             content_html += f"""
             <tr>
                 <td><b>{g.base_name}</b></td>
                 <td>{v_html}</td>
             </tr>"""
         content_html += "</table>"
+        
+    # 【比赛类型】采用二维大表格矩阵风格
     else:
-        jump_links =[]
+        # 1. 收集并排序所有存在的题目编号 (A, B, C...)
+        all_pids = set()
+        for c_groups in groups_dict.values():
+            for g in c_groups:
+                pid = g.problem_id.strip() if g.problem_id else "未知"
+                all_pids.add(pid)
+                
+        # 阿尔法+数字智能排序方法 (确保 10 在 2 之后，A在B之前)
+        def alnum_key(s):
+            return[int(c) if c.isdigit() else c.lower() for c in re.split('([0-9]+)', s)]
+        sorted_pids = sorted(list(all_pids), key=alnum_key)
+
+        # 2. 构建二维表格
+        content_html += '<div style="overflow-x: auto;">'
+        content_html += '<table class="matrix-table" id="contest-table">'
+        
+        # 表头：比赛名称 + 题目编号
+        content_html += '<thead><tr>'
+        content_html += '<th style="text-align: left;">比赛名称</th>'
+        for pid in sorted_pids:
+            content_html += f'<th>{pid}</th>'
+        content_html += '</tr></thead>'
+        
+        # 表身：各比赛的数据填充
+        content_html += '<tbody>'
         sorted_contests = sorted(groups_dict.items(), key=lambda x: len(x[1]), reverse=True)
         
-        for idx, (contest, c_groups) in enumerate(sorted_contests):
-            c_id = f"contest-{idx}"
-            jump_links.append(f'<a href="#{c_id}">📍 {contest} ({len(c_groups)})</a>')
+        for contest, c_groups in sorted_contests:
+            # 建立本场比赛的 PID 映射字典
+            pid_map = { (g.problem_id.strip() if g.problem_id else "未知"): g for g in c_groups }
             
-            content_html += f"""
-            <div class="contest-wrapper" data-name="{contest}" data-count="{len(c_groups)}">
-                <div class="contest-header" onclick="toggleContest(this)" id="{c_id}">
-                    <span>{contest} ({len(c_groups)} 题)</span>
-                    <span class="arrow">▼</span>
-                </div>
-                <table class="contest-table" style="display: table;">
-                    <tr>
-                        <th width="20%">题目编号</th>
-                        <th width="25%">题目链接</th>
-                        <th width="40%">代码/题解/配置</th>
-                        <th width="15%">备注</th>
-                    </tr>"""
+            content_html += f'<tr data-name="{contest}" data-count="{len(c_groups)}">'
             
-            for g in sorted(c_groups, key=lambda x: x.problem_id):
-                v_html = generate_versions_html(g, rel_path)
-                link_html = f'<a href="{g.link}" target="_blank">{g.link[:40] + "..." if len(g.link)>40 else g.link}</a>' if g.link != '#' else '无链接'
-                content_html += f"""
-                    <tr>
-                        <td><b>{g.problem_id if g.problem_id else g.base_name}</b></td>
-                        <td style="word-break: break-all;">{link_html}</td>
-                        <td>{v_html}</td>
-                        <td>{g.note}</td>
-                    </tr>"""
-            content_html += "</table></div>"
+            # 第一列：比赛名
+            content_html += f'<td class="contest-name-cell">{contest} <br><span style="font-size:0.85em; color:#888; font-weight:normal;">({len(c_groups)} 题)</span></td>'
             
-        quick_jump_html = f'<div class="quick-jump"><strong>快速跳转：</strong><br>{"".join(jump_links)}</div>'
+            # 填充各题目列
+            for pid in sorted_pids:
+                if pid in pid_map:
+                    g = pid_map[pid]
+                    # 极简模式产生代码题解文件链接
+                    v_html = generate_versions_html(g, rel_path, minimal=True)
+                    
+                    # 挂链接的超链接按钮
+                    link_html = f'<a href="{g.link}" target="_blank">🔗题目</a>' if g.link != '#' else '<span style="color:#999; font-size:0.9em; font-weight:bold;">-</span>'
+                    
+                    # 悬浮备注
+                    note_icon = f'<span class="prob-note" title="备注: {g.note}">💭</span>' if g.note else ''
+                    
+                    # 组合渲染单元格
+                    content_html += f"""
+                    <td>
+                        <div class="prob-cell">
+                            <div class="prob-link-wrap">{link_html}{note_icon}</div>
+                            {v_html}
+                        </div>
+                    </td>"""
+                else:
+                    # 本场比赛没有这个题号，留空
+                    content_html += '<td></td>'
+                    
+            content_html += '</tr>'
+        
+        content_html += '</tbody></table></div>'
 
     html = HTML_TEMPLATE.format(
         title=title,
         subtitle="",  # 子页面无副标题
         stats_html=stats_html,
         sort_html=sort_html,
-        quick_jump_html=quick_jump_html,
         content_html=content_html,
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
@@ -399,7 +450,7 @@ def build_index_page(categories, out_path):
             p_count = sum(len(gs) for gs in data.values())
             stats.append((cat, p_count, f"{c_count} 个比赛，{p_count} 个题目组"))
             
-    # 1. 首页独有的“第二行” .conf 配置文件说明副标题
+    # 首页独有的“第二行” .conf 配置文件说明副标题
     subtitle_html = """
     <div style="background: #e8f0fe; color: #174ea6; padding: 12px 18px; border-radius: 6px; margin-bottom: 25px; font-size: 0.95em; border: 1px solid #d2e3fc;">
         <strong>📝 .conf 配置文件写法（固定5行）：</strong>
@@ -411,7 +462,6 @@ def build_index_page(categories, out_path):
     </div>
     """
 
-    # 2. 分类导航卡片
     content = "<div style='display:flex; flex-wrap:wrap; gap:20px;'>"
     for cat, _, desc in stats:
         content += f"""
@@ -427,7 +477,6 @@ def build_index_page(categories, out_path):
         subtitle=subtitle_html,
         stats_html="<span>👋 欢迎使用题目自动整理工具</span>",
         sort_html="",
-        quick_jump_html="",
         content_html=content,
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
@@ -437,9 +486,7 @@ def build_index_page(categories, out_path):
 
 
 def main():
-    # 1. 参数解析
     data_dir = sys.argv[1] if len(sys.argv) > 1 else 'data'
-    # 修改：未指定输出目录时，默认输出到当前目录 '.' （即脚本运行的位置）
     out_dir = sys.argv[2] if len(sys.argv) > 2 else '.'
 
     if not os.path.exists(data_dir):
@@ -449,7 +496,6 @@ def main():
     if out_dir != '.' and not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
-    # 相对路径计算 (给 HTML 中的链接使用)
     rel_data_path = os.path.relpath(data_dir, out_dir).replace('\\', '/')
 
     print(f"🔍 正在扫描 '{data_dir}'...")
@@ -458,7 +504,6 @@ def main():
     
     apply_categories_and_links(groups, data_dir)
 
-    # 2. 分类结构化
     categories = {
         'Codeforces': defaultdict(list),
         'AtCoder': defaultdict(list),
@@ -474,7 +519,6 @@ def main():
         else:
             categories[g.category][g.contest_name].append(g)
 
-    # 3. 生成各分类 HTML
     print(f"🛠️ 正在生成 HTML 到 '{out_dir}' (当前目录)...")
     for cat in categories:
         if cat == '杂题':
@@ -482,12 +526,10 @@ def main():
         else:
             build_category_page(cat, categories[cat], os.path.join(out_dir, f"{cat}.html"), rel_data_path, is_flat=False)
 
-    # 4. 生成主页 index.html
     build_index_page(categories, os.path.join(out_dir, "index.html"))
 
     index_abs_path = os.path.abspath(os.path.join(out_dir, 'index.html'))
     print(f"🎉 处理完成！请在浏览器中打开: {index_abs_path}")
-
 
 if __name__ == '__main__':
     main()
