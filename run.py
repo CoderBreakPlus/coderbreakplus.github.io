@@ -9,29 +9,23 @@ from datetime import datetime
 # =======================
 def get_diff_style(diff):
     if diff >= 3200:
-        # 高于 3200 使用金色/青铜色渐变全亮
         return 'background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;'
+    if diff < 400: color = '#808080'
+    elif diff < 800: color = '#804000'
+    elif diff < 1200: color = '#008000'
+    elif diff < 1600: color = '#00C0C0'
+    elif diff < 2000: color = '#0000FF'
+    elif diff < 2400: color = '#C0C000'
+    elif diff < 2800: color = '#FF8000'
+    else: color = '#FF0000'
     
-    if diff < 400: color = '#808080'      # 灰
-    elif diff < 800: color = '#804000'    # 棕
-    elif diff < 1200: color = '#008000'   # 绿
-    elif diff < 1600: color = '#00C0C0'   # 青
-    elif diff < 2000: color = '#0000FF'   # 蓝
-    elif diff < 2400: color = '#C0C000'   # 黄
-    elif diff < 2800: color = '#FF8000'   # 橙
-    else: color = '#FF0000'               # 红
-    
-    # 按照 Kenkoooo 规则计算底部填充比例
     clamped_diff = max(0, diff)
     ratio = (clamped_diff % 400) / 400 * 100
-    
     return f'background: linear-gradient(to top, {color} {ratio}%, transparent {ratio}%); border: 1px solid {color}; border-radius: 50%;'
-
 
 # =======================
 #   HTML & CSS 模板定义
 # =======================
-
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -56,7 +50,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .sort-btns button {{ background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin-left: 5px; }}
         .sort-btns button:hover {{ background: #f1f3f4; }}
 
-        /* 表格通用 */
         table {{ width: 100%; border-collapse: collapse; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }}
         th, td {{ padding: 10px; box-sizing: border-box; }}
         
@@ -68,13 +61,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .matrix-table tbody tr:hover {{ background-color: #fcfcfc; }}
         .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #333; }}
         
-        /* 单元格微型组件 */
         .prob-cell {{ display: flex; flex-direction: column; align-items: center; gap: 6px; justify-content: center; }}
-        .prob-link-wrap {{ font-size: 0.9em; display: flex; align-items: center; justify-content: center; gap: 6px; background: #f1f3f4; padding: 4px 10px; border-radius: 12px; flex-wrap: wrap; text-align: center; }}
+        /* 强制 nowrap 紧随不换行 */
+        .prob-link-wrap {{ font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f3f4; padding: 4px 10px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; text-align: center; }}
         .prob-link-wrap a {{ color: var(--primary); text-decoration: none; font-weight: bold; }}
         .prob-link-wrap a:hover {{ text-decoration: underline; }}
         
-        /* 难度圈 */
         .diff-indicator {{ display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }}
         .diff-circle {{ width: 12px; height: 12px; display: inline-block; }}
 
@@ -82,9 +74,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .mini-tag {{ font-size: 0.7em; padding: 2px 4px; border-radius: 3px; font-weight: bold; line-height: 1; }}
         .mini-tag-easy {{ background: #e6f4ea; color: #1e8e3e; }}
         .mini-tag-hard {{ background: #fce8e6; color: #d93025; }}
-        .mini-file-link {{ text-decoration: none; display: inline-block; }}
+        .mini-file-link {{ text-decoration: none; display: inline-block; transition: 0.2s; }}
+        .mini-file-link:hover {{ transform: scale(1.1); }}
         
-        /* 杂题的常规表格样式 */
         .zhati-filter-bar {{ background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); align-items: center; }}
         .zhati-filter-bar input {{ padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }}
         .zhati-filter-bar input:focus {{ border-color: #1a73e8; }}
@@ -100,8 +92,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .normal-table th:nth-child(5) {{ width: 30%; }}
         
         .version-row {{ margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }}
-        .file-link {{ color: var(--primary); text-decoration: none; font-size: 0.95em; white-space: nowrap; }}
-        .file-link:hover {{ text-decoration: underline; }}
+        .file-link {{ color: var(--primary); text-decoration: none; font-size: 1.1em; white-space: nowrap; transition: 0.2s; }}
+        .file-link:hover {{ transform: scale(1.1); }}
         .tag-pill {{ background: #f1f3f4; color: #5f6368; font-size: 0.85em; padding: 2px 8px; border-radius: 12px; display: inline-block; margin: 2px; }}
 
         .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #80868b; font-size: 0.85em; }}
@@ -171,10 +163,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
-        // 杂题大表格的无序标签匹配 & 日期筛选
+        // 杂题表格动态筛选
         function filterZhati() {{
             const tagVal = document.getElementById('filter-tag') ? document.getElementById('filter-tag').value.toLowerCase().trim() : '';
-            // 修复 \\s 引起的转义警告，使用 \\s+ 进行安全分割
             const searchTerms = tagVal.split(/\\s+/).filter(t => t);
             
             const minStr = document.getElementById('filter-diff-min') ? document.getElementById('filter-diff-min').value : '';
@@ -213,6 +204,48 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 row.style.display = (matchTag && matchDiff && matchDate) ? '' : 'none';
             }});
         }}
+
+        // 杂题表格双向排序
+        let sortDirection = {{ 'diff': 1, 'date': 1 }};
+        function sortZhatiTable(col) {{
+            const tbody = document.querySelector('#zhati-table tbody');
+            if (!tbody) return;
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            sortDirection[col] *= -1;
+            const dir = sortDirection[col];
+            
+            rows.sort((a, b) => {{
+                if (col === 'diff') {{
+                    let v1 = parseFloat(a.dataset.diff);
+                    let v2 = parseFloat(b.dataset.diff);
+                    if (isNaN(v1)) v1 = -Infinity;
+                    if (isNaN(v2)) v2 = -Infinity;
+                    return (v1 - v2) * dir;
+                }} else if (col === 'date') {{
+                    let d1 = a.dataset.date;
+                    let d2 = b.dataset.date;
+                    if (d1 === '未知') d1 = '';
+                    if (d2 === '未知') d2 = '';
+                    return d1.localeCompare(d2) * dir;
+                }}
+            }});
+            
+            rows.forEach(r => tbody.appendChild(r));
+        }}
+
+        // AtCoder 标签页切换
+        function switchAtCoderTab(targetId, btn) {{
+            document.querySelectorAll('.atcoder-tab-content').forEach(el => el.style.display = 'none');
+            document.getElementById(targetId).style.display = 'block';
+            
+            document.querySelectorAll('.atcoder-tab-btn').forEach(el => {{
+                el.style.background = '#f1f3f4';
+                el.style.color = '#333';
+            }});
+            btn.style.background = '#1a73e8';
+            btn.style.color = '#fff';
+        }}
     </script>
 </body>
 </html>
@@ -235,7 +268,7 @@ class ProblemGroup:
         self.has_conf = False
         self.date = "未知"
         self.versions = {}
-        self.version_order = ['Normal', 'Easy', 'Hard']
+        self.version_order =['Normal', 'Easy', 'Hard']
 
     def add_file(self, version, ext, filename):
         if version not in self.versions:
@@ -255,7 +288,7 @@ def scan_and_group_files(data_dir):
         if not os.path.isfile(os.path.join(data_dir, f)):
             continue
         name, ext = os.path.splitext(f)
-        if ext not in ['.cpp', '.md', '.conf']: continue
+        if ext not in['.cpp', '.md', '.conf']: continue
             
         base_name, version = None, 'Normal'
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
@@ -296,8 +329,6 @@ def scan_and_group_files(data_dir):
 
 def apply_categories_and_links(groups, data_dir):
     for group in groups.values():
-        
-        # 1. 读取代码第一行提取创建日期： // created time: 2026-04-07 11:49:41
         group.date = "未知"
         for v in group.versions.values():
             if v.files.get('cpp'):
@@ -313,10 +344,8 @@ def apply_categories_and_links(groups, data_dir):
                     except Exception:
                         pass
 
-        # 2. 匹配规则
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
-        
         is_cf, is_at = bool(m_cf), bool(m_ac)
 
         conf_file = None
@@ -342,7 +371,7 @@ def apply_categories_and_links(groups, data_dir):
                         group.difficulty = None
                 
                 cat_conf = lines[1].lower()
-                if cat_conf in['oi', 'xcpc', 'xcpc+']: group.category = cat_conf
+                if cat_conf in ['oi', 'xcpc', 'xcpc+']: group.category = cat_conf
                 elif cat_conf: group.category = '杂题'
                 else:
                     if is_cf: group.category = 'Codeforces'
@@ -367,7 +396,7 @@ def apply_categories_and_links(groups, data_dir):
                     elif is_at: group.problem_id = m_ac.group(3).upper()
                     else: group.problem_id = ""
             except Exception as e:
-                print(f"读取配置 {conf_file} 时警告: {e}")
+                pass
         else:
             if is_cf:
                 group.category = 'Codeforces'
@@ -395,26 +424,29 @@ def generate_versions_html(group, rel_path, minimal=False):
                     if v_name == 'Easy': tag = '<span class="mini-tag mini-tag-easy">E</span>'
                     elif v_name == 'Hard': tag = '<span class="mini-tag mini-tag-hard">H</span>'
                 links = []
-                if v.files['cpp']: links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="mini-file-link" title="代码">📝</a>')
+                if v.files['cpp']: links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a>')
                 if v.files['md']: 
                     md_href = v.files['md'][:-3] if v.files['md'].endswith('.md') else v.files['md']
-                    links.append(f'<a href="{rel_path}/{md_href}" class="mini-file-link" title="题解">💡</a>')
-                if v.files['conf']: links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="mini-file-link" title="配置">⚙️</a>')
-                v_htmls.append(f'<div class="mini-version-row">{tag}{"".join(links)}</div>')
+                    links.append(f'<a href="{rel_path}/{md_href}" class="mini-file-link" title="题解" style="text-decoration:none;">💡</a>')
+                if v.files['conf']: links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a>')
+                
+                # 强制在一行不换行
+                v_htmls.append(f'<div class="mini-version-row">{tag}<span style="white-space: nowrap; display: inline-flex; gap: 4px;">{"".join(links)}</span></div>')
             else:
                 if has_multiple:
                     if v_name == 'Easy': tag = '<span class="tag-pill" style="background:#e6f4ea; color:#1e8e3e;">E</span>'
                     elif v_name == 'Hard': tag = '<span class="tag-pill" style="background:#fce8e6; color:#d93025;">H</span>'
                     else: tag = '<span class="tag-pill">N</span>'
                 links =[]
-                if v.files['cpp']: links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link">📝代码</a>')
+                if v.files['cpp']: links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
                 if v.files['md']: 
                     md_href = v.files['md'][:-3] if v.files['md'].endswith('.md') else v.files['md']
-                    links.append(f'<a href="{rel_path}/{md_href}" class="file-link">💡题解</a>')
-                if v.files['conf']: links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link">⚙️配置</a>')
-                v_htmls.append(f'<div class="version-row">{tag}{"".join(links)}</div>')
+                    links.append(f'<a href="{rel_path}/{md_href}" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
+                if v.files['conf']: links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
+                
+                # 去除文字，强制在一行不换行
+                v_htmls.append(f'<div class="version-row" style="flex-wrap: nowrap;">{tag}<span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>')
     return "".join(v_htmls)
-
 
 def build_matrix_table(groups_dict, rel_path):
     if not groups_dict: return ""
@@ -455,12 +487,10 @@ def build_matrix_table(groups_dict, rel_path):
                         style = get_diff_style(g.difficulty)
                         diff_html = f'<span class="diff-indicator" title="难度: {g.difficulty}"><span class="diff-circle" style="{style}"></span> {int(g.difficulty) if g.difficulty.is_integer() else g.difficulty}</span>'
                     
+                    # .prob-link-wrap 在 css 中已设为 flex-wrap: nowrap 和 white-space: nowrap
                     html += f"""
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            {link_html}
-                            {diff_html}
-                        </div>
+                        <div class="prob-link-wrap">{link_html}{diff_html}</div>
                         {v_html}
                     </div>"""
             html += '</td>'
@@ -491,10 +521,25 @@ def build_category_page(title, groups_dict, out_path, rel_path):
             elif contest.upper().startswith('AGC'): sub_cats['AGC'][contest] = c_groups
             else: sub_cats['其他'][contest] = c_groups
         
-        for sc_name in['ABC', 'ARC', 'AGC', '其他']:
+        # AtCoder Tab 栏和按需显示内容
+        tabs_html = '<div class="atcoder-tabs" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">'
+        tables_html = ''
+        first = True
+        for sc_name in ['ABC', 'ARC', 'AGC', '其他']:
             if not sub_cats[sc_name]: continue
-            content_html += f"<h2 style='margin-top: 30px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 5px;'>{sc_name} 模块</h2>"
-            content_html += build_matrix_table(sub_cats[sc_name], rel_path)
+            
+            btn_style = "background: #1a73e8; color: #fff;" if first else "background: #f1f3f4; color: #333;"
+            tabs_html += f'<button class="atcoder-tab-btn" data-target="tab-{sc_name}" onclick="switchAtCoderTab(\'tab-{sc_name}\', this)" style="padding: 8px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; {btn_style}">{sc_name}</button>'
+            
+            display = "block" if first else "none"
+            tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
+            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 5px;'>{sc_name} 模块</h2>"
+            tables_html += build_matrix_table(sub_cats[sc_name], rel_path)
+            tables_html += '</div>'
+            first = False
+            
+        tabs_html += '</div>'
+        content_html = tabs_html + tables_html
     else:
         content_html = build_matrix_table(groups_dict, rel_path)
 
@@ -503,7 +548,6 @@ def build_category_page(title, groups_dict, out_path, rel_path):
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-
 
 def build_zhati_page(title, all_groups, out_path, rel_path):
     total_groups, total_versions, has_cpp, has_md, has_conf = len(all_groups), 0, 0, 0, 0
@@ -515,6 +559,7 @@ def build_zhati_page(title, all_groups, out_path, rel_path):
 
     stats_html = f"<span>📁 题目组数: {total_groups}</span><span>📄 总版本数: {total_versions}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span><span>⚙️ 有配置: {has_conf}</span>"
     
+    # 加入点击双向排序功能表头
     content_html = """
     <div class="zhati-filter-bar">
         <strong style="color: #1a73e8;">🔍 筛选器</strong>
@@ -535,26 +580,24 @@ def build_zhati_page(title, all_groups, out_path, rel_path):
             <tr>
                 <th>题目与来源</th>
                 <th>标签</th>
-                <th>难度</th>
-                <th>添加日期</th>
+                <th onclick="sortZhatiTable('diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                <th onclick="sortZhatiTable('date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
                 <th>文件</th>
             </tr>
         </thead>
         <tbody>
     """
     
-    # 按照有无日期分类排序：有日期的排前面（按日期倒序），没日期的排后面沉底
     for g in sorted(all_groups, key=lambda x: (x.date != "未知", x.date), reverse=True): 
         v_html = generate_versions_html(g, rel_path, minimal=False)
         origin = f"{g.category} - {g.contest_name}" if g.contest_name else g.category
         
         name_html = f'<a href="{g.link}" target="_blank" style="color:var(--primary); text-decoration:none;"><b>{g.base_name}</b></a>' if g.link != '#' else f'<b>{g.base_name}</b>'
-        
         tags_str = " ".join(g.tags) if g.tags else ""
         tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in g.tags])
-        
         diff_val = g.difficulty if g.difficulty is not None else 'None'
         diff_html = "-"
+        
         if g.difficulty is not None:
             style = get_diff_style(g.difficulty)
             diff_html = f'<span class="diff-indicator" title="难度: {g.difficulty}"><span class="diff-circle" style="{style}"></span> {int(g.difficulty) if g.difficulty.is_integer() else g.difficulty}</span>'
@@ -613,7 +656,6 @@ def build_index_page(categories, zhati_list, out_path):
         content_html=content, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-
 
 def main():
     data_dir = sys.argv[1] if len(sys.argv) > 1 else 'data'

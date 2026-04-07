@@ -22,7 +22,6 @@
         .sort-btns button { background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin-left: 5px; }
         .sort-btns button:hover { background: #f1f3f4; }
 
-        /* 表格通用 */
         table { width: 100%; border-collapse: collapse; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
         th, td { padding: 10px; box-sizing: border-box; }
         
@@ -34,13 +33,12 @@
         .matrix-table tbody tr:hover { background-color: #fcfcfc; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #333; }
         
-        /* 单元格微型组件 */
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 6px; justify-content: center; }
-        .prob-link-wrap { font-size: 0.9em; display: flex; align-items: center; justify-content: center; gap: 6px; background: #f1f3f4; padding: 4px 10px; border-radius: 12px; flex-wrap: wrap; text-align: center; }
+        /* 强制 nowrap 紧随不换行 */
+        .prob-link-wrap { font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f3f4; padding: 4px 10px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; text-align: center; }
         .prob-link-wrap a { color: var(--primary); text-decoration: none; font-weight: bold; }
         .prob-link-wrap a:hover { text-decoration: underline; }
         
-        /* 难度圈 */
         .diff-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }
         .diff-circle { width: 12px; height: 12px; display: inline-block; }
 
@@ -48,9 +46,9 @@
         .mini-tag { font-size: 0.7em; padding: 2px 4px; border-radius: 3px; font-weight: bold; line-height: 1; }
         .mini-tag-easy { background: #e6f4ea; color: #1e8e3e; }
         .mini-tag-hard { background: #fce8e6; color: #d93025; }
-        .mini-file-link { text-decoration: none; display: inline-block; }
+        .mini-file-link { text-decoration: none; display: inline-block; transition: 0.2s; }
+        .mini-file-link:hover { transform: scale(1.1); }
         
-        /* 杂题的常规表格样式 */
         .zhati-filter-bar { background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); align-items: center; }
         .zhati-filter-bar input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
         .zhati-filter-bar input:focus { border-color: #1a73e8; }
@@ -66,8 +64,8 @@
         .normal-table th:nth-child(5) { width: 30%; }
         
         .version-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .file-link { color: var(--primary); text-decoration: none; font-size: 0.95em; white-space: nowrap; }
-        .file-link:hover { text-decoration: underline; }
+        .file-link { color: var(--primary); text-decoration: none; font-size: 1.1em; white-space: nowrap; transition: 0.2s; }
+        .file-link:hover { transform: scale(1.1); }
         .tag-pill { background: #f1f3f4; color: #5f6368; font-size: 0.85em; padding: 2px 8px; border-radius: 12px; display: inline-block; margin: 2px; }
 
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #80868b; font-size: 0.85em; }
@@ -92,113 +90,68 @@
         
         <div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%;">比赛名称</th><th style="width: 7.2727272727272725%;">A</th><th style="width: 7.2727272727272725%;">B</th><th style="width: 7.2727272727272725%;">D</th><th style="width: 7.2727272727272725%;">E</th><th style="width: 7.2727272727272725%;">F</th><th style="width: 7.2727272727272725%;">H</th><th style="width: 7.2727272727272725%;">I</th><th style="width: 7.2727272727272725%;">J</th><th style="width: 7.2727272727272725%;">K</th><th style="width: 7.2727272727272725%;">L</th><th style="width: 7.2727272727272725%;">M</th></tr></thead><tbody><tr data-name="The 4th Universal Cup. Stage 22: Grand Prix of Kyoto" data-count="7"><td class="contest-name-cell">The 4th Universal Cup. Stage 22: Grand Prix of Kyoto <br><span style="font-size:0.8em; color:#888; font-weight:normal;">(7 题)</span></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/3575/problem/17713" target="_blank">A</a>
-                            <span class="diff-indicator" title="难度: 1600.0"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 0.0%, transparent 0.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1600</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj17713.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj17713.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3575/problem/17713" target="_blank">A</a><span class="diff-indicator" title="难度: 1600.0"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 0.0%, transparent 0.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1600</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj17713.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17713.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/3575/problem/17714" target="_blank">B</a>
-                            <span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj17714.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj17714.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3575/problem/17714" target="_blank">B</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj17714.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17714.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/3575/problem/17717" target="_blank">E</a>
-                            <span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj17717.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj17717.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3575/problem/17717" target="_blank">E</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj17717.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17717.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/3575/problem/17718" target="_blank">F</a>
-                            <span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj17718.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj17718.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3575/problem/17718" target="_blank">F</a><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj17718.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17718.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td></td><td></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/3575/problem/17722" target="_blank">J</a>
-                            <span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj17722.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj17722.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3575/problem/17722" target="_blank">J</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj17722.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17722.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/3575/problem/17723" target="_blank">K</a>
-                            <span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj17723.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj17723.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3575/problem/17723" target="_blank">K</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj17723.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17723.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/3575/problem/17725" target="_blank">M</a>
-                            <span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj17725.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj17725" class="mini-file-link" title="题解">💡</a><a href="data/qoj17725.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3575/problem/17725" target="_blank">M</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj17725.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17725" class="mini-file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj17725.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td></tr><tr data-name="The 2nd Universal Cup. Stage 15: Macau" data-count="7"><td class="contest-name-cell">The 2nd Universal Cup. Stage 15: Macau <br><span style="font-size:0.8em; color:#888; font-weight:normal;">(7 题)</span></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/1459/problem/7857" target="_blank">A</a>
-                            <span class="diff-indicator" title="难度: 2300.0"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 75.0%, transparent 75.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2300</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj7857.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj7857" class="mini-file-link" title="题解">💡</a><a href="data/qoj7857.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/1459/problem/7857" target="_blank">A</a><span class="diff-indicator" title="难度: 2300.0"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 75.0%, transparent 75.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2300</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj7857.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7857" class="mini-file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj7857.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/1459/problem/7858" target="_blank">B</a>
-                            <span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj7858.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj7858.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/1459/problem/7858" target="_blank">B</a><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj7858.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7858.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/1459/problem/7860" target="_blank">D</a>
-                            <span class="diff-indicator" title="难度: 2200.0"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 50.0%, transparent 50.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2200</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj7860.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj7860.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/1459/problem/7860" target="_blank">D</a><span class="diff-indicator" title="难度: 2200.0"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 50.0%, transparent 50.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2200</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj7860.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7860.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/1459/problem/7861" target="_blank">E</a>
-                            <span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj7861.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj7861.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/1459/problem/7861" target="_blank">E</a><span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj7861.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7861.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/1459/problem/7864" target="_blank">H</a>
-                            <span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj7864.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj7864.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/1459/problem/7864" target="_blank">H</a><span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj7864.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7864.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/1459/problem/7865" target="_blank">I</a>
-                            <span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj7865.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj7865.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/1459/problem/7865" target="_blank">I</a><span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj7865.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7865.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/1459/problem/7866" target="_blank">J</a>
-                            <span class="diff-indicator" title="难度: 1900.0"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 75.0%, transparent 75.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1900</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj7866.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj7866.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/1459/problem/7866" target="_blank">J</a><span class="diff-indicator" title="难度: 1900.0"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 75.0%, transparent 75.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1900</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj7866.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7866.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td></td><td></td><td></td></tr><tr data-name="The 4th Universal Cup. Stage 12: Grand Prix of Shanghai" data-count="1"><td class="contest-name-cell">The 4th Universal Cup. Stage 12: Grand Prix of Shanghai <br><span style="font-size:0.8em; color:#888; font-weight:normal;">(1 题)</span></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">
-                            <a href="https://qoj.ac/contest/2908/problem/15325" target="_blank">L</a>
-                            <span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span>
-                        </div>
-                        <div class="mini-version-row"><a href="data/qoj15325.cpp" class="mini-file-link" title="代码">📝</a><a href="data/qoj15325" class="mini-file-link" title="题解">💡</a><a href="data/qoj15325.conf" class="mini-file-link" title="配置">⚙️</a></div>
+                        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/2908/problem/15325" target="_blank">L</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
+                        <div class="mini-version-row"><span style="white-space: nowrap; display: inline-flex; gap: 4px;"><a href="data/qoj15325.cpp" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj15325" class="mini-file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj15325.conf" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
                     </div></td><td></td></tr></tbody></table></div>
         
         <div class="footer">
-            生成时间: 2026-04-07 18:01:48 | 题目整理工具自动生成
+            生成时间: 2026-04-07 18:13:29 | 题目整理工具自动生成
         </div>
     </div>
 
@@ -242,10 +195,9 @@
             });
         }
 
-        // 杂题大表格的无序标签匹配 & 日期筛选
+        // 杂题表格动态筛选
         function filterZhati() {
             const tagVal = document.getElementById('filter-tag') ? document.getElementById('filter-tag').value.toLowerCase().trim() : '';
-            // 修复 \s 引起的转义警告，使用 \s+ 进行安全分割
             const searchTerms = tagVal.split(/\s+/).filter(t => t);
             
             const minStr = document.getElementById('filter-diff-min') ? document.getElementById('filter-diff-min').value : '';
@@ -283,6 +235,48 @@
 
                 row.style.display = (matchTag && matchDiff && matchDate) ? '' : 'none';
             });
+        }
+
+        // 杂题表格双向排序
+        let sortDirection = { 'diff': 1, 'date': 1 };
+        function sortZhatiTable(col) {
+            const tbody = document.querySelector('#zhati-table tbody');
+            if (!tbody) return;
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            sortDirection[col] *= -1;
+            const dir = sortDirection[col];
+            
+            rows.sort((a, b) => {
+                if (col === 'diff') {
+                    let v1 = parseFloat(a.dataset.diff);
+                    let v2 = parseFloat(b.dataset.diff);
+                    if (isNaN(v1)) v1 = -Infinity;
+                    if (isNaN(v2)) v2 = -Infinity;
+                    return (v1 - v2) * dir;
+                } else if (col === 'date') {
+                    let d1 = a.dataset.date;
+                    let d2 = b.dataset.date;
+                    if (d1 === '未知') d1 = '';
+                    if (d2 === '未知') d2 = '';
+                    return d1.localeCompare(d2) * dir;
+                }
+            });
+            
+            rows.forEach(r => tbody.appendChild(r));
+        }
+
+        // AtCoder 标签页切换
+        function switchAtCoderTab(targetId, btn) {
+            document.querySelectorAll('.atcoder-tab-content').forEach(el => el.style.display = 'none');
+            document.getElementById(targetId).style.display = 'block';
+            
+            document.querySelectorAll('.atcoder-tab-btn').forEach(el => {
+                el.style.background = '#f1f3f4';
+                el.style.color = '#333';
+            });
+            btn.style.background = '#1a73e8';
+            btn.style.color = '#fff';
         }
     </script>
 </body>
