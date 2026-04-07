@@ -12,18 +12,16 @@
         
         .nav-bar { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
         .nav-bar a { color: var(--primary); text-decoration: none; font-weight: 500; }
-        .nav-bar a:hover { text-decoration: underline; }
         
-        .toggle-diff-btn { margin-left: auto; background: #fff; border: 1px solid #d2e3fc; padding: 6px 12px; border-radius: 4px; cursor: pointer; color: #1a73e8; font-size: 0.9em; transition: 0.2s; font-weight: bold; }
-        .toggle-diff-btn:hover { background: #f8f9fa; }
-        
+        /* 按钮样式 */
+        .toggle-btn { background: #fff; border: 1px solid #d2e3fc; padding: 6px 12px; border-radius: 4px; cursor: pointer; color: #1a73e8; font-size: 0.9em; transition: 0.2s; font-weight: bold; margin-right: 5px; }
+        .toggle-btn:hover { background: #f8f9fa; }
+        .toggle-btn.active { background: #1a73e8; color: #fff; border-color: #1a73e8; }
+
         .stats-bar { display: flex; justify-content: space-between; align-items: center; background: #e8f0fe; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
         .stats-info span { margin-right: 15px; font-size: 0.95em; color: #174ea6; font-weight: 500; display: inline-block; }
-        .sort-btns button { background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin-left: 5px; }
-        .sort-btns button:hover { background: #f1f3f4; }
 
-        /* 表格通用 */
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th, td { padding: 10px; box-sizing: border-box; }
         
         .matrix-table { background: #fff; border-radius: 8px; margin-bottom: 20px; }
@@ -31,45 +29,30 @@
         .matrix-table th { border-bottom: 2px solid var(--border); color: #5f6368; font-weight: 600; text-align: center; }
         .matrix-table td { border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: center; vertical-align: middle; }
         .matrix-table td:last-child { border-right: none; }
-        .matrix-table tbody tr:hover { background-color: #fcfcfc; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #333; }
         
-        /* 单元格微型组件 */
-        .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 6px; justify-content: center; }
-        .prob-link-wrap { font-size: 0.9em; display: flex; align-items: center; justify-content: center; gap: 6px; background: #f1f3f4; padding: 4px 10px; border-radius: 12px; flex-wrap: wrap; text-align: center; }
-        .prob-link-wrap a { color: var(--primary); text-decoration: none; font-weight: bold; }
-        .prob-link-wrap a:hover { text-decoration: underline; }
+        /* ID与难度紧贴且不换行 */
+        .id-diff-nowrap { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
         
-        /* 难度圈 */
+        /* 图标紧贴且不换行 */
+        .icons-nowrap { white-space: nowrap; display: inline-flex; gap: 4px; font-size: 1.1em; }
+        .mini-file-link { text-decoration: none; }
+
         .diff-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }
         .diff-circle { width: 12px; height: 12px; display: inline-block; }
 
-        .mini-version-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }
-        .mini-tag { font-size: 0.7em; padding: 2px 4px; border-radius: 3px; font-weight: bold; line-height: 1; }
-        .mini-tag-easy { background: #e6f4ea; color: #1e8e3e; }
-        .mini-tag-hard { background: #fce8e6; color: #d93025; }
-        .mini-file-link { text-decoration: none; display: inline-block; }
+        /* 杂题筛选与排序 */
+        .zhati-filter-bar { background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .zhati-filter-bar input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; }
         
-        /* 杂题的常规表格样式 */
-        .zhati-filter-bar { background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); align-items: center; }
-        .zhati-filter-bar input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
-        .zhati-filter-bar input:focus { border-color: #1a73e8; }
+        .sort-icon { cursor: pointer; font-size: 0.8em; margin-left: 4px; color: #aaa; text-decoration: none; }
+        .sort-icon:hover { color: #1a73e8; }
         
         .normal-table { margin-bottom: 30px; }
         .normal-table th, .normal-table td { border: 1px solid var(--border); text-align: left; vertical-align: middle; }
-        .normal-table th { background: #f8f9fa; color: #5f6368; font-weight: 600; }
-        .normal-table tr:hover { background-color: #fcfcfc; }
-        .normal-table th:nth-child(1) { width: 22%; }
-        .normal-table th:nth-child(2) { width: 23%; }
-        .normal-table th:nth-child(3) { width: 12%; }
-        .normal-table th:nth-child(4) { width: 13%; }
-        .normal-table th:nth-child(5) { width: 30%; }
+        .normal-table th { background: #f8f9fa; }
         
-        .version-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .file-link { color: var(--primary); text-decoration: none; font-size: 0.95em; white-space: nowrap; }
-        .file-link:hover { text-decoration: underline; }
         .tag-pill { background: #f1f3f4; color: #5f6368; font-size: 0.85em; padding: 2px 8px; border-radius: 12px; display: inline-block; margin: 2px; }
-
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #80868b; font-size: 0.85em; }
     </style>
 </head>
@@ -78,250 +61,141 @@
         <div class="nav-bar">
             <a href="index.html">🏠 返回首页</a>
             <span style="color:#aaa;">|</span>
-            <span style="font-size: 0.9em; color: #666;">全动态自适应表格</span>
-            <button class="toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
+            <button class="toggle-btn" id="diff-toggle-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
+            
         </div>
         
         <h1>杂题</h1>
         
         
         <div class="stats-bar">
-            <div class="stats-info"><span>📁 题目组数: 17</span><span>📄 总版本数: 17</span><span>📝 有代码: 17</span><span>💡 有题解: 5</span><span>⚙️ 有配置: 17</span></div>
+            <div class="stats-info"><span>📁 题目数: 17</span></div>
             
         </div>
         
-        
-    <div class="zhati-filter-bar">
-        <strong style="color: #1a73e8;">🔍 筛选器</strong>
-        <input type="text" id="filter-tag" placeholder="输入标签筛选(支持空格多词)..." onkeyup="filterZhati()" style="min-width: 200px;">
-        
-        <span style="color:#888; margin-left: 10px;">📊 难度:</span>
-        <input type="number" id="filter-diff-min" placeholder="Min" style="width: 70px;" onkeyup="filterZhati()" onchange="filterZhati()">
-        <span style="color:#888;">-</span>
-        <input type="number" id="filter-diff-max" placeholder="Max" style="width: 70px;" onkeyup="filterZhati()" onchange="filterZhati()">
-        
-        <span style="color:#888; margin-left: 10px;">📅 日期:</span>
-        <input type="date" id="filter-date-start" onchange="filterZhati()">
-        <span style="color:#888;">-</span>
-        <input type="date" id="filter-date-end" onchange="filterZhati()">
-    </div>
-    <table class="normal-table" id="zhati-table">
-        <thead>
-            <tr>
-                <th>题目与来源</th>
-                <th>标签</th>
-                <th>难度</th>
-                <th>添加日期</th>
-                <th>文件</th>
-            </tr>
-        </thead>
-        <tbody>
-    
-        <tr data-tags="多项式 组合数学" data-diff="2500.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17717" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17717</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
-            <td><span class="tag-pill">多项式</span><span class="tag-pill">组合数学</span></td>
-            <td><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
-            <td><div class="version-row"><a href="data/qoj17717.cpp" class="file-link">📝代码</a><a href="data/qoj17717.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="" data-diff="2500.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17722" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17722</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
-            <td></td>
-            <td><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
-            <td><div class="version-row"><a href="data/qoj17722.cpp" class="file-link">📝代码</a><a href="data/qoj17722.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="哈希" data-diff="2500.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17714" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17714</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
-            <td><span class="tag-pill">哈希</span></td>
-            <td><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
-            <td><div class="version-row"><a href="data/qoj17714.cpp" class="file-link">📝代码</a><a href="data/qoj17714.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="凸性 分治" data-diff="2800.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17725" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17725</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
-            <td><span class="tag-pill">凸性</span><span class="tag-pill">分治</span></td>
-            <td><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
-            <td><div class="version-row"><a href="data/qoj17725.cpp" class="file-link">📝代码</a><a href="data/qoj17725" class="file-link">💡题解</a><a href="data/qoj17725.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="数论" data-diff="2900.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17723" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17723</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
-            <td><span class="tag-pill">数论</span></td>
-            <td><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
-            <td><div class="version-row"><a href="data/qoj17723.cpp" class="file-link">📝代码</a><a href="data/qoj17723.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="数论" data-diff="2600.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17718" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17718</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
-            <td><span class="tag-pill">数论</span></td>
-            <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
-            <td><div class="version-row"><a href="data/qoj17718.cpp" class="file-link">📝代码</a><a href="data/qoj17718.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="" data-diff="1600.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17713" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17713</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
-            <td></td>
-            <td><span class="diff-indicator" title="难度: 1600.0"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 0.0%, transparent 0.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1600</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
-            <td><div class="version-row"><a href="data/qoj17713.cpp" class="file-link">📝代码</a><a href="data/qoj17713.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="数论 二分" data-diff="3000.0" data-date="2026-04-03">
-            <td><a href="https://www.luogu.com.cn/problem/P12636" target="_blank" style="color:var(--primary); text-decoration:none;"><b>P12636</b></a><br><span style="font-size:0.8em; color:#888;">oi - GZOI-NOI2026模拟赛（六）</span></td>
-            <td><span class="tag-pill">数论</span><span class="tag-pill">二分</span></td>
-            <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-03</td>
-            <td><div class="version-row"><a href="data/P12636.cpp" class="file-link">📝代码</a><a href="data/P12636" class="file-link">💡题解</a><a href="data/P12636.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="" data-diff="2400.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7861" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7861</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
-            <td></td>
-            <td><span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
-            <td><div class="version-row"><a href="data/qoj7861.cpp" class="file-link">📝代码</a><a href="data/qoj7861.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="" data-diff="2400.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7865" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7865</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
-            <td></td>
-            <td><span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
-            <td><div class="version-row"><a href="data/qoj7865.cpp" class="file-link">📝代码</a><a href="data/qoj7865.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="线性规划对偶" data-diff="3100.0" data-date="2026-04-02">
-            <td><a href="https://www.luogu.com.cn/problem/P8182" target="_blank" style="color:var(--primary); text-decoration:none;"><b>P8182</b></a><br><span style="font-size:0.8em; color:#888;">杂题</span></td>
-            <td><span class="tag-pill">线性规划对偶</span></td>
-            <td><span class="diff-indicator" title="难度: 3100.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 75.0%, transparent 75.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3100</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
-            <td><div class="version-row"><a href="data/P8182.cpp" class="file-link">📝代码</a><a href="data/P8182" class="file-link">💡题解</a><a href="data/P8182.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="" data-diff="2600.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7858" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7858</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
-            <td></td>
-            <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
-            <td><div class="version-row"><a href="data/qoj7858.cpp" class="file-link">📝代码</a><a href="data/qoj7858.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="" data-diff="1900.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7866" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7866</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
-            <td></td>
-            <td><span class="diff-indicator" title="难度: 1900.0"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 75.0%, transparent 75.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1900</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
-            <td><div class="version-row"><a href="data/qoj7866.cpp" class="file-link">📝代码</a><a href="data/qoj7866.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="" data-diff="2200.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7860" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7860</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
-            <td></td>
-            <td><span class="diff-indicator" title="难度: 2200.0"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 50.0%, transparent 50.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2200</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
-            <td><div class="version-row"><a href="data/qoj7860.cpp" class="file-link">📝代码</a><a href="data/qoj7860.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="构造" data-diff="2300.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7857" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7857</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
-            <td><span class="tag-pill">构造</span></td>
-            <td><span class="diff-indicator" title="难度: 2300.0"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 75.0%, transparent 75.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2300</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
-            <td><div class="version-row"><a href="data/qoj7857.cpp" class="file-link">📝代码</a><a href="data/qoj7857" class="file-link">💡题解</a><a href="data/qoj7857.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="" data-diff="2400.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7864" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7864</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
-            <td></td>
-            <td><span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
-            <td><div class="version-row"><a href="data/qoj7864.cpp" class="file-link">📝代码</a><a href="data/qoj7864.conf" class="file-link">⚙️配置</a></div></td>
-        </tr>
-        <tr data-tags="计数 dp" data-diff="3000.0" data-date="2026-01-10">
-            <td><a href="https://qoj.ac/contest/2908/problem/15325" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj15325</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 12: Grand Prix of Shanghai</span></td>
-            <td><span class="tag-pill">计数</span><span class="tag-pill">dp</span></td>
-            <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
-            <td style="font-size: 0.9em; color: #5f6368;">2026-01-10</td>
-            <td><div class="version-row"><a href="data/qoj15325.cpp" class="file-link">📝代码</a><a href="data/qoj15325" class="file-link">💡题解</a><a href="data/qoj15325.conf" class="file-link">⚙️配置</a></div></td>
-        </tr></tbody></table>
-        
-        <div class="footer">
-            生成时间: 2026-04-07 14:01:39 | 题目整理工具自动生成
+        <div id="content-area">
+            <div class="zhati-filter-bar">
+            <strong>🔍 筛选:</strong> <input type="text" id="filter-tag" placeholder="标签(空格多词)" onkeyup="filterZhati()">
+            <strong>难度:</strong> <input type="number" id="filter-diff-min" placeholder="Min" style="width:60px" onchange="filterZhati()">-<input type="number" id="filter-diff-max" placeholder="Max" style="width:60px" onchange="filterZhati()">
+            <strong>日期:</strong> <input type="date" id="filter-date-start" onchange="filterZhati()">-<input type="date" id="filter-date-end" onchange="filterZhati()">
         </div>
+        <table class="normal-table" id="zhati-table"><thead><tr>
+            <th>题目与来源</th><th>标签</th>
+            <th>难度 <a class="sort-icon" onclick="sortZhati('diff','asc')">🔼</a><a class="sort-icon" onclick="sortZhati('diff','desc')">🔽</a></th>
+            <th>添加日期 <a class="sort-icon" onclick="sortZhati('date','asc')">🔼</a><a class="sort-icon" onclick="sortZhati('date','desc')">🔽</a></th>
+            <th>文件</th>
+        </tr></thead><tbody><tr data-tags="多项式 组合数学" data-diff="2500.0" data-date="2026-04-04">
+                <td><a href="https://qoj.ac/contest/3575/problem/17717" target="_blank"><b>qoj17717</b></a><br><small>The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</small></td>
+                <td><span class="tag-pill">多项式</span><span class="tag-pill">组合数学</span></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td><td>2026-04-04</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj17717.cpp" class="mini-file-link">📝</a><a href="data/qoj17717.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="" data-diff="2500.0" data-date="2026-04-04">
+                <td><a href="https://qoj.ac/contest/3575/problem/17722" target="_blank"><b>qoj17722</b></a><br><small>The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</small></td>
+                <td></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td><td>2026-04-04</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj17722.cpp" class="mini-file-link">📝</a><a href="data/qoj17722.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="哈希" data-diff="2500.0" data-date="2026-04-04">
+                <td><a href="https://qoj.ac/contest/3575/problem/17714" target="_blank"><b>qoj17714</b></a><br><small>The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</small></td>
+                <td><span class="tag-pill">哈希</span></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td><td>2026-04-04</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj17714.cpp" class="mini-file-link">📝</a><a href="data/qoj17714.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="凸性 分治" data-diff="2800.0" data-date="2026-04-04">
+                <td><a href="https://qoj.ac/contest/3575/problem/17725" target="_blank"><b>qoj17725</b></a><br><small>The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</small></td>
+                <td><span class="tag-pill">凸性</span><span class="tag-pill">分治</span></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></td><td>2026-04-04</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj17725.cpp" class="mini-file-link">📝</a><a href="data/qoj17725" class="mini-file-link">💡</a><a href="data/qoj17725.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="数论" data-diff="2900.0" data-date="2026-04-04">
+                <td><a href="https://qoj.ac/contest/3575/problem/17723" target="_blank"><b>qoj17723</b></a><br><small>The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</small></td>
+                <td><span class="tag-pill">数论</span></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td><td>2026-04-04</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj17723.cpp" class="mini-file-link">📝</a><a href="data/qoj17723.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="数论" data-diff="2600.0" data-date="2026-04-04">
+                <td><a href="https://qoj.ac/contest/3575/problem/17718" target="_blank"><b>qoj17718</b></a><br><small>The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</small></td>
+                <td><span class="tag-pill">数论</span></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td><td>2026-04-04</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj17718.cpp" class="mini-file-link">📝</a><a href="data/qoj17718.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="" data-diff="1600.0" data-date="2026-04-04">
+                <td><a href="https://qoj.ac/contest/3575/problem/17713" target="_blank"><b>qoj17713</b></a><br><small>The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</small></td>
+                <td></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 0.0%, transparent 0.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1600</span></td><td>2026-04-04</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj17713.cpp" class="mini-file-link">📝</a><a href="data/qoj17713.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="数论 二分" data-diff="3000.0" data-date="2026-04-03">
+                <td><a href="https://www.luogu.com.cn/problem/P12636" target="_blank"><b>P12636</b></a><br><small>GZOI-NOI2026模拟赛（六）</small></td>
+                <td><span class="tag-pill">数论</span><span class="tag-pill">二分</span></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td><td>2026-04-03</td><td><div style=""><span class="icons-nowrap"><a href="data/P12636.cpp" class="mini-file-link">📝</a><a href="data/P12636" class="mini-file-link">💡</a><a href="data/P12636.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="" data-diff="2400.0" data-date="2026-04-02">
+                <td><a href="https://qoj.ac/contest/1459/problem/7861" target="_blank"><b>qoj7861</b></a><br><small>The 2nd Universal Cup. Stage 15: Macau</small></td>
+                <td></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></td><td>2026-04-02</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj7861.cpp" class="mini-file-link">📝</a><a href="data/qoj7861.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="" data-diff="2400.0" data-date="2026-04-02">
+                <td><a href="https://qoj.ac/contest/1459/problem/7865" target="_blank"><b>qoj7865</b></a><br><small>The 2nd Universal Cup. Stage 15: Macau</small></td>
+                <td></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></td><td>2026-04-02</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj7865.cpp" class="mini-file-link">📝</a><a href="data/qoj7865.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="线性规划对偶" data-diff="3100.0" data-date="2026-04-02">
+                <td><a href="https://www.luogu.com.cn/problem/P8182" target="_blank"><b>P8182</b></a><br><small>杂题</small></td>
+                <td><span class="tag-pill">线性规划对偶</span></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 75.0%, transparent 75.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3100</span></td><td>2026-04-02</td><td><div style=""><span class="icons-nowrap"><a href="data/P8182.cpp" class="mini-file-link">📝</a><a href="data/P8182" class="mini-file-link">💡</a><a href="data/P8182.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="" data-diff="2600.0" data-date="2026-04-02">
+                <td><a href="https://qoj.ac/contest/1459/problem/7858" target="_blank"><b>qoj7858</b></a><br><small>The 2nd Universal Cup. Stage 15: Macau</small></td>
+                <td></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td><td>2026-04-02</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj7858.cpp" class="mini-file-link">📝</a><a href="data/qoj7858.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="" data-diff="1900.0" data-date="2026-04-02">
+                <td><a href="https://qoj.ac/contest/1459/problem/7866" target="_blank"><b>qoj7866</b></a><br><small>The 2nd Universal Cup. Stage 15: Macau</small></td>
+                <td></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 75.0%, transparent 75.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1900</span></td><td>2026-04-02</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj7866.cpp" class="mini-file-link">📝</a><a href="data/qoj7866.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="" data-diff="2200.0" data-date="2026-04-02">
+                <td><a href="https://qoj.ac/contest/1459/problem/7860" target="_blank"><b>qoj7860</b></a><br><small>The 2nd Universal Cup. Stage 15: Macau</small></td>
+                <td></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 50.0%, transparent 50.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2200</span></td><td>2026-04-02</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj7860.cpp" class="mini-file-link">📝</a><a href="data/qoj7860.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="构造" data-diff="2300.0" data-date="2026-04-02">
+                <td><a href="https://qoj.ac/contest/1459/problem/7857" target="_blank"><b>qoj7857</b></a><br><small>The 2nd Universal Cup. Stage 15: Macau</small></td>
+                <td><span class="tag-pill">构造</span></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 75.0%, transparent 75.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2300</span></td><td>2026-04-02</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj7857.cpp" class="mini-file-link">📝</a><a href="data/qoj7857" class="mini-file-link">💡</a><a href="data/qoj7857.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="" data-diff="2400.0" data-date="2026-04-02">
+                <td><a href="https://qoj.ac/contest/1459/problem/7864" target="_blank"><b>qoj7864</b></a><br><small>The 2nd Universal Cup. Stage 15: Macau</small></td>
+                <td></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></td><td>2026-04-02</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj7864.cpp" class="mini-file-link">📝</a><a href="data/qoj7864.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr><tr data-tags="计数 dp" data-diff="3000.0" data-date="2026-01-10">
+                <td><a href="https://qoj.ac/contest/2908/problem/15325" target="_blank"><b>qoj15325</b></a><br><small>The 4th Universal Cup. Stage 12: Grand Prix of Shanghai</small></td>
+                <td><span class="tag-pill">计数</span><span class="tag-pill">dp</span></td><td><span class="diff-indicator"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td><td>2026-01-10</td><td><div style=""><span class="icons-nowrap"><a href="data/qoj15325.cpp" class="mini-file-link">📝</a><a href="data/qoj15325" class="mini-file-link">💡</a><a href="data/qoj15325.conf" class="mini-file-link">⚙️</a></span></div></td>
+            </tr></tbody></table>
+        </div>
+        
+        <div class="footer">生成时间: 2026-04-07 | 题目整理工具</div>
     </div>
 
     <script>
         let isDiffVisible = true;
         function toggleDiff() {
             isDiffVisible = !isDiffVisible;
-            const btn = document.querySelector('.toggle-diff-btn');
-            
-            if (isDiffVisible) {
-                btn.innerHTML = '🌕 隐藏难度';
-                btn.style.color = '#1a73e8';
-                btn.style.borderColor = '#d2e3fc';
-                btn.style.background = '#fff';
-            } else {
-                btn.innerHTML = '🌑 显示难度';
-                btn.style.color = '#5f6368';
-                btn.style.borderColor = '#dadce0';
-                btn.style.background = '#f1f3f4';
-            }
-            
-            document.querySelectorAll('.diff-indicator').forEach(el => {
-                el.style.display = isDiffVisible ? 'inline-flex' : 'none';
-            });
+            const btn = document.getElementById('diff-toggle-btn');
+            btn.innerHTML = isDiffVisible ? '🌕 隐藏难度' : '🌑 显示难度';
+            document.querySelectorAll('.diff-indicator').forEach(el => el.style.display = isDiffVisible ? 'inline-flex' : 'none');
         }
 
-        function sortContests(type) {
-            const tables = document.querySelectorAll('.matrix-table');
-            tables.forEach(table => {
-                const tbody = table.querySelector('tbody');
-                if (!tbody) return;
-                const rows = Array.from(tbody.querySelectorAll('tr'));
-                rows.sort((a, b) => {
-                    if (type === 'count') {
-                        return parseInt(b.dataset.count) - parseInt(a.dataset.count);
-                    } else {
-                        return a.dataset.name.localeCompare(b.dataset.name);
-                    }
-                });
-                rows.forEach(r => tbody.appendChild(r));
-            });
+        // AtCoder 切换
+        function switchAtCoder(type, btn) {
+            document.querySelectorAll('.atcoder-section').forEach(s => s.style.display = 'none');
+            document.getElementById('section-' + type).style.display = 'block';
+            document.querySelectorAll('.at-nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
 
-        // 杂题大表格的无序标签匹配 & 日期筛选
+        // 杂题排序逻辑
+        function sortZhati(col, dir) {
+            const tbody = document.querySelector('#zhati-table tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+                let valA, valB;
+                if (col === 'diff') {
+                    valA = a.getAttribute('data-diff') === 'None' ? -1 : parseFloat(a.getAttribute('data-diff'));
+                    valB = b.getAttribute('data-diff') === 'None' ? -1 : parseFloat(b.getAttribute('data-diff'));
+                } else {
+                    valA = a.getAttribute('data-date');
+                    valB = b.getAttribute('data-date');
+                    if (valA === '未知') valA = '0000-00-00';
+                    if (valB === '未知') valB = '0000-00-00';
+                }
+                return dir === 'asc' ? valA.toString().localeCompare(valB.toString(), undefined, {numeric: true}) : valB.toString().localeCompare(valA.toString(), undefined, {numeric: true});
+            });
+            rows.forEach(r => tbody.appendChild(r));
+        }
+
+        // 筛选逻辑
         function filterZhati() {
-            const tagVal = document.getElementById('filter-tag') ? document.getElementById('filter-tag').value.toLowerCase().trim() : '';
-            // 修复 \s 引起的转义警告，使用 \s+ 进行安全分割
-            const searchTerms = tagVal.split(/\s+/).filter(t => t);
-            
-            const minStr = document.getElementById('filter-diff-min') ? document.getElementById('filter-diff-min').value : '';
-            const maxStr = document.getElementById('filter-diff-max') ? document.getElementById('filter-diff-max').value : '';
-            const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
-            const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
+            const tagVal = document.getElementById('filter-tag').value.toLowerCase().trim();
+            const terms = tagVal.split(/\s+/).filter(t => t);
+            const minV = parseFloat(document.getElementById('filter-diff-min').value) || -Infinity;
+            const maxV = parseFloat(document.getElementById('filter-diff-max').value) || Infinity;
+            const dStart = document.getElementById('filter-date-start').value;
+            const dEnd = document.getElementById('filter-date-end').value;
 
-            const dateStart = document.getElementById('filter-date-start') ? document.getElementById('filter-date-start').value : '';
-            const dateEnd = document.getElementById('filter-date-end') ? document.getElementById('filter-date-end').value : '';
-
-            const rows = document.querySelectorAll('#zhati-table tbody tr');
-            rows.forEach(row => {
+            document.querySelectorAll('#zhati-table tbody tr').forEach(row => {
                 const tags = row.getAttribute('data-tags').toLowerCase();
-                const diffStr = row.getAttribute('data-diff');
+                const diff = row.getAttribute('data-diff') === 'None' ? NaN : parseFloat(row.getAttribute('data-diff'));
                 const rDate = row.getAttribute('data-date');
-                const diff = diffStr !== 'None' ? parseFloat(diffStr) : NaN;
-
-                let matchTag = true;
-                if (searchTerms.length > 0) {
-                    matchTag = searchTerms.every(term => tags.includes(term));
-                }
-
-                let matchDiff = true;
-                if (minStr !== '' || maxStr !== '') {
-                    if (isNaN(diff)) {
-                        matchDiff = false;
-                    } else {
-                        if (diff < minVal || diff > maxVal) matchDiff = false;
-                    }
-                }
                 
-                let matchDate = true;
-                if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
-                if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
-
-                row.style.display = (matchTag && matchDiff && matchDate) ? '' : 'none';
+                let mTag = terms.every(t => tags.includes(t));
+                let mDiff = (isNaN(diff)) ? (minV === -Infinity && maxV === Infinity) : (diff >= minV && diff <= maxV);
+                let mDate = (rDate !== '未知') ? ((!dStart || rDate >= dStart) && (!dEnd || rDate <= dEnd)) : (!dStart && !dEnd);
+                row.style.display = (mTag && mDiff && mDate) ? '' : 'none';
             });
         }
     </script>
