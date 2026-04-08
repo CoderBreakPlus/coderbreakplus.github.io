@@ -17,6 +17,9 @@
         .toggle-diff-btn { margin-left: auto; background: #fff; border: 1px solid #d2e3fc; padding: 6px 12px; border-radius: 4px; cursor: pointer; color: #1a73e8; font-size: 0.9em; transition: 0.2s; font-weight: bold; }
         .toggle-diff-btn:hover { background: #f8f9fa; }
         
+        .toggle-remark-btn { background: #fff; border: 1px solid #ceead6; padding: 6px 12px; border-radius: 4px; cursor: pointer; color: #188038; font-size: 0.9em; transition: 0.2s; font-weight: bold; margin-left: 10px; }
+        .toggle-remark-btn:hover { background: #f8f9fa; }
+        
         .stats-bar { display: flex; justify-content: space-between; align-items: center; background: #e8f0fe; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
         .stats-info span { margin-right: 15px; font-size: 0.95em; color: #174ea6; font-weight: 500; display: inline-block; }
         .sort-btns button { background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin-left: 5px; }
@@ -34,7 +37,6 @@
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #333; }
         
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 6px; justify-content: center; }
-        /* 强制 nowrap 紧随不换行 */
         .prob-link-wrap { font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f3f4; padding: 4px 10px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; text-align: center; }
         .prob-link-wrap a { color: var(--primary); text-decoration: none; font-weight: bold; }
         .prob-link-wrap a:hover { text-decoration: underline; }
@@ -49,19 +51,23 @@
         .mini-file-link { text-decoration: none; display: inline-block; transition: 0.2s; }
         .mini-file-link:hover { transform: scale(1.1); }
         
-        .zhati-filter-bar { background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); align-items: center; }
-        .zhati-filter-bar input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
-        .zhati-filter-bar input:focus { border-color: #1a73e8; }
+        .list-filter-bar { background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); align-items: center; }
+        .list-filter-bar input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+        .list-filter-bar input:focus { border-color: #1a73e8; }
         
         .normal-table { margin-bottom: 30px; }
         .normal-table th, .normal-table td { border: 1px solid var(--border); text-align: left; vertical-align: middle; }
         .normal-table th { background: #f8f9fa; color: #5f6368; font-weight: 600; }
         .normal-table tr:hover { background-color: #fcfcfc; }
-        .normal-table th:nth-child(1) { width: 22%; }
-        .normal-table th:nth-child(2) { width: 23%; }
-        .normal-table th:nth-child(3) { width: 12%; }
-        .normal-table th:nth-child(4) { width: 13%; }
-        .normal-table th:nth-child(5) { width: 30%; }
+        
+        /* 列表表格列宽控制 */
+        .normal-table th:nth-child(1) { width: 18%; }
+        .normal-table th:nth-child(2) { width: 18%; }
+        .normal-table th:nth-child(3) { width: 10%; }
+        .normal-table th:nth-child(4) { width: 12%; }
+        .normal-table th.remark-col { width: 22%; color: #888; font-weight: normal; font-size: 0.9em; }
+        .normal-table th:last-child { width: 20%; }
+        .normal-table td.remark-col { color: #666; font-size: 0.9em; background: #fafafa; }
         
         .version-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.1em; white-space: nowrap; transition: 0.2s; }
@@ -78,6 +84,7 @@
             <span style="color:#aaa;">|</span>
             <span style="font-size: 0.9em; color: #666;">全动态自适应表格</span>
             <button class="toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
+            
         </div>
         
         <h1>AtCoder</h1>
@@ -139,7 +146,7 @@
                     </div></td></tr></tbody></table></div></div>
         
         <div class="footer">
-            生成时间: 2026-04-08 10:32:26 | 题目整理工具自动生成
+            生成时间: 2026-04-08 11:16:26 | 题目整理工具自动生成
         </div>
     </div>
 
@@ -165,6 +172,20 @@
                 el.style.display = isDiffVisible ? 'inline-flex' : 'none';
             });
         }
+        
+        // 备注列显示隐藏开关
+        let isRemarkVisible = true;
+        function toggleRemark() {
+            isRemarkVisible = !isRemarkVisible;
+            document.querySelectorAll('.remark-col').forEach(el => {
+                el.style.display = isRemarkVisible ? '' : 'none';
+            });
+            const btn = document.querySelector('.toggle-remark-btn');
+            if (btn) {
+                btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
+                btn.style.color = isRemarkVisible ? '#188038' : '#5f6368';
+            }
+        }
 
         function sortContests(type) {
             const tables = document.querySelectorAll('.matrix-table');
@@ -183,20 +204,20 @@
             });
         }
 
-        // 杂题表格动态筛选
-        function filterZhati() {
-            const tagVal = document.getElementById('filter-tag') ? document.getElementById('filter-tag').value.toLowerCase().trim() : '';
+        // 列表表格(杂题/Todo)动态筛选
+        function filterListTable(tableId) {
+            const tagVal = document.getElementById('filter-tag-' + tableId) ? document.getElementById('filter-tag-' + tableId).value.toLowerCase().trim() : '';
             const searchTerms = tagVal.split(/\s+/).filter(t => t);
             
-            const minStr = document.getElementById('filter-diff-min') ? document.getElementById('filter-diff-min').value : '';
-            const maxStr = document.getElementById('filter-diff-max') ? document.getElementById('filter-diff-max').value : '';
+            const minStr = document.getElementById('filter-diff-min-' + tableId) ? document.getElementById('filter-diff-min-' + tableId).value : '';
+            const maxStr = document.getElementById('filter-diff-max-' + tableId) ? document.getElementById('filter-diff-max-' + tableId).value : '';
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
 
-            const dateStart = document.getElementById('filter-date-start') ? document.getElementById('filter-date-start').value : '';
-            const dateEnd = document.getElementById('filter-date-end') ? document.getElementById('filter-date-end').value : '';
+            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
+            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
-            const rows = document.querySelectorAll('#zhati-table tbody tr');
+            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             rows.forEach(row => {
                 const tags = row.getAttribute('data-tags').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
@@ -225,15 +246,16 @@
             });
         }
 
-        // 杂题表格双向排序
-        let sortDirection = { 'diff': 1, 'date': 1 };
-        function sortZhatiTable(col) {
-            const tbody = document.querySelector('#zhati-table tbody');
+        // 列表表格双向排序
+        let sortDirection = {};
+        function sortListTable(tableId, col) {
+            if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1 };
+            const tbody = document.querySelector('#' + tableId + ' tbody');
             if (!tbody) return;
             const rows = Array.from(tbody.querySelectorAll('tr'));
             
-            sortDirection[col] *= -1;
-            const dir = sortDirection[col];
+            sortDirection[tableId][col] *= -1;
+            const dir = sortDirection[tableId][col];
             
             rows.sort((a, b) => {
                 if (col === 'diff') {
@@ -254,7 +276,6 @@
             rows.forEach(r => tbody.appendChild(r));
         }
 
-        // AtCoder 标签页切换
         function switchAtCoderTab(targetId, btn) {
             document.querySelectorAll('.atcoder-tab-content').forEach(el => el.style.display = 'none');
             document.getElementById(targetId).style.display = 'block';
