@@ -1,4 +1,5 @@
 // created time: 2026-04-08 07:16:21
+#pragma GCC target("sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2")
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,19 +30,21 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,p[300005],ans[300005];
-pair<int,int> v[300005];
-vector<int>E[300005];
-int son[300005],sz[300005],ff[300005];
+int n,p[600005],ans[600005];
+pair<int,int> v[600005];
+vector<int>E[600005];
+int son[600005],sz[600005],ff[600005];
 
 struct Node{
+    int sz;
 	int f[2][2],g[2][2];
-}t[600005];
+}t[1200005];
 
-int lc[600005],rc[600005],fa[600005],op[600005],id;
+int lc[1200005],rc[1200005],fa[1200005],op[1200005],id;
 inline void upd(int &a,ull b){ a=(a+b)%mod; }
 
 void pushup(int x){
+    t[x].sz=t[lc[x]].sz+t[rc[x]].sz;
 	memset(t[x].f,0,sizeof(t[x].f));
 	if(op[x]){
 		for(int i:{0,1})for(int j:{0,1})for(int k:{0,1})
@@ -68,7 +71,7 @@ void ipushup(int x){
 vector<int>seq;
 
 void dfs(int x){
-	sz[x]=1; 
+	sz[x]=t[x].sz=1; 
 	if(x!=1) t[x].f[1][0]=t[x].f[0][1]=t[x].f[0][0]=1;
 	else t[x].f[0][0]=t[x].f[0][1]=1;
 	for(auto y:E[x]){
@@ -86,9 +89,9 @@ int merge(int x,int y,int o){
 int build(int l,int r,int o){
 	if(l==r) return seq[l];
 	int sum=0, cur=0, cut=r-1;
-	for(int i=l;i<=r;i++) sum+=sz[seq[i]];
+	for(int i=l;i<=r;i++) sum+=t[seq[i]].sz;
 	for(int i=l;i<r;i++){
-		cur+=sz[seq[i]];
+		cur+=t[seq[i]].sz;
 		if(2*cur>=sum){ cut=i; break; }
 	}
 	return merge(build(l,cut,o),build(cut+1,r,o),o);
