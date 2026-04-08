@@ -24,14 +24,14 @@ def get_diff_style(diff):
     return f'background: linear-gradient(to top, {color} {ratio}%, transparent {ratio}%); border: 1px solid {color}; border-radius: 50%;'
 
 # =======================
-#   HTML & CSS 模板定义
+#   内部子页面 HTML & CSS 模板
 # =======================
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{title} - 题目整理索引</title>
+    <title>{title} - 题目整理</title>
     <style>
         :root {{ --primary: #1a73e8; --bg: #f4f5f7; --text: #333; --border: #e0e0e0; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; overflow-x: hidden; }}
@@ -115,10 +115,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         </div>
         
         <h1>{title}</h1>
-        {subtitle}
         
         {stats_block}
-        
         {content_html}
         
         <div class="footer">
@@ -261,6 +259,169 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             btn.style.color = '#fff';
         }}
     </script>
+</body>
+</html>
+"""
+
+# =======================
+#   仪表盘专属首页模板 (新UI)
+# =======================
+INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算法主页 | Algorithm Dashboard</title>
+    <style>
+        /* Base Reset */
+        :root {{ --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 40px 20px; line-height: 1.6; }}
+        .container {{ max-width: 1100px; margin: 0 auto; }}
+        
+        header {{ text-align: center; margin-bottom: 50px; }}
+        h1 {{ font-size: 2.5em; margin-bottom: 5px; font-weight: 800; letter-spacing: -0.5px; color: #0f172a; }}
+        .subtitle {{ color: var(--text-muted); font-size: 1.1em; }}
+        
+        /* Dashboard Grid Layout (2 cols x 3 rows) */
+        .dashboard-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 50px; }}
+        @media (max-width: 768px) {{ .dashboard-grid {{ grid-template-columns: 1fr; }} }}
+        
+        /* Card Styling */
+        .card {{ background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; text-decoration: none; color: inherit; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }}
+        .card:hover {{ transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: #cbd5e1; }}
+        
+        /* Color Accents (Top Border) */
+        .card::before {{ content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; }}
+        .card-summary::before {{ background: linear-gradient(90deg, #8b5cf6, #d946ef); }}
+        .card-todo::before {{ background: linear-gradient(90deg, #f59e0b, #fbbf24); }}
+        .card-oi::before {{ background: linear-gradient(90deg, #3b82f6, #0ea5e9); }}
+        .card-xcpc::before {{ background: linear-gradient(90deg, #10b981, #34d399); }}
+        .card-cf::before {{ background: linear-gradient(90deg, #ef4444, #f87171); }}
+        .card-at::before {{ background: linear-gradient(90deg, #1e293b, #475569); }}
+        
+        /* Card Content */
+        .card-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }}
+        .card-title {{ font-size: 1.4em; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }}
+        .card-badge {{ font-size: 0.75em; padding: 4px 8px; border-radius: 6px; font-weight: 600; text-transform: uppercase; }}
+        
+        .card-stats {{ display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }}
+        .stat-number {{ font-size: 2.8em; font-weight: 800; line-height: 1; }}
+        .stat-label {{ color: var(--text-muted); font-size: 0.95em; font-weight: 500; }}
+        
+        .card-desc {{ color: var(--text-muted); font-size: 0.95em; margin: 0; }}
+        
+        /* Settings Info Box */
+        .syntax-guide {{ background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }}
+        .syntax-guide h3 {{ margin-top: 0; margin-bottom: 15px; color: #0f172a; display: flex; align-items: center; gap: 8px; }}
+        .syntax-code {{ display: grid; gap: 10px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #f1f5f9; overflow-x: auto; }}
+        .line-def {{ display: flex; gap: 16px; }}
+        .line-num {{ color: #94a3b8; user-select: none; width: 20px; text-align: right; font-weight: bold; }}
+        .line-desc {{ color: #334155; }}
+        .highlight {{ color: #2563eb; font-weight: 600; }}
+        
+        .footer {{ text-align: center; color: #94a3b8; font-size: 0.85em; margin-top: 50px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Algorithm Dashboard</h1>
+            <div class="subtitle">个人算法竞赛题目归档与整理工作台</div>
+        </header>
+        
+        <div class="dashboard-grid">
+            <!-- Row 1: Global -->
+            <a href="Summary.html" class="card card-summary">
+                <div class="card-header">
+                    <h2 class="card-title"><span>📚</span> Summary</h2>
+                    <span class="card-badge" style="color: #8b5cf6; background: #ede9fe;">All</span>
+                </div>
+                <div class="card-stats">
+                    <span class="stat-number">{s_count}</span>
+                    <span class="stat-label">个题目组</span>
+                </div>
+                <p class="card-desc">全局题库汇总池，支持按标签、难度、日期多维检索</p>
+            </a>
+            
+            <a href="todo.html" class="card card-todo">
+                <div class="card-header">
+                    <h2 class="card-title"><span>🎯</span> Todo</h2>
+                    <span class="card-badge" style="color: #d97706; background: #fef3c7;">Task</span>
+                </div>
+                <div class="card-stats">
+                    <span class="stat-number">{t_count}</span>
+                    <span class="stat-label">道待补题</span>
+                </div>
+                <p class="card-desc">无代码但已记录配置的待完成题目备忘录</p>
+            </a>
+            
+            <!-- Row 2: Chinese Contests -->
+            <a href="OI.html" class="card card-oi">
+                <div class="card-header">
+                    <h2 class="card-title"><span>🏅</span> OI</h2>
+                    <span class="card-badge" style="color: #2563eb; background: #dbeafe;">{oi_c} Contests</span>
+                </div>
+                <div class="card-stats">
+                    <span class="stat-number">{oi_p}</span>
+                    <span class="stat-label">题归档</span>
+                </div>
+                <p class="card-desc">国内信息学奥赛题目收集与题解归档</p>
+            </a>
+            
+            <a href="XCPC.html" class="card card-xcpc">
+                <div class="card-header">
+                    <h2 class="card-title"><span>🏆</span> XCPC</h2>
+                    <span class="card-badge" style="color: #059669; background: #d1fae5;">{xcpc_c} Contests</span>
+                </div>
+                <div class="card-stats">
+                    <span class="stat-number">{xcpc_p}</span>
+                    <span class="stat-label">题归档</span>
+                </div>
+                <p class="card-desc">ICPC / CCPC 等大学生程序设计竞赛题目</p>
+            </a>
+            
+            <!-- Row 3: Online Judges -->
+            <a href="Codeforces.html" class="card card-cf">
+                <div class="card-header">
+                    <h2 class="card-title"><span>⚡</span> Codeforces</h2>
+                    <span class="card-badge" style="color: #dc2626; background: #fee2e2;">{cf_c} Rounds</span>
+                </div>
+                <div class="card-stats">
+                    <span class="stat-number">{cf_p}</span>
+                    <span class="stat-label">题归档</span>
+                </div>
+                <p class="card-desc">Codeforces 平台日常练习及比赛记录</p>
+            </a>
+            
+            <a href="AtCoder.html" class="card card-at">
+                <div class="card-header">
+                    <h2 class="card-title"><span>🗻</span> AtCoder</h2>
+                    <span class="card-badge" style="color: #334155; background: #f1f5f9;">{at_c} Contests</span>
+                </div>
+                <div class="card-stats">
+                    <span class="stat-number">{at_p}</span>
+                    <span class="stat-label">题归档</span>
+                </div>
+                <p class="card-desc">AtCoder 平台 (ABC/ARC/AGC) 归档记录</p>
+            </a>
+        </div>
+        
+        <div class="syntax-guide">
+            <h3><span>⚙️</span> .conf 配置文件语法规则 (固定 6 行)</h3>
+            <div class="syntax-code">
+                <div class="line-def"><span class="line-num">1</span> <span class="line-desc"><span class="highlight">标签/关键词</span> (多个用空格隔开，末尾数字自动解析为难度)</span></div>
+                <div class="line-def"><span class="line-num">2</span> <span class="line-desc"><span class="highlight">比赛分类</span> (填 OI 或 XCPC。CF/AT 留空自动归档)</span></div>
+                <div class="line-def"><span class="line-num">3</span> <span class="line-desc"><span class="highlight">URL 链接</span> (完整链接。CF/AT 留空自动生成)</span></div>
+                <div class="line-def"><span class="line-num">4</span> <span class="line-desc"><span class="highlight">比赛名称</span> (如 "第xx届蓝桥杯"。CF/AT 留空自动补全)</span></div>
+                <div class="line-def"><span class="line-num">5</span> <span class="line-desc"><span class="highlight">题目编号</span> (如 A, B, C...)</span></div>
+                <div class="line-def"><span class="line-num">6</span> <span class="line-desc"><span class="highlight">备注/备忘录</span> (在表格中独立成列展示，不需要可留空换行)</span></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            最后构建: {gen_time} | Algorithm Platform Generator
+        </div>
+    </div>
 </body>
 </html>
 """
@@ -560,7 +721,7 @@ def build_category_page(title, groups_dict, out_path, rel_path):
         content_html = build_matrix_table(groups_dict, rel_path)
 
     html = HTML_TEMPLATE.format(
-        title=title, subtitle="", stats_block=stats_block, nav_extra="",
+        title=title, stats_block=stats_block, nav_extra="",
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
@@ -634,51 +795,35 @@ def build_list_page(title, all_groups, out_path, rel_path, table_id="list-table"
     content_html += "</tbody></table>"
 
     html = HTML_TEMPLATE.format(
-        title=title, subtitle="", stats_block=stats_block, nav_extra=nav_extra,
+        title=title, stats_block=stats_block, nav_extra=nav_extra,
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
 def build_index_page(categories, summary_list, todo_list, out_path):
-    stats = []
-    
-    # 强制将 Summary 放在首位
+    # 提取六个模块的具体统计数据
     s_count = len(summary_list)
-    stats.append(("Summary", s_count, f"全局题库汇总池，收录并整合共 {s_count} 个题目组", "Summary.html"))
-    
-    for cat, data in categories.items():
-        c_count = len(data)
-        p_count = sum(len(gs) for gs in data.values())
-        stats.append((cat, p_count, f"共 {c_count} 场比赛，包含 {p_count} 个题目组", f"{cat}.html"))
-    
     t_count = len(todo_list)
-    stats.append(("Todo", t_count, f"无代码但已记录配置的待完成项目，共 {t_count} 题", "todo.html"))
-            
-    subtitle_html = """
-    <div style="background: #e8f0fe; color: #174ea6; padding: 16px 20px; border-radius: 6px; margin-bottom: 25px; font-size: 0.95em; border: 1px solid #d2e3fc; line-height: 1.8;">
-        <strong>📝 新版 .conf 配置文件语法规则（固定 6 行，不需要的信息可直接留空换行）：</strong><br>
-        <span style="display:inline-block; width: 65px; font-weight:bold;">第 1 行:</span> 标签/关键词。多个 tag 用空格隔开。如果最后为数字，则自动解析为<strong>难度</strong>数值。<br>
-        <span style="display:inline-block; width: 65px; font-weight:bold;">第 2 行:</span> 比赛分类 (<code>OI</code> / <code>XCPC</code>)。CF/AT 留空会自动归档，其他留空则无所属类别。<br>
-        <span style="display:inline-block; width: 65px; font-weight:bold;">第 3 行:</span> 完整 URL 链接。CF/AT 留空自动生成官方链接。<br>
-        <span style="display:inline-block; width: 65px; font-weight:bold;">第 4 行:</span> 比赛名称。CF/AT 留空会自动补全。<br>
-        <span style="display:inline-block; width: 65px; font-weight:bold;">第 5 行:</span> 题目编号 (如 A, B, C...)。<br>
-        <span style="display:inline-block; width: 65px; font-weight:bold;">第 6 行:</span> <strong>备注/备忘录</strong>（将在 Summary 或 Todo 表格中独立成列展示）。
-    </div>
-    """
+    
+    oi_p = sum(len(gs) for gs in categories.get('OI', {}).values())
+    oi_c = len(categories.get('OI', {}))
+    
+    xcpc_p = sum(len(gs) for gs in categories.get('XCPC', {}).values())
+    xcpc_c = len(categories.get('XCPC', {}))
+    
+    cf_p = sum(len(gs) for gs in categories.get('Codeforces', {}).values())
+    cf_c = len(categories.get('Codeforces', {}))
+    
+    at_p = sum(len(gs) for gs in categories.get('AtCoder', {}).values())
+    at_c = len(categories.get('AtCoder', {}))
 
-    content = "<div style='display:flex; flex-wrap:wrap; gap:20px;'>"
-    for cat, _, desc, link in stats:
-        content += f"""
-        <div style="background:#fff; border:1px solid #e0e0e0; padding:20px; border-radius:8px; width:calc(33% - 20px); min-width:250px; box-sizing:border-box; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-            <h2 style="margin-top:0; color:#1a73e8; margin-bottom: 10px;">{cat}</h2>
-            <p style="color:#5f6368; font-size:0.95em;">{desc}</p>
-            <a href="{link}" style="display:inline-block; margin-top:10px; padding:8px 16px; background:#1a73e8; color:#fff; text-decoration:none; border-radius:4px; font-size:0.9em;">进入分类 →</a>
-        </div>"""
-    content += "</div>"
-
-    html = HTML_TEMPLATE.format(
-        title="首页索引", subtitle=subtitle_html, stats_block="", nav_extra="",
-        content_html=content, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    html = INDEX_HTML_TEMPLATE.format(
+        s_count=s_count, t_count=t_count,
+        oi_p=oi_p, oi_c=oi_c,
+        xcpc_p=xcpc_p, xcpc_c=xcpc_c,
+        cf_p=cf_p, cf_c=cf_c,
+        at_p=at_p, at_c=at_c,
+        gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
@@ -714,7 +859,7 @@ def main():
         has_any_cpp = any(v.files['cpp'] for v in g.versions.values())
         is_todo = g.has_conf and not has_any_cpp
         
-        # 精准分流：是 Todo 就不进 Summary，反之流入 Summary
+        # 严格分流逻辑：是 Todo 的题目绝不会进入 Summary
         if is_todo:
             todo_list.append(g)
         elif g.has_conf or g.category == 'Summary':
@@ -727,6 +872,7 @@ def main():
     build_list_page('Summary', summary_list, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table")
     build_list_page('Todo', todo_list, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table")
 
+    # 构建全新的独立 dashboard 首页
     build_index_page(categories, summary_list, todo_list, os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
 
