@@ -60,7 +60,6 @@
         .normal-table th { background: #f8f9fa; color: #5f6368; font-weight: 600; }
         .normal-table tr:hover { background-color: #fcfcfc; }
         
-        /* 列表表格列宽控制 */
         .normal-table th:nth-child(1) { width: 18%; }
         .normal-table th:nth-child(2) { width: 18%; }
         .normal-table th:nth-child(3) { width: 10%; }
@@ -90,10 +89,7 @@
         <h1>AtCoder</h1>
         
         
-        <div class="stats-bar">
-            <div class="stats-info"><span>📁 题目组数: 12</span><span>📄 总版本数: 12</span><span>📝 有代码: 12</span><span>💡 有题解: 2</span><span>⚙️ 有配置: 0</span><span>🏆 比赛数: 3</span></div>
-            <div class="sort-btns"><button onclick="sortContests('count')">按题目数降序</button><button onclick="sortContests('name')">按比赛名字典序</button></div>
-        </div>
+        <div class="stats-bar"><div class="stats-info"><span>📁 题目组数: 12</span><span>📄 总版本数: 12</span><span>📝 有代码: 12</span><span>💡 有题解: 2</span><span>⚙️ 有配置: 0</span><span>🏆 比赛数: 3</span></div><div class="sort-btns"><button onclick="sortContests('count')">按题目数降序</button><button onclick="sortContests('name')">按比赛名字典序</button></div></div>
         
         <div class="atcoder-tabs" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-ABC" onclick="switchAtCoderTab('tab-ABC', this)" style="padding: 8px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; background: #1a73e8; color: #fff;">ABC</button><button class="atcoder-tab-btn" data-target="tab-ARC" onclick="switchAtCoderTab('tab-ARC', this)" style="padding: 8px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; background: #f1f3f4; color: #333;">ARC</button><button class="atcoder-tab-btn" data-target="tab-AGC" onclick="switchAtCoderTab('tab-AGC', this)" style="padding: 8px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; background: #f1f3f4; color: #333;">AGC</button></div><div id="tab-ABC" class="atcoder-tab-content" style="display: block;"><h2 style='margin-top: 10px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 5px;'>ABC 模块</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%;">比赛名称</th><th style="width: 11.428571428571429%;">A</th><th style="width: 11.428571428571429%;">B</th><th style="width: 11.428571428571429%;">C</th><th style="width: 11.428571428571429%;">D</th><th style="width: 11.428571428571429%;">E</th><th style="width: 11.428571428571429%;">F</th><th style="width: 11.428571428571429%;">G</th></tr></thead><tbody><tr data-name="ABC452" data-count="7"><td class="contest-name-cell">ABC452 <br><span style="font-size:0.8em; color:#888; font-weight:normal;">(7 题)</span></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
@@ -146,7 +142,7 @@
                     </div></td></tr></tbody></table></div></div>
         
         <div class="footer">
-            生成时间: 2026-04-08 11:16:26 | 题目整理工具自动生成
+            生成时间: 2026-04-08 11:24:32 | 题目整理工具自动生成
         </div>
     </div>
 
@@ -173,7 +169,6 @@
             });
         }
         
-        // 备注列显示隐藏开关
         let isRemarkVisible = true;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
@@ -204,7 +199,6 @@
             });
         }
 
-        // 列表表格(杂题/Todo)动态筛选
         function filterListTable(tableId) {
             const tagVal = document.getElementById('filter-tag-' + tableId) ? document.getElementById('filter-tag-' + tableId).value.toLowerCase().trim() : '';
             const searchTerms = tagVal.split(/\s+/).filter(t => t);
@@ -246,7 +240,6 @@
             });
         }
 
-        // 列表表格双向排序
         let sortDirection = {};
         function sortListTable(tableId, col) {
             if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1 };

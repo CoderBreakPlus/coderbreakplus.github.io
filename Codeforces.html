@@ -60,7 +60,6 @@
         .normal-table th { background: #f8f9fa; color: #5f6368; font-weight: 600; }
         .normal-table tr:hover { background-color: #fcfcfc; }
         
-        /* 列表表格列宽控制 */
         .normal-table th:nth-child(1) { width: 18%; }
         .normal-table th:nth-child(2) { width: 18%; }
         .normal-table th:nth-child(3) { width: 10%; }
@@ -90,10 +89,7 @@
         <h1>Codeforces</h1>
         
         
-        <div class="stats-bar">
-            <div class="stats-info"><span>📁 题目组数: 8</span><span>📄 总版本数: 8</span><span>📝 有代码: 8</span><span>💡 有题解: 2</span><span>⚙️ 有配置: 0</span><span>🏆 比赛数: 3</span></div>
-            <div class="sort-btns"><button onclick="sortContests('count')">按题目数降序</button><button onclick="sortContests('name')">按比赛名字典序</button></div>
-        </div>
+        <div class="stats-bar"><div class="stats-info"><span>📁 题目组数: 8</span><span>📄 总版本数: 8</span><span>📝 有代码: 8</span><span>💡 有题解: 2</span><span>⚙️ 有配置: 0</span><span>🏆 比赛数: 3</span></div><div class="sort-btns"><button onclick="sortContests('count')">按题目数降序</button><button onclick="sortContests('name')">按比赛名字典序</button></div></div>
         
         <div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%;">比赛名称</th><th style="width: 13.333333333333334%;">A</th><th style="width: 13.333333333333334%;">B</th><th style="width: 13.333333333333334%;">C</th><th style="width: 13.333333333333334%;">D</th><th style="width: 13.333333333333334%;">E</th><th style="width: 13.333333333333334%;">F</th></tr></thead><tbody><tr data-name="Codeforces Round 2203" data-count="6"><td class="contest-name-cell">Codeforces Round 2203 <br><span style="font-size:0.8em; color:#888; font-weight:normal;">(6 题)</span></td><td>
                     <div class="prob-cell" style="margin-bottom:8px;">
@@ -130,7 +126,7 @@
                     </div></td><td></td><td></td></tr></tbody></table></div>
         
         <div class="footer">
-            生成时间: 2026-04-08 11:16:26 | 题目整理工具自动生成
+            生成时间: 2026-04-08 11:24:32 | 题目整理工具自动生成
         </div>
     </div>
 
@@ -157,7 +153,6 @@
             });
         }
         
-        // 备注列显示隐藏开关
         let isRemarkVisible = true;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
@@ -188,7 +183,6 @@
             });
         }
 
-        // 列表表格(杂题/Todo)动态筛选
         function filterListTable(tableId) {
             const tagVal = document.getElementById('filter-tag-' + tableId) ? document.getElementById('filter-tag-' + tableId).value.toLowerCase().trim() : '';
             const searchTerms = tagVal.split(/\s+/).filter(t => t);
@@ -230,7 +224,6 @@
             });
         }
 
-        // 列表表格双向排序
         let sortDirection = {};
         function sortListTable(tableId, col) {
             if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1 };
