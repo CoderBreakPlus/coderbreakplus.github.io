@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo 待补题列表 - 题目整理索引</title>
+    <title>Todo - 题目整理索引</title>
     <style>
         :root { --primary: #1a73e8; --bg: #f4f5f7; --text: #333; --border: #e0e0e0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; overflow-x: hidden; }
@@ -60,7 +60,6 @@
         .normal-table th { background: #f8f9fa; color: #5f6368; font-weight: 600; }
         .normal-table tr:hover { background-color: #fcfcfc; }
         
-        /* 列表表格列宽控制 */
         .normal-table th:nth-child(1) { width: 18%; }
         .normal-table th:nth-child(2) { width: 18%; }
         .normal-table th:nth-child(3) { width: 10%; }
@@ -87,13 +86,10 @@
             <button class="toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>
         </div>
         
-        <h1>Todo 待补题列表</h1>
+        <h1>Todo</h1>
         
         
-        <div class="stats-bar">
-            <div class="stats-info"><span>📁 收录组数: 0</span><span>📄 版本数: 0</span><span>📝 有代码: 0</span><span>💡 有题解: 0</span></div>
-            
-        </div>
+        <div class="stats-bar"><div class="stats-info"><span>📁 收录组数: 0</span><span>📄 版本数: 0</span><span>📝 有代码: 0</span><span>💡 有题解: 0</span></div></div>
         
         
     <div class="list-filter-bar">
@@ -125,7 +121,7 @@
     </tbody></table>
         
         <div class="footer">
-            生成时间: 2026-04-08 11:16:26 | 题目整理工具自动生成
+            生成时间: 2026-04-08 11:24:32 | 题目整理工具自动生成
         </div>
     </div>
 
@@ -152,7 +148,6 @@
             });
         }
         
-        // 备注列显示隐藏开关
         let isRemarkVisible = true;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
@@ -183,7 +178,6 @@
             });
         }
 
-        // 列表表格(杂题/Todo)动态筛选
         function filterListTable(tableId) {
             const tagVal = document.getElementById('filter-tag-' + tableId) ? document.getElementById('filter-tag-' + tableId).value.toLowerCase().trim() : '';
             const searchTerms = tagVal.split(/\s+/).filter(t => t);
@@ -225,7 +219,6 @@
             });
         }
 
-        // 列表表格双向排序
         let sortDirection = {};
         function sortListTable(tableId, col) {
             if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1 };

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全局杂题列表 - 题目整理索引</title>
+    <title>Summary - 题目整理索引</title>
     <style>
         :root { --primary: #1a73e8; --bg: #f4f5f7; --text: #333; --border: #e0e0e0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; overflow-x: hidden; }
@@ -60,7 +60,6 @@
         .normal-table th { background: #f8f9fa; color: #5f6368; font-weight: 600; }
         .normal-table tr:hover { background-color: #fcfcfc; }
         
-        /* 列表表格列宽控制 */
         .normal-table th:nth-child(1) { width: 18%; }
         .normal-table th:nth-child(2) { width: 18%; }
         .normal-table th:nth-child(3) { width: 10%; }
@@ -87,36 +86,33 @@
             <button class="toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>
         </div>
         
-        <h1>全局杂题列表</h1>
+        <h1>Summary</h1>
         
         
-        <div class="stats-bar">
-            <div class="stats-info"><span>📁 收录组数: 21</span><span>📄 版本数: 21</span><span>📝 有代码: 21</span><span>💡 有题解: 7</span></div>
-            
-        </div>
+        <div class="stats-bar"><div class="stats-info"><span>📁 收录组数: 21</span><span>📄 版本数: 21</span><span>📝 有代码: 21</span><span>💡 有题解: 7</span></div></div>
         
         
     <div class="list-filter-bar">
         <strong style="color: #1a73e8;">🔍 筛选器</strong>
-        <input type="text" id="filter-tag-zhati-table" placeholder="输入标签筛选(支持空格多词)..." onkeyup="filterListTable('zhati-table')" style="min-width: 200px;">
+        <input type="text" id="filter-tag-summary-table" placeholder="输入标签筛选(支持空格多词)..." onkeyup="filterListTable('summary-table')" style="min-width: 200px;">
         
         <span style="color:#888; margin-left: 10px;">📊 难度:</span>
-        <input type="number" id="filter-diff-min-zhati-table" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('zhati-table')" onchange="filterListTable('zhati-table')">
+        <input type="number" id="filter-diff-min-summary-table" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('summary-table')" onchange="filterListTable('summary-table')">
         <span style="color:#888;">-</span>
-        <input type="number" id="filter-diff-max-zhati-table" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('zhati-table')" onchange="filterListTable('zhati-table')">
+        <input type="number" id="filter-diff-max-summary-table" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('summary-table')" onchange="filterListTable('summary-table')">
         
         <span style="color:#888; margin-left: 10px;">📅 日期:</span>
-        <input type="date" id="filter-date-start-zhati-table" onchange="filterListTable('zhati-table')">
+        <input type="date" id="filter-date-start-summary-table" onchange="filterListTable('summary-table')">
         <span style="color:#888;">-</span>
-        <input type="date" id="filter-date-end-zhati-table" onchange="filterListTable('zhati-table')">
+        <input type="date" id="filter-date-end-summary-table" onchange="filterListTable('summary-table')">
     </div>
-    <table class="normal-table" id="zhati-table">
+    <table class="normal-table" id="summary-table">
         <thead>
             <tr>
                 <th>题目与来源</th>
                 <th>标签</th>
-                <th onclick="sortListTable('zhati-table', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
-                <th onclick="sortListTable('zhati-table', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
+                <th onclick="sortListTable('summary-table', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                <th onclick="sortListTable('summary-table', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
                 <th class="remark-col">备注</th>
                 <th>文件</th>
             </tr>
@@ -124,7 +120,7 @@
         <tbody>
     
         <tr data-tags="数据结构 toptree 转置" data-diff="3200.0" data-date="2026-04-08">
-            <td><a href="https://www.luogu.com.cn/problem/P11824" target="_blank" style="color:var(--primary); text-decoration:none;"><b>P11824</b></a><br><span style="font-size:0.8em; color:#888;">oi - GZOI-NOI2026模拟赛（五）</span></td>
+            <td><a href="https://www.luogu.com.cn/problem/P11824" target="_blank" style="color:var(--primary); text-decoration:none;"><b>P11824</b></a><br><span style="font-size:0.8em; color:#888;">OI - GZOI-NOI2026模拟赛（五）</span></td>
             <td><span class="tag-pill">数据结构</span><span class="tag-pill">toptree</span><span class="tag-pill">转置</span></td>
             <td><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3200</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-08</td>
@@ -132,7 +128,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/P11824.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/P11824" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/P11824.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="计数 dp 转置" data-diff="2900.0" data-date="2026-04-07">
-            <td><a href="https://www.luogu.com.cn/problem/U672297" target="_blank" style="color:var(--primary); text-decoration:none;"><b>u672297</b></a><br><span style="font-size:0.8em; color:#888;">oi - GZOI-NOI2026模拟赛（七）</span></td>
+            <td><a href="https://www.luogu.com.cn/problem/U672297" target="_blank" style="color:var(--primary); text-decoration:none;"><b>u672297</b></a><br><span style="font-size:0.8em; color:#888;">OI - GZOI-NOI2026模拟赛（七）</span></td>
             <td><span class="tag-pill">计数</span><span class="tag-pill">dp</span><span class="tag-pill">转置</span></td>
             <td><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-07</td>
@@ -140,7 +136,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/u672297.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/u672297" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/u672297.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="ds 图论" data-diff="2900.0" data-date="2026-04-07">
-            <td><a href="https://www.luogu.com.cn/problem/U671863" target="_blank" style="color:var(--primary); text-decoration:none;"><b>u671863</b></a><br><span style="font-size:0.8em; color:#888;">oi - GZOI-NOI2026模拟赛（七）</span></td>
+            <td><a href="https://www.luogu.com.cn/problem/U671863" target="_blank" style="color:var(--primary); text-decoration:none;"><b>u671863</b></a><br><span style="font-size:0.8em; color:#888;">OI - GZOI-NOI2026模拟赛（七）</span></td>
             <td><span class="tag-pill">ds</span><span class="tag-pill">图论</span></td>
             <td><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-07</td>
@@ -148,7 +144,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/u671863.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/u671863.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="模板 字符串" data-diff="None" data-date="2026-04-06">
-            <td><a href="https://www.luogu.com.cn/problem/P6656" target="_blank" style="color:var(--primary); text-decoration:none;"><b>lg6656</b></a><br><span style="font-size:0.8em; color:#888;">杂题</span></td>
+            <td><a href="https://www.luogu.com.cn/problem/P6656" target="_blank" style="color:var(--primary); text-decoration:none;"><b>lg6656</b></a><br><span style="font-size:0.8em; color:#888;">Summary</span></td>
             <td><span class="tag-pill">模板</span><span class="tag-pill">字符串</span></td>
             <td>-</td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-06</td>
@@ -156,7 +152,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/lg6656.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/lg6656.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="多项式 组合数学" data-diff="2500.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17717" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17717</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
+            <td><a href="https://qoj.ac/contest/3575/problem/17717" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17717</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
             <td><span class="tag-pill">多项式</span><span class="tag-pill">组合数学</span></td>
             <td><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
@@ -164,7 +160,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17717.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17717.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="2500.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17722" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17722</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
+            <td><a href="https://qoj.ac/contest/3575/problem/17722" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17722</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
             <td></td>
             <td><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
@@ -172,7 +168,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17722.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17722.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="哈希" data-diff="2500.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17714" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17714</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
+            <td><a href="https://qoj.ac/contest/3575/problem/17714" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17714</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
             <td><span class="tag-pill">哈希</span></td>
             <td><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
@@ -180,7 +176,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17714.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17714.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="凸性 分治" data-diff="2800.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17725" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17725</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
+            <td><a href="https://qoj.ac/contest/3575/problem/17725" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17725</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
             <td><span class="tag-pill">凸性</span><span class="tag-pill">分治</span></td>
             <td><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
@@ -188,7 +184,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17725.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17725" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj17725.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="数论" data-diff="2900.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17723" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17723</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
+            <td><a href="https://qoj.ac/contest/3575/problem/17723" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17723</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
             <td><span class="tag-pill">数论</span></td>
             <td><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
@@ -196,7 +192,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17723.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17723.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="数论" data-diff="2600.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17718" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17718</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
+            <td><a href="https://qoj.ac/contest/3575/problem/17718" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17718</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
             <td><span class="tag-pill">数论</span></td>
             <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
@@ -204,7 +200,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17718.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17718.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="1600.0" data-date="2026-04-04">
-            <td><a href="https://qoj.ac/contest/3575/problem/17713" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17713</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
+            <td><a href="https://qoj.ac/contest/3575/problem/17713" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj17713</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 4th Universal Cup. Stage 22: Grand Prix of Kyoto</span></td>
             <td></td>
             <td><span class="diff-indicator" title="难度: 1600.0"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 0.0%, transparent 0.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1600</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-04</td>
@@ -212,7 +208,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17713.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17713.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="数论 二分" data-diff="3000.0" data-date="2026-04-03">
-            <td><a href="https://www.luogu.com.cn/problem/P12636" target="_blank" style="color:var(--primary); text-decoration:none;"><b>P12636</b></a><br><span style="font-size:0.8em; color:#888;">oi - GZOI-NOI2026模拟赛（六）</span></td>
+            <td><a href="https://www.luogu.com.cn/problem/P12636" target="_blank" style="color:var(--primary); text-decoration:none;"><b>P12636</b></a><br><span style="font-size:0.8em; color:#888;">OI - GZOI-NOI2026模拟赛（六）</span></td>
             <td><span class="tag-pill">数论</span><span class="tag-pill">二分</span></td>
             <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-03</td>
@@ -220,7 +216,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/P12636.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/P12636" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/P12636.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="2400.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7861" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7861</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
+            <td><a href="https://qoj.ac/contest/1459/problem/7861" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7861</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 2nd Universal Cup. Stage 15: Macau</span></td>
             <td></td>
             <td><span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
@@ -228,7 +224,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7861.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7861.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="2400.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7865" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7865</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
+            <td><a href="https://qoj.ac/contest/1459/problem/7865" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7865</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 2nd Universal Cup. Stage 15: Macau</span></td>
             <td></td>
             <td><span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
@@ -236,7 +232,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7865.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7865.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="线性规划对偶" data-diff="3100.0" data-date="2026-04-02">
-            <td><a href="https://www.luogu.com.cn/problem/P8182" target="_blank" style="color:var(--primary); text-decoration:none;"><b>P8182</b></a><br><span style="font-size:0.8em; color:#888;">杂题</span></td>
+            <td><a href="https://www.luogu.com.cn/problem/P8182" target="_blank" style="color:var(--primary); text-decoration:none;"><b>P8182</b></a><br><span style="font-size:0.8em; color:#888;">Summary</span></td>
             <td><span class="tag-pill">线性规划对偶</span></td>
             <td><span class="diff-indicator" title="难度: 3100.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 75.0%, transparent 75.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3100</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
@@ -244,7 +240,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/P8182.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/P8182" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/P8182.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="2600.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7858" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7858</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
+            <td><a href="https://qoj.ac/contest/1459/problem/7858" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7858</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 2nd Universal Cup. Stage 15: Macau</span></td>
             <td></td>
             <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
@@ -252,7 +248,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7858.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7858.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="1900.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7866" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7866</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
+            <td><a href="https://qoj.ac/contest/1459/problem/7866" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7866</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 2nd Universal Cup. Stage 15: Macau</span></td>
             <td></td>
             <td><span class="diff-indicator" title="难度: 1900.0"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 75.0%, transparent 75.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1900</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
@@ -260,7 +256,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7866.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7866.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="2200.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7860" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7860</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
+            <td><a href="https://qoj.ac/contest/1459/problem/7860" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7860</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 2nd Universal Cup. Stage 15: Macau</span></td>
             <td></td>
             <td><span class="diff-indicator" title="难度: 2200.0"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 50.0%, transparent 50.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2200</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
@@ -268,7 +264,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7860.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7860.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="构造" data-diff="2300.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7857" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7857</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
+            <td><a href="https://qoj.ac/contest/1459/problem/7857" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7857</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 2nd Universal Cup. Stage 15: Macau</span></td>
             <td><span class="tag-pill">构造</span></td>
             <td><span class="diff-indicator" title="难度: 2300.0"><span class="diff-circle" style="background: linear-gradient(to top, #C0C000 75.0%, transparent 75.0%); border: 1px solid #C0C000; border-radius: 50%;"></span> 2300</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
@@ -276,7 +272,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7857.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7857" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj7857.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="2400.0" data-date="2026-04-02">
-            <td><a href="https://qoj.ac/contest/1459/problem/7864" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7864</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 2nd Universal Cup. Stage 15: Macau</span></td>
+            <td><a href="https://qoj.ac/contest/1459/problem/7864" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7864</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 2nd Universal Cup. Stage 15: Macau</span></td>
             <td></td>
             <td><span class="diff-indicator" title="难度: 2400.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 0.0%, transparent 0.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2400</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-04-02</td>
@@ -284,7 +280,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7864.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7864.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="计数 dp" data-diff="3000.0" data-date="2026-01-10">
-            <td><a href="https://qoj.ac/contest/2908/problem/15325" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj15325</b></a><br><span style="font-size:0.8em; color:#888;">xcpc - The 4th Universal Cup. Stage 12: Grand Prix of Shanghai</span></td>
+            <td><a href="https://qoj.ac/contest/2908/problem/15325" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj15325</b></a><br><span style="font-size:0.8em; color:#888;">XCPC - The 4th Universal Cup. Stage 12: Grand Prix of Shanghai</span></td>
             <td><span class="tag-pill">计数</span><span class="tag-pill">dp</span></td>
             <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
             <td style="font-size: 0.9em; color: #5f6368;">2026-01-10</td>
@@ -293,7 +289,7 @@
         </tr></tbody></table>
         
         <div class="footer">
-            生成时间: 2026-04-08 11:16:26 | 题目整理工具自动生成
+            生成时间: 2026-04-08 11:24:32 | 题目整理工具自动生成
         </div>
     </div>
 
@@ -320,7 +316,6 @@
             });
         }
         
-        // 备注列显示隐藏开关
         let isRemarkVisible = true;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
@@ -351,7 +346,6 @@
             });
         }
 
-        // 列表表格(杂题/Todo)动态筛选
         function filterListTable(tableId) {
             const tagVal = document.getElementById('filter-tag-' + tableId) ? document.getElementById('filter-tag-' + tableId).value.toLowerCase().trim() : '';
             const searchTerms = tagVal.split(/\s+/).filter(t => t);
@@ -393,7 +387,6 @@
             });
         }
 
-        // 列表表格双向排序
         let sortDirection = {};
         function sortListTable(tableId, col) {
             if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1 };

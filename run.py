@@ -88,7 +88,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .normal-table th {{ background: #f8f9fa; color: #5f6368; font-weight: 600; }}
         .normal-table tr:hover {{ background-color: #fcfcfc; }}
         
-        /* 列表表格列宽控制 */
         .normal-table th:nth-child(1) {{ width: 18%; }}
         .normal-table th:nth-child(2) {{ width: 18%; }}
         .normal-table th:nth-child(3) {{ width: 10%; }}
@@ -118,10 +117,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <h1>{title}</h1>
         {subtitle}
         
-        <div class="stats-bar">
-            <div class="stats-info">{stats_html}</div>
-            {sort_html}
-        </div>
+        {stats_block}
         
         {content_html}
         
@@ -153,7 +149,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
         
-        // 备注列显示隐藏开关
         let isRemarkVisible = true;
         function toggleRemark() {{
             isRemarkVisible = !isRemarkVisible;
@@ -184,7 +179,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
-        // 列表表格(杂题/Todo)动态筛选
         function filterListTable(tableId) {{
             const tagVal = document.getElementById('filter-tag-' + tableId) ? document.getElementById('filter-tag-' + tableId).value.toLowerCase().trim() : '';
             const searchTerms = tagVal.split(/\\s+/).filter(t => t);
@@ -226,7 +220,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
-        // 列表表格双向排序
         let sortDirection = {{}};
         function sortListTable(tableId, col) {{
             if (!sortDirection[tableId]) sortDirection[tableId] = {{ 'diff': 1, 'date': 1 }};
@@ -280,13 +273,13 @@ class ProblemVersion:
 class ProblemGroup:
     def __init__(self, base_name):
         self.base_name = base_name
-        self.category = "杂题"
+        self.category = "Summary"
         self.contest_name = ""
         self.problem_id = ""
         self.link = "#"
         self.tags = []
         self.difficulty = None
-        self.remark = ""    # 新增：备注字段
+        self.remark = ""
         self.has_conf = False
         self.date = "未知"
         self.versions = {}
@@ -381,7 +374,7 @@ def apply_categories_and_links(groups, data_dir):
             try:
                 with open(os.path.join(data_dir, conf_file), 'r', encoding='utf-8') as f:
                     lines = [line.strip() for line in f.readlines()]
-                while len(lines) < 6: lines.append('')  # 扩展至6行，第6行为备注
+                while len(lines) < 6: lines.append('')
                 
                 parts = lines[0].split()
                 if parts:
@@ -393,12 +386,13 @@ def apply_categories_and_links(groups, data_dir):
                         group.difficulty = None
                 
                 cat_conf = lines[1].lower()
-                if cat_conf in ['oi', 'xcpc']: group.category = cat_conf  # 已移除 xcpc+
-                elif cat_conf: group.category = '杂题'
+                if cat_conf == 'oi': group.category = 'OI'
+                elif cat_conf == 'xcpc': group.category = 'XCPC'
+                elif cat_conf: group.category = 'Summary'
                 else:
                     if is_cf: group.category = 'Codeforces'
                     elif is_at: group.category = 'AtCoder'
-                    else: group.category = '杂题'
+                    else: group.category = 'Summary'
                 
                 if lines[2]: group.link = lines[2]
                 else:
@@ -418,7 +412,7 @@ def apply_categories_and_links(groups, data_dir):
                     elif is_at: group.problem_id = m_ac.group(3).upper()
                     else: group.problem_id = ""
                     
-                if lines[5]: group.remark = lines[5]  # 第6行：备注
+                if lines[5]: group.remark = lines[5]
                 
             except Exception as e:
                 pass
@@ -434,7 +428,7 @@ def apply_categories_and_links(groups, data_dir):
                 group.problem_id = m_ac.group(3).upper()
                 group.link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{m_ac.group(3).lower()}"
             else:
-                group.category = '杂题'
+                group.category = 'Summary'
 
 def generate_versions_html(group, rel_path, minimal=False):
     v_htmls = []
@@ -533,6 +527,7 @@ def build_category_page(title, groups_dict, out_path, rel_path):
 
     stats_html = f"<span>📁 题目组数: {total_groups}</span><span>📄 总版本数: {total_versions}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span><span>⚙️ 有配置: {has_conf}</span><span>🏆 比赛数: {len(groups_dict)}</span>"
     sort_html = """<div class="sort-btns"><button onclick="sortContests('count')">按题目数降序</button><button onclick="sortContests('name')">按比赛名字典序</button></div>"""
+    stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div>{sort_html}</div>'
 
     content_html = ""
     if title == 'AtCoder':
@@ -565,7 +560,7 @@ def build_category_page(title, groups_dict, out_path, rel_path):
         content_html = build_matrix_table(groups_dict, rel_path)
 
     html = HTML_TEMPLATE.format(
-        title=title, subtitle="", stats_html=stats_html, sort_html=sort_html, nav_extra="",
+        title=title, subtitle="", stats_block=stats_block, nav_extra="",
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
@@ -579,6 +574,7 @@ def build_list_page(title, all_groups, out_path, rel_path, table_id="list-table"
         if any(v.files['conf'] for v in g.versions.values()): has_conf += 1
 
     stats_html = f"<span>📁 收录组数: {total_groups}</span><span>📄 版本数: {total_versions}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span>"
+    stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div></div>'
     nav_extra = '<button class="toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>'
     
     content_html = f"""
@@ -638,33 +634,35 @@ def build_list_page(title, all_groups, out_path, rel_path, table_id="list-table"
     content_html += "</tbody></table>"
 
     html = HTML_TEMPLATE.format(
-        title=title, subtitle="", stats_html=stats_html, sort_html="", nav_extra=nav_extra,
+        title=title, subtitle="", stats_block=stats_block, nav_extra=nav_extra,
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def build_index_page(categories, zhati_list, todo_list, out_path):
+def build_index_page(categories, summary_list, todo_list, out_path):
     stats = []
+    
+    # 强制将 Summary 放在首位
+    s_count = len(summary_list)
+    stats.append(("Summary", s_count, f"全局题库汇总池，收录并整合共 {s_count} 个题目组", "Summary.html"))
+    
     for cat, data in categories.items():
         c_count = len(data)
         p_count = sum(len(gs) for gs in data.values())
         stats.append((cat, p_count, f"共 {c_count} 场比赛，包含 {p_count} 个题目组", f"{cat}.html"))
     
-    z_count = len(zhati_list)
     t_count = len(todo_list)
-    stats.append(("Todo 待补题", t_count, f"无代码但已记录配置的待完成项目，共 {t_count} 题", "todo.html"))
-    stats.append(("全量杂题", z_count, f"全局题库汇总池，收录并整合共 {z_count} 个题目组", "杂题.html"))
+    stats.append(("Todo", t_count, f"无代码但已记录配置的待完成项目，共 {t_count} 题", "todo.html"))
             
     subtitle_html = """
     <div style="background: #e8f0fe; color: #174ea6; padding: 16px 20px; border-radius: 6px; margin-bottom: 25px; font-size: 0.95em; border: 1px solid #d2e3fc; line-height: 1.8;">
         <strong>📝 新版 .conf 配置文件语法规则（固定 6 行，不需要的信息可直接留空换行）：</strong><br>
         <span style="display:inline-block; width: 65px; font-weight:bold;">第 1 行:</span> 标签/关键词。多个 tag 用空格隔开。如果最后为数字，则自动解析为<strong>难度</strong>数值。<br>
-        <span style="display:inline-block; width: 65px; font-weight:bold;">第 2 行:</span> 比赛分类 (<code>oi</code> / <code>xcpc</code>)。CF/AT 留空会自动归档，其他留空则无所属类别。<br>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 2 行:</span> 比赛分类 (<code>OI</code> / <code>XCPC</code>)。CF/AT 留空会自动归档，其他留空则无所属类别。<br>
         <span style="display:inline-block; width: 65px; font-weight:bold;">第 3 行:</span> 完整 URL 链接。CF/AT 留空自动生成官方链接。<br>
         <span style="display:inline-block; width: 65px; font-weight:bold;">第 4 行:</span> 比赛名称。CF/AT 留空会自动补全。<br>
         <span style="display:inline-block; width: 65px; font-weight:bold;">第 5 行:</span> 题目编号 (如 A, B, C...)。<br>
-        <span style="display:inline-block; width: 65px; font-weight:bold;">第 6 行:</span> <strong>备注/备忘录</strong>（将在杂题或 Todo 表格中独立成列展示）。<br>
-        <div style="margin-top: 8px; color:#d93025; font-weight:bold;">⚠️ 提示：带有 .conf 但本地无对应 .cpp 代码的文件将自动流入 Todo 页面；拥有 .conf 的全部题均会汇入杂题列表。</div>
+        <span style="display:inline-block; width: 65px; font-weight:bold;">第 6 行:</span> <strong>备注/备忘录</strong>（将在 Summary 或 Todo 表格中独立成列展示）。
     </div>
     """
 
@@ -679,7 +677,7 @@ def build_index_page(categories, zhati_list, todo_list, out_path):
     content += "</div>"
 
     html = HTML_TEMPLATE.format(
-        title="首页索引", subtitle=subtitle_html, stats_html="<span>👋 欢迎使用题目自动整理工具</span>", sort_html="", nav_extra="",
+        title="首页索引", subtitle=subtitle_html, stats_block="", nav_extra="",
         content_html=content, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
@@ -701,35 +699,35 @@ def main():
     
     apply_categories_and_links(groups, data_dir)
 
-    # 移除了 xcpc+
     categories = {
         'Codeforces': defaultdict(list), 'AtCoder': defaultdict(list),
-        'oi': defaultdict(list), 'xcpc': defaultdict(list)
+        'OI': defaultdict(list), 'XCPC': defaultdict(list)
     }
     
-    zhati_list = []
+    summary_list = []
     todo_list = []
 
     for g in groups.values():
-        if g.category != '杂题' and g.category in categories:
+        if g.category != 'Summary' and g.category in categories:
             categories[g.category][g.contest_name].append(g)
             
-        if g.has_conf or g.category == '杂题':
-            zhati_list.append(g)
-            
-        # Todo 判断逻辑：有 conf 配置文件，但是此题组下任何版本都没有对应的 cpp 代码文件
         has_any_cpp = any(v.files['cpp'] for v in g.versions.values())
-        if g.has_conf and not has_any_cpp:
+        is_todo = g.has_conf and not has_any_cpp
+        
+        # 精准分流：是 Todo 就不进 Summary，反之流入 Summary
+        if is_todo:
             todo_list.append(g)
+        elif g.has_conf or g.category == 'Summary':
+            summary_list.append(g)
 
     print(f"🛠️ 正在生成 HTML 到 '{out_dir}' (当前目录)...")
     for cat in categories:
         build_category_page(cat, categories[cat], os.path.join(out_dir, f"{cat}.html"), rel_data_path)
         
-    build_list_page('全局杂题列表', zhati_list, os.path.join(out_dir, '杂题.html'), rel_data_path, "zhati-table")
-    build_list_page('Todo 待补题列表', todo_list, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table")
+    build_list_page('Summary', summary_list, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table")
+    build_list_page('Todo', todo_list, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table")
 
-    build_index_page(categories, zhati_list, todo_list, os.path.join(out_dir, "index.html"))
+    build_index_page(categories, summary_list, todo_list, os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
 
 if __name__ == '__main__':
