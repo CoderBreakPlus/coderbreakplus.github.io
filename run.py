@@ -442,15 +442,11 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
 </body>
 </html>
 """
-
 class ProblemVersion:
-    def __init__(self, name):
+    def __init__(self, name, base_filename=""):
         self.name = name
+        self.base_filename = base_filename
         self.files = {'cpp': None, 'md': None, 'conf': None}
-
-class ProblemGroup:
-    def __init__(self, base_name):
-        self.base_name = base_name
         self.category = "Summary"
         self.contest_name = ""
         self.problem_id = ""
@@ -460,12 +456,20 @@ class ProblemGroup:
         self.remark = ""
         self.has_conf = False
         self.date = "未知"
+
+class ProblemGroup:
+    def __init__(self, base_name):
+        self.base_name = base_name
+        self.category = "Summary"
+        self.contest_name = ""
+        self.base_pid = ""
+        self.has_conf = False
         self.versions = {}
         self.version_order = ['Normal', 'Easy', 'Hard']
 
-    def add_file(self, version, ext, filename):
+    def add_file(self, version, ext, filename, base_filename):
         if version not in self.versions:
-            self.versions[version] = ProblemVersion(version)
+            self.versions[version] = ProblemVersion(version, base_filename)
         if ext == '.cpp': self.versions[version].files['cpp'] = filename
         elif ext == '.md': self.versions[version].files['md'] = filename
         elif ext == '.conf': self.versions[version].files['conf'] = filename
@@ -478,8 +482,7 @@ def scan_and_group_files(data_dir):
             if f.endswith('.conf'): conf_bases.add(f[:-5])
 
     for f in os.listdir(data_dir):
-        if not os.path.isfile(os.path.join(data_dir, f)):
-            continue
+        if not os.path.isfile(os.path.join(data_dir, f)): continue
         name, ext = os.path.splitext(f)
         if ext not in ['.cpp', '.md', '.conf']: continue
             
@@ -516,14 +519,26 @@ def scan_and_group_files(data_dir):
 
         if base_name not in groups:
             groups[base_name] = ProblemGroup(base_name)
-        groups[base_name].add_file(version, ext, f)
+        groups[base_name].add_file(version, ext, f, name)
         
     return groups
 
 def apply_categories_and_links(groups, data_dir):
     for group in groups.values():
-        group.date = "未知"
-        for v in group.versions.values():
+        m_cf = re.match(r'^cf(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
+        m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
+        is_cf, is_at = bool(m_cf), bool(m_ac)
+
+        if is_cf:
+            group.category = 'Codeforces'
+            group.contest_name = f"Codeforces Round {m_cf.group(1)}"
+            group.base_pid = m_cf.group(2).upper()
+        elif is_at:
+            group.category = 'AtCoder'
+            group.contest_name = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
+            group.base_pid = m_ac.group(3).upper()
+
+        for v_name, v in group.versions.items():
             if v.files.get('cpp'):
                 fp = os.path.join(data_dir, v.files['cpp'])
                 if os.path.exists(fp):
@@ -531,125 +546,83 @@ def apply_categories_and_links(groups, data_dir):
                         with open(fp, 'r', encoding='utf-8') as f:
                             first_line = f.readline()
                             m = re.search(r'//\s*created time:\s*(\d{4}-\d{2}-\d{2})', first_line, re.IGNORECASE)
-                            if m:
-                                group.date = m.group(1)
-                                break
-                    except Exception:
-                        pass
+                            if m: v.date = m.group(1)
+                    except Exception: pass
 
-        m_cf = re.match(r'^cf(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
-        m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
-        is_cf, is_at = bool(m_cf), bool(m_ac)
+            suffix = "1" if v_name == 'Easy' else ("2" if v_name == 'Hard' else "")
+            default_pid = group.base_pid + suffix if group.base_pid else ""
+            v.problem_id = default_pid
+            v.contest_name = group.contest_name
+            v.category = group.category
 
-        conf_file = None
+            if v.files.get('conf'):
+                v.has_conf = True
+                group.has_conf = True
+                try:
+                    with open(os.path.join(data_dir, v.files['conf']), 'r', encoding='utf-8') as f:
+                        lines = [line.strip() for line in f.readlines()]
+                    while len(lines) < 6: lines.append('')
+                    
+                    parts = lines[0].split()
+                    if parts:
+                        try:
+                            v.difficulty = float(parts[-1])
+                            v.tags = parts[:-1]
+                        except ValueError:
+                            v.tags = parts
+                            v.difficulty = None
+                    
+                    cat_conf = lines[1].lower()
+                    if cat_conf == 'oi': v.category = 'OI'
+                    elif cat_conf == 'xcpc': v.category = 'XCPC'
+                    elif cat_conf: v.category = 'Summary'
+                    
+                    if lines[2]: v.link = lines[2]
+                    else:
+                        if is_cf: v.link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{v.problem_id}"
+                        elif is_at: v.link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{v.problem_id.lower()}"
+                    
+                    if lines[3]: v.contest_name = lines[3]
+                    if lines[4]: 
+                        v.problem_id = lines[4]
+                        if not group.base_pid: group.base_pid = re.sub(r'1|2|E1|E2$', '', lines[4], flags=re.IGNORECASE)
+                    if lines[5]: v.remark = lines[5]
+                except Exception: pass
+            else:
+                if is_cf: v.link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{v.problem_id}"
+                elif is_at: v.link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{v.problem_id.lower()}"
+
         for v in group.versions.values():
-            if v.files['conf']:
-                conf_file = v.files['conf']
-                break
+            if v.category != 'Summary': group.category = v.category
+            if v.contest_name: group.contest_name = v.contest_name
 
-        if conf_file:
-            group.has_conf = True
-            try:
-                with open(os.path.join(data_dir, conf_file), 'r', encoding='utf-8') as f:
-                    lines = [line.strip() for line in f.readlines()]
-                while len(lines) < 6: lines.append('')
-                
-                parts = lines[0].split()
-                if parts:
-                    try:
-                        group.difficulty = float(parts[-1])
-                        group.tags = parts[:-1]
-                    except ValueError:
-                        group.tags = parts
-                        group.difficulty = None
-                
-                cat_conf = lines[1].lower()
-                if cat_conf == 'oi': group.category = 'OI'
-                elif cat_conf == 'xcpc': group.category = 'XCPC'
-                elif cat_conf: group.category = 'Summary'
-                else:
-                    if is_cf: group.category = 'Codeforces'
-                    elif is_at: group.category = 'AtCoder'
-                    else: group.category = 'Summary'
-                
-                if lines[2]: group.link = lines[2]
-                else:
-                    if is_cf: group.link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{m_cf.group(2).upper()}"
-                    elif is_at: group.link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{m_ac.group(3).lower()}"
-                    else: group.link = '#'
-                
-                if lines[3]: group.contest_name = lines[3]
-                else:
-                    if is_cf: group.contest_name = f"Codeforces Round {m_cf.group(1)}"
-                    elif is_at: group.contest_name = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
-                    else: group.contest_name = ""
-                    
-                if lines[4]: group.problem_id = lines[4]
-                else:
-                    if is_cf: group.problem_id = m_cf.group(2).upper()
-                    elif is_at: group.problem_id = m_ac.group(3).upper()
-                    else: group.problem_id = ""
-                    
-                if lines[5]: group.remark = lines[5]
-                
-            except Exception as e:
-                pass
-        else:
-            if is_cf:
-                group.category = 'Codeforces'
-                group.contest_name = f"Codeforces Round {m_cf.group(1)}"
-                group.problem_id = m_cf.group(2).upper()
-                group.link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{m_cf.group(2).upper()}"
-            elif is_at:
-                group.category = 'AtCoder'
-                group.contest_name = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
-                group.problem_id = m_ac.group(3).upper()
-                group.link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{m_ac.group(3).lower()}"
-            else:
-                group.category = 'Summary'
-
-def generate_versions_html(group, rel_path, minimal=False):
-    v_htmls = []
-    has_multiple = len(group.versions) > 1
+def render_single_version(v, rel_path):
+    display_pid = v.problem_id if v.problem_id else v.base_filename
+    link_html = f'<a href="{v.link}" target="_blank">{display_pid}</a>' if v.link != '#' else f'<span>{display_pid}</span>'
+    diff_html = ""
+    if v.difficulty is not None:
+        style = get_diff_style(v.difficulty)
+        diff_html = f'<span class="diff-indicator" title="难度: {v.difficulty}"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
     
-    for v_name in group.version_order:
-        if v_name in group.versions:
-            v = group.versions[v_name]
-            tag = ""
-            if minimal:
-                if has_multiple:
-                    if v_name == 'Easy': tag = '<span class="mini-tag mini-tag-easy">E</span>'
-                    elif v_name == 'Hard': tag = '<span class="mini-tag mini-tag-hard">H</span>'
-                links = []
-                if v.files['cpp']: links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="mini-file-link" title="代码" style="text-decoration:none;">📝</a>')
-                if v.files['md']: 
-                    md_href = v.files['md'][:-3] if v.files['md'].endswith('.md') else v.files['md']
-                    links.append(f'<a href="{rel_path}/{md_href}" class="mini-file-link" title="题解" style="text-decoration:none;">💡</a>')
-                if v.files['conf']: links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="mini-file-link" title="配置" style="text-decoration:none;">⚙️</a>')
-                
-                v_htmls.append(f'<div class="mini-version-row">{tag}<span style="white-space: nowrap; display: inline-flex; gap: 4px;">{"".join(links)}</span></div>')
-            else:
-                if has_multiple:
-                    if v_name == 'Easy': tag = '<span class="tag-pill" style="background:#dcfce7; color:#166534; border-color:#bbf7d0;">E</span>'
-                    elif v_name == 'Hard': tag = '<span class="tag-pill" style="background:#fee2e2; color:#991b1b; border-color:#fecaca;">H</span>'
-                    else: tag = '<span class="tag-pill">N</span>'
-                links = []
-                if v.files['cpp']: links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
-                if v.files['md']: 
-                    md_href = v.files['md'][:-3] if v.files['md'].endswith('.md') else v.files['md']
-                    links.append(f'<a href="{rel_path}/{md_href}" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
-                if v.files['conf']: links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
-                
-                v_htmls.append(f'<div class="version-row" style="flex-wrap: nowrap;">{tag}<span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>')
-    return "".join(v_htmls)
+    links = []
+    if v.files.get('cpp'): links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
+    if v.files.get('md'): 
+        md_href = v.files['md'][:-3] if v.files['md'].endswith('.md') else v.files['md']
+        links.append(f'<a href="{rel_path}/{md_href}" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
+    if v.files.get('conf'): links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
+    
+    return f"""
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap">{link_html}{diff_html}</div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>
+    </div>"""
 
 def build_matrix_table(groups_dict, rel_path):
     if not groups_dict: return ""
-    
     all_pids = set()
     for c_groups in groups_dict.values():
         for g in c_groups:
-            all_pids.add(g.problem_id.strip() if g.problem_id else "未知")
+            all_pids.add(g.base_pid if g.base_pid else "未知")
             
     def alnum_key(s): return [int(c) if c.isdigit() else c.lower() for c in re.split('([0-9]+)', s)]
     sorted_pids = sorted(list(all_pids), key=lambda x: ([float('inf')] if x == '未知' else alnum_key(x)))
@@ -663,7 +636,7 @@ def build_matrix_table(groups_dict, rel_path):
     for contest, c_groups in sorted_contests:
         pid_map = defaultdict(list)
         for g in c_groups:
-            pid_map[g.problem_id.strip() if g.problem_id else "未知"].append(g)
+            pid_map[g.base_pid if g.base_pid else "未知"].append(g)
         
         html += f'<tr data-name="{contest}" data-count="{len(c_groups)}">'
         display_contest = contest if contest else "无名比赛"
@@ -673,37 +646,32 @@ def build_matrix_table(groups_dict, rel_path):
             html += '<td>'
             if pid in pid_map:
                 for g in sorted(pid_map[pid], key=lambda x: x.base_name):
-                    v_html = generate_versions_html(g, rel_path, minimal=True)
-                    display_pid = pid if pid != "未知" else g.base_name
-                    link_html = f'<a href="{g.link}" target="_blank">{display_pid}</a>' if g.link != '#' else f'<span>{display_pid}</span>'
-                    
-                    diff_html = ""
-                    if g.difficulty is not None:
-                        style = get_diff_style(g.difficulty)
-                        diff_html = f'<span class="diff-indicator" title="难度: {g.difficulty}"><span class="diff-circle" style="{style}"></span> {int(g.difficulty) if g.difficulty.is_integer() else g.difficulty}</span>'
-                    
-                    html += f"""
-                    <div class="prob-cell" style="margin-bottom:8px;">
-                        <div class="prob-link-wrap">{link_html}{diff_html}</div>
-                        {v_html}
-                    </div>"""
+                    if 'Normal' in g.versions and len(g.versions) == 1:
+                        html += render_single_version(g.versions['Normal'], rel_path)
+                    else:
+                        html += '<div style="display: flex; gap: 4px; justify-content: center; width: 100%;">'
+                        for v_name in ['Easy', 'Hard']:
+                            if v_name in g.versions:
+                                border = 'border-right: 1px dashed #cbd5e1; padding-right: 4px;' if v_name == 'Easy' and 'Hard' in g.versions else ''
+                                html += f'<div style="flex: 1; {border}">'
+                                html += render_single_version(g.versions[v_name], rel_path)
+                                html += '</div>'
+                        html += '</div>'
             html += '</td>'
         html += '</tr>'
     html += '</tbody></table></div>'
     return html
 
 def build_category_page(title, groups_dict, out_path, rel_path):
-    all_groups = []
-    for gs in groups_dict.values(): all_groups.extend(gs)
+    all_versions = []
+    for gs in groups_dict.values():
+        for g in gs: all_versions.extend(g.versions.values())
                 
-    total_groups, total_versions, has_cpp, has_md, has_conf = len(all_groups), 0, 0, 0, 0
-    for g in all_groups:
-        total_versions += len(g.versions)
-        if any(v.files['cpp'] for v in g.versions.values()): has_cpp += 1
-        if any(v.files['md'] for v in g.versions.values()): has_md += 1
-        if any(v.files['conf'] for v in g.versions.values()): has_conf += 1
+    has_cpp = sum(1 for v in all_versions if v.files.get('cpp'))
+    has_md = sum(1 for v in all_versions if v.files.get('md'))
+    has_conf = sum(1 for v in all_versions if v.files.get('conf'))
 
-    stats_html = f"<span>📁 题目组数: {total_groups}</span><span>📄 总版本数: {total_versions}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span><span>🏆 比赛数: {len(groups_dict)}</span>"
+    stats_html = f"<span>📁 独立题目: {len(all_versions)}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span><span>⚙️ 有配置: {has_conf}</span><span>🏆 比赛数: {len(groups_dict)}</span>"
     sort_html = """<div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button><button class="btn" onclick="sortContests('name')">按比赛名字典序</button></div>"""
     stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div>{sort_html}</div>'
 
@@ -727,7 +695,7 @@ def build_category_page(title, groups_dict, out_path, rel_path):
             
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
-            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name}</h2>"
+            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name} 模块</h2>"
             tables_html += build_matrix_table(sub_cats[sc_name], rel_path)
             tables_html += '</div>'
             first = False
@@ -743,15 +711,11 @@ def build_category_page(title, groups_dict, out_path, rel_path):
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def build_list_page(title, all_groups, out_path, rel_path, table_id="list-table"):
-    total_groups, total_versions, has_cpp, has_md, has_conf = len(all_groups), 0, 0, 0, 0
-    for g in all_groups:
-        total_versions += len(g.versions)
-        if any(v.files['cpp'] for v in g.versions.values()): has_cpp += 1
-        if any(v.files['md'] for v in g.versions.values()): has_md += 1
-        if any(v.files['conf'] for v in g.versions.values()): has_conf += 1
+def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table"):
+    has_cpp = sum(1 for v in all_versions if v.files.get('cpp'))
+    has_md = sum(1 for v in all_versions if v.files.get('md'))
 
-    stats_html = f"<span>📁 收录组数: {total_groups}</span><span>📄 版本数: {total_versions}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span>"
+    stats_html = f"<span>📁 独立题目: {len(all_versions)}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span>"
     stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div></div>'
     nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>'
     
@@ -786,27 +750,35 @@ def build_list_page(title, all_groups, out_path, rel_path, table_id="list-table"
             <tbody>
     """
     
-    for g in sorted(all_groups, key=lambda x: (x.date != "未知", x.date), reverse=True): 
-        v_html = generate_versions_html(g, rel_path, minimal=False)
-        origin = f"{g.category} - {g.contest_name}" if g.contest_name else g.category
+    for v in sorted(all_versions, key=lambda x: (x.date != "未知", x.date), reverse=True): 
+        origin = f"{v.category} - {v.contest_name}" if v.contest_name else v.category
         
-        name_html = f'<a href="{g.link}" target="_blank" style="color:var(--primary); text-decoration:none;"><b>{g.base_name}</b></a>' if g.link != '#' else f'<b>{g.base_name}</b>'
-        tags_str = " ".join(g.tags) if g.tags else ""
-        tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in g.tags])
-        diff_val = g.difficulty if g.difficulty is not None else 'None'
+        display_name = v.problem_id if v.problem_id else v.base_filename
+        name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); text-decoration:none;"><b>{display_name}</b></a>' if v.link != '#' else f'<b>{display_name}</b>'
+        tags_str = " ".join(v.tags) if v.tags else ""
+        tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in v.tags])
+        diff_val = v.difficulty if v.difficulty is not None else 'None'
         diff_html = "-"
-        remark_text = g.remark if g.remark else "-"
+        remark_text = v.remark if v.remark else "-"
         
-        if g.difficulty is not None:
-            style = get_diff_style(g.difficulty)
-            diff_html = f'<span class="diff-indicator" title="难度: {g.difficulty}"><span class="diff-circle" style="{style}"></span> {int(g.difficulty) if g.difficulty.is_integer() else g.difficulty}</span>'
+        if v.difficulty is not None:
+            style = get_diff_style(v.difficulty)
+            diff_html = f'<span class="diff-indicator" title="难度: {v.difficulty}"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
+        
+        links = []
+        if v.files.get('cpp'): links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
+        if v.files.get('md'): 
+            md_href = v.files['md'][:-3] if v.files['md'].endswith('.md') else v.files['md']
+            links.append(f'<a href="{rel_path}/{md_href}" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
+        if v.files.get('conf'): links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
+        v_html = f'<div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>'
         
         content_html += f"""
-        <tr data-tags="{tags_str}" data-diff="{diff_val}" data-date="{g.date}">
+        <tr data-tags="{tags_str}" data-diff="{diff_val}" data-date="{v.date}">
             <td style="padding-left: 20px;">{name_html}<br><span style="font-size:0.85em; color:var(--text-muted);">{origin}</span></td>
             <td>{tags_html}</td>
             <td>{diff_html}</td>
-            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">{g.date}</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">{v.date}</td>
             <td class="remark-col">{remark_text}</td>
             <td>{v_html}</td>
         </tr>"""
@@ -819,20 +791,20 @@ def build_list_page(title, all_groups, out_path, rel_path, table_id="list-table"
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def build_index_page(categories, summary_list, todo_list, out_path):
-    s_count = len(summary_list)
-    t_count = len(todo_list)
+def build_index_page(categories, summary_versions, todo_versions, out_path):
+    s_count = len(summary_versions)
+    t_count = len(todo_versions)
     
-    oi_p = sum(len(gs) for gs in categories.get('OI', {}).values())
+    oi_p = sum(len(g.versions) for gs in categories.get('OI', {}).values() for g in gs)
     oi_c = len(categories.get('OI', {}))
     
-    xcpc_p = sum(len(gs) for gs in categories.get('XCPC', {}).values())
+    xcpc_p = sum(len(g.versions) for gs in categories.get('XCPC', {}).values() for g in gs)
     xcpc_c = len(categories.get('XCPC', {}))
     
-    cf_p = sum(len(gs) for gs in categories.get('Codeforces', {}).values())
+    cf_p = sum(len(g.versions) for gs in categories.get('Codeforces', {}).values() for g in gs)
     cf_c = len(categories.get('Codeforces', {}))
     
-    at_p = sum(len(gs) for gs in categories.get('AtCoder', {}).values())
+    at_p = sum(len(g.versions) for gs in categories.get('AtCoder', {}).values() for g in gs)
     at_c = len(categories.get('AtCoder', {}))
 
     html = INDEX_HTML_TEMPLATE.format(
@@ -867,29 +839,28 @@ def main():
         'OI': defaultdict(list), 'XCPC': defaultdict(list)
     }
     
-    summary_list = []
-    todo_list = []
+    summary_versions = []
+    todo_versions = []
 
     for g in groups.values():
         if g.category != 'Summary' and g.category in categories:
             categories[g.category][g.contest_name].append(g)
             
-        has_any_cpp = any(v.files['cpp'] for v in g.versions.values())
-        is_todo = g.has_conf and not has_any_cpp
-        
-        if is_todo:
-            todo_list.append(g)
-        elif g.has_conf or g.category == 'Summary':
-            summary_list.append(g)
+        for v in g.versions.values():
+            is_todo = v.has_conf and not v.files.get('cpp')
+            if is_todo:
+                todo_versions.append(v)
+            elif v.has_conf or v.category == 'Summary':
+                summary_versions.append(v)
 
     print(f"🛠️ 正在生成 HTML 到 '{out_dir}' (当前目录)...")
     for cat in categories:
         build_category_page(cat, categories[cat], os.path.join(out_dir, f"{cat}.html"), rel_data_path)
         
-    build_list_page('Summary', summary_list, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table")
-    build_list_page('Todo', todo_list, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table")
+    build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table")
+    build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table")
 
-    build_index_page(categories, summary_list, todo_list, os.path.join(out_dir, "index.html"))
+    build_index_page(categories, summary_versions, todo_versions, os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
 
 if __name__ == '__main__':
