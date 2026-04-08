@@ -727,7 +727,7 @@ def build_category_page(title, groups_dict, out_path, rel_path):
             
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
-            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name} 模块</h2>"
+            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name}</h2>"
             tables_html += build_matrix_table(sub_cats[sc_name], rel_path)
             tables_html += '</div>'
             first = False
