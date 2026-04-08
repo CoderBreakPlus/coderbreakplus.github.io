@@ -24,7 +24,7 @@ def get_diff_style(diff):
     return f'background: linear-gradient(to top, {color} {ratio}%, transparent {ratio}%); border: 1px solid {color}; border-radius: 50%;'
 
 # =======================
-#   内部子页面 HTML & CSS 模板
+#   内部子页面 HTML & CSS 模板 (已适配现代 Dashboard 风格)
 # =======================
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -33,84 +33,104 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title} - 题目整理</title>
     <style>
-        :root {{ --primary: #1a73e8; --bg: #f4f5f7; --text: #333; --border: #e0e0e0; }}
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; overflow-x: hidden; }}
-        .container {{ width: 100%; max-width: 1400px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; }}
-        h1, h2, h3 {{ color: #202124; margin-bottom: 10px; }}
+        :root {{ 
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --bg: #f4f5f8; 
+            --text-main: #1e293b; 
+            --text-muted: #64748b;
+            --border: #e2e8f0; 
+            --panel-bg: #f8fafc;
+        }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }}
         
-        .nav-bar {{ margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }}
-        .nav-bar a {{ color: var(--primary); text-decoration: none; font-weight: 500; }}
-        .nav-bar a:hover {{ text-decoration: underline; }}
+        .container {{ width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }}
+        h1 {{ color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }}
+        h2 {{ color: #0f172a; font-weight: 700; margin-bottom: 12px; }}
         
-        .toggle-diff-btn {{ margin-left: auto; background: #fff; border: 1px solid #d2e3fc; padding: 6px 12px; border-radius: 4px; cursor: pointer; color: #1a73e8; font-size: 0.9em; transition: 0.2s; font-weight: bold; }}
-        .toggle-diff-btn:hover {{ background: #f8f9fa; }}
+        /* Nav Bar */
+        .nav-bar {{ margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }}
+        .nav-bar a {{ color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s; }}
+        .nav-bar a:hover {{ color: var(--primary-hover); text-decoration: underline; }}
         
-        .toggle-remark-btn {{ background: #fff; border: 1px solid #ceead6; padding: 6px 12px; border-radius: 4px; cursor: pointer; color: #188038; font-size: 0.9em; transition: 0.2s; font-weight: bold; margin-left: 10px; }}
-        .toggle-remark-btn:hover {{ background: #f8f9fa; }}
+        /* Buttons */
+        .btn {{ background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }}
+        .btn:hover {{ background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
         
-        .stats-bar {{ display: flex; justify-content: space-between; align-items: center; background: #e8f0fe; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }}
-        .stats-info span {{ margin-right: 15px; font-size: 0.95em; color: #174ea6; font-weight: 500; display: inline-block; }}
-        .sort-btns button {{ background: #fff; border: 1px solid #d2e3fc; color: #1a73e8; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin-left: 5px; }}
-        .sort-btns button:hover {{ background: #f1f3f4; }}
+        .toggle-diff-btn {{ margin-left: auto; color: var(--primary); border-color: #bfdbfe; }}
+        .toggle-diff-btn:hover {{ background: #eff6ff; }}
+        .toggle-remark-btn {{ color: #059669; border-color: #a7f3d0; margin-left: 10px; }}
+        .toggle-remark-btn:hover {{ background: #ecfdf5; }}
+        
+        /* Toolbars */
+        .stats-bar {{ display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }}
+        .stats-info span {{ margin-right: 18px; font-size: 0.95em; color: #334155; font-weight: 600; display: inline-block; }}
+        .sort-btns button {{ margin-left: 8px; color: var(--primary); }}
 
-        table {{ width: 100%; border-collapse: collapse; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }}
-        th, td {{ padding: 10px; box-sizing: border-box; }}
+        /* Tables */
+        table {{ width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }}
+        th, td {{ padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }}
         
-        .matrix-table {{ background: #fff; border-radius: 8px; margin-bottom: 20px; }}
-        .matrix-table thead {{ background: #f8f9fa; }}
-        .matrix-table th {{ border-bottom: 2px solid var(--border); color: #5f6368; font-weight: 600; text-align: center; }}
-        .matrix-table td {{ border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: center; vertical-align: middle; }}
+        .matrix-table, .normal-table {{ background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }}
+        thead {{ background: var(--panel-bg); }}
+        th {{ color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }}
+        td {{ border-bottom: 1px solid #f1f5f9; }}
+        tbody tr:last-child td {{ border-bottom: none; }}
+        tbody tr:hover td {{ background-color: #f8fafc; }}
+        
+        /* Matrix specific */
+        .matrix-table th {{ text-align: center; border-right: 1px solid var(--border); }}
+        .matrix-table th:last-child {{ border-right: none; }}
+        .matrix-table td {{ text-align: center; border-right: 1px solid #f1f5f9; }}
         .matrix-table td:last-child {{ border-right: none; }}
-        .matrix-table tbody tr:hover {{ background-color: #fcfcfc; }}
-        .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #333; }}
+        .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
         
-        .prob-cell {{ display: flex; flex-direction: column; align-items: center; gap: 6px; justify-content: center; }}
-        .prob-link-wrap {{ font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f3f4; padding: 4px 10px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; text-align: center; }}
-        .prob-link-wrap a {{ color: var(--primary); text-decoration: none; font-weight: bold; }}
+        /* List specific */
+        .normal-table th:nth-child(1) {{ width: 18%; }}
+        .normal-table th:nth-child(2) {{ width: 18%; }}
+        .normal-table th:nth-child(3) {{ width: 10%; }}
+        .normal-table th:nth-child(4) {{ width: 12%; }}
+        .normal-table th.remark-col {{ width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }}
+        .normal-table th:last-child {{ width: 20%; }}
+        .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; }}
+        
+        /* Cells and Links */
+        .prob-cell {{ display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }}
+        .prob-link-wrap {{ font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }}
+        .prob-link-wrap a {{ color: var(--primary); text-decoration: none; font-weight: 700; }}
         .prob-link-wrap a:hover {{ text-decoration: underline; }}
         
         .diff-indicator {{ display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }}
         .diff-circle {{ width: 12px; height: 12px; display: inline-block; }}
 
+        /* File links & Tags */
         .mini-version-row {{ display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }}
-        .mini-tag {{ font-size: 0.7em; padding: 2px 4px; border-radius: 3px; font-weight: bold; line-height: 1; }}
-        .mini-tag-easy {{ background: #e6f4ea; color: #1e8e3e; }}
-        .mini-tag-hard {{ background: #fce8e6; color: #d93025; }}
-        .mini-file-link {{ text-decoration: none; display: inline-block; transition: 0.2s; }}
-        .mini-file-link:hover {{ transform: scale(1.1); }}
-        
-        .list-filter-bar {{ background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); align-items: center; }}
-        .list-filter-bar input {{ padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }}
-        .list-filter-bar input:focus {{ border-color: #1a73e8; }}
-        
-        .normal-table {{ margin-bottom: 30px; }}
-        .normal-table th, .normal-table td {{ border: 1px solid var(--border); text-align: left; vertical-align: middle; }}
-        .normal-table th {{ background: #f8f9fa; color: #5f6368; font-weight: 600; }}
-        .normal-table tr:hover {{ background-color: #fcfcfc; }}
-        
-        .normal-table th:nth-child(1) {{ width: 18%; }}
-        .normal-table th:nth-child(2) {{ width: 18%; }}
-        .normal-table th:nth-child(3) {{ width: 10%; }}
-        .normal-table th:nth-child(4) {{ width: 12%; }}
-        .normal-table th.remark-col {{ width: 22%; color: #888; font-weight: normal; font-size: 0.9em; }}
-        .normal-table th:last-child {{ width: 20%; }}
-        .normal-table td.remark-col {{ color: #666; font-size: 0.9em; background: #fafafa; }}
+        .mini-tag {{ font-size: 0.7em; padding: 2px 5px; border-radius: 4px; font-weight: bold; line-height: 1; }}
+        .mini-tag-easy {{ background: #dcfce7; color: #166534; }}
+        .mini-tag-hard {{ background: #fee2e2; color: #991b1b; }}
+        .mini-file-link {{ text-decoration: none; display: inline-block; transition: transform 0.2s; }}
+        .mini-file-link:hover {{ transform: scale(1.15); }}
         
         .version-row {{ margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }}
-        .file-link {{ color: var(--primary); text-decoration: none; font-size: 1.1em; white-space: nowrap; transition: 0.2s; }}
+        .file-link {{ color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }}
         .file-link:hover {{ transform: scale(1.1); }}
-        .tag-pill {{ background: #f1f3f4; color: #5f6368; font-size: 0.85em; padding: 2px 8px; border-radius: 12px; display: inline-block; margin: 2px; }}
+        .tag-pill {{ background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; }}
 
-        .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #80868b; font-size: 0.85em; }}
+        /* Filter Bar */
+        .list-filter-bar {{ background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }}
+        .list-filter-bar input {{ padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.95em; transition: border-color 0.2s; color: var(--text-main); }}
+        .list-filter-bar input:focus {{ border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }}
+        
+        .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="nav-bar">
-            <a href="index.html">🏠 返回首页</a>
-            <span style="color:#aaa;">|</span>
-            <span style="font-size: 0.9em; color: #666;">全动态自适应表格</span>
-            <button class="toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
+            <a href="index.html">🏠 Dashboard</a>
+            <span style="color:#cbd5e1;">|</span>
+            <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
+            <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
             {nav_extra}
         </div>
         
@@ -120,7 +140,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         {content_html}
         
         <div class="footer">
-            生成时间: {gen_time} | 题目整理工具自动生成
+            最后构建: {gen_time} | Algorithm Platform Generator
         </div>
     </div>
 
@@ -132,14 +152,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             
             if (isDiffVisible) {{
                 btn.innerHTML = '🌕 隐藏难度';
-                btn.style.color = '#1a73e8';
-                btn.style.borderColor = '#d2e3fc';
+                btn.style.color = 'var(--primary)';
+                btn.style.borderColor = '#bfdbfe';
                 btn.style.background = '#fff';
             }} else {{
                 btn.innerHTML = '🌑 显示难度';
-                btn.style.color = '#5f6368';
-                btn.style.borderColor = '#dadce0';
-                btn.style.background = '#f1f3f4';
+                btn.style.color = '#475569';
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = '#f8fafc';
             }}
             
             document.querySelectorAll('.diff-indicator').forEach(el => {{
@@ -156,7 +176,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const btn = document.querySelector('.toggle-remark-btn');
             if (btn) {{
                 btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
-                btn.style.color = isRemarkVisible ? '#188038' : '#5f6368';
+                btn.style.color = isRemarkVisible ? '#059669' : '#475569';
+                btn.style.borderColor = isRemarkVisible ? '#a7f3d0' : '#e2e8f0';
+                btn.style.background = isRemarkVisible ? '#fff' : '#f8fafc';
             }}
         }}
 
@@ -252,11 +274,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             document.getElementById(targetId).style.display = 'block';
             
             document.querySelectorAll('.atcoder-tab-btn').forEach(el => {{
-                el.style.background = '#f1f3f4';
-                el.style.color = '#333';
+                el.style.background = '#fff';
+                el.style.color = '#334155';
+                el.style.borderColor = '#e2e8f0';
             }});
-            btn.style.background = '#1a73e8';
+            btn.style.background = 'var(--primary)';
             btn.style.color = '#fff';
+            btn.style.borderColor = 'var(--primary)';
         }}
     </script>
 </body>
@@ -264,7 +288,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 """
 
 # =======================
-#   仪表盘专属首页模板 (新UI)
+#   仪表盘专属首页模板 (纯净版卡片UI)
 # =======================
 INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -287,7 +311,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         @media (max-width: 768px) {{ .dashboard-grid {{ grid-template-columns: 1fr; }} }}
         
         /* Card Styling */
-        .card {{ background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; text-decoration: none; color: inherit; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }}
+        .card {{ background: #fff; border-radius: 16px; padding: 24px; padding-bottom: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; text-decoration: none; color: inherit; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }}
         .card:hover {{ transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: #cbd5e1; }}
         
         /* Color Accents (Top Border) */
@@ -300,19 +324,17 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         .card-at::before {{ background: linear-gradient(90deg, #1e293b, #475569); }}
         
         /* Card Content */
-        .card-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }}
+        .card-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }}
         .card-title {{ font-size: 1.4em; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }}
-        .card-badge {{ font-size: 0.75em; padding: 4px 8px; border-radius: 6px; font-weight: 600; text-transform: uppercase; }}
+        .card-badge {{ font-size: 0.8em; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
         
-        .card-stats {{ display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }}
-        .stat-number {{ font-size: 2.8em; font-weight: 800; line-height: 1; }}
-        .stat-label {{ color: var(--text-muted); font-size: 0.95em; font-weight: 500; }}
-        
-        .card-desc {{ color: var(--text-muted); font-size: 0.95em; margin: 0; }}
+        .card-stats {{ display: flex; align-items: baseline; gap: 8px; margin-bottom: 0; }}
+        .stat-number {{ font-size: 3.2em; font-weight: 800; line-height: 1; }}
+        .stat-label {{ color: var(--text-muted); font-size: 1.05em; font-weight: 500; }}
         
         /* Settings Info Box */
         .syntax-guide {{ background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }}
-        .syntax-guide h3 {{ margin-top: 0; margin-bottom: 15px; color: #0f172a; display: flex; align-items: center; gap: 8px; }}
+        .syntax-guide h3 {{ margin-top: 0; margin-bottom: 15px; color: #0f172a; display: flex; align-items: center; gap: 8px; font-weight: 700; }}
         .syntax-code {{ display: grid; gap: 10px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #f1f5f9; overflow-x: auto; }}
         .line-def {{ display: flex; gap: 16px; }}
         .line-num {{ color: #94a3b8; user-select: none; width: 20px; text-align: right; font-weight: bold; }}
@@ -340,7 +362,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     <span class="stat-number">{s_count}</span>
                     <span class="stat-label">个题目组</span>
                 </div>
-                <p class="card-desc">全局题库汇总池，支持按标签、难度、日期多维检索</p>
             </a>
             
             <a href="todo.html" class="card card-todo">
@@ -352,57 +373,52 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     <span class="stat-number">{t_count}</span>
                     <span class="stat-label">道待补题</span>
                 </div>
-                <p class="card-desc">无代码但已记录配置的待完成题目备忘录</p>
             </a>
             
             <!-- Row 2: Chinese Contests -->
             <a href="OI.html" class="card card-oi">
                 <div class="card-header">
                     <h2 class="card-title"><span>🏅</span> OI</h2>
-                    <span class="card-badge" style="color: #2563eb; background: #dbeafe;">{oi_c} Contests</span>
+                    <span class="card-badge" style="color: #2563eb; background: #dbeafe;">{oi_c}</span>
                 </div>
                 <div class="card-stats">
                     <span class="stat-number">{oi_p}</span>
                     <span class="stat-label">题归档</span>
                 </div>
-                <p class="card-desc">国内信息学奥赛题目收集与题解归档</p>
             </a>
             
             <a href="XCPC.html" class="card card-xcpc">
                 <div class="card-header">
                     <h2 class="card-title"><span>🏆</span> XCPC</h2>
-                    <span class="card-badge" style="color: #059669; background: #d1fae5;">{xcpc_c} Contests</span>
+                    <span class="card-badge" style="color: #059669; background: #d1fae5;">{xcpc_c}</span>
                 </div>
                 <div class="card-stats">
                     <span class="stat-number">{xcpc_p}</span>
                     <span class="stat-label">题归档</span>
                 </div>
-                <p class="card-desc">ICPC / CCPC 等大学生程序设计竞赛题目</p>
             </a>
             
             <!-- Row 3: Online Judges -->
             <a href="Codeforces.html" class="card card-cf">
                 <div class="card-header">
                     <h2 class="card-title"><span>⚡</span> Codeforces</h2>
-                    <span class="card-badge" style="color: #dc2626; background: #fee2e2;">{cf_c} Rounds</span>
+                    <span class="card-badge" style="color: #dc2626; background: #fee2e2;">{cf_c}</span>
                 </div>
                 <div class="card-stats">
                     <span class="stat-number">{cf_p}</span>
                     <span class="stat-label">题归档</span>
                 </div>
-                <p class="card-desc">Codeforces 平台日常练习及比赛记录</p>
             </a>
             
             <a href="AtCoder.html" class="card card-at">
                 <div class="card-header">
                     <h2 class="card-title"><span>🗻</span> AtCoder</h2>
-                    <span class="card-badge" style="color: #334155; background: #f1f5f9;">{at_c} Contests</span>
+                    <span class="card-badge" style="color: #334155; background: #f1f5f9;">{at_c}</span>
                 </div>
                 <div class="card-stats">
                     <span class="stat-number">{at_p}</span>
                     <span class="stat-label">题归档</span>
                 </div>
-                <p class="card-desc">AtCoder 平台 (ABC/ARC/AGC) 归档记录</p>
             </a>
         </div>
         
@@ -613,8 +629,8 @@ def generate_versions_html(group, rel_path, minimal=False):
                 v_htmls.append(f'<div class="mini-version-row">{tag}<span style="white-space: nowrap; display: inline-flex; gap: 4px;">{"".join(links)}</span></div>')
             else:
                 if has_multiple:
-                    if v_name == 'Easy': tag = '<span class="tag-pill" style="background:#e6f4ea; color:#1e8e3e;">E</span>'
-                    elif v_name == 'Hard': tag = '<span class="tag-pill" style="background:#fce8e6; color:#d93025;">H</span>'
+                    if v_name == 'Easy': tag = '<span class="tag-pill" style="background:#dcfce7; color:#166534; border-color:#bbf7d0;">E</span>'
+                    elif v_name == 'Hard': tag = '<span class="tag-pill" style="background:#fee2e2; color:#991b1b; border-color:#fecaca;">H</span>'
                     else: tag = '<span class="tag-pill">N</span>'
                 links = []
                 if v.files['cpp']: links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
@@ -637,7 +653,7 @@ def build_matrix_table(groups_dict, rel_path):
     def alnum_key(s): return [int(c) if c.isdigit() else c.lower() for c in re.split('([0-9]+)', s)]
     sorted_pids = sorted(list(all_pids), key=lambda x: ([float('inf')] if x == '未知' else alnum_key(x)))
 
-    html = '<div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%;">比赛名称</th>'
+    html = '<div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th>'
     col_width = 80 / max(1, len(sorted_pids))
     for pid in sorted_pids: html += f'<th style="width: {col_width}%;">{pid}</th>'
     html += '</tr></thead><tbody>'
@@ -650,7 +666,7 @@ def build_matrix_table(groups_dict, rel_path):
         
         html += f'<tr data-name="{contest}" data-count="{len(c_groups)}">'
         display_contest = contest if contest else "无名比赛"
-        html += f'<td class="contest-name-cell">{display_contest} <br><span style="font-size:0.8em; color:#888; font-weight:normal;">({len(c_groups)} 题)</span></td>'
+        html += f'<td class="contest-name-cell" style="padding-left: 20px;">{display_contest} <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">({len(c_groups)} 题)</span></td>'
         
         for pid in sorted_pids:
             html += '<td>'
@@ -686,8 +702,8 @@ def build_category_page(title, groups_dict, out_path, rel_path):
         if any(v.files['md'] for v in g.versions.values()): has_md += 1
         if any(v.files['conf'] for v in g.versions.values()): has_conf += 1
 
-    stats_html = f"<span>📁 题目组数: {total_groups}</span><span>📄 总版本数: {total_versions}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span><span>⚙️ 有配置: {has_conf}</span><span>🏆 比赛数: {len(groups_dict)}</span>"
-    sort_html = """<div class="sort-btns"><button onclick="sortContests('count')">按题目数降序</button><button onclick="sortContests('name')">按比赛名字典序</button></div>"""
+    stats_html = f"<span>📁 题目组数: {total_groups}</span><span>📄 总版本数: {total_versions}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span><span>🏆 比赛数: {len(groups_dict)}</span>"
+    sort_html = """<div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button><button class="btn" onclick="sortContests('name')">按比赛名字典序</button></div>"""
     stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div>{sort_html}</div>'
 
     content_html = ""
@@ -699,18 +715,18 @@ def build_category_page(title, groups_dict, out_path, rel_path):
             elif contest.upper().startswith('AGC'): sub_cats['AGC'][contest] = c_groups
             else: sub_cats['其他'][contest] = c_groups
         
-        tabs_html = '<div class="atcoder-tabs" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">'
+        tabs_html = '<div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;">'
         tables_html = ''
         first = True
         for sc_name in ['ABC', 'ARC', 'AGC', '其他']:
             if not sub_cats[sc_name]: continue
             
-            btn_style = "background: #1a73e8; color: #fff;" if first else "background: #f1f3f4; color: #333;"
-            tabs_html += f'<button class="atcoder-tab-btn" data-target="tab-{sc_name}" onclick="switchAtCoderTab(\'tab-{sc_name}\', this)" style="padding: 8px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; {btn_style}">{sc_name}</button>'
+            btn_style = "background: var(--primary); color: #fff; border-color: var(--primary);" if first else "background: #fff; color: #334155; border-color: #e2e8f0;"
+            tabs_html += f'<button class="atcoder-tab-btn" data-target="tab-{sc_name}" onclick="switchAtCoderTab(\'tab-{sc_name}\', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; {btn_style}">{sc_name}</button>'
             
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
-            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 5px;'>{sc_name} 模块</h2>"
+            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name} 模块</h2>"
             tables_html += build_matrix_table(sub_cats[sc_name], rel_path)
             tables_html += '</div>'
             first = False
@@ -736,35 +752,37 @@ def build_list_page(title, all_groups, out_path, rel_path, table_id="list-table"
 
     stats_html = f"<span>📁 收录组数: {total_groups}</span><span>📄 版本数: {total_versions}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span>"
     stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div></div>'
-    nav_extra = '<button class="toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>'
+    nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>'
     
     content_html = f"""
     <div class="list-filter-bar">
-        <strong style="color: #1a73e8;">🔍 筛选器</strong>
-        <input type="text" id="filter-tag-{table_id}" placeholder="输入标签筛选(支持空格多词)..." onkeyup="filterListTable('{table_id}')" style="min-width: 200px;">
+        <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
+        <input type="text" id="filter-tag-{table_id}" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('{table_id}')" style="min-width: 220px;">
         
-        <span style="color:#888; margin-left: 10px;">📊 难度:</span>
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
         <input type="number" id="filter-diff-min-{table_id}" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('{table_id}')" onchange="filterListTable('{table_id}')">
-        <span style="color:#888;">-</span>
+        <span style="color:var(--border);">-</span>
         <input type="number" id="filter-diff-max-{table_id}" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('{table_id}')" onchange="filterListTable('{table_id}')">
         
-        <span style="color:#888; margin-left: 10px;">📅 日期:</span>
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📅 日期:</span>
         <input type="date" id="filter-date-start-{table_id}" onchange="filterListTable('{table_id}')">
-        <span style="color:#888;">-</span>
+        <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-{table_id}" onchange="filterListTable('{table_id}')">
     </div>
-    <table class="normal-table" id="{table_id}">
-        <thead>
-            <tr>
-                <th>题目与来源</th>
-                <th>标签</th>
-                <th onclick="sortListTable('{table_id}', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
-                <th onclick="sortListTable('{table_id}', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
-                <th class="remark-col">备注</th>
-                <th>文件</th>
-            </tr>
-        </thead>
-        <tbody>
+    
+    <div style="overflow-x: auto;">
+        <table class="normal-table" id="{table_id}">
+            <thead>
+                <tr>
+                    <th style="padding-left: 20px;">题目与来源</th>
+                    <th>标签</th>
+                    <th onclick="sortListTable('{table_id}', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                    <th onclick="sortListTable('{table_id}', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
+                    <th class="remark-col">备注</th>
+                    <th>文件</th>
+                </tr>
+            </thead>
+            <tbody>
     """
     
     for g in sorted(all_groups, key=lambda x: (x.date != "未知", x.date), reverse=True): 
@@ -784,15 +802,15 @@ def build_list_page(title, all_groups, out_path, rel_path, table_id="list-table"
         
         content_html += f"""
         <tr data-tags="{tags_str}" data-diff="{diff_val}" data-date="{g.date}">
-            <td>{name_html}<br><span style="font-size:0.8em; color:#888;">{origin}</span></td>
+            <td style="padding-left: 20px;">{name_html}<br><span style="font-size:0.85em; color:var(--text-muted);">{origin}</span></td>
             <td>{tags_html}</td>
             <td>{diff_html}</td>
-            <td style="font-size: 0.9em; color: #5f6368;">{g.date}</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">{g.date}</td>
             <td class="remark-col">{remark_text}</td>
             <td>{v_html}</td>
         </tr>"""
         
-    content_html += "</tbody></table>"
+    content_html += "</tbody></table></div>"
 
     html = HTML_TEMPLATE.format(
         title=title, stats_block=stats_block, nav_extra=nav_extra,
@@ -801,7 +819,6 @@ def build_list_page(title, all_groups, out_path, rel_path, table_id="list-table"
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
 def build_index_page(categories, summary_list, todo_list, out_path):
-    # 提取六个模块的具体统计数据
     s_count = len(summary_list)
     t_count = len(todo_list)
     
@@ -859,7 +876,6 @@ def main():
         has_any_cpp = any(v.files['cpp'] for v in g.versions.values())
         is_todo = g.has_conf and not has_any_cpp
         
-        # 严格分流逻辑：是 Todo 的题目绝不会进入 Summary
         if is_todo:
             todo_list.append(g)
         elif g.has_conf or g.category == 'Summary':
@@ -872,7 +888,6 @@ def main():
     build_list_page('Summary', summary_list, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table")
     build_list_page('Todo', todo_list, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table")
 
-    # 构建全新的独立 dashboard 首页
     build_index_page(categories, summary_list, todo_list, os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
 
