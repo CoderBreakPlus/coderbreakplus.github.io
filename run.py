@@ -753,7 +753,9 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
     for v in sorted(all_versions, key=lambda x: (x.date != "未知", x.date), reverse=True): 
         origin = f"{v.category} - {v.contest_name}" if v.contest_name else v.category
         
-        display_name = v.problem_id if v.problem_id else v.base_filename
+        # 【修改点】：不再优先使用问题编号(A/B/C)，而是强制使用本地去除后缀的文件名(如 cf1920f1)
+        display_name = v.base_filename 
+        
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); text-decoration:none;"><b>{display_name}</b></a>' if v.link != '#' else f'<b>{display_name}</b>'
         tags_str = " ".join(v.tags) if v.tags else ""
         tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in v.tags])
@@ -790,7 +792,7 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-
+    
 def build_index_page(categories, summary_versions, todo_versions, out_path):
     s_count = len(summary_versions)
     t_count = len(todo_versions)
