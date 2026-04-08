@@ -8,7 +8,7 @@ from datetime import datetime
 #   难度颜色 & 填充率计算器
 # =======================
 def get_diff_style(diff):
-    if diff >= 3200:
+    if diff >= 3300:
         return 'background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;'
     if diff < 400: color = '#808080'
     elif diff < 800: color = '#804000'
@@ -20,7 +20,7 @@ def get_diff_style(diff):
     else: color = '#FF0000'
     
     clamped_diff = max(0, diff)
-    ratio = (clamped_diff % 400) / 400 * 100
+    ratio = 100 if clamped_diff >= 3200 else (clamped_diff % 400) / 400 * 100
     return f'background: linear-gradient(to top, {color} {ratio}%, transparent {ratio}%); border: 1px solid {color}; border-radius: 50%;'
 
 # =======================
@@ -86,13 +86,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .matrix-table th, .matrix-table td {{ text-align: center; }}
         .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
         
-        /* List specific: 修改了列宽比例，让第一列更宽，最后一列变窄 */
-        .normal-table th:nth-child(1) {{ width: 30%; }}  /* 题目与来源 */
-        .normal-table th:nth-child(2) {{ width: 16%; }}  /* 标签 */
-        .normal-table th:nth-child(3) {{ width: 10%; }}  /* 难度 */
-        .normal-table th:nth-child(4) {{ width: 11%; }}  /* 添加日期 */
-        .normal-table th.remark-col {{ width: 21%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} /* 备注 */
-        .normal-table th:last-child {{ width: 12%; }}    /* 文件 */
+        /* List specific: 再次调整列宽 */
+        .normal-table th:nth-child(1) {{ width: 35%; }}  /* 题目与来源 */
+        .normal-table th:nth-child(2) {{ width: 15%; }}  /* 标签 */
+        .normal-table th:nth-child(3) {{ width: 9%; }}   /* 难度 */
+        .normal-table th:nth-child(4) {{ width: 10%; }}  /* 添加日期 */
+        .normal-table th.remark-col {{ width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} /* 备注 */
+        .normal-table th:last-child {{ width: 9%; }}     /* 文件 */
         .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; }}
         
         /* Cells and Links */
