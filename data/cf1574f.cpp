@@ -35,7 +35,7 @@ int a[300005],fa[300005],b[300005],ban[300005],sz[300005];
 int find(int x){ if(x!=fa[x])fa[x]=find(fa[x]);return fa[x]; }
 
 void merge(int x,int y){
-	x=find(x),y=find(y);if(x==y)return;
+	x=find(x),y=find(y);if(x==y){ ban[x]=1;return; }
 	fa[x]=y, ban[y]|=ban[x], sz[y]+=sz[x];
 }
 int buc[300005],sl[300005],t,dp[300005];
@@ -45,9 +45,10 @@ void procedure(){
 	fill(sz+1,sz+k+1,1);
 	for(int i=1;i<=n;i++){
 		int len=read();
-		for(int x=1;x<=len;x++) b[x]=read();
+		bool f=1;
+		for(int x=1;x<=len;x++) b[x]=read(),buc[b[x]]++,f&=(buc[b[x]]<=1);
 		for(int x=2;x<=len;x++){
-			if(prv[b[x]]==b[x-1]) continue;
+			if(prv[b[x]]==b[x-1] && nxt[b[x-1]]==b[x]) continue;
 
 			if(!prv[b[x]] && !nxt[b[x-1]]){
 				prv[b[x]]=b[x-1];
@@ -58,6 +59,8 @@ void procedure(){
 				ban[find(b[x])]=1;
 			}
 		}
+		for(int x=1;x<=len;x++) buc[b[x]]--;
+		if(!f) ban[find(b[1])]=1;
 	}
 
 	for(int i=1;i<=k;i++){
