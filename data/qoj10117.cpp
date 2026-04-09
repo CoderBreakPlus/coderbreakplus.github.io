@@ -1,4 +1,5 @@
-// created time: 2026-04-08 14:41:07
+// created time: 2026-04-09 07:35:02
+// https://qoj.ac/contest/1924/problem/10117
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,19 +29,31 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-ll n=100000;
+
+ll cnt[10],buc[10];
 void procedure(){
-	cout<<n<<endl;
-	for(ll i=1;i<=n;i++)cout<<rng(1,20)<<" ";cout<<endl;
-	for(ll i=1;i<=n;i++)cout<<rng(0,20)<<" ";cout<<endl;
+	ll n=read();
+	memset(cnt,0,sizeof(cnt));
+	ll N=n;while(N)cnt[N%10]++,N/=10;
+	ll val=0;
+
+	for(int i=2;i<=9;i++){
+		if(n%i==0){
+			ll x=n/i;memset(buc,0,sizeof(buc));
+			while(x)buc[x%10]++,x/=10;
+			bool f=1;
+			for(int j=0;j<10;j++)f&=(buc[j]==cnt[j]);
+			val+=f;
+		}
+	}
+	printf("%lld\n",val);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=10; cout<<T<<endl;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
