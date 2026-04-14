@@ -663,12 +663,12 @@ def apply_categories_and_links(groups, data_dir):
             v.link = primary_link
             v.appearances = group.appearances
 
-def render_single_version(v, rel_path, contest_pid=""):
-    # 动态适应 E/H 题号
+def render_single_version(v, rel_path, contest_pid="", is_official=False):
+    # 动态适应 E/H 题号：仅当是官方比赛时，才自动追加 1 或 2
     display_pid = v.base_filename
     if contest_pid:
         display_pid = contest_pid
-        if v.name in ['Easy', 'Hard'] and not contest_pid[-1].isdigit():
+        if is_official and v.name in ['Easy', 'Hard'] and not contest_pid[-1].isdigit():
             display_pid += "1" if v.name == 'Easy' else "2"
             
     link_html = f'<a href="{v.link}" target="_blank">{display_pid}</a>' if v.link != '#' else f'<span>{display_pid}</span>'
@@ -690,7 +690,7 @@ def render_single_version(v, rel_path, contest_pid=""):
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>
     </div>"""
 
-def build_matrix_table(groups_dict, rel_path):
+def build_matrix_table(groups_dict, rel_path, is_official=False):
     if not groups_dict: return ""
     all_pids = set()
     for contest, c_groups in groups_dict.items():
@@ -722,14 +722,14 @@ def build_matrix_table(groups_dict, rel_path):
             if pid in pid_map:
                 for g in sorted(pid_map[pid], key=lambda x: x.base_name):
                     if 'Normal' in g.versions and len(g.versions) == 1:
-                        html += render_single_version(g.versions['Normal'], rel_path, pid)
+                        html += render_single_version(g.versions['Normal'], rel_path, pid, is_official)
                     else:
                         html += '<div style="display: flex; gap: 4px; justify-content: center; width: 100%;">'
                         for v_name in ['Easy', 'Hard']:
                             if v_name in g.versions:
                                 border = 'border-right: 1px dashed #cbd5e1; padding-right: 4px;' if v_name == 'Easy' and 'Hard' in g.versions else ''
                                 html += f'<div style="flex: 1; {border}">'
-                                html += render_single_version(g.versions[v_name], rel_path, pid)
+                                html += render_single_version(g.versions[v_name], rel_path, pid, is_official)
                                 html += '</div>'
                         html += '</div>'
             html += '</td>'
@@ -751,6 +751,9 @@ def build_category_page(title, groups_dict, out_path, rel_path):
     stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div>{sort_html}</div>'
 
     content_html = ""
+    # 判断是否为官方比赛
+    is_official = (title in ['Codeforces', 'AtCoder'])
+    
     if title == 'AtCoder':
         sub_cats = {'ABC': {}, 'ARC': {}, 'AGC': {}, '其他': {}}
         for contest, c_groups in groups_dict.items():
@@ -771,21 +774,21 @@ def build_category_page(title, groups_dict, out_path, rel_path):
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
             tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name} 模块</h2>"
-            tables_html += build_matrix_table(sub_cats[sc_name], rel_path)
+            tables_html += build_matrix_table(sub_cats[sc_name], rel_path, is_official)
             tables_html += '</div>'
             first = False
             
         tabs_html += '</div>'
         content_html = tabs_html + tables_html
     else:
-        content_html = build_matrix_table(groups_dict, rel_path)
+        content_html = build_matrix_table(groups_dict, rel_path, is_official)
 
     html = HTML_TEMPLATE.format(
         title=title, stats_block=stats_block, nav_extra="",
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-
+    
 def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table"):
     has_cpp = sum(1 for v in all_versions if v.files.get('cpp'))
     has_md = sum(1 for v in all_versions if v.files.get('md'))
