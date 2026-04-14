@@ -161,7 +161,7 @@
     </div></td><td></td></tr></tbody></table></div>
         
         <div class="footer">
-            最后构建: 2026-04-14 16:19:27 | Algorithm Platform Generator
+            最后构建: 2026-04-14 16:48:13 | Algorithm Platform Generator
         </div>
     </div>
 
@@ -192,7 +192,7 @@
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => {
-                el.style.display = isRemarkVisible ? '' : 'none';
+                el.style.display = isRemarkVisible ? 'table-cell' : 'none';
             });
             const btn = document.querySelector('.toggle-remark-btn');
             if (btn) {
