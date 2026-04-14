@@ -172,7 +172,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         function toggleRemark() {{
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => {{
-                el.style.display = isRemarkVisible ? '' : 'none';
+                el.style.display = isRemarkVisible ? 'table-cell' : 'none';
             }});
             const btn = document.querySelector('.toggle-remark-btn');
             if (btn) {{
