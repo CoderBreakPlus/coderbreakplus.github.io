@@ -59,8 +59,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         
         .toggle-diff-btn {{ margin-left: auto; color: var(--primary); border-color: #bfdbfe; }}
         .toggle-diff-btn:hover {{ background: #eff6ff; }}
-        .toggle-remark-btn {{ color: #059669; border-color: #a7f3d0; margin-left: 10px; }}
-        .toggle-remark-btn:hover {{ background: #ecfdf5; }}
+        .toggle-remark-btn {{ color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }}
+        .toggle-remark-btn:hover {{ background: #f1f5f9; }}
         
         /* Toolbars */
         .stats-bar {{ display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }}
@@ -74,7 +74,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .matrix-table, .normal-table {{ background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }}
         thead {{ background: var(--panel-bg); }}
         
-        /* 表格横向与纵向分割线 */
         th {{ color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }}
         td {{ border-bottom: 1px solid var(--border); }}
         th:not(:last-child), td:not(:last-child) {{ border-right: 1px solid var(--border); }}
@@ -86,14 +85,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .matrix-table th, .matrix-table td {{ text-align: center; }}
         .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
         
-        /* List specific: 再次调整列宽 */
-        .normal-table th:nth-child(1) {{ width: 35%; }}  /* 题目与来源 */
-        .normal-table th:nth-child(2) {{ width: 15%; }}  /* 标签 */
-        .normal-table th:nth-child(3) {{ width: 9%; }}   /* 难度 */
-        .normal-table th:nth-child(4) {{ width: 10%; }}  /* 添加日期 */
-        .normal-table th.remark-col {{ width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} /* 备注 */
-        .normal-table th:last-child {{ width: 9%; }}     /* 文件 */
-        .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; }}
+        /* List specific */
+        .normal-table th:nth-child(1) {{ width: 35%; }}  
+        .normal-table th:nth-child(2) {{ width: 15%; }}  
+        .normal-table th:nth-child(3) {{ width: 9%; }}   
+        .normal-table th:nth-child(4) {{ width: 10%; }}  
+        .normal-table th.remark-col {{ width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; display: none; }} 
+        .normal-table th:last-child {{ width: 9%; }}     
+        .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; display: none; }}
         
         /* Cells and Links */
         .prob-cell {{ display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }}
@@ -115,7 +114,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .version-row {{ margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }}
         .file-link {{ color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }}
         .file-link:hover {{ transform: scale(1.1); }}
-        .tag-pill {{ background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; }}
+        .tag-pill {{ background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }}
+        .tag-pill:hover {{ background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }}
 
         /* Filter Bar */
         .list-filter-bar {{ background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }}
@@ -168,7 +168,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
         
-        let isRemarkVisible = true;
+        let isRemarkVisible = false;
         function toggleRemark() {{
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => {{
@@ -200,9 +200,50 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
+        function addTagToFilter(tag, tableId) {{
+            const input = document.getElementById('filter-tag-' + tableId);
+            if (!input) return;
+            let terms = input.value.trim().split(/\\s+/).filter(t => t);
+            
+            const lowerTag = tag.toLowerCase();
+            const index = terms.findIndex(t => t.toLowerCase() === lowerTag);
+            
+            if (index === -1) {{
+                terms.push(tag);
+            }} else {{
+                terms.splice(index, 1);
+            }}
+            
+            input.value = terms.length > 0 ? terms.join(' ') + ' ' : '';
+            filterListTable(tableId);
+            input.focus();
+        }}
+
+        function clearTagFilter(tableId) {{
+            const input = document.getElementById('filter-tag-' + tableId);
+            if (input) {{
+                input.value = '';
+                filterListTable(tableId);
+                input.focus();
+            }}
+        }}
+
         function filterListTable(tableId) {{
-            const tagVal = document.getElementById('filter-tag-' + tableId) ? document.getElementById('filter-tag-' + tableId).value.toLowerCase().trim() : '';
+            const input = document.getElementById('filter-tag-' + tableId);
+            const tagVal = input ? input.value.toLowerCase().trim() : '';
             const searchTerms = tagVal.split(/\\s+/).filter(t => t);
+            
+            const clearBtn = document.getElementById('clear-btn-' + tableId);
+            if (clearBtn) {{
+                clearBtn.style.display = tagVal.length > 0 ? 'block' : 'none';
+            }}
+            
+            if (tableId.includes('table')) {{
+                const url = new URL(window.location);
+                if (tagVal) url.searchParams.set('q', tagVal);
+                else url.searchParams.delete('q');
+                window.history.replaceState({{}}, '', url);
+            }}
             
             const minStr = document.getElementById('filter-diff-min-' + tableId) ? document.getElementById('filter-diff-min-' + tableId).value : '';
             const maxStr = document.getElementById('filter-diff-max-' + tableId) ? document.getElementById('filter-diff-max-' + tableId).value : '';
@@ -215,22 +256,20 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             rows.forEach(row => {{
                 const tags = row.getAttribute('data-tags').toLowerCase();
+                const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
                 const diff = diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
                 if (searchTerms.length > 0) {{
-                    matchTag = searchTerms.every(term => tags.includes(term));
+                    matchTag = searchTerms.every(term => tags.includes(term) || baseName.includes(term));
                 }}
 
                 let matchDiff = true;
                 if (minStr !== '' || maxStr !== '') {{
-                    if (isNaN(diff)) {{
-                        matchDiff = false;
-                    }} else {{
-                        if (diff < minVal || diff > maxVal) matchDiff = false;
-                    }}
+                    if (isNaN(diff)) matchDiff = false;
+                    else if (diff < minVal || diff > maxVal) matchDiff = false;
                 }}
                 
                 let matchDate = true;
@@ -252,21 +291,28 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const dir = sortDirection[tableId][col];
             
             rows.sort((a, b) => {{
+                let res = 0;
                 if (col === 'diff') {{
                     let v1 = parseFloat(a.dataset.diff);
                     let v2 = parseFloat(b.dataset.diff);
                     if (isNaN(v1)) v1 = -Infinity;
                     if (isNaN(v2)) v2 = -Infinity;
-                    return (v1 - v2) * dir;
+                    res = (v1 - v2) * dir;
                 }} else if (col === 'date') {{
                     let d1 = a.dataset.date;
                     let d2 = b.dataset.date;
                     if (d1 === '未知') d1 = '';
                     if (d2 === '未知') d2 = '';
-                    return d1.localeCompare(d2) * dir;
+                    res = d1.localeCompare(d2) * dir;
                 }}
+                
+                if (res === 0) {{
+                    let baseA = a.dataset.base || '';
+                    let baseB = b.dataset.base || '';
+                    return baseA.localeCompare(baseB);
+                }}
+                return res;
             }});
-            
             rows.forEach(r => tbody.appendChild(r));
         }}
 
@@ -283,13 +329,26 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }}
+
+        window.addEventListener('DOMContentLoaded', () => {{
+            const urlParams = new URLSearchParams(window.location.search);
+            const q = urlParams.get('q');
+            if (q) {{
+                const input = document.querySelector('input[id^="filter-tag-"]');
+                if (input) {{
+                    input.value = q + ' ';
+                    const tableId = input.id.replace('filter-tag-', '');
+                    filterListTable(tableId);
+                }}
+            }}
+        }});
     </script>
 </body>
 </html>
 """
 
 # =======================
-#   仪表盘专属首页模板 (纯净版卡片UI)
+#   仪表盘专属首页模板
 # =======================
 INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -298,7 +357,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>算法主页 | Algorithm Dashboard</title>
     <style>
-        /* Base Reset */
         :root {{ --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 40px 20px; line-height: 1.6; }}
         .container {{ max-width: 1100px; margin: 0 auto; }}
@@ -307,15 +365,12 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         h1 {{ font-size: 2.5em; margin-bottom: 5px; font-weight: 800; letter-spacing: -0.5px; color: #0f172a; }}
         .subtitle {{ color: var(--text-muted); font-size: 1.1em; }}
         
-        /* Dashboard Grid Layout (2 cols x 3 rows) */
         .dashboard-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 50px; }}
         @media (max-width: 768px) {{ .dashboard-grid {{ grid-template-columns: 1fr; }} }}
         
-        /* Card Styling */
         .card {{ background: #fff; border-radius: 16px; padding: 24px; padding-bottom: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; text-decoration: none; color: inherit; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }}
         .card:hover {{ transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: #cbd5e1; }}
         
-        /* Color Accents (Top Border) */
         .card::before {{ content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; }}
         .card-summary::before {{ background: linear-gradient(90deg, #8b5cf6, #d946ef); }}
         .card-todo::before {{ background: linear-gradient(90deg, #f59e0b, #fbbf24); }}
@@ -324,7 +379,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         .card-cf::before {{ background: linear-gradient(90deg, #ef4444, #f87171); }}
         .card-at::before {{ background: linear-gradient(90deg, #1e293b, #475569); }}
         
-        /* Card Content */
         .card-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }}
         .card-title {{ font-size: 1.4em; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }}
         .card-badge {{ font-size: 0.8em; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
@@ -333,7 +387,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         .stat-number {{ font-size: 3.2em; font-weight: 800; line-height: 1; }}
         .stat-label {{ color: var(--text-muted); font-size: 1.05em; font-weight: 500; }}
         
-        /* Settings Info Box */
         .syntax-guide {{ background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }}
         .syntax-guide h3 {{ margin-top: 0; margin-bottom: 15px; color: #0f172a; display: flex; align-items: center; gap: 8px; font-weight: 700; }}
         .syntax-code {{ display: grid; gap: 10px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #f1f5f9; overflow-x: auto; }}
@@ -353,7 +406,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         </header>
         
         <div class="dashboard-grid">
-            <!-- Row 1: Global -->
             <a href="Summary.html" class="card card-summary">
                 <div class="card-header">
                     <h2 class="card-title"><span>📚</span> Summary</h2>
@@ -361,10 +413,9 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 </div>
                 <div class="card-stats">
                     <span class="stat-number">{s_count}</span>
-                    <span class="stat-label">个题目组</span>
+                    <span class="stat-label">个独立版本</span>
                 </div>
             </a>
-            
             <a href="todo.html" class="card card-todo">
                 <div class="card-header">
                     <h2 class="card-title"><span>🎯</span> Todo</h2>
@@ -375,8 +426,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     <span class="stat-label">道待补题</span>
                 </div>
             </a>
-            
-            <!-- Row 2: Chinese Contests -->
             <a href="OI.html" class="card card-oi">
                 <div class="card-header">
                     <h2 class="card-title"><span>🏅</span> OI</h2>
@@ -387,7 +436,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     <span class="stat-label">题归档</span>
                 </div>
             </a>
-            
             <a href="XCPC.html" class="card card-xcpc">
                 <div class="card-header">
                     <h2 class="card-title"><span>🏆</span> XCPC</h2>
@@ -398,8 +446,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     <span class="stat-label">题归档</span>
                 </div>
             </a>
-            
-            <!-- Row 3: Online Judges -->
             <a href="Codeforces.html" class="card card-cf">
                 <div class="card-header">
                     <h2 class="card-title"><span>⚡</span> Codeforces</h2>
@@ -410,7 +456,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     <span class="stat-label">题归档</span>
                 </div>
             </a>
-            
             <a href="AtCoder.html" class="card card-at">
                 <div class="card-header">
                     <h2 class="card-title"><span>🗻</span> AtCoder</h2>
@@ -428,9 +473,9 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="syntax-code">
                 <div class="line-def"><span class="line-num">1</span> <span class="line-desc"><span class="highlight">标签/关键词</span> (多个用空格隔开，末尾数字自动解析为难度)</span></div>
                 <div class="line-def"><span class="line-num">2</span> <span class="line-desc"><span class="highlight">比赛分类</span> (填 OI 或 XCPC。CF/AT 留空自动归档)</span></div>
-                <div class="line-def"><span class="line-num">3</span> <span class="line-desc"><span class="highlight">URL 链接</span> (CF/AT 留空自动生成)</span></div>
-                <div class="line-def"><span class="line-num">4</span> <span class="line-desc"><span class="highlight">比赛名称</span> (CF/AT 留空自动补全)</span></div>
-                <div class="line-def"><span class="line-num">5</span> <span class="line-desc"><span class="highlight">题目编号</span> (如 A, B, C...)</span></div>
+                <div class="line-def"><span class="line-num">3</span> <span class="line-desc"><span class="highlight">URL 链接</span> (完整链接。CF/AT 留空自动生成)</span></div>
+                <div class="line-def"><span class="line-num">4</span> <span class="line-desc"><span class="highlight">比赛名称</span> (支持 | 隔开多场，如 XOJ Round 1|YOJ Round 2)</span></div>
+                <div class="line-def"><span class="line-num">5</span> <span class="line-desc"><span class="highlight">题目编号</span> (支持 | 隔开多个，如 C|D)</span></div>
                 <div class="line-def"><span class="line-num">6</span> <span class="line-desc"><span class="highlight">备注/备忘录</span> (在表格中独立成列展示，不需要可留空换行)</span></div>
             </div>
         </div>
@@ -442,30 +487,27 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
 </body>
 </html>
 """
+
 class ProblemVersion:
     def __init__(self, name, base_filename=""):
         self.name = name
         self.base_filename = base_filename
         self.files = {'cpp': None, 'md': None, 'conf': None}
-        self.category = "Summary"
-        self.contest_name = ""
-        self.problem_id = ""
         self.link = "#"
         self.tags = []
         self.difficulty = None
         self.remark = ""
         self.has_conf = False
         self.date = "未知"
+        self.appearances = [] # list of (category, contest_name, problem_id)
 
 class ProblemGroup:
     def __init__(self, base_name):
         self.base_name = base_name
-        self.category = "Summary"
-        self.contest_name = ""
-        self.base_pid = ""
         self.has_conf = False
         self.versions = {}
         self.version_order = ['Normal', 'Easy', 'Hard']
+        self.appearances = [] # list of (category, contest_name, problem_id)
 
     def add_file(self, version, ext, filename, base_filename):
         if version not in self.versions:
@@ -473,6 +515,11 @@ class ProblemGroup:
         if ext == '.cpp': self.versions[version].files['cpp'] = filename
         elif ext == '.md': self.versions[version].files['md'] = filename
         elif ext == '.conf': self.versions[version].files['conf'] = filename
+        
+    def get_pid_in_contest(self, contest):
+        for cat, c, p in self.appearances:
+            if c == contest: return p
+        return ""
 
 def scan_and_group_files(data_dir):
     groups = {}
@@ -529,14 +576,74 @@ def apply_categories_and_links(groups, data_dir):
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
         is_cf, is_at = bool(m_cf), bool(m_ac)
 
+        group.appearances = []
+        
+        conf_file = None
+        for v_name in group.version_order:
+            if v_name in group.versions and group.versions[v_name].files.get('conf'):
+                conf_file = group.versions[v_name].files['conf']
+                break
+                
+        primary_link = "#"
+        group_remark = ""
+        group_difficulty = None
+        group_tags = []
+        
+        if conf_file:
+            group.has_conf = True
+            fp = os.path.join(data_dir, conf_file)
+            try:
+                with open(fp, 'r', encoding='utf-8') as f:
+                    lines = [line.strip() for line in f.readlines()]
+                while len(lines) < 6: lines.append('')
+                
+                parts = lines[0].split()
+                if parts:
+                    try:
+                        group_difficulty = float(parts[-1])
+                        group_tags = parts[:-1]
+                    except ValueError:
+                        group_tags = parts
+                        group_difficulty = None
+                        
+                raw_cat = lines[1].lower()
+                cat_conf = 'OI' if raw_cat == 'oi' else ('XCPC' if raw_cat == 'xcpc' else '')
+                
+                primary_link = lines[2]
+                
+                c_list = [c.strip() for c in lines[3].split('|') if c.strip()] if lines[3] else []
+                p_list = [p.strip() for p in lines[4].split('|') if p.strip()] if lines[4] else []
+                
+                for i in range(max(len(c_list), len(p_list))):
+                    c = c_list[i] if i < len(c_list) else ""
+                    p = p_list[i] if i < len(p_list) else ""
+                    if c and cat_conf:
+                        group.appearances.append((cat_conf, c, p))
+                    elif c and not cat_conf:
+                        group.appearances.append(('', c, p))
+                        
+                group_remark = lines[5]
+            except Exception:
+                pass
+        
+        # 补全 CF/AT 官方归档信息
+        cf_at_link = "#"
         if is_cf:
-            group.category = 'Codeforces'
-            group.contest_name = f"Codeforces Round {m_cf.group(1)}"
-            group.base_pid = m_cf.group(2).upper()
+            c = f"Codeforces Round {m_cf.group(1)}"
+            p = m_cf.group(2).upper()
+            group.appearances.append(('Codeforces', c, p))
+            cf_at_link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{p}"
         elif is_at:
-            group.category = 'AtCoder'
-            group.contest_name = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
-            group.base_pid = m_ac.group(3).upper()
+            c = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
+            p = m_ac.group(3).upper()
+            group.appearances.append(('AtCoder', c, p))
+            cf_at_link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{p.lower()}"
+            
+        if not group.appearances:
+            group.appearances.append(('Summary', '', ''))
+            
+        if not primary_link or primary_link == "#":
+            primary_link = cf_at_link
 
         for v_name, v in group.versions.items():
             if v.files.get('cpp'):
@@ -548,56 +655,22 @@ def apply_categories_and_links(groups, data_dir):
                             m = re.search(r'//\s*created time:\s*(\d{4}-\d{2}-\d{2})', first_line, re.IGNORECASE)
                             if m: v.date = m.group(1)
                     except Exception: pass
-
-            suffix = "1" if v_name == 'Easy' else ("2" if v_name == 'Hard' else "")
-            default_pid = group.base_pid + suffix if group.base_pid else ""
-            v.problem_id = default_pid
-            v.contest_name = group.contest_name
-            v.category = group.category
-
-            if v.files.get('conf'):
-                v.has_conf = True
-                group.has_conf = True
-                try:
-                    with open(os.path.join(data_dir, v.files['conf']), 'r', encoding='utf-8') as f:
-                        lines = [line.strip() for line in f.readlines()]
-                    while len(lines) < 6: lines.append('')
                     
-                    parts = lines[0].split()
-                    if parts:
-                        try:
-                            v.difficulty = float(parts[-1])
-                            v.tags = parts[:-1]
-                        except ValueError:
-                            v.tags = parts
-                            v.difficulty = None
-                    
-                    cat_conf = lines[1].lower()
-                    if cat_conf == 'oi': v.category = 'OI'
-                    elif cat_conf == 'xcpc': v.category = 'XCPC'
-                    elif cat_conf: v.category = 'Summary'
-                    
-                    if lines[2]: v.link = lines[2]
-                    else:
-                        if is_cf: v.link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{v.problem_id}"
-                        elif is_at: v.link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{v.problem_id.lower()}"
-                    
-                    if lines[3]: v.contest_name = lines[3]
-                    if lines[4]: 
-                        v.problem_id = lines[4]
-                        if not group.base_pid: group.base_pid = re.sub(r'1|2|E1|E2$', '', lines[4], flags=re.IGNORECASE)
-                    if lines[5]: v.remark = lines[5]
-                except Exception: pass
-            else:
-                if is_cf: v.link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{v.problem_id}"
-                elif is_at: v.link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{v.problem_id.lower()}"
+            v.has_conf = group.has_conf
+            v.difficulty = group_difficulty
+            v.tags = group_tags
+            v.remark = group_remark
+            v.link = primary_link
+            v.appearances = group.appearances
 
-        for v in group.versions.values():
-            if v.category != 'Summary': group.category = v.category
-            if v.contest_name: group.contest_name = v.contest_name
-
-def render_single_version(v, rel_path):
-    display_pid = v.problem_id if v.problem_id else v.base_filename
+def render_single_version(v, rel_path, contest_pid=""):
+    # 动态适应 E/H 题号
+    display_pid = v.base_filename
+    if contest_pid:
+        display_pid = contest_pid
+        if v.name in ['Easy', 'Hard'] and not contest_pid[-1].isdigit():
+            display_pid += "1" if v.name == 'Easy' else "2"
+            
     link_html = f'<a href="{v.link}" target="_blank">{display_pid}</a>' if v.link != '#' else f'<span>{display_pid}</span>'
     diff_html = ""
     if v.difficulty is not None:
@@ -620,9 +693,10 @@ def render_single_version(v, rel_path):
 def build_matrix_table(groups_dict, rel_path):
     if not groups_dict: return ""
     all_pids = set()
-    for c_groups in groups_dict.values():
+    for contest, c_groups in groups_dict.items():
         for g in c_groups:
-            all_pids.add(g.base_pid if g.base_pid else "未知")
+            pid = g.get_pid_in_contest(contest)
+            all_pids.add(pid if pid else "未知")
             
     def alnum_key(s): return [int(c) if c.isdigit() else c.lower() for c in re.split('([0-9]+)', s)]
     sorted_pids = sorted(list(all_pids), key=lambda x: ([float('inf')] if x == '未知' else alnum_key(x)))
@@ -636,7 +710,8 @@ def build_matrix_table(groups_dict, rel_path):
     for contest, c_groups in sorted_contests:
         pid_map = defaultdict(list)
         for g in c_groups:
-            pid_map[g.base_pid if g.base_pid else "未知"].append(g)
+            pid = g.get_pid_in_contest(contest)
+            pid_map[pid if pid else "未知"].append(g)
         
         html += f'<tr data-name="{contest}" data-count="{len(c_groups)}">'
         display_contest = contest if contest else "无名比赛"
@@ -647,14 +722,14 @@ def build_matrix_table(groups_dict, rel_path):
             if pid in pid_map:
                 for g in sorted(pid_map[pid], key=lambda x: x.base_name):
                     if 'Normal' in g.versions and len(g.versions) == 1:
-                        html += render_single_version(g.versions['Normal'], rel_path)
+                        html += render_single_version(g.versions['Normal'], rel_path, pid)
                     else:
                         html += '<div style="display: flex; gap: 4px; justify-content: center; width: 100%;">'
                         for v_name in ['Easy', 'Hard']:
                             if v_name in g.versions:
                                 border = 'border-right: 1px dashed #cbd5e1; padding-right: 4px;' if v_name == 'Easy' and 'Hard' in g.versions else ''
                                 html += f'<div style="flex: 1; {border}">'
-                                html += render_single_version(g.versions[v_name], rel_path)
+                                html += render_single_version(g.versions[v_name], rel_path, pid)
                                 html += '</div>'
                         html += '</div>'
             html += '</td>'
@@ -695,7 +770,7 @@ def build_category_page(title, groups_dict, out_path, rel_path):
             
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
-            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name}</h2>"
+            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name} 模块</h2>"
             tables_html += build_matrix_table(sub_cats[sc_name], rel_path)
             tables_html += '</div>'
             first = False
@@ -717,12 +792,15 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
 
     stats_html = f"<span>📁 独立题目: {len(all_versions)}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span>"
     stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div></div>'
-    nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>'
+    nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()">📝 显示备注</button>'
     
     content_html = f"""
     <div class="list-filter-bar">
         <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
-        <input type="text" id="filter-tag-{table_id}" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('{table_id}')" style="min-width: 220px;">
+        <div style="position: relative; display: inline-block;">
+            <input type="text" id="filter-tag-{table_id}" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('{table_id}')" style="min-width: 220px; padding-right: 30px;">
+            <span onclick="clearTagFilter('{table_id}')" id="clear-btn-{table_id}" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
+        </div>
         
         <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
         <input type="number" id="filter-diff-min-{table_id}" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('{table_id}')" onchange="filterListTable('{table_id}')">
@@ -750,15 +828,26 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
             <tbody>
     """
     
-    for v in sorted(all_versions, key=lambda x: (x.date != "未知", x.date), reverse=True): 
-        origin = f"{v.category} - {v.contest_name}" if v.contest_name else v.category
+    # 稳定排序机制：先排字典序，再排日期
+    sorted_versions = sorted(all_versions, key=lambda x: x.base_filename)
+    sorted_versions.sort(key=lambda x: (x.date != "未知", x.date), reverse=True)
+    
+    for v in sorted_versions: 
+        origin_parts = []
+        seen = set()
+        for cat, c, p in v.appearances:
+            s = f"{cat} - {c}" if c else cat
+            if s not in seen and s != "Summary" and s:
+                origin_parts.append(s)
+                seen.add(s)
+        if not origin_parts: origin_parts.append("Summary")
+        origin = "<br>".join(origin_parts)
         
-        # 【修改点】：不再优先使用问题编号(A/B/C)，而是强制使用本地去除后缀的文件名(如 cf1920f1)
         display_name = v.base_filename 
         
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); text-decoration:none;"><b>{display_name}</b></a>' if v.link != '#' else f'<b>{display_name}</b>'
         tags_str = " ".join(v.tags) if v.tags else ""
-        tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in v.tags])
+        tags_html = "".join([f'<span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter(\'{t}\', \'{table_id}\')" title="追加到筛选">{t}</span>' for t in v.tags])
         diff_val = v.difficulty if v.difficulty is not None else 'None'
         diff_html = "-"
         remark_text = v.remark if v.remark else "-"
@@ -776,8 +865,8 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         v_html = f'<div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>'
         
         content_html += f"""
-        <tr data-tags="{tags_str}" data-diff="{diff_val}" data-date="{v.date}">
-            <td style="padding-left: 20px;">{name_html}<br><span style="font-size:0.85em; color:var(--text-muted);">{origin}</span></td>
+        <tr data-tags="{tags_str}" data-diff="{diff_val}" data-date="{v.date}" data-base="{v.base_filename}">
+            <td style="padding-left: 20px;">{name_html}<br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">{origin}</span></td>
             <td>{tags_html}</td>
             <td>{diff_html}</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">{v.date}</td>
@@ -792,7 +881,7 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-    
+
 def build_index_page(categories, summary_versions, todo_versions, out_path):
     s_count = len(summary_versions)
     t_count = len(todo_versions)
@@ -845,15 +934,24 @@ def main():
     todo_versions = []
 
     for g in groups.values():
-        if g.category != 'Summary' and g.category in categories:
-            categories[g.category][g.contest_name].append(g)
+        added_to_cat = set()
+        for cat, contest, pid in g.appearances:
+            if cat in categories and contest:
+                key = f"{cat}-{contest}"
+                if key not in added_to_cat:
+                    categories[cat][contest].append(g)
+                    added_to_cat.add(key)
             
         for v in g.versions.values():
             is_todo = v.has_conf and not v.files.get('cpp')
             if is_todo:
                 todo_versions.append(v)
-            elif v.has_conf or v.category == 'Summary':
+            elif v.has_conf:
                 summary_versions.append(v)
+            else:
+                is_cf_at = any(cat in ('Codeforces', 'AtCoder') for cat, c, p in v.appearances)
+                if not is_cf_at:
+                    summary_versions.append(v)
 
     print(f"🛠️ 正在生成 HTML 到 '{out_dir}' (当前目录)...")
     for cat in categories:

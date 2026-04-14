@@ -31,8 +31,8 @@
         
         .toggle-diff-btn { margin-left: auto; color: var(--primary); border-color: #bfdbfe; }
         .toggle-diff-btn:hover { background: #eff6ff; }
-        .toggle-remark-btn { color: #059669; border-color: #a7f3d0; margin-left: 10px; }
-        .toggle-remark-btn:hover { background: #ecfdf5; }
+        .toggle-remark-btn { color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }
+        .toggle-remark-btn:hover { background: #f1f5f9; }
         
         /* Toolbars */
         .stats-bar { display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
@@ -46,7 +46,6 @@
         .matrix-table, .normal-table { background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
         thead { background: var(--panel-bg); }
         
-        /* 表格横向与纵向分割线 */
         th { color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
         td { border-bottom: 1px solid var(--border); }
         th:not(:last-child), td:not(:last-child) { border-right: 1px solid var(--border); }
@@ -58,14 +57,14 @@
         .matrix-table th, .matrix-table td { text-align: center; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
         
-        /* List specific: 再次调整列宽 */
-        .normal-table th:nth-child(1) { width: 35%; }  /* 题目与来源 */
-        .normal-table th:nth-child(2) { width: 15%; }  /* 标签 */
-        .normal-table th:nth-child(3) { width: 9%; }   /* 难度 */
-        .normal-table th:nth-child(4) { width: 10%; }  /* 添加日期 */
-        .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } /* 备注 */
-        .normal-table th:last-child { width: 9%; }     /* 文件 */
-        .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
+        /* List specific */
+        .normal-table th:nth-child(1) { width: 35%; }  
+        .normal-table th:nth-child(2) { width: 15%; }  
+        .normal-table th:nth-child(3) { width: 9%; }   
+        .normal-table th:nth-child(4) { width: 10%; }  
+        .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; display: none; } 
+        .normal-table th:last-child { width: 9%; }     
+        .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; display: none; }
         
         /* Cells and Links */
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }
@@ -87,7 +86,8 @@
         .version-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
-        .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; }
+        .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
+        .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
 
         /* Filter Bar */
         .list-filter-bar { background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }
@@ -110,7 +110,7 @@
         <h1>AtCoder</h1>
         
         <div class="stats-bar"><div class="stats-info"><span>📁 独立题目: 12</span><span>📝 有代码: 12</span><span>💡 有题解: 2</span><span>⚙️ 有配置: 0</span><span>🏆 比赛数: 3</span></div><div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button><button class="btn" onclick="sortContests('name')">按比赛名字典序</button></div></div>
-        <div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-ABC" onclick="switchAtCoderTab('tab-ABC', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">ABC</button><button class="atcoder-tab-btn" data-target="tab-ARC" onclick="switchAtCoderTab('tab-ARC', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">ARC</button><button class="atcoder-tab-btn" data-target="tab-AGC" onclick="switchAtCoderTab('tab-AGC', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">AGC</button></div><div id="tab-ABC" class="atcoder-tab-content" style="display: block;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 ABC</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th><th style="width: 11.428571428571429%;">A</th><th style="width: 11.428571428571429%;">B</th><th style="width: 11.428571428571429%;">C</th><th style="width: 11.428571428571429%;">D</th><th style="width: 11.428571428571429%;">E</th><th style="width: 11.428571428571429%;">F</th><th style="width: 11.428571428571429%;">G</th></tr></thead><tbody><tr data-name="ABC452" data-count="7"><td class="contest-name-cell" style="padding-left: 20px;">ABC452 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(7 题)</span></td><td>
+        <div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-ABC" onclick="switchAtCoderTab('tab-ABC', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">ABC</button><button class="atcoder-tab-btn" data-target="tab-ARC" onclick="switchAtCoderTab('tab-ARC', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">ARC</button><button class="atcoder-tab-btn" data-target="tab-AGC" onclick="switchAtCoderTab('tab-AGC', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">AGC</button></div><div id="tab-ABC" class="atcoder-tab-content" style="display: block;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 ABC 模块</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th><th style="width: 11.428571428571429%;">A</th><th style="width: 11.428571428571429%;">B</th><th style="width: 11.428571428571429%;">C</th><th style="width: 11.428571428571429%;">D</th><th style="width: 11.428571428571429%;">E</th><th style="width: 11.428571428571429%;">F</th><th style="width: 11.428571428571429%;">G</th></tr></thead><tbody><tr data-name="ABC452" data-count="7"><td class="contest-name-cell" style="padding-left: 20px;">ABC452 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(7 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://atcoder.jp/contests/abc452/tasks/abc452_a" target="_blank">A</a></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/abc452a.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a></span></div>
@@ -138,7 +138,7 @@
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://atcoder.jp/contests/abc452/tasks/abc452_g" target="_blank">G</a></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/abc452g.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a></span></div>
-    </div></td></tr></tbody></table></div></div><div id="tab-ARC" class="atcoder-tab-content" style="display: none;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 ARC</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th><th style="width: 20.0%;">A</th><th style="width: 20.0%;">B</th><th style="width: 20.0%;">C</th><th style="width: 20.0%;">D</th></tr></thead><tbody><tr data-name="ARC217" data-count="4"><td class="contest-name-cell" style="padding-left: 20px;">ARC217 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(4 题)</span></td><td>
+    </div></td></tr></tbody></table></div></div><div id="tab-ARC" class="atcoder-tab-content" style="display: none;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 ARC 模块</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th><th style="width: 20.0%;">A</th><th style="width: 20.0%;">B</th><th style="width: 20.0%;">C</th><th style="width: 20.0%;">D</th></tr></thead><tbody><tr data-name="ARC217" data-count="4"><td class="contest-name-cell" style="padding-left: 20px;">ARC217 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(4 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://atcoder.jp/contests/arc217/tasks/arc217_a" target="_blank">A</a></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/arc217a.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a></span></div>
@@ -154,14 +154,14 @@
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://atcoder.jp/contests/arc217/tasks/arc217_d" target="_blank">D</a></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/arc217d.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a></span></div>
-    </div></td></tr></tbody></table></div></div><div id="tab-AGC" class="atcoder-tab-content" style="display: none;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 AGC</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th><th style="width: 80.0%;">C</th></tr></thead><tbody><tr data-name="AGC066" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">AGC066 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td>
+    </div></td></tr></tbody></table></div></div><div id="tab-AGC" class="atcoder-tab-content" style="display: none;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 AGC 模块</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th><th style="width: 80.0%;">C</th></tr></thead><tbody><tr data-name="AGC066" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">AGC066 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://atcoder.jp/contests/agc066/tasks/agc066_c" target="_blank">C</a></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/agc066c.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/agc066c" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div>
     </div></td></tr></tbody></table></div></div>
         
         <div class="footer">
-            最后构建: 2026-04-14 15:09:30 | Algorithm Platform Generator
+            最后构建: 2026-04-14 15:36:41 | Algorithm Platform Generator
         </div>
     </div>
 
@@ -188,7 +188,7 @@
             });
         }
         
-        let isRemarkVisible = true;
+        let isRemarkVisible = false;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => {
@@ -220,9 +220,50 @@
             });
         }
 
+        function addTagToFilter(tag, tableId) {
+            const input = document.getElementById('filter-tag-' + tableId);
+            if (!input) return;
+            let terms = input.value.trim().split(/\s+/).filter(t => t);
+            
+            const lowerTag = tag.toLowerCase();
+            const index = terms.findIndex(t => t.toLowerCase() === lowerTag);
+            
+            if (index === -1) {
+                terms.push(tag);
+            } else {
+                terms.splice(index, 1);
+            }
+            
+            input.value = terms.length > 0 ? terms.join(' ') + ' ' : '';
+            filterListTable(tableId);
+            input.focus();
+        }
+
+        function clearTagFilter(tableId) {
+            const input = document.getElementById('filter-tag-' + tableId);
+            if (input) {
+                input.value = '';
+                filterListTable(tableId);
+                input.focus();
+            }
+        }
+
         function filterListTable(tableId) {
-            const tagVal = document.getElementById('filter-tag-' + tableId) ? document.getElementById('filter-tag-' + tableId).value.toLowerCase().trim() : '';
+            const input = document.getElementById('filter-tag-' + tableId);
+            const tagVal = input ? input.value.toLowerCase().trim() : '';
             const searchTerms = tagVal.split(/\s+/).filter(t => t);
+            
+            const clearBtn = document.getElementById('clear-btn-' + tableId);
+            if (clearBtn) {
+                clearBtn.style.display = tagVal.length > 0 ? 'block' : 'none';
+            }
+            
+            if (tableId.includes('table')) {
+                const url = new URL(window.location);
+                if (tagVal) url.searchParams.set('q', tagVal);
+                else url.searchParams.delete('q');
+                window.history.replaceState({}, '', url);
+            }
             
             const minStr = document.getElementById('filter-diff-min-' + tableId) ? document.getElementById('filter-diff-min-' + tableId).value : '';
             const maxStr = document.getElementById('filter-diff-max-' + tableId) ? document.getElementById('filter-diff-max-' + tableId).value : '';
@@ -235,22 +276,20 @@
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             rows.forEach(row => {
                 const tags = row.getAttribute('data-tags').toLowerCase();
+                const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
                 const diff = diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
                 if (searchTerms.length > 0) {
-                    matchTag = searchTerms.every(term => tags.includes(term));
+                    matchTag = searchTerms.every(term => tags.includes(term) || baseName.includes(term));
                 }
 
                 let matchDiff = true;
                 if (minStr !== '' || maxStr !== '') {
-                    if (isNaN(diff)) {
-                        matchDiff = false;
-                    } else {
-                        if (diff < minVal || diff > maxVal) matchDiff = false;
-                    }
+                    if (isNaN(diff)) matchDiff = false;
+                    else if (diff < minVal || diff > maxVal) matchDiff = false;
                 }
                 
                 let matchDate = true;
@@ -272,21 +311,28 @@
             const dir = sortDirection[tableId][col];
             
             rows.sort((a, b) => {
+                let res = 0;
                 if (col === 'diff') {
                     let v1 = parseFloat(a.dataset.diff);
                     let v2 = parseFloat(b.dataset.diff);
                     if (isNaN(v1)) v1 = -Infinity;
                     if (isNaN(v2)) v2 = -Infinity;
-                    return (v1 - v2) * dir;
+                    res = (v1 - v2) * dir;
                 } else if (col === 'date') {
                     let d1 = a.dataset.date;
                     let d2 = b.dataset.date;
                     if (d1 === '未知') d1 = '';
                     if (d2 === '未知') d2 = '';
-                    return d1.localeCompare(d2) * dir;
+                    res = d1.localeCompare(d2) * dir;
                 }
+                
+                if (res === 0) {
+                    let baseA = a.dataset.base || '';
+                    let baseB = b.dataset.base || '';
+                    return baseA.localeCompare(baseB);
+                }
+                return res;
             });
-            
             rows.forEach(r => tbody.appendChild(r));
         }
 
@@ -303,6 +349,19 @@
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const q = urlParams.get('q');
+            if (q) {
+                const input = document.querySelector('input[id^="filter-tag-"]');
+                if (input) {
+                    input.value = q + ' ';
+                    const tableId = input.id.replace('filter-tag-', '');
+                    filterListTable(tableId);
+                }
+            }
+        });
     </script>
 </body>
 </html>
