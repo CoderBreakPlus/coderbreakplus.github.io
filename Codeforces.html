@@ -31,8 +31,8 @@
         
         .toggle-diff-btn { margin-left: auto; color: var(--primary); border-color: #bfdbfe; }
         .toggle-diff-btn:hover { background: #eff6ff; }
-        .toggle-remark-btn { color: #059669; border-color: #a7f3d0; margin-left: 10px; }
-        .toggle-remark-btn:hover { background: #ecfdf5; }
+        .toggle-remark-btn { color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }
+        .toggle-remark-btn:hover { background: #f1f5f9; }
         
         /* Toolbars */
         .stats-bar { display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
@@ -46,7 +46,6 @@
         .matrix-table, .normal-table { background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
         thead { background: var(--panel-bg); }
         
-        /* 表格横向与纵向分割线 */
         th { color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
         td { border-bottom: 1px solid var(--border); }
         th:not(:last-child), td:not(:last-child) { border-right: 1px solid var(--border); }
@@ -58,14 +57,14 @@
         .matrix-table th, .matrix-table td { text-align: center; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
         
-        /* List specific: 再次调整列宽 */
-        .normal-table th:nth-child(1) { width: 35%; }  /* 题目与来源 */
-        .normal-table th:nth-child(2) { width: 15%; }  /* 标签 */
-        .normal-table th:nth-child(3) { width: 9%; }   /* 难度 */
-        .normal-table th:nth-child(4) { width: 10%; }  /* 添加日期 */
-        .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } /* 备注 */
-        .normal-table th:last-child { width: 9%; }     /* 文件 */
-        .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
+        /* List specific */
+        .normal-table th:nth-child(1) { width: 35%; }  
+        .normal-table th:nth-child(2) { width: 15%; }  
+        .normal-table th:nth-child(3) { width: 9%; }   
+        .normal-table th:nth-child(4) { width: 10%; }  
+        .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; display: none; } 
+        .normal-table th:last-child { width: 9%; }     
+        .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; display: none; }
         
         /* Cells and Links */
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }
@@ -87,7 +86,8 @@
         .version-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
-        .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; }
+        .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
+        .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
 
         /* Filter Bar */
         .list-filter-bar { background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }
@@ -136,15 +136,15 @@
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf2203f.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a></span></div>
     </div></td><td></td></tr><tr data-name="Codeforces Round 1920" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">Codeforces Round 1920 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td></td><td></td><td></td><td><div style="display: flex; gap: 4px; justify-content: center; width: 100%;"><div style="flex: 1; border-right: 1px dashed #cbd5e1; padding-right: 4px;">
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/1920/F1" target="_blank">F1</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
+        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/1920/F" target="_blank">F1</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf1920f1.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/cf1920f1.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
     </div></div><div style="flex: 1; ">
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/1920/F2" target="_blank">F2</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
+        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/1920/F" target="_blank">F2</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf1920f2.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/cf1920f2" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/cf1920f2.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
     </div></div></div></td><td></td></tr><tr data-name="Codeforces Round 2152" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">Codeforces Round 2152 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td></td><td></td><td></td><td></td><td><div style="display: flex; gap: 4px; justify-content: center; width: 100%;"><div style="flex: 1; ">
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/2152/H2" target="_blank">H2</a><span class="diff-indicator" title="难度: 3500.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3500</span></div>
+        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/2152/H" target="_blank">H2</a><span class="diff-indicator" title="难度: 3500.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3500</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf2152h2.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/cf2152h2" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/cf2152h2.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
     </div></div></div></td></tr><tr data-name="Codeforces Round 1310" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">Codeforces Round 1310 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -161,7 +161,7 @@
     </div></td><td></td></tr></tbody></table></div>
         
         <div class="footer">
-            最后构建: 2026-04-14 15:09:30 | Algorithm Platform Generator
+            最后构建: 2026-04-14 15:36:41 | Algorithm Platform Generator
         </div>
     </div>
 
@@ -188,7 +188,7 @@
             });
         }
         
-        let isRemarkVisible = true;
+        let isRemarkVisible = false;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => {
@@ -220,9 +220,50 @@
             });
         }
 
+        function addTagToFilter(tag, tableId) {
+            const input = document.getElementById('filter-tag-' + tableId);
+            if (!input) return;
+            let terms = input.value.trim().split(/\s+/).filter(t => t);
+            
+            const lowerTag = tag.toLowerCase();
+            const index = terms.findIndex(t => t.toLowerCase() === lowerTag);
+            
+            if (index === -1) {
+                terms.push(tag);
+            } else {
+                terms.splice(index, 1);
+            }
+            
+            input.value = terms.length > 0 ? terms.join(' ') + ' ' : '';
+            filterListTable(tableId);
+            input.focus();
+        }
+
+        function clearTagFilter(tableId) {
+            const input = document.getElementById('filter-tag-' + tableId);
+            if (input) {
+                input.value = '';
+                filterListTable(tableId);
+                input.focus();
+            }
+        }
+
         function filterListTable(tableId) {
-            const tagVal = document.getElementById('filter-tag-' + tableId) ? document.getElementById('filter-tag-' + tableId).value.toLowerCase().trim() : '';
+            const input = document.getElementById('filter-tag-' + tableId);
+            const tagVal = input ? input.value.toLowerCase().trim() : '';
             const searchTerms = tagVal.split(/\s+/).filter(t => t);
+            
+            const clearBtn = document.getElementById('clear-btn-' + tableId);
+            if (clearBtn) {
+                clearBtn.style.display = tagVal.length > 0 ? 'block' : 'none';
+            }
+            
+            if (tableId.includes('table')) {
+                const url = new URL(window.location);
+                if (tagVal) url.searchParams.set('q', tagVal);
+                else url.searchParams.delete('q');
+                window.history.replaceState({}, '', url);
+            }
             
             const minStr = document.getElementById('filter-diff-min-' + tableId) ? document.getElementById('filter-diff-min-' + tableId).value : '';
             const maxStr = document.getElementById('filter-diff-max-' + tableId) ? document.getElementById('filter-diff-max-' + tableId).value : '';
@@ -235,22 +276,20 @@
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             rows.forEach(row => {
                 const tags = row.getAttribute('data-tags').toLowerCase();
+                const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
                 const diff = diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
                 if (searchTerms.length > 0) {
-                    matchTag = searchTerms.every(term => tags.includes(term));
+                    matchTag = searchTerms.every(term => tags.includes(term) || baseName.includes(term));
                 }
 
                 let matchDiff = true;
                 if (minStr !== '' || maxStr !== '') {
-                    if (isNaN(diff)) {
-                        matchDiff = false;
-                    } else {
-                        if (diff < minVal || diff > maxVal) matchDiff = false;
-                    }
+                    if (isNaN(diff)) matchDiff = false;
+                    else if (diff < minVal || diff > maxVal) matchDiff = false;
                 }
                 
                 let matchDate = true;
@@ -272,21 +311,28 @@
             const dir = sortDirection[tableId][col];
             
             rows.sort((a, b) => {
+                let res = 0;
                 if (col === 'diff') {
                     let v1 = parseFloat(a.dataset.diff);
                     let v2 = parseFloat(b.dataset.diff);
                     if (isNaN(v1)) v1 = -Infinity;
                     if (isNaN(v2)) v2 = -Infinity;
-                    return (v1 - v2) * dir;
+                    res = (v1 - v2) * dir;
                 } else if (col === 'date') {
                     let d1 = a.dataset.date;
                     let d2 = b.dataset.date;
                     if (d1 === '未知') d1 = '';
                     if (d2 === '未知') d2 = '';
-                    return d1.localeCompare(d2) * dir;
+                    res = d1.localeCompare(d2) * dir;
                 }
+                
+                if (res === 0) {
+                    let baseA = a.dataset.base || '';
+                    let baseB = b.dataset.base || '';
+                    return baseA.localeCompare(baseB);
+                }
+                return res;
             });
-            
             rows.forEach(r => tbody.appendChild(r));
         }
 
@@ -303,6 +349,19 @@
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const q = urlParams.get('q');
+            if (q) {
+                const input = document.querySelector('input[id^="filter-tag-"]');
+                if (input) {
+                    input.value = q + ' ';
+                    const tableId = input.id.replace('filter-tag-', '');
+                    filterListTable(tableId);
+                }
+            }
+        });
     </script>
 </body>
 </html>
