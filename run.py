@@ -238,17 +238,27 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 clearBtn.style.display = tagVal.length > 0 ? 'block' : 'none';
             }}
             
-            if (tableId.includes('table')) {{
-                const url = new URL(window.location);
-                if (tagVal) url.searchParams.set('q', tagVal);
-                else url.searchParams.delete('q');
-                window.history.replaceState({{}}, '', url);
-            }}
-            
-            const minStr = document.getElementById('filter-diff-min-' + tableId) ? document.getElementById('filter-diff-min-' + tableId).value : '';
-            const maxStr = document.getElementById('filter-diff-max-' + tableId) ? document.getElementById('filter-diff-max-' + tableId).value : '';
+            const minInput = document.getElementById('filter-diff-min-' + tableId);
+            const maxInput = document.getElementById('filter-diff-max-' + tableId);
+            const minStr = minInput ? minInput.value : '';
+            const maxStr = maxInput ? maxInput.value : '';
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
+
+            if (tableId.includes('table')) {{
+                const url = new URL(window.location);
+                
+                if (tagVal) url.searchParams.set('q', tagVal);
+                else url.searchParams.delete('q');
+                
+                if (minStr) url.searchParams.set('min', minStr);
+                else url.searchParams.delete('min');
+                
+                if (maxStr) url.searchParams.set('max', maxStr);
+                else url.searchParams.delete('max');
+                
+                window.history.replaceState({{}}, '', url);
+            }}
 
             const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
             const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
@@ -333,11 +343,22 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         window.addEventListener('DOMContentLoaded', () => {{
             const urlParams = new URLSearchParams(window.location.search);
             const q = urlParams.get('q');
-            if (q) {{
-                const input = document.querySelector('input[id^="filter-tag-"]');
-                if (input) {{
-                    input.value = q + ' ';
-                    const tableId = input.id.replace('filter-tag-', '');
+            const min = urlParams.get('min');
+            const max = urlParams.get('max');
+            
+            const input = document.querySelector('input[id^="filter-tag-"]');
+            if (input) {{
+                const tableId = input.id.replace('filter-tag-', '');
+                
+                if (q) input.value = q + ' ';
+                
+                const minInput = document.getElementById('filter-diff-min-' + tableId);
+                if (minInput && min) minInput.value = min;
+                
+                const maxInput = document.getElementById('filter-diff-max-' + tableId);
+                if (maxInput && max) maxInput.value = max;
+                
+                if (q || min || max) {{
                     filterListTable(tableId);
                 }}
             }}
@@ -507,7 +528,7 @@ class ProblemGroup:
         self.has_conf = False
         self.versions = {}
         self.version_order = ['Normal', 'Easy', 'Hard']
-        self.appearances = [] # list of (category, contest_name, problem_id)
+        self.appearances = []
 
     def add_file(self, version, ext, filename, base_filename):
         if version not in self.versions:
@@ -577,75 +598,12 @@ def apply_categories_and_links(groups, data_dir):
         is_cf, is_at = bool(m_cf), bool(m_ac)
 
         group.appearances = []
+        group.has_conf = False
         
-        conf_file = None
         for v_name in group.version_order:
-            if v_name in group.versions and group.versions[v_name].files.get('conf'):
-                conf_file = group.versions[v_name].files['conf']
-                break
-                
-        primary_link = "#"
-        group_remark = ""
-        group_difficulty = None
-        group_tags = []
-        
-        if conf_file:
-            group.has_conf = True
-            fp = os.path.join(data_dir, conf_file)
-            try:
-                with open(fp, 'r', encoding='utf-8') as f:
-                    lines = [line.strip() for line in f.readlines()]
-                while len(lines) < 6: lines.append('')
-                
-                parts = lines[0].split()
-                if parts:
-                    try:
-                        group_difficulty = float(parts[-1])
-                        group_tags = parts[:-1]
-                    except ValueError:
-                        group_tags = parts
-                        group_difficulty = None
-                        
-                raw_cat = lines[1].lower()
-                cat_conf = 'OI' if raw_cat == 'oi' else ('XCPC' if raw_cat == 'xcpc' else '')
-                
-                primary_link = lines[2]
-                
-                c_list = [c.strip() for c in lines[3].split('|') if c.strip()] if lines[3] else []
-                p_list = [p.strip() for p in lines[4].split('|') if p.strip()] if lines[4] else []
-                
-                for i in range(max(len(c_list), len(p_list))):
-                    c = c_list[i] if i < len(c_list) else ""
-                    p = p_list[i] if i < len(p_list) else ""
-                    if c and cat_conf:
-                        group.appearances.append((cat_conf, c, p))
-                    elif c and not cat_conf:
-                        group.appearances.append(('', c, p))
-                        
-                group_remark = lines[5]
-            except Exception:
-                pass
-        
-        # 补全 CF/AT 官方归档信息
-        cf_at_link = "#"
-        if is_cf:
-            c = f"Codeforces Round {m_cf.group(1)}"
-            p = m_cf.group(2).upper()
-            group.appearances.append(('Codeforces', c, p))
-            cf_at_link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{p}"
-        elif is_at:
-            c = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
-            p = m_ac.group(3).upper()
-            group.appearances.append(('AtCoder', c, p))
-            cf_at_link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{p.lower()}"
+            if v_name not in group.versions: continue
+            v = group.versions[v_name]
             
-        if not group.appearances:
-            group.appearances.append(('Summary', '', ''))
-            
-        if not primary_link or primary_link == "#":
-            primary_link = cf_at_link
-
-        for v_name, v in group.versions.items():
             if v.files.get('cpp'):
                 fp = os.path.join(data_dir, v.files['cpp'])
                 if os.path.exists(fp):
@@ -656,15 +614,70 @@ def apply_categories_and_links(groups, data_dir):
                             if m: v.date = m.group(1)
                     except Exception: pass
                     
-            v.has_conf = group.has_conf
-            v.difficulty = group_difficulty
-            v.tags = group_tags
-            v.remark = group_remark
+            primary_link = "#"
+            
+            if v.files.get('conf'):
+                v.has_conf = True
+                group.has_conf = True
+                fp = os.path.join(data_dir, v.files['conf'])
+                try:
+                    with open(fp, 'r', encoding='utf-8') as f:
+                        lines = [line.strip() for line in f.readlines()]
+                    while len(lines) < 6: lines.append('')
+                    
+                    parts = lines[0].split()
+                    if parts:
+                        try:
+                            v.difficulty = float(parts[-1])
+                            v.tags = parts[:-1]
+                        except ValueError:
+                            v.tags = parts
+                            v.difficulty = None
+                            
+                    raw_cat = lines[1].lower()
+                    cat_conf = 'OI' if raw_cat == 'oi' else ('XCPC' if raw_cat == 'xcpc' else '')
+                    primary_link = lines[2]
+                    
+                    c_list = [c.strip() for c in lines[3].split('|') if c.strip()] if lines[3] else []
+                    p_list = [p.strip() for p in lines[4].split('|') if p.strip()] if lines[4] else []
+                    
+                    for i in range(max(len(c_list), len(p_list))):
+                        c = c_list[i] if i < len(c_list) else ""
+                        p = p_list[i] if i < len(p_list) else ""
+                        if c and cat_conf:
+                            v.appearances.append((cat_conf, c, p))
+                        elif c and not cat_conf:
+                            v.appearances.append(('', c, p))
+                            
+                    v.remark = lines[5]
+                except Exception:
+                    pass
+            
+            suffix = "1" if v_name == 'Easy' else ("2" if v_name == 'Hard' else "")
+            cf_at_link = "#"
+            if is_cf:
+                c = f"Codeforces Round {m_cf.group(1)}"
+                p = m_cf.group(2).upper() + suffix
+                v.appearances.append(('Codeforces', c, p))
+                cf_at_link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{p}"
+            elif is_at:
+                c = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
+                p = m_ac.group(3).upper() + suffix
+                v.appearances.append(('AtCoder', c, p))
+                cf_at_link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{p.lower()}"
+                
+            if not v.appearances:
+                v.appearances.append(('Summary', '', ''))
+                
+            if not primary_link or primary_link == "#":
+                primary_link = cf_at_link
             v.link = primary_link
-            v.appearances = group.appearances
+
+            for app in v.appearances:
+                if app not in group.appearances:
+                    group.appearances.append(app)
 
 def render_single_version(v, rel_path, contest_pid="", is_official=False):
-    # 动态适应 E/H 题号：仅当是官方比赛时，才自动追加 1 或 2
     display_pid = v.base_filename
     if contest_pid:
         display_pid = contest_pid
@@ -751,7 +764,6 @@ def build_category_page(title, groups_dict, out_path, rel_path):
     stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div>{sort_html}</div>'
 
     content_html = ""
-    # 判断是否为官方比赛
     is_official = (title in ['Codeforces', 'AtCoder'])
     
     if title == 'AtCoder':
@@ -788,7 +800,7 @@ def build_category_page(title, groups_dict, out_path, rel_path):
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-    
+
 def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table"):
     has_cpp = sum(1 for v in all_versions if v.files.get('cpp'))
     has_md = sum(1 for v in all_versions if v.files.get('md'))
@@ -831,7 +843,6 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
             <tbody>
     """
     
-    # 稳定排序机制：先排字典序，再排日期
     sorted_versions = sorted(all_versions, key=lambda x: x.base_filename)
     sorted_versions.sort(key=lambda x: (x.date != "未知", x.date), reverse=True)
     
@@ -850,7 +861,7 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); text-decoration:none;"><b>{display_name}</b></a>' if v.link != '#' else f'<b>{display_name}</b>'
         tags_str = " ".join(v.tags) if v.tags else ""
-        tags_html = "".join([f'<span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter(\'{t}\', \'{table_id}\')" title="追加到筛选">{t}</span>' for t in v.tags])
+        tags_html = "".join([f'<span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter(\'{t}\', \'{table_id}\')" title="点击筛选/取消">{t}</span>' for t in v.tags])
         diff_val = v.difficulty if v.difficulty is not None else 'None'
         diff_html = "-"
         remark_text = v.remark if v.remark else "-"
