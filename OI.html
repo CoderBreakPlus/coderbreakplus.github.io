@@ -132,7 +132,7 @@
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/P12636.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/P12636" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/P12636.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
     </div></td></tr><tr data-name="GZOI-NOI2026模拟赛（十）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td><div style="display: flex; gap: 4px; justify-content: center; width: 100%;"><div style="flex: 1; ">
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/2152/H" target="_blank">C</a><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 100%, transparent 100%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3200</span></div>
+        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/2152/H2" target="_blank">C</a><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 100%, transparent 100%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3200</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf2152h2.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/cf2152h2" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/cf2152h2.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
     </div></div></div></td></tr><tr data-name="JOI Final 2026 Day 1" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">JOI Final 2026 Day 1 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -141,7 +141,7 @@
     </div></td><td></td><td></td></tr></tbody></table></div>
         
         <div class="footer">
-            最后构建: 2026-04-15 20:17:40 | Algorithm Platform Generator
+            最后构建: 2026-04-15 20:32:03 | Algorithm Platform Generator
         </div>
     </div>
 
@@ -238,17 +238,27 @@
                 clearBtn.style.display = tagVal.length > 0 ? 'block' : 'none';
             }
             
-            if (tableId.includes('table')) {
-                const url = new URL(window.location);
-                if (tagVal) url.searchParams.set('q', tagVal);
-                else url.searchParams.delete('q');
-                window.history.replaceState({}, '', url);
-            }
-            
-            const minStr = document.getElementById('filter-diff-min-' + tableId) ? document.getElementById('filter-diff-min-' + tableId).value : '';
-            const maxStr = document.getElementById('filter-diff-max-' + tableId) ? document.getElementById('filter-diff-max-' + tableId).value : '';
+            const minInput = document.getElementById('filter-diff-min-' + tableId);
+            const maxInput = document.getElementById('filter-diff-max-' + tableId);
+            const minStr = minInput ? minInput.value : '';
+            const maxStr = maxInput ? maxInput.value : '';
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
+
+            if (tableId.includes('table')) {
+                const url = new URL(window.location);
+                
+                if (tagVal) url.searchParams.set('q', tagVal);
+                else url.searchParams.delete('q');
+                
+                if (minStr) url.searchParams.set('min', minStr);
+                else url.searchParams.delete('min');
+                
+                if (maxStr) url.searchParams.set('max', maxStr);
+                else url.searchParams.delete('max');
+                
+                window.history.replaceState({}, '', url);
+            }
 
             const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
             const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
@@ -333,11 +343,22 @@
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const q = urlParams.get('q');
-            if (q) {
-                const input = document.querySelector('input[id^="filter-tag-"]');
-                if (input) {
-                    input.value = q + ' ';
-                    const tableId = input.id.replace('filter-tag-', '');
+            const min = urlParams.get('min');
+            const max = urlParams.get('max');
+            
+            const input = document.querySelector('input[id^="filter-tag-"]');
+            if (input) {
+                const tableId = input.id.replace('filter-tag-', '');
+                
+                if (q) input.value = q + ' ';
+                
+                const minInput = document.getElementById('filter-diff-min-' + tableId);
+                if (minInput && min) minInput.value = min;
+                
+                const maxInput = document.getElementById('filter-diff-max-' + tableId);
+                if (maxInput && max) maxInput.value = max;
+                
+                if (q || min || max) {
                     filterListTable(tableId);
                 }
             }

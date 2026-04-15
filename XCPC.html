@@ -221,7 +221,7 @@
     </div></td></tr></tbody></table></div>
         
         <div class="footer">
-            最后构建: 2026-04-15 20:17:40 | Algorithm Platform Generator
+            最后构建: 2026-04-15 20:32:03 | Algorithm Platform Generator
         </div>
     </div>
 
@@ -318,17 +318,27 @@
                 clearBtn.style.display = tagVal.length > 0 ? 'block' : 'none';
             }
             
-            if (tableId.includes('table')) {
-                const url = new URL(window.location);
-                if (tagVal) url.searchParams.set('q', tagVal);
-                else url.searchParams.delete('q');
-                window.history.replaceState({}, '', url);
-            }
-            
-            const minStr = document.getElementById('filter-diff-min-' + tableId) ? document.getElementById('filter-diff-min-' + tableId).value : '';
-            const maxStr = document.getElementById('filter-diff-max-' + tableId) ? document.getElementById('filter-diff-max-' + tableId).value : '';
+            const minInput = document.getElementById('filter-diff-min-' + tableId);
+            const maxInput = document.getElementById('filter-diff-max-' + tableId);
+            const minStr = minInput ? minInput.value : '';
+            const maxStr = maxInput ? maxInput.value : '';
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
+
+            if (tableId.includes('table')) {
+                const url = new URL(window.location);
+                
+                if (tagVal) url.searchParams.set('q', tagVal);
+                else url.searchParams.delete('q');
+                
+                if (minStr) url.searchParams.set('min', minStr);
+                else url.searchParams.delete('min');
+                
+                if (maxStr) url.searchParams.set('max', maxStr);
+                else url.searchParams.delete('max');
+                
+                window.history.replaceState({}, '', url);
+            }
 
             const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
             const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
@@ -413,11 +423,22 @@
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const q = urlParams.get('q');
-            if (q) {
-                const input = document.querySelector('input[id^="filter-tag-"]');
-                if (input) {
-                    input.value = q + ' ';
-                    const tableId = input.id.replace('filter-tag-', '');
+            const min = urlParams.get('min');
+            const max = urlParams.get('max');
+            
+            const input = document.querySelector('input[id^="filter-tag-"]');
+            if (input) {
+                const tableId = input.id.replace('filter-tag-', '');
+                
+                if (q) input.value = q + ' ';
+                
+                const minInput = document.getElementById('filter-diff-min-' + tableId);
+                if (minInput && min) minInput.value = min;
+                
+                const maxInput = document.getElementById('filter-diff-max-' + tableId);
+                if (maxInput && max) maxInput.value = max;
+                
+                if (q || min || max) {
                     filterListTable(tableId);
                 }
             }
