@@ -361,8 +361,8 @@ void procedure(){
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.out","w",stdout));
+		assert(freopen("test10.in","r",stdin));
+		assert(freopen("test10.ans","w",stdout));
 	#endif
 	ll T=1;
 	math_init();
