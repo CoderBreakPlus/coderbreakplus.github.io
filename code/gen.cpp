@@ -28,16 +28,18 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
+mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
+ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-int n=3000;
+int n=rng(99996,100000),m=rng(50000,n);
+
 void procedure(){
-	cout<<n<<" "<<1<<endl;
-	for(ll i=1;i<=n;i++)cout<<1<<" ";cout<<endl;
+	cout<<n<<" "<<m<<endl;
+	for(ll i=1;i<=n;i++)cout<<rng(0,998244352)<<" ";cout<<endl;
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.out","w",stdout));
+		assert(freopen("test10.in","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
