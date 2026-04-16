@@ -1,4 +1,4 @@
-// created time: 2026-04-16 08:41:37
+// created time: 2026-04-16 10:49:08
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,30 +28,16 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-ll n=500000,q=100000,m=5;
-ll a[500005],b[100005];
-
+int n=3000;
 void procedure(){
-	cout<<n<<" "<<q<<endl;
-	for(ll i=1;i<=n;i++)a[i]=i;
-	shuffle(a+1,a+n+1,rnd);
-	for(ll i=1;i<=n;i++)cout<<a[i]<<" ";cout<<endl;
-	for(ll i=1;i<=q;i++){
-		for(ll j=1;j<=2*m;j++) b[j]=rnd()%(n-2*m+1);
-
-		sort(b+1,b+2*m+1);
-		for(ll j=1;j<=2*m;j++) b[j]+=j;
-
-		cout<<m<<endl;
-		for(ll j=1;j<=m;j++) cout<<b[2*j-1]<<" "<<b[2*j]<<endl;
-	}
+	cout<<n<<" "<<1<<endl;
+	for(ll i=1;i<=n;i++)cout<<1<<" ";cout<<endl;
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
