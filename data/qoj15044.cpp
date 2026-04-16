@@ -1,4 +1,5 @@
 // created time: 2026-04-16 11:17:28
+// https://qoj.ac/contest/2693/problem/15044
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -210,7 +211,7 @@ void fastinv(int *a, int *b, int n) {
 	poly_t f = poly_t{a, a + n + 1}.inverse(n + 1);
 	copy(f.begin(), f.begin() + n + 1, b);
 }
-int n,m,a[100005],b[100005];
+int n,dp[100005],ans[100005];
 
 // 用于封装二维多项式的结构体
 struct Poly2D {
@@ -274,7 +275,8 @@ Poly2D multiply(const Poly2D& A, const Poly2D& B, int limit_x, int limit_y) {
 }
 
 // 主算法接口
-void get_coefficients(int n, int n_orig, int *F, int *ans) {
+void get_coefficients(int n, int *F, int *ans) {
+	int n_orig = n-1;
 	if (n_orig == 0) {
 		ans[0] = 1;
 		return;
@@ -348,15 +350,19 @@ void get_coefficients(int n, int n_orig, int *F, int *ans) {
 	// 当 curr_N 归零时，相当于求 [x^0] P(x,y)/Q(x,y)。
 	// 由于 F[0]=0，可以严谨证明任何时刻的 Q(0, y) 都恒为 1，
 	// 所以答案矩阵就直接存在了最后的 P(0, y) 中。
-	for (int i = 1; i <= n_orig; ++i) {
+	for (int i = 0; i < n; ++i) {
 		ans[i] = P.get(0, i);
 	}
 }
 void procedure(){
-	n=read(),m=read();
-	for(int i=1;i<=n;i++) a[i]=read();
-	get_coefficients(n,m,a,b);
-	for(int i=1;i<=m;i++) printf("%d ",b[i]);
+	n=read();
+	for(int i=0;i<=n;i++) dp[i]=fac[i+1];
+	fastinv(dp,dp,n);
+	for(int i=0;i<=n;i++){
+		dp[i]=(mod-dp[i]+(i==0))%mod;
+	}
+	get_coefficients(n,dp,ans);
+	for(int i=0;i<n;i++) printf("%d ",ans[i]);
 	puts("");
 }
 int main(){
@@ -369,44 +375,3 @@ int main(){
 	while(T--) procedure();
 	return 0;
 }
-/*
-
-## 问题背景与核心难点
-
-本题要求计算多项式幂次的特定项系数集合，即求 $i \in [0, m]$ 时 $[x^{m}] F(x)^i$ 的值（已知 $F_0=0$）。
-在常规的生成函数处理中，提取 $[x^{m}] F(x)^i$ 往往会导向拉格朗日反演，需要计算复合逆、求导以及进行多次多项式 $\exp$ 和 $\ln$ 操作。这种做法不仅常数庞大，而且在严格的测试限制（如 $n \le 10^5$, 4s）下极容易引发 TLE。
-
-本解法跳出了拉格朗日反演的常规框架，巧妙结合了 **Bostan-Mori 算法**与**二元多项式降维压位**技巧，直接在 $\mathcal{O}(n \log^2 n)$ 的时间复杂度下求解。该方法避开了所有微积分和求逆操作，拥有极小的常数，非常适合处理十万级别规模的高强度多项式运算。
-
-## 算法原理解析
-
-### 1. 转化为二元生成函数
-设我们需要求的答案序列为 $c_i = [x^{m}] F(x)^i$。
-构造该序列的生成函数 $H(y) = \sum_{i=0}^{m} c_i y^i$。
-根据定义，可以将其提取系数的逻辑写为：
-$$H(y) = [x^{m}] \sum_{i=0}^{m} (y F(x))^i = [x^{m}] \frac{1}{1 - y F(x)}$$
-
-至此，原问题转化为求一个**二元分式**的 $x^{m}$ 次项系数。记分子为 $P(x, y) = 1$，分母为 $Q(x, y) = 1 - y F(x)$。
-
-### 2. Bostan-Mori 奇偶折半
-Bostan-Mori 算法常用于求常系数线性递推的第 $N$ 项，其核心思想是通过分子分母同乘 $Q(-x, y)$ 来消除分母中 $x$ 的奇数次项：
-$$[x^N] \frac{P(x, y)}{Q(x, y)} = [x^N] \frac{P(x, y) Q(-x, y)}{Q(x, y) Q(-x, y)}$$
-
-此时，新的分母 $W(x, y) = Q(x, y) Q(-x, y)$ 是关于 $x$ 的偶函数（即只包含 $x^{2k}$ 项）。
-因此，我们可以将分母中的 $x^2$ 整体替换为 $x$，使 $x$ 的维度直接减半。对于分子 $V(x, y) = P(x, y) Q(-x, y)$，我们根据当前目标提取次数 $N$ 的奇偶性，仅仅保留对应的奇数项或偶数项，随后也按 $x^2 \to x$ 减半。
-
-通过不断迭代 $N \leftarrow \lfloor N / 2 \rfloor$，最终 $N$ 降为 0 时，$P(0, y) / Q(0, y)$ 的常数项即为答案。因为 $F[0]=0$，所以任何时刻 $Q(0, y)$ 恒为 1，最终提取出的 $P(0, y)$ 就是我们需要输出的答案多项式。
-
-### 3. 二维降一维的压位优化
-在上述迭代中，$P$ 和 $Q$ 都是关于 $x$ 和 $y$ 的二元多项式。如果直接手写二维 NTT，常数依然难以接受。
-观察各维度的最高次幂变化：每次迭代中，$x$ 维度减半，而 $y$ 维度翻倍（但我们只关心到 $y^{m}$ 即可截断）。因此，在任何一层的状态下，$x$ 和 $y$ 的有效维度乘积始终保持在 $\mathcal{O}(n)$ 级别！
-
-我们可以利用**降维压位**，将二维项 $x^i y^j$ 映射为一维变量 $t^{i \cdot K + j}$。
-这里 $K$ 是压位步长，取 $K = \max(\text{degree}(y)) + 1$。因为最大可能的 $y$ 次数不会超过 $K-1$，所以在一维多项式相乘时，$y$ 维度的进位绝对不会溢出并污染到 $x$ 维度的系数。
-通过这种一维扁平化处理，我们只需要调用最基础普通的 1D `fastmul` 接口，即可高效完成二元多项式乘法。
-
-## 复杂度分析
-- **时间复杂度**：主循环共进行 $\log n$ 层迭代。在第 $k$ 层，$x$ 的次数最高约为 $n/2^k$，$y$ 的次数最高为 $\min(n, 2^k)$。由于 $y$ 严格截断，压位后的一维多项式总保留长度始终控制在 $2n$ 以内。每一层仅进行两次一维 `fastmul`，故总时间复杂度为严格的 $\mathcal{O}(n \log^2 n)$。
-- **空间复杂度**：该非递归写法不需要维护深层的调用栈，二维转一维所需的辅助数组最大长度不超过 $2n$，空间复杂度为 $\mathcal{O}(n)$。
-
-*/

@@ -28,10 +28,9 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-const int B=320,N=500000;
+const int B=450,N=500000;
 
 int n,m,a[N+5],lf[N+5],rh[N+5],bl[N+5];
-int tab[N/B+5][N/B+5];
 
 ll ans[N+5];
 pair<int,int> q[N+5]; int tt;

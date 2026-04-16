@@ -1,4 +1,4 @@
-// created time: 2026-04-16 07:47:15
+// created time: 2026-04-16 11:33:26
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,41 +28,30 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-const int B=400,N=500000;
 
-int n,m,a[N+5];
-ll ans[N+5];
-vector<pair<int,int>>q[N+5];
-
-struct BIT{
-	int c[N+5];
-	void upd(int x,int w){
-		while(x<=n) c[x]+=w,x+=(x&-x);
-	}
-	int qry(int x){
-		int ret=0;
-		while(x) ret+=c[x],x-=(x&-x);
-		return ret;
-	}
-}bit;
+int n=5,a[55];
 
 void procedure(){
-	n=read(),m=read();
-	for(int i=1;i<=n;i++)a[i]=read();
-	for(int i=1;i<=m;i++){
-		int y=read();
-		while(y--){
-			int l=read(),r=read();
-			q[i].pb(l,r);
-
-			for(int x=l;x<=r;x++) ans[i]+=bit.qry(a[x]);
-			for(int x=l;x<=r;x++) bit.upd(a[x],1);
-		}
-		for(auto [l,r]: q[i]){
-			for(int x=l;x<=r;x++) bit.upd(a[x],-1);
-		}
+	for(n=1;n<=5;n++){
+		for(int i=0;i<n;i++)a[i]=i;
+		int cnt=0;
+		do{
+			bool f=1;
+			for(int l=0;l<n;l++){
+				vector<bool>v(n+1);
+				int pt=0;
+				for(int r=l;r<n;r++){
+					v[a[r]]=1;
+					while(v[pt]) pt++;
+					if(pt==r-l+1 && pt!=n && pt!=1){
+						f=0;
+					} 
+				}
+			}
+			cnt+=f;
+		}while(next_permutation(a,a+n));
+		cout<<cnt<<endl;
 	}
-	for(int i=1;i<=m;i++) printf("%lld\n",ans[i]);
 }
 int main(){
 	#ifdef LOCAL
