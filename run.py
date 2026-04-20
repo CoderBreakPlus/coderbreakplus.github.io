@@ -520,7 +520,7 @@ class ProblemVersion:
         self.remark = ""
         self.has_conf = False
         self.date = "未知"
-        self.appearances = [] # list of (category, contest_name, problem_id)
+        self.appearances = [] 
 
 class ProblemGroup:
     def __init__(self, base_name):
@@ -638,12 +638,22 @@ def apply_categories_and_links(groups, data_dir):
                     cat_conf = 'OI' if raw_cat == 'oi' else ('XCPC' if raw_cat == 'xcpc' else '')
                     primary_link = lines[2]
                     
-                    c_list = [c.strip() for c in lines[3].split('|') if c.strip()] if lines[3] else []
-                    p_list = [p.strip() for p in lines[4].split('|') if p.strip()] if lines[4] else []
+                    c_str = lines[3]
+                    p_str = lines[4]
+                    
+                    if not c_str:
+                        if is_cf: c_str = f"Codeforces Round {m_cf.group(1)}"
+                        elif is_at: c_str = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
+                    if not p_str:
+                        if is_cf: p_str = m_cf.group(2).upper()
+                        elif is_at: p_str = m_ac.group(3).upper()
+                        
+                    c_list = [c.strip() for c in c_str.split('|') if c.strip()]
+                    p_list = [p.strip() for p in p_str.split('|') if p.strip()]
                     
                     for i in range(max(len(c_list), len(p_list))):
-                        c = c_list[i] if i < len(c_list) else ""
-                        p = p_list[i] if i < len(p_list) else ""
+                        c = c_list[i] if i < len(c_list) else (c_list[-1] if c_list else "")
+                        p = p_list[i] if i < len(p_list) else (p_list[-1] if p_list else "")
                         if c and cat_conf:
                             v.appearances.append((cat_conf, c, p))
                         elif c and not cat_conf:
@@ -655,16 +665,17 @@ def apply_categories_and_links(groups, data_dir):
             
             suffix = "1" if v_name == 'Easy' else ("2" if v_name == 'Hard' else "")
             cf_at_link = "#"
+            
             if is_cf:
                 c = f"Codeforces Round {m_cf.group(1)}"
-                p = m_cf.group(2).upper() + suffix
-                v.appearances.append(('Codeforces', c, p))
-                cf_at_link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{p}"
+                base_p = m_cf.group(2).upper()
+                v.appearances.append(('Codeforces', c, base_p))
+                cf_at_link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{base_p + suffix}"
             elif is_at:
                 c = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
-                p = m_ac.group(3).upper() + suffix
-                v.appearances.append(('AtCoder', c, p))
-                cf_at_link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{p.lower()}"
+                base_p = m_ac.group(3).upper()
+                v.appearances.append(('AtCoder', c, base_p))
+                cf_at_link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{(base_p + suffix).lower()}"
                 
             if not v.appearances:
                 v.appearances.append(('Summary', '', ''))
