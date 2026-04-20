@@ -1,4 +1,5 @@
 // created time: 2026-04-20 08:01:25
+// https://qoj.ac/contest/1887/problem/10032
 #pragma GCC optimize(3,"inline")
 #pragma GCC optimize("Ofast,no-stack-protector,unroll-loops,fast-math")
 #pragma GCC target("sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2")

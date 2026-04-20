@@ -493,7 +493,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             <h3><span>⚙️</span> .conf 配置文件语法规则 (固定 6 行)</h3>
             <div class="syntax-code">
                 <div class="line-def"><span class="line-num">1</span> <span class="line-desc"><span class="highlight">标签/关键词</span> (多个用空格隔开，末尾数字自动解析为难度)</span></div>
-                <div class="line-def"><span class="line-num">2</span> <span class="line-desc"><span class="highlight">比赛分类</span> (填 OI 或 XCPC。CF/AT 留空自动归档)</span></div>
+                <div class="line-def"><span class="line-num">2</span> <span class="line-desc"><span class="highlight">比赛分类</span> (支持 | 隔开多个，如 OI | XCPC。CF/AT 留空自动归档)</span></div>
                 <div class="line-def"><span class="line-num">3</span> <span class="line-desc"><span class="highlight">URL 链接</span> (完整链接。CF/AT 留空自动生成)</span></div>
                 <div class="line-def"><span class="line-num">4</span> <span class="line-desc"><span class="highlight">比赛名称</span> (支持 | 隔开多场，如 XOJ Round 1|YOJ Round 2)</span></div>
                 <div class="line-def"><span class="line-num">5</span> <span class="line-desc"><span class="highlight">题目编号</span> (支持 | 隔开多个，如 C|D)</span></div>
@@ -634,31 +634,48 @@ def apply_categories_and_links(groups, data_dir):
                             v.tags = parts
                             v.difficulty = None
                             
-                    raw_cat = lines[1].lower()
-                    cat_conf = 'OI' if raw_cat == 'oi' else ('XCPC' if raw_cat == 'xcpc' else '')
-                    primary_link = lines[2]
+                    cat_str = lines[1].strip()
+                    c_str = lines[3].strip()
+                    p_str = lines[4].strip()
                     
-                    c_str = lines[3]
-                    p_str = lines[4]
-                    
-                    if not c_str:
-                        if is_cf: c_str = f"Codeforces Round {m_cf.group(1)}"
-                        elif is_at: c_str = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
-                    if not p_str:
-                        if is_cf: p_str = m_cf.group(2).upper()
-                        elif is_at: p_str = m_ac.group(3).upper()
+                    if cat_str or c_str or p_str:
+                        cat_list_raw = [x.strip() for x in cat_str.split('|')] if cat_str else []
+                        c_list = [x.strip() for x in c_str.split('|')] if c_str else []
+                        p_list = [x.strip() for x in p_str.split('|')] if p_str else []
                         
-                    c_list = [c.strip() for c in c_str.split('|') if c.strip()]
-                    p_list = [p.strip() for p in p_str.split('|') if p.strip()]
-                    
-                    for i in range(max(len(c_list), len(p_list))):
-                        c = c_list[i] if i < len(c_list) else (c_list[-1] if c_list else "")
-                        p = p_list[i] if i < len(p_list) else (p_list[-1] if p_list else "")
-                        if c and cat_conf:
-                            v.appearances.append((cat_conf, c, p))
-                        elif c and not cat_conf:
-                            v.appearances.append(('', c, p))
+                        cat_list_clean = []
+                        for cat in cat_list_raw:
+                            if cat.lower() == 'oi': cat_list_clean.append('OI')
+                            elif cat.lower() == 'xcpc': cat_list_clean.append('XCPC')
+                            else: cat_list_clean.append(cat)
                             
+                        if not c_list:
+                            if is_cf: c_list = [f"Codeforces Round {m_cf.group(1)}"]
+                            elif is_at: c_list = [f"{m_ac.group(1).upper()}{m_ac.group(2)}"]
+                        if not p_list:
+                            if is_cf: p_list = [m_cf.group(2).upper()]
+                            elif is_at: p_list = [m_ac.group(3).upper()]
+                            
+                        max_len = max(len(cat_list_clean), len(c_list), len(p_list))
+                        
+                        for i in range(max_len):
+                            cat = cat_list_clean[i] if i < len(cat_list_clean) else (cat_list_clean[-1] if cat_list_clean else "")
+                            c = c_list[i] if i < len(c_list) else (c_list[-1] if c_list else "")
+                            p = p_list[i] if i < len(p_list) else (p_list[-1] if p_list else "")
+                            
+                            current_cat = cat
+                            if not current_cat:
+                                if is_cf and c == f"Codeforces Round {m_cf.group(1)}":
+                                    current_cat = 'Codeforces'
+                                elif is_at and c == f"{m_ac.group(1).upper()}{m_ac.group(2)}":
+                                    current_cat = 'AtCoder'
+                                    
+                            if c and current_cat:
+                                v.appearances.append((current_cat, c, p))
+                            elif c and not current_cat:
+                                v.appearances.append(('', c, p))
+                                
+                    primary_link = lines[2].strip()
                     v.remark = lines[5]
                 except Exception:
                     pass
@@ -861,7 +878,7 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         origin_parts = []
         seen = set()
         for cat, c, p in v.appearances:
-            s = f"{cat} - {c}" if c else cat
+            s = f"{cat} - {c}" if cat and c else (c if not cat else cat)
             if s not in seen and s != "Summary" and s:
                 origin_parts.append(s)
                 seen.add(s)
