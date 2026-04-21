@@ -1,4 +1,4 @@
-// created time: 2026-04-21 14:40:26
+// created time: 2026-04-21 11:42:26
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,18 +28,48 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+
+ll c,n,q,a[3000005];
+
+struct BIT{
+	ll c[3000005];
+	void upd(ll x,ll w){
+		while(x<=n){
+			c[x]+=w;
+			x+=(x&-x);
+		}
+	}
+	ll qry(ll x){
+		ll ret=0;
+		while(x){
+			ret+=c[x];
+			x-=(x&-x);
+		}
+		return ret;
+	}
+}B;
 
 void procedure(){
-	ll x=rng(0,100),y=rng(0,100);
-	cout<<x<<" "<<y<<endl;
+	c=read(),n=read(),q=read();
+	for(ll i=1;i<=n;i++) a[i]=read(),B.upd(i,lg2(a[i]));
+
+	while(q--){
+		ll op=read(),l=read(),r=read();
+		if(op==1){
+			ll ans=B.qry(r)-B.qry(l-1);
+			printf("%lld\n",2*ans+1+2*(r-l+1));
+		}else{
+			B.upd(l,lg2(r)-lg2(a[l]));
+			a[l]=r;
+		}
+	}
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=100; cout<<T<<endl;
+	ll T=1;
 	// math_init();
 	while(T--) procedure();
 	return 0;

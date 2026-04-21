@@ -1,4 +1,4 @@
-// created time: 2026-04-21 14:40:26
+// created time: 2026-04-21 14:08:06
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,18 +28,38 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+
+int n;char s[200005];
 
 void procedure(){
-	ll x=rng(0,100),y=rng(0,100);
-	cout<<x<<" "<<y<<endl;
+	n=read();	
+	scanf("%s",s+1);
+	s[n+1]='1';
+	int lst=0,ans=0;
+
+	int cnt=0;
+	for(int i=1;i<=n;i++) cnt+=(s[i]=='1');
+
+	if(!cnt){
+		printf("%d\n",(n-1)/3+1);
+		return;
+	}
+	for(int i=1;i<=n+1;i++){
+		if(s[i]=='1'){
+			ans+=(i<=n);
+			if(!lst || i==n+1) ans+=(i-lst)/3;
+			else ans+=(i-lst-1)/3;
+			lst=i;
+		}
+	}
+	printf("%d\n",ans);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=100; cout<<T<<endl;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
