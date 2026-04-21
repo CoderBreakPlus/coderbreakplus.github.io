@@ -1,4 +1,4 @@
-// created time: 2026-04-21 14:40:26
+// created time: 2026-04-21 14:21:17
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,18 +28,47 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
+ll x,y;
 void procedure(){
-	ll x=rng(0,100),y=rng(0,100);
-	cout<<x<<" "<<y<<endl;
+	x=read(),y=read();
+	vector<ll>a={0,x},b={0,y};
+	for(ll i=30;i>=0;i--){
+		if(!((x>>i)&1))
+			a.pb(((x>>i)|1)<<i),b.pb(((y>>i)|1)<<i);
+		else{
+			a.pb(x>>i<<i),b.pb(x>>i<<i);
+			a.pb((x>>i<<i)-1),b.pb((x>>i<<i)-1);
+		}
+	}
+	ll ans=1e18,px,py;
+	for(auto xx:a)for(auto yy:b){
+		if(xx<0||yy<0)continue;
+		ll d=(xx&yy);
+
+		xx-=d;
+		ll dis=max(x-xx,xx-x)+max(y-yy,yy-y);
+		if(dis<ans){
+			px=xx,py=yy;
+			ans=dis;
+		}
+
+		xx+=d,yy-=d;
+		dis=max(x-xx,xx-x)+max(y-yy,yy-y);
+		if(dis<ans){
+			px=xx,py=yy;
+			ans=dis;
+		}
+	}
+	printf("%lld\n",ans);
+	// printf("%lld %lld\n",px,py);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=100; cout<<T<<endl;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;

@@ -1,4 +1,4 @@
-// created time: 2026-04-21 14:40:26
+// created time: 2026-04-21 16:39:55
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,18 +28,57 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+
+int n,p[4005];
+
+void upd(int x,int y){
+	if(x==y)return;
+	cout<<"? "<<x<<" "<<y<<endl;
+	int a,b; if(!(cin>>a>>b)) exit(0);
+	swap(p[a],p[b]);
+}
 
 void procedure(){
-	ll x=rng(0,100),y=rng(0,100);
-	cout<<x<<" "<<y<<endl;
+	cin>>n;
+	for(int i=1;i<=n;i++)cin>>p[i];
+
+	if(n&1){
+		int pos;
+		for(int i=1;i<=n;i++)
+			if(p[i]==(n/2+1))pos=i;
+
+		upd(pos, n/2+1);
+		while(p[n/2+1]!=n/2+1){
+			pos=n-pos+1;
+			upd(pos, n/2+1);
+		}
+	}
+	
+	for(int i=1,j=n;i<j;i++,j--){
+		{
+			int a,b;
+			for(int x=1;x<=n;x++){
+				if(p[x]==i) a=x;
+				if(p[x]==j) b=x;
+			}
+			upd(a,n-b+1);
+		}
+		{
+			int a;
+			for(int x=1;x<=n;x++){
+				if(p[x]==i) a=x;
+			}
+			while(!(p[i]==i && p[j]==j)) upd(a,i);
+		}
+	}
+	cout<<"!"<<endl;
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=100; cout<<T<<endl;
+	ll T;cin>>T;
 	// math_init();
 	while(T--) procedure();
 	return 0;
