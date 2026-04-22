@@ -1,7 +1,7 @@
 // created time: 2026-04-22 14:38:18
-#pragma GCC optimize(3,"inline")
-#pragma GCC optimize("Ofast,no-stack-protector,unroll-loops,fast-math")
-#pragma GCC target("sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2")
+// #pragma GCC optimize(3,"inline")
+// #pragma GCC optimize("Ofast,no-stack-protector,unroll-loops,fast-math")
+// #pragma GCC target("sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2")
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -32,31 +32,21 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,m,k,q,ans[1<<10],u[10],v[10],w[1<<10];
+int n,m,k,q,ans[1<<10],u[10],v[10],tmp[1<<10];
 int que[300005],h,t;
+int hd[10005],to[20055],nxt[20055],tot=1;
+int dep[10005],cur[10005],id[10];
+
 struct Graph{
-	struct Edge{
-		short to,w,nxt;
-	}e[20055];
-	short hd[10005],dep[10005],cur[10005],tot;
-	Graph(){ tot = 1; }
-	void addedge(int u,int v,int w){
-		e[++tot].to=v;
-		e[tot].w=w;
-		e[tot].nxt=hd[u];
-		hd[u]=tot;
-	}
-	void add(int u,int v,int w){
-		addedge(u,v,w), addedge(v,u,0);
-	}
+	int w[20055];
 	bool bfs(){
 		memcpy(cur,hd,sizeof(cur));
 		memset(dep,0,sizeof(dep));
 		que[h=t=1]=dep[1]=1;
 		while(h<=t){
 			int x=que[h++];
-			for(int i=hd[x];i;i=e[i].nxt)if(e[i].w){
-				int y=e[i].to;
+			for(int i=hd[x];i;i=nxt[i])if(w[i]){
+				int y=to[i];
 				if(!dep[y]){
 					dep[y]=dep[x]+1,que[++t]=y;
 				}
@@ -67,83 +57,101 @@ struct Graph{
 	int dfs(int x,int fl){
 		if(x==n) return fl;
 		int ret=0;
-		for(short &i=cur[x];i&&fl;i=e[i].nxt){
-			int y=e[i].to,w=e[i].w;
-			if(dep[y]==dep[x]+1 && w){
-				int f=dfs(y,min(fl,w));
+		for(int &i=cur[x];i&&fl;i=nxt[i]){
+			int y=to[i],ww=w[i];
+			if(dep[y]==dep[x]+1 && ww){
+				int f=dfs(y,min(fl,ww));
 				fl-=f,ret+=f;
-				e[i].w-=f,e[i^1].w+=f;
+				w[i]-=f,w[i^1]+=f;
 			}
 		}
 		return ret;
 	}
 	int ff(){
+		// cout<<"fuckit"<<endl;
 		memset(dep,0,sizeof(dep));
 		que[h=t=1]=dep[1]=1;
 		while(h<=t){
 			int x=que[h++];
-			for(int i=hd[x];i;i=e[i].nxt)if(e[i].w){
-				int y=e[i].to;
+			for(int i=hd[x];i;i=nxt[i])if(w[i]){
+				int y=to[i];
 				if(!dep[y]) dep[y]=dep[x]+1,cur[y]=i,que[++t]=y;
 			}
 		}
 		if(!dep[n])return 0;
 
-		short val=25;
+		int val=25;
 		int m=n;
 		while(m!=1){
-			val=min(val,e[cur[m]].w);
-			m=e[cur[m]^1].to;
+			val=min(val,w[cur[m]]);
+			m=to[cur[m]^1];
 		}
 
 		m=n;
 		while(m!=1){
-			e[cur[m]].w-=val;
-			e[cur[m]^1].w+=val;
-			m=e[cur[m]^1].to;
+			w[cur[m]]-=val;
+			w[cur[m]^1]+=val;
+			m=to[cur[m]^1];
 		}
+		// cout<<"val="<<val<<endl;
 		return val;
 	}
 	int dinic(){
-		int ret=0,tmp;
+		int ret=0,sb;
 		while(bfs()){
-			tmp = dfs(1,25);
-			ret += tmp;
+			sb = dfs(1,25);
+			ret += sb;
 		}
 		return ret;
 	}
 	int delta(){
-		int ret=0, tmp;
-		while(tmp=ff()) ret+=tmp;
+		// cout<<"shabi1"<<endl;
+		int ret=0, sb;
+		while(sb=ff()) ret+=sb;
 		return ret;
 	}
 }g[1<<10];
+
+int addedge(int u,int v,int w){
+	to[++tot]=v;
+	g[0].w[tot]=w;
+	nxt[tot]=hd[u];
+	hd[u]=tot;
+	return tot;
+}
+int add(int u,int v,int w){
+	int x=addedge(u,v,w);
+	addedge(v,u,0);
+	return x;
+}
 void procedure(){
 	n=read(),m=read(),k=read(),q=read();
 	for(int i=0;i<m;i++){
 		if(i>=k){
 			int u=read(),v=read(),w=read();
-			g[0].add(u,v,w);
+			add(u,v,w);
 		}else{
 			u[i]=read(),v[i]=read(),read();
+			id[i]=add(u[i],v[i],0);
 		}
 	}
 	ans[0]=g[0].dinic();
+	// cout<<"fuck1"<<endl;
 	for(int i=1;i<(1<<k);i++){
 		int x=__builtin_ctz(i);
 		g[i]=g[i^(1<<x)];
-		g[i].add(u[x],v[x],25);
+		g[i].w[id[x]]=25;
 		ans[i]=ans[i^(1<<x)]+g[i].delta();
 	}
 	while(q--){
 		int ret=1e9;
-		for(int i=0;i<k;i++) w[1<<i]=read();
+		for(int i=0;i<k;i++) tmp[1<<i]=read();
 		for(int i=1;i<(1<<k);i++){
 			int j=(i&-i);
-			w[i]=w[i^j]+w[j];
+			tmp[i]=tmp[i^j]+tmp[j];
 		}
 		for(int i=0;i<(1<<k);i++)
-			ret=min(ret, w[i]+ans[(1<<k)-1-i]);
+			ret=min(ret, tmp[i]+ans[(1<<k)-1-i]);
 		printf("%d\n",ret);
 	}
 }
