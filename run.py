@@ -386,7 +386,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         h1 {{ font-size: 2.5em; margin-bottom: 5px; font-weight: 800; letter-spacing: -0.5px; color: #0f172a; }}
         .subtitle {{ color: var(--text-muted); font-size: 1.1em; }}
         
-        .dashboard-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 50px; }}
+        .dashboard-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 40px; }}
         @media (max-width: 768px) {{ .dashboard-grid {{ grid-template-columns: 1fr; }} }}
         
         .card {{ background: #fff; border-radius: 16px; padding: 24px; padding-bottom: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; text-decoration: none; color: inherit; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }}
@@ -408,13 +408,21 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         .stat-number {{ font-size: 3.2em; font-weight: 800; line-height: 1; }}
         .stat-label {{ color: var(--text-muted); font-size: 1.05em; font-weight: 500; }}
         
-        .syntax-guide {{ background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }}
-        .syntax-guide h3 {{ margin-top: 0; margin-bottom: 15px; color: #0f172a; display: flex; align-items: center; gap: 8px; font-weight: 700; }}
-        .syntax-code {{ display: grid; gap: 10px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #f1f5f9; overflow-x: auto; }}
+        .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }}
+        @media (max-width: 900px) {{ .info-grid {{ grid-template-columns: 1fr; }} }}
+        
+        .info-box {{ background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; display: flex; flex-direction: column; }}
+        .info-box h3 {{ margin-top: 0; margin-bottom: 15px; color: #0f172a; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.1em; }}
+        
+        .syntax-code {{ display: grid; gap: 10px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.88em; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #f1f5f9; overflow-x: auto; flex-grow: 1; }}
         .line-def {{ display: flex; gap: 16px; }}
-        .line-num {{ color: #94a3b8; user-select: none; width: 20px; text-align: right; font-weight: bold; }}
+        .line-num {{ color: #94a3b8; user-select: none; width: 15px; text-align: right; font-weight: bold; }}
         .line-desc {{ color: #334155; }}
         .highlight {{ color: #2563eb; font-weight: 600; }}
+        
+        .cpp-code {{ background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 12px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.85em; overflow-x: auto; margin: 0; line-height: 1.6; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }}
+        .cpp-keyword {{ color: #c678dd; }}
+        .cpp-include {{ color: #98c379; }}
         
         .footer {{ text-align: center; color: #94a3b8; font-size: 0.85em; margin-top: 50px; }}
     </style>
@@ -489,15 +497,24 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             </a>
         </div>
         
-        <div class="syntax-guide">
-            <h3><span>⚙️</span> .conf 配置文件语法规则 (固定 6 行)</h3>
-            <div class="syntax-code">
-                <div class="line-def"><span class="line-num">1</span> <span class="line-desc"><span class="highlight">标签/关键词</span> (多个用空格隔开，末尾数字自动解析为难度)</span></div>
-                <div class="line-def"><span class="line-num">2</span> <span class="line-desc"><span class="highlight">比赛分类</span> (支持 | 隔开多个，如 OI | XCPC。CF/AT 留空自动归档)</span></div>
-                <div class="line-def"><span class="line-num">3</span> <span class="line-desc"><span class="highlight">URL 链接</span> (完整链接。CF/AT 留空自动生成)</span></div>
-                <div class="line-def"><span class="line-num">4</span> <span class="line-desc"><span class="highlight">比赛名称</span> (支持 | 隔开多场，如 XOJ Round 1|YOJ Round 2)</span></div>
-                <div class="line-def"><span class="line-num">5</span> <span class="line-desc"><span class="highlight">题目编号</span> (支持 | 隔开多个，如 C|D)</span></div>
-                <div class="line-def"><span class="line-num">6</span> <span class="line-desc"><span class="highlight">备注/备忘录</span> (在表格中独立成列展示，不需要可留空换行)</span></div>
+        <div class="info-grid">
+            <div class="info-box">
+                <h3><span>⚙️</span> .conf 语法规则 (固定 6 行)</h3>
+                <div class="syntax-code">
+                    <div class="line-def"><span class="line-num">1</span> <span class="line-desc"><span class="highlight">标签/关键词</span> (多个用空格隔开，末尾数字解析为难度)</span></div>
+                    <div class="line-def"><span class="line-num">2</span> <span class="line-desc"><span class="highlight">比赛分类</span> (支持 | 隔开，填 OI 或 XCPC。CF/AT 留空自动归档)</span></div>
+                    <div class="line-def"><span class="line-num">3</span> <span class="line-desc"><span class="highlight">URL 链接</span> (完整链接。CF/AT 留空自动生成)</span></div>
+                    <div class="line-def"><span class="line-num">4</span> <span class="line-desc"><span class="highlight">比赛名称</span> (支持 | 隔开多场，如 XOJ Round 1|YOJ 2)</span></div>
+                    <div class="line-def"><span class="line-num">5</span> <span class="line-desc"><span class="highlight">题目编号</span> (支持 | 隔开多个，如 C|D)</span></div>
+                    <div class="line-def"><span class="line-num">6</span> <span class="line-desc"><span class="highlight">备注/备忘录</span> (在表格中独立成列展示，不需要可留空)</span></div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h3><span>🚀</span> GCC 编译优化指令</h3>
+                <pre class="cpp-code"><code><span class="cpp-keyword">#pragma</span> GCC optimize(3,<span class="cpp-include">"inline"</span>)
+<span class="cpp-keyword">#pragma</span> GCC optimize(<span class="cpp-include">"Ofast,no-stack-protector,unroll-loops,fast-math"</span>)
+<span class="cpp-keyword">#pragma</span> GCC target(<span class="cpp-include">"sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2"</span>)</code></pre>
             </div>
         </div>
         

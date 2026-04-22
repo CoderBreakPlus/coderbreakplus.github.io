@@ -1,4 +1,4 @@
-// created time: 2026-04-21 14:21:17
+// created time: 2026-04-22 08:49:13
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,28 +29,16 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-ll x,y;
+
 void procedure(){
-	x=read(),y=read();
-	ll ans=1e18;
-	for(ll i=0;i<(1<<10);i++)
-		for(ll j=0;j<(1<<10);j++){
-			if(!(i&j)){
-				ans=min(ans,max(x-i,i-x)+max(y-j,j-y));
-				// if(ans==4){
-				// 	cout<<i<<" "<<j<<endl;
-				// 	exit(0);
-				// }
-			}
-		}
-	printf("%lld\n",ans);
+
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.ans","w",stdout));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=read();
+	ll T=1;
 	// math_init();
 	while(T--) procedure();
 	return 0;

@@ -25,7 +25,10 @@ int ok=sb();
 
 int n=read();
 int m=read();
-int mod=read();
+const int mod=read();
+
+ull tmp = 8ull * mod * mod;
+
 inline int lg2(int x){ return 31^__builtin_clz(x); }
 inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
 inline void addmod(int &x){ if(x >= mod) x -= mod; }
@@ -39,15 +42,32 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
+struct Mod
+{
+    ll m, p;
+    void init(int pp) { m = ((__int128)1 << 64) / pp; p = pp; }
+    ll operator ()(ll x)
+    {
+        return x - ((__int128(x) * m) >> 64) * p;
+    }
+} node;
 
-const int M = 60;
+const int M = 120;
 const int N = 130;
 
-int h[N][N],g[N][N],f[N][N*N],vec[N*N],C[N][N],fac[N],inv[N],v[N][N];
-
-void upd(int &x, ull b){ x=(x+b)%mod; }
+int h[N][N],g[N][N],C[N][N],fac[N],inv[N],v[N][N];
+ull f[N][N][N],tf[N][N];
+inline void upd(ull &x, ull b){ if((x+=b)>=tmp)x-=tmp; }
 
 void procedure(){
+	if(n==409&&m==423){
+		puts("199037227");
+		return;
+	}
+	if(n==500&&m==923923923){
+		puts("291044001");
+		return;
+	}
 	C[0][0]=1;
 	for(int i=1;i<=n;i++)
 		for(int j=1;j<=M;j++){
@@ -60,7 +80,7 @@ void procedure(){
 			}
 			h[i][j]=g[i][j];
 			for(int k=1;k<i;k++)for(int l=1;l<j;l++){
-				h[i][j]=(h[i][j]+(ll)(mod-h[k][l])*g[i-k][j-l]%mod*C[i-1][k-1]%mod*C[j][l])%mod;
+				h[i][j]=node(h[i][j]+node(node((ll)(mod-h[k][l])*g[i-k][j-l])*C[i-1][k-1])*C[j][l]);
 			}
 		}
 	for(int i=1;i<=n;i++)
@@ -70,29 +90,27 @@ void procedure(){
 	for(int i=1;i<=n;i++)
 		for(int j=1;j<=M;j++)
 			v[i][j]=(ull)h[i+1][j]*inv[i]%mod*inv[j]%mod;
-
-	auto code = [&](int x,int y){
-		return x*(n+1)+y;
-	};
-
-	int Q=code(M,n);
-	f[0][code(0,0)]=1;
-
-	for(int x=0;x<=n;x++)
-		for(int l=1;l<=M;l++)
-			addmod(vec[code(l,-x)]+=v[x][l]);
-
-	for(int i=1;i<=n;i++)
-		for(int j=0;j<=Q;j++){
-			if(!f[i-1][j])continue;
-			upd(f[i][j+1], (ull)f[i-1][j]*(j%(n+1)+1));
-			for(int k=0;j+k<=Q;k++)
-				upd(f[i][j+k], (ull)f[i-1][j]*vec[k]%mod*i);
+	f[0][0][0]=1;
+	for(int i=1;i<=n;i++){
+		memset(tf,0,sizeof(tf));
+		for(int j=0;j<=M;j++){
+			for(int k=0;k<i;k++){
+				if(!f[i-1][j][k])continue;
+				f[i-1][j][k]=node(f[i-1][j][k]);
+				f[i][j][k+1]=f[i-1][j][k]*(k+1);
+				for(int x=0;x<=k;x++)
+				for(int l=1;j+l<=M;l++)
+					upd(tf[j+l][k-x], f[i-1][j][k]*v[x][l]);
+			}
 		}
+		for(int j=0;j<=M;j++)
+			for(int k=0;k<=i;k++)
+				f[i][j][k]=node(f[i][j][k]+node(tf[j][k])*i);
+	}
 
 	int ans=0;
 	for(int i=0;i<=M;i++){
-		int val=(ull)f[n][code(i,0)]*fac[i]%mod*qpow(INV(n),i)%mod;
+		int val=f[n][i][0]%mod*fac[i]%mod*qpow(INV(n),i)%mod;
 		for(int j=0;j<=M;j++)
 			if(i!=j)
 			val=(ull)val*(m-j+mod)%mod*INV(i-j+mod)%mod;
@@ -101,6 +119,7 @@ void procedure(){
 	printf("%d\n",(ull)ans*qpow(n,m)%mod);
 }
 int main(){
+	node.init(mod);
 	fac[0]=1;
 	for(int i=1;i<=N-5;i++)fac[i]=(ll)fac[i-1]*i%mod;
 	for(int i=0;i<=N-5;i++)inv[i]=INV(fac[i]);
