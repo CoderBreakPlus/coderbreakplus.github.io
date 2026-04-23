@@ -1,4 +1,5 @@
 // created time: 2026-04-18 07:44:32
+// https://qoj.ac/contest/3588/problem/17753
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
