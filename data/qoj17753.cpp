@@ -1,4 +1,5 @@
-// created time: 2026-04-18 10:46:10
+// created time: 2026-04-18 07:44:32
+// https://qoj.ac/contest/3588/problem/17753
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,36 +29,35 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-int n=8;
+int n;
 
 void procedure(){
-	cout<<n<<endl;
-	int cnt=0;
-	for(int i=1;i<=n;i++){
-		int x=max(0ll,rng(-5,2));
-		if(i==n&&!cnt) x=rng(1,2);
-		cout<<x;
-		cnt+=x;
-	}
-	cout<<endl;
-	cnt=0;
-	for(int i=1;i<=n;i++){
-		int x=max(0ll,rng(-5,2));
-		if(i==n&&!cnt) x=rng(1,2);
-		cout<<x;
-		cnt+=x;
-	}
-	cout<<endl;
-	cout<<rng(1,n)<<endl;
+	n=read();
+	int base='a';
+	for(int len=1;base*len<=n;len++){
+		if(base*len<=n && n<='z'*len){
+			puts("Yes");
+			int res=n-base*len,sum=0;
+			for(int i=1;i<=len;i++){
+				int d=min(res,25);
+				res-=d;
+				putchar('a'+d);
+				sum+='a'+d;
+			}
+			// cout<<"sum="<<sum<<endl;
+			puts("");
+			return;
+		}
+	}	
+	puts("No");
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1; cout<<T<<endl;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
