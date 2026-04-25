@@ -1,7 +1,9 @@
-Case #1: IMPOSSIBLE
-Case #2: IMPOSSIBLE
-Case #3: POSSIBLE
-##########
-#S#...#.F#
-#...#...##
-##########
+YES
+abcccabba
+YES
+ccabba
+YES
+cca
+NO
+YES
+rac
