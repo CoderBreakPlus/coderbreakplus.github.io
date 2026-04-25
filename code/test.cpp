@@ -1,4 +1,4 @@
-// created time: 2026-04-22 08:49:13
+// created time: 2026-04-24 14:43:41
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -8,7 +8,7 @@ typedef unsigned long long ull;
 #define mkp make_pair
 #define pb emplace_back
 #define popcnt __builtin_popcountll
-const int mod = 998244353;
+const int mod = 1e9+7;
 inline ll read(){
 	ll x=0, f=1; int ch=getchar();
 	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
@@ -29,16 +29,26 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
+int m,n;
+int f[105][105];
 
 void procedure(){
+	m=read(),n=read();
+	memset(f,0,sizeof(f));
+	f[0][0]=1;
+	for(int i=1;i<=m;i++)
+		for(int j=0;j<=n;j++)
+			for(int k=0,pw=1;j+k<=n;k++,pw=(ull)pw*i%mod)
+				f[i][j+k]=(f[i][j+k]+(ull)f[i-1][j]*pw)%mod;
 
+	printf("%d\n",f[m][n]);
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.out","w",stdout));
+		assert(freopen("test.ans","w",stdout));
 	#endif
-	ll T=1;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
