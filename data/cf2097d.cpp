@@ -1,5 +1,4 @@
-// created time: 2026-04-18 07:59:13
-// https://qoj.ac/contest/3588/problem/17761
+// created time: 2026-04-24 19:36:59
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,65 +29,49 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-map<vector<int>,int>mp;
-
-vector<int>vec[5005]; int t;
-
-int now[10];
-
-void dfs(int x,int w){
-	if(x==6){
-		vector<int>cur;
-		for(int i=0;i<6;i++)cur.pb(now[i]);
-		if(!mp.count(cur))mp[cur]=++t,vec[t]=cur;
-		return;
-	}
-	for(int d=0;w+d<=8;d++){
-		now[x]=w+d, dfs(x+1,w+d);
-	}
-}
-
-int p[100],q[100];
+int n,m;char s[1000005],t[1000005];
 
 void procedure(){
-	int x=read();
-	if(!p[x]&&!q[x]){
-		puts("No");
-		return;
+	n=read(); 
+	m=(n&-n); n/=m;
+	swap(n,m);
+	// cout<<"n="<<n<<" m="<<m<<endl;
+	scanf("%s%s",s,t);
+	vector<vector<int>>a(n,vector<int>(m)),b(n,vector<int>(m));
+	for(int i=0;i<n*m;i++)a[i/m][i%m]=s[i]-'0',b[i/m][i%m]=t[i]-'0';
+
+	// cout<<"done"<<endl;
+	int p=0;
+	for(int i=0;i<m;i++){
+		int q=p;
+		while(q<n&&!a[q][i])q++;
+		// cout<<"q="<<q<<endl;
+		if(q>=n)continue;
+		if(p!=q)swap(a[p],a[q]);
+		for(int j=0;j<n;j++)
+			if(j!=p&&a[j][i])for(int k=i;k<m;k++)a[j][k]^=a[p][k];
+		p++;
 	}
+	// cout<<"done2"<<endl;
+	p=0;
+	for(int i=0;i<m;i++){
+		int q=p;
+		while(q<n&&!b[q][i])q++;
+		if(q>=n)continue;
+		if(p!=q)swap(b[p],b[q]);
+		for(int j=0;j<n;j++)
+			if(j!=p&&b[j][i])for(int k=i;k<m;k++)b[j][k]^=b[p][k];
+		p++;
+	}
+	for(int i=0;i<n;i++)
+		for(int j=0;j<m;j++)if(a[i][j]!=b[i][j]){puts("No");return;}
 	puts("Yes");
-	for(auto y:vec[p[x]])printf("%d ",y);
-	for(auto y:vec[q[x]])printf("%d ",y);
-	puts("");
 }
-bool f1[10],f2[10];
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-
-	dfs(0,0);
-	// cout<<t<<endl;
-	// for(int i=1;i<=t;i++){
-	// 	for(auto x: vec[i])cout<<x<<" ";cout<<endl;
-	// }
-
-	for(int i=1;i<=t;i++){
-		for(int j=1;j<=t;j++){
-			memset(f1,0,sizeof(f1)),memset(f2,0,sizeof(f2));
-			for(auto x: vec[i]){
-				f1[x]=1; if(x==6)f1[9]=1;
-			}
-			for(auto x: vec[j]){
-				f2[x]=1; if(x==6)f2[9]=1;
-			}
-
-			int mx=1;
-			while((f1[mx/10] && f2[mx%10])||(f2[mx/10] && f1[mx%10])) mx++;
-			p[mx]=i,q[mx]=j;
-		}
-	}
 	ll T=read();
 	// math_init();
 	while(T--) procedure();
