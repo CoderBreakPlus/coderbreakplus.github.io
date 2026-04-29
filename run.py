@@ -24,6 +24,34 @@ def get_diff_style(diff):
     return f'background: linear-gradient(to top, {color} {ratio}%, transparent {ratio}%); border: 1px solid {color}; border-radius: 50%;'
 
 # =======================
+#   智能数字提取排序器
+# =======================
+def contest_sort_key(name):
+    if not name: return ("",)
+    def replace_cn(m):
+        s = m.group(0)
+        val_map = {'零':0, '一':1, '二':2, '两':2, '三':3, '四':4, '五':5, '六':6, '七':7, '八':8, '九':9}
+        unit_map = {'十':10, '百':100, '千':1000, '万':10000}
+        res = 0; tmp = 0
+        for char in s:
+            if char in val_map: tmp = val_map[char]
+            elif char in unit_map:
+                if tmp == 0 and char == '十': tmp = 1
+                res += tmp * unit_map[char]
+                tmp = 0
+        res += tmp
+        return str(res)
+    
+    # 替换中文数字为阿拉伯数字
+    name_num = re.sub(r'[零一二两三四五六七八九十百千万]+', replace_cn, name)
+    parts = re.split(r'(\d+)', name_num)
+    
+    # 非数字部分合并作为第一关键字，所有提取出的数字依次作为后续关键字
+    non_num = "".join([p for p in parts if not p.isdigit()]).strip().lower()
+    nums = [int(p) for p in parts if p.isdigit()]
+    return (non_num, *nums)
+
+# =======================
 #   内部子页面 HTML & CSS 模板
 # =======================
 HTML_TEMPLATE = """<!DOCTYPE html>
@@ -48,26 +76,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         h1 {{ color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }}
         h2 {{ color: #0f172a; font-weight: 700; margin-bottom: 12px; }}
         
-        /* Nav Bar */
         .nav-bar {{ margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }}
         .nav-bar a {{ color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s; }}
         .nav-bar a:hover {{ color: var(--primary-hover); text-decoration: underline; }}
         
-        /* Buttons */
         .btn {{ background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }}
         .btn:hover {{ background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
         
         .toggle-diff-btn {{ margin-left: auto; color: var(--primary); border-color: #bfdbfe; }}
         .toggle-diff-btn:hover {{ background: #eff6ff; }}
+        
+        /* 默认显示备注时的按钮状态 */
         .toggle-remark-btn {{ color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }}
         .toggle-remark-btn:hover {{ background: #f1f5f9; }}
         
-        /* Toolbars */
         .stats-bar {{ display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }}
         .stats-info span {{ margin-right: 18px; font-size: 0.95em; color: #334155; font-weight: 600; display: inline-block; }}
         .sort-btns button {{ margin-left: 8px; color: var(--primary); }}
 
-        /* Tables */
         table {{ width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }}
         th, td {{ padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }}
         
@@ -81,20 +107,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         tbody tr:last-child td {{ border-bottom: none; }}
         tbody tr:hover td {{ background-color: #f8fafc; }}
         
-        /* Matrix specific */
         .matrix-table th, .matrix-table td {{ text-align: center; }}
         .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
         
-        /* List specific */
         .normal-table th:nth-child(1) {{ width: 35%; }}  
         .normal-table th:nth-child(2) {{ width: 15%; }}  
         .normal-table th:nth-child(3) {{ width: 9%; }}   
         .normal-table th:nth-child(4) {{ width: 10%; }}  
-        .normal-table th.remark-col {{ width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; display: none; }} 
+        .normal-table th.remark-col {{ width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} 
         .normal-table th:last-child {{ width: 9%; }}     
-        .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; display: none; }}
+        .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; }}
         
-        /* Cells and Links */
         .prob-cell {{ display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }}
         .prob-link-wrap {{ font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }}
         .prob-link-wrap a {{ color: var(--primary); text-decoration: none; font-weight: 700; }}
@@ -103,7 +126,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .diff-indicator {{ display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }}
         .diff-circle {{ width: 12px; height: 12px; display: inline-block; }}
 
-        /* File links & Tags */
         .mini-version-row {{ display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }}
         .mini-tag {{ font-size: 0.7em; padding: 2px 5px; border-radius: 4px; font-weight: bold; line-height: 1; }}
         .mini-tag-easy {{ background: #dcfce7; color: #166534; }}
@@ -117,7 +139,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .tag-pill {{ background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }}
         .tag-pill:hover {{ background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }}
 
-        /* Filter Bar */
         .list-filter-bar {{ background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }}
         .list-filter-bar input {{ padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.95em; transition: border-color 0.2s; color: var(--text-main); }}
         .list-filter-bar input:focus {{ border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }}
@@ -168,7 +189,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
         
-        let isRemarkVisible = false;
+        let isRemarkVisible = true;
         function toggleRemark() {{
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => {{
@@ -177,9 +198,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const btn = document.querySelector('.toggle-remark-btn');
             if (btn) {{
                 btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
-                btn.style.color = isRemarkVisible ? '#059669' : '#475569';
-                btn.style.borderColor = isRemarkVisible ? '#a7f3d0' : '#e2e8f0';
-                btn.style.background = isRemarkVisible ? '#fff' : '#f8fafc';
+                btn.style.color = isRemarkVisible ? '#475569' : '#059669';
+                btn.style.borderColor = isRemarkVisible ? '#e2e8f0' : '#a7f3d0';
+                btn.style.background = isRemarkVisible ? '#f8fafc' : '#fff';
             }}
         }}
 
@@ -193,7 +214,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     if (type === 'count') {{
                         return parseInt(b.dataset.count) - parseInt(a.dataset.count);
                     }} else {{
-                        return a.dataset.name.localeCompare(b.dataset.name);
+                        return b.dataset.name.localeCompare(a.dataset.name, undefined, {{numeric: true}});
                     }}
                 }});
                 rows.forEach(r => tbody.appendChild(r));
@@ -319,7 +340,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 if (res === 0) {{
                     let baseA = a.dataset.base || '';
                     let baseB = b.dataset.base || '';
-                    return baseA.localeCompare(baseB);
+                    return baseA.localeCompare(baseB, undefined, {{numeric: true}});
                 }}
                 return res;
             }});
@@ -502,8 +523,8 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 <h3><span>⚙️</span> .conf 语法规则 (固定 6 行)</h3>
                 <div class="syntax-code">
                     <div class="line-def"><span class="line-num">1</span> <span class="line-desc"><span class="highlight">标签/关键词</span> (多个用空格隔开，末尾数字解析为难度)</span></div>
-                    <div class="line-def"><span class="line-num">2</span> <span class="line-desc"><span class="highlight">比赛分类</span> (支持 | 隔开，填 OI 或 XCPC。CF/AT 留空自动归档)</span></div>
-                    <div class="line-def"><span class="line-num">3</span> <span class="line-desc"><span class="highlight">URL 链接</span> (完整链接。CF/AT 留空自动生成)</span></div>
+                    <div class="line-def"><span class="line-num">2</span> <span class="line-desc"><span class="highlight">比赛分类</span> (支持 | 隔开，填 OI / OIs / XCPC。CF/AT 留空默认归档)</span></div>
+                    <div class="line-def"><span class="line-num">3</span> <span class="line-desc"><span class="highlight">URL 链接</span> (完整链接。Luogu/QOJ/CF/AT 等留空自动生成)</span></div>
                     <div class="line-def"><span class="line-num">4</span> <span class="line-desc"><span class="highlight">比赛名称</span> (支持 | 隔开多场，如 XOJ Round 1|YOJ 2)</span></div>
                     <div class="line-def"><span class="line-num">5</span> <span class="line-desc"><span class="highlight">题目编号</span> (支持 | 隔开多个，如 C|D)</span></div>
                     <div class="line-def"><span class="line-num">6</span> <span class="line-desc"><span class="highlight">备注/备忘录</span> (在表格中独立成列展示，不需要可留空)</span></div>
@@ -612,7 +633,10 @@ def apply_categories_and_links(groups, data_dir):
     for group in groups.values():
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
-        is_cf, is_at = bool(m_cf), bool(m_ac)
+        m_luogu = re.match(r'^p(\d+)$', group.base_name, re.IGNORECASE)
+        m_qoj = re.match(r'^qoj(\d+)$', group.base_name, re.IGNORECASE)
+        
+        is_cf, is_at, is_luogu, is_qoj = bool(m_cf), bool(m_ac), bool(m_luogu), bool(m_qoj)
 
         group.appearances = []
         group.has_conf = False
@@ -632,6 +656,7 @@ def apply_categories_and_links(groups, data_dir):
                     except Exception: pass
                     
             primary_link = "#"
+            cat_list_clean = []
             
             if v.files.get('conf'):
                 v.has_conf = True
@@ -660,9 +685,9 @@ def apply_categories_and_links(groups, data_dir):
                         c_list = [x.strip() for x in c_str.split('|')] if c_str else []
                         p_list = [x.strip() for x in p_str.split('|')] if p_str else []
                         
-                        cat_list_clean = []
                         for cat in cat_list_raw:
                             if cat.lower() == 'oi': cat_list_clean.append('OI')
+                            elif cat.lower() == 'ois': cat_list_clean.append('OIs')
                             elif cat.lower() == 'xcpc': cat_list_clean.append('XCPC')
                             else: cat_list_clean.append(cat)
                             
@@ -697,25 +722,44 @@ def apply_categories_and_links(groups, data_dir):
                 except Exception:
                     pass
             
+            # 判断是否需要补全官方比赛矩阵项
+            add_official_cf = is_cf
+            add_official_at = is_at
+            if v.has_conf and (lines[1].strip() or lines[3].strip() or lines[4].strip()):
+                if is_cf and 'Codeforces' not in cat_list_clean:
+                    add_official_cf = False
+                if is_at and 'AtCoder' not in cat_list_clean:
+                    add_official_at = False
+
             suffix = "1" if v_name == 'Easy' else ("2" if v_name == 'Hard' else "")
             cf_at_link = "#"
             
-            if is_cf:
+            if add_official_cf:
                 c = f"Codeforces Round {m_cf.group(1)}"
                 base_p = m_cf.group(2).upper()
                 v.appearances.append(('Codeforces', c, base_p))
-                cf_at_link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{base_p + suffix}"
-            elif is_at:
+            if is_cf:
+                cf_at_link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{m_cf.group(2).upper() + suffix}"
+                
+            if add_official_at:
                 c = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
                 base_p = m_ac.group(3).upper()
                 v.appearances.append(('AtCoder', c, base_p))
-                cf_at_link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{(base_p + suffix).lower()}"
+            if is_at:
+                cf_at_link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{(m_ac.group(3).upper() + suffix).lower()}"
                 
             if not v.appearances:
                 v.appearances.append(('Summary', '', ''))
                 
+            # 自动生成链接
             if not primary_link or primary_link == "#":
-                primary_link = cf_at_link
+                if is_cf or is_at:
+                    primary_link = cf_at_link
+                elif is_luogu:
+                    primary_link = f"https://www.luogu.com.cn/problem/P{m_luogu.group(1)}"
+                elif is_qoj:
+                    primary_link = f"https://qoj.ac/problem/{m_qoj.group(1)}"
+                    
             v.link = primary_link
 
             for app in v.appearances:
@@ -748,7 +792,7 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False):
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>
     </div>"""
 
-def build_matrix_table(groups_dict, rel_path, is_official=False):
+def build_matrix_table(groups_dict, rel_path, is_official=False, first_col_width=20):
     if not groups_dict: return ""
     all_pids = set()
     for contest, c_groups in groups_dict.items():
@@ -759,12 +803,14 @@ def build_matrix_table(groups_dict, rel_path, is_official=False):
     def alnum_key(s): return [int(c) if c.isdigit() else c.lower() for c in re.split('([0-9]+)', s)]
     sorted_pids = sorted(list(all_pids), key=lambda x: ([float('inf')] if x == '未知' else alnum_key(x)))
 
-    html = '<div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th>'
-    col_width = 80 / max(1, len(sorted_pids))
+    # 动态应用传进来的第一列宽度
+    html = f'<div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: {first_col_width}%; padding-left: 20px;">比赛名称</th>'
+    col_width = (100 - first_col_width) / max(1, len(sorted_pids))
     for pid in sorted_pids: html += f'<th style="width: {col_width}%;">{pid}</th>'
     html += '</tr></thead><tbody>'
     
-    sorted_contests = sorted(groups_dict.items(), key=lambda x: len(x[1]), reverse=True)
+    # 默认字典序倒序/降序
+    sorted_contests = sorted(groups_dict.items(), key=lambda x: contest_sort_key(x[0]), reverse=True)
     for contest, c_groups in sorted_contests:
         pid_map = defaultdict(list)
         for g in c_groups:
@@ -797,19 +843,32 @@ def build_matrix_table(groups_dict, rel_path, is_official=False):
 
 def build_category_page(title, groups_dict, out_path, rel_path):
     all_versions = []
-    for gs in groups_dict.values():
-        for g in gs: all_versions.extend(g.versions.values())
+    if title == 'OI':
+        for sub_gs in groups_dict.values():
+            for gs in sub_gs.values():
+                for g in gs: all_versions.extend(g.versions.values())
+    else:
+        for gs in groups_dict.values():
+            for g in gs: all_versions.extend(g.versions.values())
                 
     has_cpp = sum(1 for v in all_versions if v.files.get('cpp'))
     has_md = sum(1 for v in all_versions if v.files.get('md'))
     has_conf = sum(1 for v in all_versions if v.files.get('conf'))
 
-    stats_html = f"<span>📁 独立题目: {len(all_versions)}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span><span>⚙️ 有配置: {has_conf}</span><span>🏆 比赛数: {len(groups_dict)}</span>"
+    if title == 'OI':
+        total_contests = len(groups_dict.get('OI', {})) + len(groups_dict.get('OIs', {}))
+    else:
+        total_contests = len(groups_dict)
+
+    stats_html = f"<span>📁 独立题目: {len(all_versions)}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span><span>⚙️ 有配置: {has_conf}</span><span>🏆 比赛数: {total_contests}</span>"
     sort_html = """<div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button><button class="btn" onclick="sortContests('name')">按比赛名字典序</button></div>"""
     stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div>{sort_html}</div>'
 
     content_html = ""
     is_official = (title in ['Codeforces', 'AtCoder'])
+    
+    # 动态设定第一列的宽度：OI 页面为 35%，其他保持 20%
+    first_col_width = 35 if title == 'OI' else 20
     
     if title == 'AtCoder':
         sub_cats = {'ABC': {}, 'ARC': {}, 'AGC': {}, '其他': {}}
@@ -830,15 +889,36 @@ def build_category_page(title, groups_dict, out_path, rel_path):
             
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
-            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name} 模块</h2>"
-            tables_html += build_matrix_table(sub_cats[sc_name], rel_path, is_official)
+            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name}</h2>"
+            tables_html += build_matrix_table(sub_cats[sc_name], rel_path, is_official, first_col_width)
+            tables_html += '</div>'
+            first = False
+            
+        tabs_html += '</div>'
+        content_html = tabs_html + tables_html
+    elif title == 'OI':
+        tabs_html = '<div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;">'
+        tables_html = ''
+        first = True
+        for sc_name in ['OI', 'OIs']:
+            if not groups_dict[sc_name]: continue
+            
+            display_name = "3~4题场" if sc_name == 'OI' else "5+题场"
+            
+            btn_style = "background: var(--primary); color: #fff; border-color: var(--primary);" if first else "background: #fff; color: #334155; border-color: #e2e8f0;"
+            tabs_html += f'<button class="atcoder-tab-btn" data-target="tab-{sc_name}" onclick="switchAtCoderTab(\'tab-{sc_name}\', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; {btn_style}">{display_name}</button>'
+            
+            display = "block" if first else "none"
+            tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
+            tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {display_name}</h2>"
+            tables_html += build_matrix_table(groups_dict[sc_name], rel_path, is_official, first_col_width)
             tables_html += '</div>'
             first = False
             
         tabs_html += '</div>'
         content_html = tabs_html + tables_html
     else:
-        content_html = build_matrix_table(groups_dict, rel_path, is_official)
+        content_html = build_matrix_table(groups_dict, rel_path, is_official, first_col_width)
 
     html = HTML_TEMPLATE.format(
         title=title, stats_block=stats_block, nav_extra="",
@@ -852,7 +932,7 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
 
     stats_html = f"<span>📁 独立题目: {len(all_versions)}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span>"
     stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div></div>'
-    nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()">📝 显示备注</button>'
+    nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>'
     
     content_html = f"""
     <div class="list-filter-bar">
@@ -945,8 +1025,8 @@ def build_index_page(categories, summary_versions, todo_versions, out_path):
     s_count = len(summary_versions)
     t_count = len(todo_versions)
     
-    oi_p = sum(len(g.versions) for gs in categories.get('OI', {}).values() for g in gs)
-    oi_c = len(categories.get('OI', {}))
+    oi_p = sum(len(g.versions) for gs in categories.get('OI', {}).values() for g in gs) + sum(len(g.versions) for gs in categories.get('OIs', {}).values() for g in gs)
+    oi_c = len(categories.get('OI', {})) + len(categories.get('OIs', {}))
     
     xcpc_p = sum(len(g.versions) for gs in categories.get('XCPC', {}).values() for g in gs)
     xcpc_c = len(categories.get('XCPC', {}))
@@ -986,7 +1066,7 @@ def main():
 
     categories = {
         'Codeforces': defaultdict(list), 'AtCoder': defaultdict(list),
-        'OI': defaultdict(list), 'XCPC': defaultdict(list)
+        'OI': defaultdict(list), 'OIs': defaultdict(list), 'XCPC': defaultdict(list)
     }
     
     summary_versions = []
@@ -1013,8 +1093,10 @@ def main():
                     summary_versions.append(v)
 
     print(f"🛠️ 正在生成 HTML 到 '{out_dir}' (当前目录)...")
-    for cat in categories:
+    for cat in ['Codeforces', 'AtCoder', 'XCPC']:
         build_category_page(cat, categories[cat], os.path.join(out_dir, f"{cat}.html"), rel_data_path)
+        
+    build_category_page('OI', {'OI': categories['OI'], 'OIs': categories['OIs']}, os.path.join(out_dir, "OI.html"), rel_data_path)
         
     build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table")
     build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table")
