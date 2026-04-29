@@ -20,26 +20,24 @@
         h1 { color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }
         h2 { color: #0f172a; font-weight: 700; margin-bottom: 12px; }
         
-        /* Nav Bar */
         .nav-bar { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
         .nav-bar a { color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s; }
         .nav-bar a:hover { color: var(--primary-hover); text-decoration: underline; }
         
-        /* Buttons */
         .btn { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
         .btn:hover { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         
         .toggle-diff-btn { margin-left: auto; color: var(--primary); border-color: #bfdbfe; }
         .toggle-diff-btn:hover { background: #eff6ff; }
+        
+        /* 默认显示备注时的按钮状态 */
         .toggle-remark-btn { color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }
         .toggle-remark-btn:hover { background: #f1f5f9; }
         
-        /* Toolbars */
         .stats-bar { display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
         .stats-info span { margin-right: 18px; font-size: 0.95em; color: #334155; font-weight: 600; display: inline-block; }
         .sort-btns button { margin-left: 8px; color: var(--primary); }
 
-        /* Tables */
         table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
         th, td { padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }
         
@@ -53,20 +51,17 @@
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background-color: #f8fafc; }
         
-        /* Matrix specific */
         .matrix-table th, .matrix-table td { text-align: center; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
         
-        /* List specific */
         .normal-table th:nth-child(1) { width: 35%; }  
         .normal-table th:nth-child(2) { width: 15%; }  
         .normal-table th:nth-child(3) { width: 9%; }   
         .normal-table th:nth-child(4) { width: 10%; }  
-        .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; display: none; } 
+        .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
         .normal-table th:last-child { width: 9%; }     
-        .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; display: none; }
+        .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
         
-        /* Cells and Links */
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }
         .prob-link-wrap { font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }
         .prob-link-wrap a { color: var(--primary); text-decoration: none; font-weight: 700; }
@@ -75,7 +70,6 @@
         .diff-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }
         .diff-circle { width: 12px; height: 12px; display: inline-block; }
 
-        /* File links & Tags */
         .mini-version-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }
         .mini-tag { font-size: 0.7em; padding: 2px 5px; border-radius: 4px; font-weight: bold; line-height: 1; }
         .mini-tag-easy { background: #dcfce7; color: #166534; }
@@ -89,7 +83,6 @@
         .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
         .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
 
-        /* Filter Bar */
         .list-filter-bar { background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }
         .list-filter-bar input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.95em; transition: border-color 0.2s; color: var(--text-main); }
         .list-filter-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
@@ -109,8 +102,32 @@
         
         <h1>OI</h1>
         
-        <div class="stats-bar"><div class="stats-info"><span>📁 独立题目: 17</span><span>📝 有代码: 17</span><span>💡 有题解: 7</span><span>⚙️ 有配置: 17</span><span>🏆 比赛数: 11</span></div><div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button><button class="btn" onclick="sortContests('name')">按比赛名字典序</button></div></div>
-        <div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th><th style="width: 26.666666666666668%;">A</th><th style="width: 26.666666666666668%;">B</th><th style="width: 26.666666666666668%;">C</th></tr></thead><tbody><tr data-name="GZOI-NOI2026模拟赛（十三）" data-count="3"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十三） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(3 题)</span></td><td>
+        <div class="stats-bar"><div class="stats-info"><span>📁 独立题目: 20</span><span>📝 有代码: 20</span><span>💡 有题解: 8</span><span>⚙️ 有配置: 20</span><span>🏆 比赛数: 13</span></div><div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button><button class="btn" onclick="sortContests('name')">按比赛名字典序</button></div></div>
+        <div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-OI" onclick="switchAtCoderTab('tab-OI', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">3~4题场</button><button class="atcoder-tab-btn" data-target="tab-OIs" onclick="switchAtCoderTab('tab-OIs', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">5+题场</button></div><div id="tab-OI" class="atcoder-tab-content" style="display: block;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 3~4题场</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 35%; padding-left: 20px;">比赛名称</th><th style="width: 16.25%;">A</th><th style="width: 16.25%;">B</th><th style="width: 16.25%;">C</th><th style="width: 16.25%;">D</th></tr></thead><tbody><tr data-name="The 25th Japanese Olympiad in Informatics (JOI 2025/2026) Final Stage. Day 2" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">The 25th Japanese Olympiad in Informatics (JOI 2025/2026) Final Stage. Day 2 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td>
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="https://qoj.ac/problem/17706" target="_blank">C</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17706.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17706" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj17706.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td><td></td></tr><tr data-name="Korea IOI Team Selection Test (KOI TST) 2026, 1st Selection Contest" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">Korea IOI Team Selection Test (KOI TST) 2026, 1st Selection Contest <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td></td><td>
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3392/problem/17177" target="_blank">D</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17177.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17177.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td></tr><tr data-name="JOI Final 2026 Day 1" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;">JOI Final 2026 Day 1 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3571/problem/17701" target="_blank">A</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17701.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17701" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj17701.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td><td>
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3571/problem/17701" target="_blank">B</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17702.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17702.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td><td></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（十四）" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十四） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="http://10.49.18.71/problem/2505" target="_blank">A</a></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2505.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2505.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td><td>
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="http://10.49.18.71/problem/2506" target="_blank">B</a></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2506.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2506.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td><td></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（十三）" data-count="3"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十三） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(3 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="http://10.49.18.71/problem/2546" target="_blank">A</a></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2546.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2546.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
@@ -122,7 +139,19 @@
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="http://10.49.18.71/problem/2548" target="_blank">C</a></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2548.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2548.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td></tr><tr data-name="GZOI-NOI2026模拟赛（七）" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（七） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
+    </div></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（十二）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十二） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td>
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/1887/problem/10032" target="_blank">B</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj10032.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj10032.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td><td></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（十）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td><div style="display: flex; gap: 4px; justify-content: center; width: 100%;"><div style="flex: 1; ">
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/2152/H2" target="_blank">C</a><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 100%, transparent 100%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3200</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf2152h2.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/cf2152h2" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/cf2152h2.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></div></div></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（九）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（九） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td>
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="http://10.49.18.71/problem/2512" target="_blank">A</a><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2512.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2512.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td><td></td><td></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（七）" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（七） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://www.luogu.com.cn/problem/U672297" target="_blank">A</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/u672297.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/u672297" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/u672297.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
@@ -130,6 +159,10 @@
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://www.luogu.com.cn/problem/U671863" target="_blank">B</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/u671863.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/u671863.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td><td></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（六）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（六） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td>
+    <div class="prob-cell" style="margin-bottom:8px;">
+        <div class="prob-link-wrap"><a href="https://www.luogu.com.cn/problem/P12636" target="_blank">C</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/P12636.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/P12636" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/P12636.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
     </div></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（五）" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（五） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2529" target="_blank">A</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
@@ -138,50 +171,22 @@
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://www.luogu.com.cn/problem/P11824" target="_blank">C</a><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 100%, transparent 100%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3200</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/P11824.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/P11824" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/P11824.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td></tr><tr data-name="JOI Final 2026 Day 1" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;">JOI Final 2026 Day 1 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
-    <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3571/problem/17701" target="_blank">A</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17701.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17701" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj17701.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td><td>
-    <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3571/problem/17701" target="_blank">B</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17702.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17702.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（十四）" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十四） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
-    <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://10.49.18.71/problem/2505" target="_blank">A</a></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2505.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2505.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td><td>
-    <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://10.49.18.71/problem/2506" target="_blank">B</a></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2506.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2506.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（六）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（六） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td>
-    <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://www.luogu.com.cn/problem/P12636" target="_blank">C</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/P12636.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/P12636" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/P12636.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td></tr><tr data-name="GZOI-NOI2026模拟赛（十）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td><div style="display: flex; gap: 4px; justify-content: center; width: 100%;"><div style="flex: 1; ">
-    <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/2152/H2" target="_blank">C</a><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 100%, transparent 100%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3200</span></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf2152h2.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/cf2152h2" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/cf2152h2.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></div></div></td></tr><tr data-name="2024-2025 集训队互测 Round 2 (Oct 19, 2024)" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">2024-2025 集训队互测 Round 2 (Oct 19, 2024) <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td>
+    </div></td><td></td></tr><tr data-name="2024-2025 集训队互测 Round 2 (Oct 19, 2024)" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">2024-2025 集训队互测 Round 2 (Oct 19, 2024) <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://qoj.ac/problem/9492" target="_blank">B</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj9492.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj9492.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td><td></td></tr><tr data-name="GZOI-NOI2026模拟赛（十二）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十二） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td>
+    </div></td><td></td><td></td></tr></tbody></table></div></div><div id="tab-OIs" class="atcoder-tab-content" style="display: none;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 5+题场</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 35%; padding-left: 20px;">比赛名称</th><th style="width: 32.5%;">D</th><th style="width: 32.5%;">E</th></tr></thead><tbody><tr data-name="The 25th Japanese Olympiad in Informatics (JOI 2025/2026) Semifinals Stage" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;">The 25th Japanese Olympiad in Informatics (JOI 2025/2026) Semifinals Stage <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/1887/problem/10032" target="_blank">B</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj10032.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj10032.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td><td></td></tr><tr data-name="The 25th Japanese Olympiad in Informatics (JOI 2025/2026) Final Stage. Day 2" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">The 25th Japanese Olympiad in Informatics (JOI 2025/2026) Final Stage. Day 2 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td>
+        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3386/problem/17244" target="_blank">D</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17243.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17243.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="https://qoj.ac/problem/17706" target="_blank">C</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17706.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17706" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj17706.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td></tr><tr data-name="GZOI-NOI2026模拟赛（九）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（九） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td>
-    <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://10.49.18.71/problem/2512" target="_blank">A</a><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2512.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2512.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
-    </div></td><td></td><td></td></tr></tbody></table></div>
+        <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3386/problem/17244" target="_blank">E</a><span class="diff-indicator" title="难度: 2700.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 75.0%, transparent 75.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2700</span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17244.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17244" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj17244.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+    </div></td></tr></tbody></table></div></div>
         
         <div class="footer">
-            最后构建: 2026-04-29 14:36:38 | Algorithm Platform Generator
+            最后构建: 2026-04-29 15:13:31 | Algorithm Platform Generator
         </div>
     </div>
 
@@ -208,7 +213,7 @@
             });
         }
         
-        let isRemarkVisible = false;
+        let isRemarkVisible = true;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => {
@@ -217,9 +222,9 @@
             const btn = document.querySelector('.toggle-remark-btn');
             if (btn) {
                 btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
-                btn.style.color = isRemarkVisible ? '#059669' : '#475569';
-                btn.style.borderColor = isRemarkVisible ? '#a7f3d0' : '#e2e8f0';
-                btn.style.background = isRemarkVisible ? '#fff' : '#f8fafc';
+                btn.style.color = isRemarkVisible ? '#475569' : '#059669';
+                btn.style.borderColor = isRemarkVisible ? '#e2e8f0' : '#a7f3d0';
+                btn.style.background = isRemarkVisible ? '#f8fafc' : '#fff';
             }
         }
 
@@ -233,7 +238,7 @@
                     if (type === 'count') {
                         return parseInt(b.dataset.count) - parseInt(a.dataset.count);
                     } else {
-                        return a.dataset.name.localeCompare(b.dataset.name);
+                        return b.dataset.name.localeCompare(a.dataset.name, undefined, {numeric: true});
                     }
                 });
                 rows.forEach(r => tbody.appendChild(r));
@@ -359,7 +364,7 @@
                 if (res === 0) {
                     let baseA = a.dataset.base || '';
                     let baseB = b.dataset.base || '';
-                    return baseA.localeCompare(baseB);
+                    return baseA.localeCompare(baseB, undefined, {numeric: true});
                 }
                 return res;
             });

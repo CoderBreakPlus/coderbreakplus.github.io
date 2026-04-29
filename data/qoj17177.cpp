@@ -30,37 +30,50 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 int N,Q;
 
-vector<int>qry[250005];
+vector<pair<int,int>>qry[250005];
 
 struct DS{
 	int c[250005];
-	void upd(int x,int w){ while(x<=n)c[x]+=w,x+=(x&-x); }
-	int qry(int x){ int ret=0; while(x)ret+=c[x],x-=(x&-x); }
+	void upd(int x,int w){ x++; while(x<=N)c[x]+=w,x+=(x&-x); }
+	int qry(int x){ x++; int ret=0; while(x)ret+=c[x],x-=(x&-x); return ret; }
 
 	set<tuple<int,int,int>>S;
-	void init(){ S.emplace(1,1e9,n+1); }
+	void init(){ S.emplace(1,1e9+1,N+1); }
 
 	void cut(int x){
 		auto [l,r,w]=*prev(S.lower_bound({x+1,-1,0}));
 		if(l!=x){
 			S.erase({l,r,w});
-			S.emplace({l,x-1,w}),S.emplace({x+1,r,w});
+			S.emplace(l,x-1,w),S.emplace(x,r,w);
 		}
 	}
 	void cover(int l,int r,int c){
-
+		// cout<<"at "<<l<<" "<<r<<" "<<c<<endl;
+		cut(l),cut(r+1);
+		while(1){
+			auto it=*S.lower_bound({l,0,0});
+			auto [L,R,C]=it;
+			// cout<<"deleting "<<L<<" "<<R<<" "<<C<<endl;
+			if(L>r)break; S.erase(it);
+			upd(C,-(R-L+1));
+		}
+		S.emplace(l,r,c);
+		upd(c,r-l+1);
+		// cout<<"upd"<<endl;
 	}
 }T1,T2;
 vector<int> array_operation(vector<int> A, vector<int> B, vector<int> L, vector<int> R){
 	N=A.size(),Q=L.size();
-	vector<int> col(Q),ans(Q);
+	vector<int> ans(Q);
 	T1.init(),T2.init();
 
 	for(int i=0;i<Q;i++)
 		qry[L[i]].pb(R[i],i);
 
-	for(int i=n-1;i>=0;i--){
-		
+	for(int i=N-1;i>=0;i--){
+		T1.cover(B[i],B[i],i),T2.cover(A[i],B[i],i);
+		for(auto [r,id]: qry[i])
+			ans[id]=(T1.qry(r)==T2.qry(r));
 	}
-	return ret;
+	return ans;
 }

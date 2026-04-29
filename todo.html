@@ -20,26 +20,24 @@
         h1 { color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }
         h2 { color: #0f172a; font-weight: 700; margin-bottom: 12px; }
         
-        /* Nav Bar */
         .nav-bar { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
         .nav-bar a { color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s; }
         .nav-bar a:hover { color: var(--primary-hover); text-decoration: underline; }
         
-        /* Buttons */
         .btn { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
         .btn:hover { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         
         .toggle-diff-btn { margin-left: auto; color: var(--primary); border-color: #bfdbfe; }
         .toggle-diff-btn:hover { background: #eff6ff; }
+        
+        /* 默认显示备注时的按钮状态 */
         .toggle-remark-btn { color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }
         .toggle-remark-btn:hover { background: #f1f5f9; }
         
-        /* Toolbars */
         .stats-bar { display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
         .stats-info span { margin-right: 18px; font-size: 0.95em; color: #334155; font-weight: 600; display: inline-block; }
         .sort-btns button { margin-left: 8px; color: var(--primary); }
 
-        /* Tables */
         table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
         th, td { padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }
         
@@ -53,20 +51,17 @@
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background-color: #f8fafc; }
         
-        /* Matrix specific */
         .matrix-table th, .matrix-table td { text-align: center; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
         
-        /* List specific */
         .normal-table th:nth-child(1) { width: 35%; }  
         .normal-table th:nth-child(2) { width: 15%; }  
         .normal-table th:nth-child(3) { width: 9%; }   
         .normal-table th:nth-child(4) { width: 10%; }  
-        .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; display: none; } 
+        .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
         .normal-table th:last-child { width: 9%; }     
-        .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; display: none; }
+        .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
         
-        /* Cells and Links */
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }
         .prob-link-wrap { font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }
         .prob-link-wrap a { color: var(--primary); text-decoration: none; font-weight: 700; }
@@ -75,7 +70,6 @@
         .diff-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }
         .diff-circle { width: 12px; height: 12px; display: inline-block; }
 
-        /* File links & Tags */
         .mini-version-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }
         .mini-tag { font-size: 0.7em; padding: 2px 5px; border-radius: 4px; font-weight: bold; line-height: 1; }
         .mini-tag-easy { background: #dcfce7; color: #166534; }
@@ -89,7 +83,6 @@
         .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
         .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
 
-        /* Filter Bar */
         .list-filter-bar { background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }
         .list-filter-bar input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.95em; transition: border-color 0.2s; color: var(--text-main); }
         .list-filter-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
@@ -104,7 +97,7 @@
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
-            <button class="btn toggle-remark-btn" onclick="toggleRemark()">📝 显示备注</button>
+            <button class="btn toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>
         </div>
         
         <h1>Todo</h1>
@@ -145,7 +138,7 @@
     </tbody></table></div>
         
         <div class="footer">
-            最后构建: 2026-04-29 14:36:38 | Algorithm Platform Generator
+            最后构建: 2026-04-29 15:13:31 | Algorithm Platform Generator
         </div>
     </div>
 
@@ -172,7 +165,7 @@
             });
         }
         
-        let isRemarkVisible = false;
+        let isRemarkVisible = true;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => {
@@ -181,9 +174,9 @@
             const btn = document.querySelector('.toggle-remark-btn');
             if (btn) {
                 btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
-                btn.style.color = isRemarkVisible ? '#059669' : '#475569';
-                btn.style.borderColor = isRemarkVisible ? '#a7f3d0' : '#e2e8f0';
-                btn.style.background = isRemarkVisible ? '#fff' : '#f8fafc';
+                btn.style.color = isRemarkVisible ? '#475569' : '#059669';
+                btn.style.borderColor = isRemarkVisible ? '#e2e8f0' : '#a7f3d0';
+                btn.style.background = isRemarkVisible ? '#f8fafc' : '#fff';
             }
         }
 
@@ -197,7 +190,7 @@
                     if (type === 'count') {
                         return parseInt(b.dataset.count) - parseInt(a.dataset.count);
                     } else {
-                        return a.dataset.name.localeCompare(b.dataset.name);
+                        return b.dataset.name.localeCompare(a.dataset.name, undefined, {numeric: true});
                     }
                 });
                 rows.forEach(r => tbody.appendChild(r));
@@ -323,7 +316,7 @@
                 if (res === 0) {
                     let baseA = a.dataset.base || '';
                     let baseB = b.dataset.base || '';
-                    return baseA.localeCompare(baseB);
+                    return baseA.localeCompare(baseB, undefined, {numeric: true});
                 }
                 return res;
             });
