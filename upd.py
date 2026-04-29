@@ -24,7 +24,7 @@ class FileOrganizer:
         self.supported_extensions = {'.cpp', '.md', '.conf'}
         
         # 排除的关键词（包含这些关键词的文件不会被移动）
-        self.exclude_keywords = ["gen", "brute", "std", "duipai", "sb", "test", "new", "try"]
+        self.exclude_keywords = ["gen", "brute", "std", "duipai", "sb", "test", "new", "try", "grader"]
         
         # 需要保留的文件扩展名（即使有执行权限也不删除）
         self.preserve_extensions = {'.cpp', '.md', '.conf', '.py', '.sh', '.bash', '.txt', '.json', '.xml', '.yml', '.yaml'}
