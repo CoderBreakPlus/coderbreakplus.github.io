@@ -5,55 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summary - 题目整理</title>
     <style>
-        :root { 
-            --primary: #2563eb; 
-            --primary-hover: #1d4ed8;
-            --bg: #f4f5f8; 
-            --text-main: #1e293b; 
-            --text-muted: #64748b;
-            --border: #e2e8f0; 
-            --panel-bg: #f8fafc;
-        }
+        :root { var(--primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }
-        
         .container { width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
         h1 { color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }
         h2 { color: #0f172a; font-weight: 700; margin-bottom: 12px; }
-        
         .nav-bar { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
         .nav-bar a { color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s; }
         .nav-bar a:hover { color: var(--primary-hover); text-decoration: underline; }
-        
         .btn { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
         .btn:hover { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        
         .toggle-diff-btn { margin-left: auto; color: var(--primary); border-color: #bfdbfe; }
         .toggle-diff-btn:hover { background: #eff6ff; }
-        
-        /* 默认显示备注时的按钮状态 */
         .toggle-remark-btn { color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }
         .toggle-remark-btn:hover { background: #f1f5f9; }
-        
         .stats-bar { display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
         .stats-info span { margin-right: 18px; font-size: 0.95em; color: #334155; font-weight: 600; display: inline-block; }
         .sort-btns button { margin-left: 8px; color: var(--primary); }
-
         table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
         th, td { padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }
-        
         .matrix-table, .normal-table { background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
         thead { background: var(--panel-bg); }
-        
         th { color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
         td { border-bottom: 1px solid var(--border); }
         th:not(:last-child), td:not(:last-child) { border-right: 1px solid var(--border); }
-        
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background-color: #f8fafc; }
-        
         .matrix-table th, .matrix-table td { text-align: center; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
-        
         .normal-table th:nth-child(1) { width: 35%; }  
         .normal-table th:nth-child(2) { width: 15%; }  
         .normal-table th:nth-child(3) { width: 9%; }   
@@ -61,33 +40,34 @@
         .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
         .normal-table th:last-child { width: 9%; }     
         .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
-        
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }
         .prob-link-wrap { font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }
         .prob-link-wrap a { color: var(--primary); text-decoration: none; font-weight: 700; }
         .prob-link-wrap a:hover { text-decoration: underline; }
-        
         .diff-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }
         .diff-circle { width: 12px; height: 12px; display: inline-block; }
-
         .mini-version-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }
         .mini-tag { font-size: 0.7em; padding: 2px 5px; border-radius: 4px; font-weight: bold; line-height: 1; }
         .mini-tag-easy { background: #dcfce7; color: #166534; }
         .mini-tag-hard { background: #fee2e2; color: #991b1b; }
         .mini-file-link { text-decoration: none; display: inline-block; transition: transform 0.2s; }
         .mini-file-link:hover { transform: scale(1.15); }
-        
         .version-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
         .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
         .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
-
         .list-filter-bar { background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }
         .list-filter-bar input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.95em; transition: border-color 0.2s; color: var(--text-main); }
         .list-filter-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }
+        
+        .plist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        .plist-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; }
+        .plist-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }
+        .plist-card h3 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }
+        .plist-card .count { font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; }
+        .opt-col { display: none; }
     </style>
 </head>
 <body>
@@ -95,13 +75,14 @@
         <div class="nav-bar">
             <a href="index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
+            <a href="Summary.html">📚 Summary</a>
+            <a href="ProblemList.html">📋 题单总览</a>
+            <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
             <button class="btn toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>
         </div>
-        
         <h1>Summary</h1>
-        
         <div class="stats-bar"><div class="stats-info"><span>📁 独立题目: 108</span><span>📝 有代码: 108</span><span>💡 有题解: 20</span></div></div>
         
     <div class="list-filter-bar">
@@ -289,7 +270,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj9492.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj9492.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="模板 生成函数 组合数学" data-diff="None" data-date="2026-04-25" data-base="soj2556">
-            <td style="padding-left: 20px;"><a href="http://10.49.18.71/problem/2556" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2556</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2556" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2556</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('模板', 'summary-table')" title="点击筛选/取消">模板</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('生成函数', 'summary-table')" title="点击筛选/取消">生成函数</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('组合数学', 'summary-table')" title="点击筛选/取消">组合数学</span></td>
             <td>-</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-25</td>
@@ -297,7 +278,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2556.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2556.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="None" data-date="2026-04-24" data-base="soj2505">
-            <td style="padding-left: 20px;"><a href="http://10.49.18.71/problem/2505" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2505</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十四）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2505" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2505</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十四）</span></td>
             <td></td>
             <td>-</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-24</td>
@@ -305,7 +286,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2505.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2505.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="None" data-date="2026-04-24" data-base="soj2506">
-            <td style="padding-left: 20px;"><a href="http://10.49.18.71/problem/2506" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2506</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十四）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2506" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2506</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十四）</span></td>
             <td></td>
             <td>-</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-24</td>
@@ -361,7 +342,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17702.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17702.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="None" data-date="2026-04-23" data-base="soj2548">
-            <td style="padding-left: 20px;"><a href="http://10.49.18.71/problem/2548" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2548</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十三）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2548" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2548</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十三）</span></td>
             <td></td>
             <td>-</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-23</td>
@@ -457,7 +438,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf2188f.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/cf2188f.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="None" data-date="2026-04-21" data-base="soj2546">
-            <td style="padding-left: 20px;"><a href="http://10.49.18.71/problem/2546" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2546</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十三）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2546" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2546</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十三）</span></td>
             <td></td>
             <td>-</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-21</td>
@@ -465,7 +446,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2546.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2546.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="None" data-date="2026-04-21" data-base="soj2547">
-            <td style="padding-left: 20px;"><a href="http://10.49.18.71/problem/2547" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2547</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十三）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2547" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2547</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十三）</span></td>
             <td></td>
             <td>-</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-21</td>
@@ -489,7 +470,7 @@
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj10032.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj10032.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="ds" data-diff="2600.0" data-date="2026-04-20" data-base="soj2512">
-            <td style="padding-left: 20px;"><a href="http://10.49.18.71/problem/2512" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2512</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（九）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2512" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2512</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（九）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span></td>
             <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-20</td>
@@ -1000,18 +981,13 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj15325.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj15325" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj15325.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr></tbody></table></div>
-        
-        <div class="footer">
-            最后构建: 2026-04-30 08:56:48 | Algorithm Platform Generator
-        </div>
+        <div class="footer">最后构建: 2026-04-30 21:27:14 | Algorithm Platform Generator</div>
     </div>
-
     <script>
         let isDiffVisible = true;
         function toggleDiff() {
             isDiffVisible = !isDiffVisible;
             const btn = document.querySelector('.toggle-diff-btn');
-            
             if (isDiffVisible) {
                 btn.innerHTML = '🌕 隐藏难度';
                 btn.style.color = 'var(--primary)';
@@ -1023,18 +999,13 @@
                 btn.style.borderColor = '#e2e8f0';
                 btn.style.background = '#f8fafc';
             }
-            
-            document.querySelectorAll('.diff-indicator').forEach(el => {
-                el.style.display = isDiffVisible ? 'inline-flex' : 'none';
-            });
+            document.querySelectorAll('.diff-indicator').forEach(el => { el.style.display = isDiffVisible ? 'inline-flex' : 'none'; });
         }
         
         let isRemarkVisible = true;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
-            document.querySelectorAll('.remark-col').forEach(el => {
-                el.style.display = isRemarkVisible ? 'table-cell' : 'none';
-            });
+            document.querySelectorAll('.remark-col').forEach(el => { el.style.display = isRemarkVisible ? 'table-cell' : 'none'; });
             const btn = document.querySelector('.toggle-remark-btn');
             if (btn) {
                 btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
@@ -1065,16 +1036,9 @@
             const input = document.getElementById('filter-tag-' + tableId);
             if (!input) return;
             let terms = input.value.trim().split(/\s+/).filter(t => t);
-            
             const lowerTag = tag.toLowerCase();
             const index = terms.findIndex(t => t.toLowerCase() === lowerTag);
-            
-            if (index === -1) {
-                terms.push(tag);
-            } else {
-                terms.splice(index, 1);
-            }
-            
+            if (index === -1) { terms.push(tag); } else { terms.splice(index, 1); }
             input.value = terms.length > 0 ? terms.join(' ') + ' ' : '';
             filterListTable(tableId);
             input.focus();
@@ -1082,11 +1046,7 @@
 
         function clearTagFilter(tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
-            if (input) {
-                input.value = '';
-                filterListTable(tableId);
-                input.focus();
-            }
+            if (input) { input.value = ''; filterListTable(tableId); input.focus(); }
         }
 
         function filterListTable(tableId) {
@@ -1095,9 +1055,7 @@
             const searchTerms = tagVal.split(/\s+/).filter(t => t);
             
             const clearBtn = document.getElementById('clear-btn-' + tableId);
-            if (clearBtn) {
-                clearBtn.style.display = tagVal.length > 0 ? 'block' : 'none';
-            }
+            if (clearBtn) { clearBtn.style.display = tagVal.length > 0 ? 'block' : 'none'; }
             
             const minInput = document.getElementById('filter-diff-min-' + tableId);
             const maxInput = document.getElementById('filter-diff-max-' + tableId);
@@ -1106,18 +1064,11 @@
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
 
-            if (tableId.includes('table')) {
+            if (tableId === 'summary-table' || tableId === 'todo-table') {
                 const url = new URL(window.location);
-                
-                if (tagVal) url.searchParams.set('q', tagVal);
-                else url.searchParams.delete('q');
-                
-                if (minStr) url.searchParams.set('min', minStr);
-                else url.searchParams.delete('min');
-                
-                if (maxStr) url.searchParams.set('max', maxStr);
-                else url.searchParams.delete('max');
-                
+                if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
+                if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
+                if (maxStr) url.searchParams.set('max', maxStr); else url.searchParams.delete('max');
                 window.history.replaceState({}, '', url);
             }
 
@@ -1126,23 +1077,19 @@
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             rows.forEach(row => {
-                const tags = row.getAttribute('data-tags').toLowerCase();
+                const tags = (row.getAttribute('data-tags') || '').toLowerCase();
                 const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
-                const diff = diffStr !== 'None' ? parseFloat(diffStr) : NaN;
+                const diff = diffStr && diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
-                if (searchTerms.length > 0) {
-                    matchTag = searchTerms.every(term => tags.includes(term) || baseName.includes(term));
-                }
-
+                if (searchTerms.length > 0) { matchTag = searchTerms.every(term => tags.includes(term) || baseName.includes(term)); }
                 let matchDiff = true;
                 if (minStr !== '' || maxStr !== '') {
                     if (isNaN(diff)) matchDiff = false;
                     else if (diff < minVal || diff > maxVal) matchDiff = false;
                 }
-                
                 let matchDate = true;
                 if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
                 if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
@@ -1153,11 +1100,10 @@
 
         let sortDirection = {};
         function sortListTable(tableId, col) {
-            if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1 };
+            if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1, 'index': 1 };
             const tbody = document.querySelector('#' + tableId + ' tbody');
             if (!tbody) return;
             const rows = Array.from(tbody.querySelectorAll('tr'));
-            
             sortDirection[tableId][col] *= -1;
             const dir = sortDirection[tableId][col];
             
@@ -1175,8 +1121,11 @@
                     if (d1 === '未知') d1 = '';
                     if (d2 === '未知') d2 = '';
                     res = d1.localeCompare(d2) * dir;
+                } else if (col === 'index') {
+                    let i1 = parseInt(a.dataset.index) || 0;
+                    let i2 = parseInt(b.dataset.index) || 0;
+                    res = (i1 - i2) * dir;
                 }
-                
                 if (res === 0) {
                     let baseA = a.dataset.base || '';
                     let baseB = b.dataset.base || '';
@@ -1190,7 +1139,6 @@
         function switchAtCoderTab(targetId, btn) {
             document.querySelectorAll('.atcoder-tab-content').forEach(el => el.style.display = 'none');
             document.getElementById(targetId).style.display = 'block';
-            
             document.querySelectorAll('.atcoder-tab-btn').forEach(el => {
                 el.style.background = '#fff';
                 el.style.color = '#334155';
@@ -1200,28 +1148,28 @@
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }
+        
+        function filterPList() {
+            const val = document.getElementById('plist-search').value.toLowerCase();
+            document.querySelectorAll('.plist-card').forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(val) ? '' : 'none';
+            });
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const q = urlParams.get('q');
             const min = urlParams.get('min');
             const max = urlParams.get('max');
-            
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input) {
+            if (input && (input.id === 'filter-tag-summary-table' || input.id === 'filter-tag-todo-table')) {
                 const tableId = input.id.replace('filter-tag-', '');
-                
                 if (q) input.value = q + ' ';
-                
                 const minInput = document.getElementById('filter-diff-min-' + tableId);
                 if (minInput && min) minInput.value = min;
-                
                 const maxInput = document.getElementById('filter-diff-max-' + tableId);
                 if (maxInput && max) maxInput.value = max;
-                
-                if (q || min || max) {
-                    filterListTable(tableId);
-                }
+                if (q || min || max) { filterListTable(tableId); }
             }
         });
     </script>
