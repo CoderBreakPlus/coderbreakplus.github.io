@@ -561,9 +561,9 @@ def apply_categories_and_links(groups, data_dir):
                     if parts:
                         try:
                             v.difficulty = float(parts[-1])
-                            v.tags = parts[:-1]
+                            v.tags = sorted(parts[:-1])  
                         except ValueError:
-                            v.tags = parts
+                            v.tags = sorted(parts)       
                             v.difficulty = None
                             
                     cat_str = lines[1].strip()
