@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summary - 题目整理</title>
     <style>
-        /* 修复了原代码中的 var(...) 语法错误，使得全局变量正常生效，恢复完美 UI */
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }
         .container { width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
@@ -26,7 +25,6 @@
         table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
         th, td { padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }
         
-        /* 统一所有表格的美化外观，并防止窄屏下挤压变形 */
         .matrix-table, .normal-table, .plist-table { background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
         .normal-table, .plist-table { min-width: 800px; }
         .matrix-table { min-width: 600px; }
@@ -76,7 +74,6 @@
         .plist-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }
         .plist-card h3 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }
         .plist-card .count { font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; border: 1px solid var(--border); }
-        .opt-col { display: none; }
     </style>
 </head>
 <body>
@@ -93,7 +90,7 @@
             <button class="btn toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>
         </div>
         <h1>Summary</h1>
-        <div class="stats-bar"><div class="stats-info"><span>📁 独立题目: 108</span><span>📝 有代码: 108</span><span>💡 有题解: 20</span></div></div>
+        <div class="stats-bar"><div class="stats-info"><span>📁 独立题目: 109</span><span>📝 有代码: 109</span><span>💡 有题解: 22</span></div></div>
         
     <div class="list-filter-bar">
         <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
@@ -285,7 +282,7 @@
             <td>-</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-25</td>
             <td class="remark-col">-</td>
-            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2556.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2556.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2556.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2556" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/soj2556.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="" data-diff="None" data-date="2026-04-24" data-base="soj2505">
             <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2505" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2505</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十四）</span></td>
@@ -606,6 +603,14 @@
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-16</td>
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj9971.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj9971.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
+        </tr>
+        <tr data-tags="多项式 组合数学 生成函数" data-diff="None" data-date="2026-04-16" data-base="soj2538">
+            <td style="padding-left: 20px;"><a href="" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2538</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('多项式', 'summary-table')" title="点击筛选/取消">多项式</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('组合数学', 'summary-table')" title="点击筛选/取消">组合数学</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('生成函数', 'summary-table')" title="点击筛选/取消">生成函数</span></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-04-16</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2538.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2538" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/soj2538.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr>
         <tr data-tags="构造 树论" data-diff="2900.0" data-date="2026-04-15" data-base="P11866">
             <td style="padding-left: 20px;"><a href="https://www.luogu.com.cn/problem/P11866" target="_blank" style="color:var(--primary); text-decoration:none;"><b>P11866</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
@@ -991,7 +996,7 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj15325.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj15325" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj15325.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div></td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-04-30 21:41:29 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-04-30 21:49:29 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;

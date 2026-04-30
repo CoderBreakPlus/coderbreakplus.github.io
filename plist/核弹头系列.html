@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📁 题单: 核弹头系列 - 题目整理</title>
     <style>
-        /* 修复了原代码中的 var(...) 语法错误，使得全局变量正常生效，恢复完美 UI */
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }
         .container { width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
@@ -26,7 +25,6 @@
         table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
         th, td { padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }
         
-        /* 统一所有表格的美化外观，并防止窄屏下挤压变形 */
         .matrix-table, .normal-table, .plist-table { background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
         .normal-table, .plist-table { min-width: 800px; }
         .matrix-table { min-width: 600px; }
@@ -76,7 +74,6 @@
         .plist-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }
         .plist-card h3 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }
         .plist-card .count { font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; border: 1px solid var(--border); }
-        .opt-col { display: none; }
     </style>
 </head>
 <body>
@@ -90,44 +87,44 @@
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
-            <button class="btn" onclick="document.querySelectorAll('.opt-col').forEach(el=>el.style.display=el.style.display==='table-cell'?'none':'table-cell')" style="margin-left: 10px; border-color:#a7f3d0; color:#059669;">📊 切换显示: 难度/日期</button>
+            
         </div>
         <h1>📁 题单: 核弹头系列</h1>
-        <div class="stats-bar"><div class="stats-info"><span>共 1 题</span></div></div>
+        <div class="stats-bar"><div class="stats-info"><span>共 2 题</span></div></div>
         
     <div class="list-filter-bar">
         <input type="text" id="filter-tag-plist-核弹头系列" placeholder="搜索本题单题目..." onkeyup="filterListTable('plist-核弹头系列')">
-        <div style="margin-left: auto;">
-            <button class="btn" onclick="sortListTable('plist-核弹头系列', 'index')">默认排序</button>
-            <button class="btn" onclick="sortListTable('plist-核弹头系列', 'diff')">按难度 ↕</button>
-            <button class="btn" onclick="sortListTable('plist-核弹头系列', 'date')">按日期 ↕</button>
-        </div>
     </div>
     <div style="overflow-x: auto;">
         <table class="plist-table" id="plist-核弹头系列">
             <thead>
                 <tr>
-                    <th style="width: 45%; padding-left:20px;">题目</th>
-                    <th style="width: 25%;">标签</th>
-                    <th class="opt-col" style="width: 10%;">难度</th>
-                    <th class="opt-col" style="width: 10%;">日期</th>
-                    <th style="width: 10%;">文件</th>
+                    <th style="width: 33.33%; padding-left:20px;">题目</th>
+                    <th style="width: 33.33%;">标签</th>
+                    <th style="width: 33.33%;">文件</th>
                 </tr>
             </thead>
             <tbody>
     
-        <tr data-index="0" data-diff="None" data-date="2026-04-25" data-base="soj2556" data-tags="模板 生成函数 组合数学">
-            <td style="padding-left:20px;"><a href="http://121.196.149.251:8080/problem/2556" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2556</a></td>
-            <td><span class="tag-pill">模板</span><span class="tag-pill">生成函数</span><span class="tag-pill">组合数学</span></td>
-            <td class="opt-col">-</td>
-            <td class="opt-col" style="font-size:0.9em; color:var(--text-muted); font-weight:500;">2026-04-25</td>
+        <tr data-index="0" data-base="soj2538" data-tags="多项式 组合数学 生成函数">
+            <td style="padding-left:20px;"><a href="" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2538</a></td>
+            <td><span class="tag-pill">多项式</span><span class="tag-pill">组合数学</span><span class="tag-pill">生成函数</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2556.cpp" class="file-link" style="text-decoration:none;">📝</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2538.cpp" class="file-link" style="text-decoration:none;" title="代码">📝</a><a href="../data/soj2538" class="file-link" style="text-decoration:none;" title="题解">💡</a><a href="../data/soj2538.conf" class="file-link" style="text-decoration:none;" title="配置">⚙️</a></span>
+                </div>
+            </td>
+        </tr>
+        <tr data-index="1" data-base="soj2556" data-tags="模板 生成函数 组合数学">
+            <td style="padding-left:20px;"><a href="http://121.196.149.251:8080/problem/2556" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2556</a></td>
+            <td><span class="tag-pill">模板</span><span class="tag-pill">生成函数</span><span class="tag-pill">组合数学</span></td>
+            <td>
+                <div class="version-row" style="flex-wrap: nowrap;">
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2556.cpp" class="file-link" style="text-decoration:none;" title="代码">📝</a><a href="../data/soj2556" class="file-link" style="text-decoration:none;" title="题解">💡</a><a href="../data/soj2556.conf" class="file-link" style="text-decoration:none;" title="配置">⚙️</a></span>
                 </div>
             </td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-04-30 21:41:29 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-04-30 21:49:29 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;

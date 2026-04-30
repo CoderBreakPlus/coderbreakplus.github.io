@@ -47,7 +47,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title} - 题目整理</title>
     <style>
-        /* 修复了原代码中的 var(...) 语法错误，使得全局变量正常生效，恢复完美 UI */
         :root {{ --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }}
         .container {{ width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }}
@@ -68,7 +67,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         table {{ width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }}
         th, td {{ padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }}
         
-        /* 统一所有表格的美化外观，并防止窄屏下挤压变形 */
         .matrix-table, .normal-table, .plist-table {{ background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }}
         .normal-table, .plist-table {{ min-width: 800px; }}
         .matrix-table {{ min-width: 600px; }}
@@ -118,7 +116,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .plist-card:hover {{ transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }}
         .plist-card h3 {{ margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }}
         .plist-card .count {{ font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; border: 1px solid var(--border); }}
-        .opt-col {{ display: none; }}
     </style>
 </head>
 <body>
@@ -963,52 +960,41 @@ def build_problem_lists_index(plists, out_path, base_url=""):
 
 def build_single_plist_page(name, versions, out_path, rel_path, base_url=""):
     table_id = f"plist-{name}"
+    
+    # 题单专属三列极简布局：无难度、无日期
     content_html = f"""
     <div class="list-filter-bar">
         <input type="text" id="filter-tag-{table_id}" placeholder="搜索本题单题目..." onkeyup="filterListTable('{table_id}')">
-        <div style="margin-left: auto;">
-            <button class="btn" onclick="sortListTable('{table_id}', 'index')">默认排序</button>
-            <button class="btn" onclick="sortListTable('{table_id}', 'diff')">按难度 ↕</button>
-            <button class="btn" onclick="sortListTable('{table_id}', 'date')">按日期 ↕</button>
-        </div>
     </div>
     <div style="overflow-x: auto;">
         <table class="plist-table" id="{table_id}">
             <thead>
                 <tr>
-                    <th style="width: 45%; padding-left:20px;">题目</th>
-                    <th style="width: 25%;">标签</th>
-                    <th class="opt-col" style="width: 10%;">难度</th>
-                    <th class="opt-col" style="width: 10%;">日期</th>
-                    <th style="width: 10%;">文件</th>
+                    <th style="width: 33.33%; padding-left:20px;">题目</th>
+                    <th style="width: 33.33%;">标签</th>
+                    <th style="width: 33.33%;">文件</th>
                 </tr>
             </thead>
             <tbody>
     """
     
     for i, v in enumerate(versions):
-        diff_val = v.difficulty if v.difficulty is not None else 'None'
-        diff_html = "-"
-        if v.difficulty is not None:
-            style = get_diff_style(v.difficulty)
-            diff_html = f'<span class="diff-indicator"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
-        
         tags_str = " ".join(v.tags) if v.tags else ""
         tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in v.tags])
         
+        # 补全 cpp、md、conf 文件跳转
         links = []
-        if v.files.get('cpp'): links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" style="text-decoration:none;">📝</a>')
-        if v.files.get('md'): links.append(f'<a href="{rel_path}/{v.files["md"][:-3] if v.files["md"].endswith(".md") else v.files["md"]}" class="file-link" style="text-decoration:none;">💡</a>')
+        if v.files.get('cpp'): links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" style="text-decoration:none;" title="代码">📝</a>')
+        if v.files.get('md'): links.append(f'<a href="{rel_path}/{v.files["md"][:-3] if v.files["md"].endswith(".md") else v.files["md"]}" class="file-link" style="text-decoration:none;" title="题解">💡</a>')
+        if v.files.get('conf'): links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link" style="text-decoration:none;" title="配置">⚙️</a>')
 
         display_name = v.base_filename 
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">{display_name}</a>' if v.link != '#' else f'<b>{display_name}</b>'
 
         content_html += f"""
-        <tr data-index="{i}" data-diff="{diff_val}" data-date="{v.date}" data-base="{v.base_filename}" data-tags="{tags_str}">
+        <tr data-index="{i}" data-base="{v.base_filename}" data-tags="{tags_str}">
             <td style="padding-left:20px;">{name_html}</td>
             <td>{tags_html}</td>
-            <td class="opt-col">{diff_html}</td>
-            <td class="opt-col" style="font-size:0.9em; color:var(--text-muted); font-weight:500;">{v.date}</td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
                     <span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span>
@@ -1018,12 +1004,10 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url=""):
         
     content_html += "</tbody></table></div>"
 
-    nav_extra = '<button class="btn" onclick="document.querySelectorAll(\'.opt-col\').forEach(el=>el.style.display=el.style.display===\'table-cell\'?\'none\':\'table-cell\')" style="margin-left: 10px; border-color:#a7f3d0; color:#059669;">📊 切换显示: 难度/日期</button>'
-
     html = HTML_TEMPLATE.format(
         title=f"📁 题单: {name}", 
         stats_block=f'<div class="stats-bar"><div class="stats-info"><span>共 {len(versions)} 题</span></div></div>',
-        nav_extra=nav_extra,
+        nav_extra="",
         content_html=content_html, 
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         base_url=base_url
