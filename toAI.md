@@ -1,3 +1,45 @@
+# 角色与任务背景
+你现在是一个资深的 Python 开发者和前端工程师。我正在开发一个**「算法竞赛题目整理工具」**，该工具通过扫描本地的代码和配置文件，自动生成带有响应式矩阵表格、Kenkoooo 风格难度圆环、以及多条件检索、纯前端状态持久化的 HTML 静态仪表盘和分类页。
+
+这是我们目前最新、最完美的项目进度、核心规则以及所有 Python 脚本代码。请你先阅读并理解这些上下文。在理解完毕后，回复我“已完全掌握项目上下文，请问需要进行什么修改或新增什么功能？”即可。
+
+---
+
+## 1. 项目目录与文件识别规则
+- **数据目录 (`data/`)**：存放 `.cpp` (代码)、`.md` (题解) 和 `.conf` (配置) 文件。
+- **版本识别**：同名题目以 `1` 或 `_e1` 结尾为 Easy version，以 `2` 或 `_e2` 结尾为 Hard version。
+- **官方/自动链接生成**：
+  - Codeforces (`cf...`)：自动补全比赛和题号，生成官方链接。
+  - AtCoder (`abc/arc/agc...`)：自动补全并分组，生成官方链接。
+  - Luogu (`p10001`)：自动生成洛谷链接 (`luogu.com.cn/problem/P10001`)。
+  - QOJ (`qoj1233`)：自动生成 QOJ 链接 (`qoj.ac/problem/1233`)。
+- **创建日期提取**：自动读取 `.cpp` 第一行的 `// created time: YYYY-MM-DD`。
+
+## 2. 配置文件 (`.conf`) 核心语法 (固定 6 行)
+- **第 1 行**：标签/关键词（多个用空格隔开，末尾如果为数字自动解析为难度）。
+- **第 2 行**：比赛分类（如 `OI` / `OIs` / `XCPC`）。支持用 `|` 隔开多个。CF/AT 留空默认归档官方。
+- **第 3 行**：URL 链接（完整链接。CF/AT/Luogu/QOJ 留空自动生成）。
+- **第 4 行**：比赛名称（支持用 `|` 隔开多场，如 `XOJ Round 1|YOJ 2`）。
+- **第 5 行**：题目编号（支持用 `|` 隔开多个，如 `C|D`）。
+- **第 6 行**：备注/备忘录（在表格中独立成列展示，不需要可留空）。
+
+## 3. 核心业务逻辑与前端特性
+1. **一题多端映射与官方截断**：通过 `|` 分隔符，一道题可同时出现在多个比赛的矩阵中。如果 CF/AT 题指定了 `OI/XCPC` 类别，则从官方 CF/AT 表格中移除。
+2. **Easy/Hard 智能显示**：官方 CF/AT 页面中，矩阵同一列内自动拆分为左/右半格（如 `C1` / `C2`）；在自定义的 OI/XCPC 表格中不带 1/2 后缀（仅显示 `C`）。
+3. **列表表格 (Summary / Todo)**：
+   - 有 `.conf` 但无 `.cpp` 的题目流入 Todo，其余流入 Summary。
+   - 列宽严格设定为：题目(35%)、标签(15%)、难度(9%)、日期(10%)、备注(22%)、文件(9%)。
+   - 支持双重稳定排序（优先日期降序，其次文件名字典序）。
+4. **比赛智能排序**：矩阵页面左侧的“比赛名称”按照先提取中文/阿拉伯数字外的文本作为字典序降序排列，再将所有提取出来的数字依次作为第二/三关键字排序。OI 页面第一列扩宽至 35%。
+5. **极客仪表盘首页**：双列 Grid 布局，包含纯数字徽章的数据统计卡片，及 C++ `pragma` 优化指令说明。
+6. **前端交互与 URL 记忆**：点击标签触发搜索或取消；查询词 `q`、难度 `min`/`max` 实时写入 `window.history` 的 URL Search 参数中刷新不丢失。难度 3200 满红圈，3300+ 金圈。
+
+---
+
+## 4. 当前最新代码资产 (共 4 个 Python 文件)
+
+### 文件一：`run.py` (核心构建引擎，生成全套 HTML)
+```python
 import os
 import sys
 import re
@@ -103,22 +145,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .list-filter-bar input {{ padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.95em; transition: border-color 0.2s; color: var(--text-main); }}
         .list-filter-bar input:focus {{ border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }}
         .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }}
-        
-        .plist-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }}
-        .plist-card {{ background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; }}
-        .plist-card:hover {{ transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }}
-        .plist-card h3 {{ margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }}
-        .plist-card .count {{ font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; }}
-        .opt-col {{ display: none; }}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="nav-bar">
             <a href="index.html">🏠 Dashboard</a>
-            <span style="color:#cbd5e1;">|</span>
-            <a href="Summary.html">📚 Summary</a>
-            <a href="ProblemList.html">📋 题单总览</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
@@ -210,7 +242,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
 
-            if (tableId === 'summary-table' || tableId === 'todo-table') {{
+            if (tableId.includes('table')) {{
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
@@ -223,11 +255,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             rows.forEach(row => {{
-                const tags = (row.getAttribute('data-tags') || '').toLowerCase();
+                const tags = row.getAttribute('data-tags').toLowerCase();
                 const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
-                const diff = diffStr && diffStr !== 'None' ? parseFloat(diffStr) : NaN;
+                const diff = diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
                 if (searchTerms.length > 0) {{ matchTag = searchTerms.every(term => tags.includes(term) || baseName.includes(term)); }}
@@ -246,7 +278,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         let sortDirection = {{}};
         function sortListTable(tableId, col) {{
-            if (!sortDirection[tableId]) sortDirection[tableId] = {{ 'diff': 1, 'date': 1, 'index': 1 }};
+            if (!sortDirection[tableId]) sortDirection[tableId] = {{ 'diff': 1, 'date': 1 }};
             const tbody = document.querySelector('#' + tableId + ' tbody');
             if (!tbody) return;
             const rows = Array.from(tbody.querySelectorAll('tr'));
@@ -267,10 +299,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     if (d1 === '未知') d1 = '';
                     if (d2 === '未知') d2 = '';
                     res = d1.localeCompare(d2) * dir;
-                }} else if (col === 'index') {{
-                    let i1 = parseInt(a.dataset.index) || 0;
-                    let i2 = parseInt(b.dataset.index) || 0;
-                    res = (i1 - i2) * dir;
                 }}
                 if (res === 0) {{
                     let baseA = a.dataset.base || '';
@@ -294,13 +322,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }}
-        
-        function filterPList() {{
-            const val = document.getElementById('plist-search').value.toLowerCase();
-            document.querySelectorAll('.plist-card').forEach(card => {{
-                card.style.display = card.innerText.toLowerCase().includes(val) ? '' : 'none';
-            }});
-        }}
 
         window.addEventListener('DOMContentLoaded', () => {{
             const urlParams = new URLSearchParams(window.location.search);
@@ -308,7 +329,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const min = urlParams.get('min');
             const max = urlParams.get('max');
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input && (input.id === 'filter-tag-summary-table' || input.id === 'filter-tag-todo-table')) {{
+            if (input) {{
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);
@@ -347,7 +368,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         .card-xcpc::before {{ background: linear-gradient(90deg, #10b981, #34d399); }}
         .card-cf::before {{ background: linear-gradient(90deg, #ef4444, #f87171); }}
         .card-at::before {{ background: linear-gradient(90deg, #1e293b, #475569); }}
-        .card-plist::before {{ background: linear-gradient(90deg, #ec4899, #f43f5e); }}
         .card-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }}
         .card-title {{ font-size: 1.4em; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }}
         .card-badge {{ font-size: 0.8em; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
@@ -399,10 +419,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             <a href="AtCoder.html" class="card card-at">
                 <div class="card-header"><h2 class="card-title"><span>🗻</span> AtCoder</h2><span class="card-badge" style="color: #334155; background: #f1f5f9;">{at_c}</span></div>
                 <div class="card-stats"><span class="stat-number">{at_p}</span><span class="stat-label">题归档</span></div>
-            </a>
-            <a href="ProblemList.html" class="card card-plist" style="grid-column: 1 / -1;">
-                <div class="card-header"><h2 class="card-title"><span>📋</span> Problem List</h2><span class="card-badge" style="color: #ec4899; background: #fce7f3;">Menu</span></div>
-                <div class="card-stats"><span class="stat-number">{plist_count}</span><span class="stat-label">个自建题单</span></div>
             </a>
         </div>
         <div class="info-grid">
@@ -891,133 +907,9 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def scan_problem_lists(plist_dir, groups):
-    plists = {}
-    if not os.path.exists(plist_dir):
-        return plists
-    
-    for f in os.listdir(plist_dir):
-        if f.endswith('.conf'):
-            name = f[:-5]
-            path = os.path.join(plist_dir, f)
-            with open(path, 'r', encoding='utf-8') as file:
-                ids = [line.strip() for line in file.readlines() if line.strip()]
-            
-            matched_versions = []
-            for pid in ids:
-                target_group = None
-                for g_name, g in groups.items():
-                    if g_name.lower() == pid.lower():
-                        target_group = g
-                        break
-                
-                if target_group:
-                    for v_name in target_group.version_order:
-                        if v_name in target_group.versions:
-                            matched_versions.append(target_group.versions[v_name])
-                else:
-                    dummy = ProblemVersion("Normal", pid)
-                    dummy.link = "#"
-                    matched_versions.append(dummy)
-                    
-            plists[name] = matched_versions
-    return plists
-
-def build_problem_lists_index(plists, out_path):
-    cards_html = ""
-    for name, versions in plists.items():
-        cards_html += f"""
-        <a href="plist_{name}.html" class="plist-card">
-            <h3>📂 {name}</h3>
-            <div><span class="count">包含 {len(versions)} 道题目</span></div>
-        </a>"""
-    
-    content = f"""
-    <div class="list-filter-bar">
-        <strong style="color: var(--primary); font-size: 1.1em;">🔍 检索题单</strong>
-        <input type="text" id="plist-search" placeholder="输入题单名称进行检索..." onkeyup="filterPList()" style="width:100%; max-width:400px; margin-left:10px;">
-    </div>
-    <div class="plist-grid">{cards_html}</div>
-    """
-    
-    html = HTML_TEMPLATE.format(
-        title="📋 Problem List 题单总览", stats_block="", nav_extra="",
-        content_html=content, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    )
-    with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-
-def build_single_plist_page(name, versions, out_path, rel_path):
-    table_id = f"plist-{name}"
-    content_html = f"""
-    <div class="list-filter-bar">
-        <input type="text" id="filter-tag-{table_id}" placeholder="搜索本题单题目..." onkeyup="filterListTable('{table_id}')">
-        <div style="margin-left: auto;">
-            <button class="btn" onclick="sortListTable('{table_id}', 'index')">默认排序</button>
-            <button class="btn" onclick="sortListTable('{table_id}', 'diff')">按难度 ↕</button>
-            <button class="btn" onclick="sortListTable('{table_id}', 'date')">按日期 ↕</button>
-        </div>
-    </div>
-    <div style="overflow-x: auto;">
-        <table class="normal-table" id="{table_id}">
-            <thead>
-                <tr>
-                    <th style="width: 45%; padding-left:20px;">题目</th>
-                    <th style="width: 25%;">标签</th>
-                    <th class="opt-col" style="width: 10%;">难度</th>
-                    <th class="opt-col" style="width: 10%;">日期</th>
-                    <th style="width: 10%;">文件</th>
-                </tr>
-            </thead>
-            <tbody>
-    """
-    
-    for i, v in enumerate(versions):
-        diff_val = v.difficulty if v.difficulty is not None else 'None'
-        diff_html = "-"
-        if v.difficulty is not None:
-            style = get_diff_style(v.difficulty)
-            diff_html = f'<span class="diff-indicator"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
-        
-        tags_str = " ".join(v.tags) if v.tags else ""
-        tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in v.tags])
-        
-        links = []
-        if v.files.get('cpp'): links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" style="text-decoration:none;">📝</a>')
-        if v.files.get('md'): links.append(f'<a href="{rel_path}/{v.files["md"][:-3] if v.files["md"].endswith(".md") else v.files["md"]}" class="file-link" style="text-decoration:none;">💡</a>')
-
-        display_name = v.base_filename 
-        name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">{display_name}</a>' if v.link != '#' else f'<b>{display_name}</b>'
-
-        content_html += f"""
-        <tr data-index="{i}" data-diff="{diff_val}" data-date="{v.date}" data-base="{v.base_filename}" data-tags="{tags_str}">
-            <td style="padding-left:20px;">{name_html}</td>
-            <td>{tags_html}</td>
-            <td class="opt-col">{diff_html}</td>
-            <td class="opt-col" style="font-size:0.9em; color:var(--text-muted); font-weight:500;">{v.date}</td>
-            <td>
-                <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span>
-                </div>
-            </td>
-        </tr>"""
-        
-    content_html += "</tbody></table></div>"
-
-    nav_extra = '<button class="btn" onclick="document.querySelectorAll(\'.opt-col\').forEach(el=>el.style.display=el.style.display===\'table-cell\'?\'none\':\'table-cell\')" style="margin-left: 10px; border-color:#a7f3d0; color:#059669;">📊 切换显示: 难度/日期</button>'
-
-    html = HTML_TEMPLATE.format(
-        title=f"📁 题单: {name}", 
-        stats_block=f'<div class="stats-bar"><div class="stats-info"><span>共 {len(versions)} 题</span></div></div>',
-        nav_extra=nav_extra,
-        content_html=content_html, 
-        gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    )
-    with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-
-def build_index_page(categories, summary_versions, todo_versions, plists, out_path):
+def build_index_page(categories, summary_versions, todo_versions, out_path):
     s_count = len(summary_versions)
     t_count = len(todo_versions)
-    plist_count = len(plists)
     
     oi_p = sum(len(g.versions) for gs in categories.get('OI', {}).values() for g in gs) + sum(len(g.versions) for gs in categories.get('OIs', {}).values() for g in gs)
     oi_c = len(categories.get('OI', {})) + len(categories.get('OIs', {}))
@@ -1037,7 +929,6 @@ def build_index_page(categories, summary_versions, todo_versions, plists, out_pa
         xcpc_p=xcpc_p, xcpc_c=xcpc_c,
         cf_p=cf_p, cf_c=cf_c,
         at_p=at_p, at_c=at_c,
-        plist_count=plist_count,
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
@@ -1045,7 +936,6 @@ def build_index_page(categories, summary_versions, todo_versions, plists, out_pa
 def main():
     data_dir = sys.argv[1] if len(sys.argv) > 1 else 'data'
     out_dir = sys.argv[2] if len(sys.argv) > 2 else '.'
-    plist_dir = 'plist'
 
     if not os.path.exists(data_dir):
         print(f"❌ 错误: 数据目录 '{data_dir}' 不存在！")
@@ -1059,11 +949,6 @@ def main():
     print(f"✅ 找到 {len(groups)} 个基础题组，正在分析配置...")
     
     apply_categories_and_links(groups, data_dir)
-    
-    print(f"📋 正在扫描题单目录 '{plist_dir}'...")
-    plists = scan_problem_lists(plist_dir, groups)
-    if plists:
-        print(f"✅ 找到 {len(plists)} 个题单。")
 
     categories = {
         'Codeforces': defaultdict(list), 'AtCoder': defaultdict(list),
@@ -1102,13 +987,97 @@ def main():
     build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table")
     build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table")
 
-    # 生成题单系列 HTML
-    build_problem_lists_index(plists, os.path.join(out_dir, "ProblemList.html"))
-    for name, versions in plists.items():
-        build_single_plist_page(name, versions, os.path.join(out_dir, f"plist_{name}.html"), rel_data_path)
-
-    build_index_page(categories, summary_versions, todo_versions, plists, os.path.join(out_dir, "index.html"))
+    build_index_page(categories, summary_versions, todo_versions, os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
 
 if __name__ == '__main__':
     main()
+```
+
+文件二：`collect.py`
+```py
+import os
+import re
+
+def main():
+    try:
+        prefix = input("请输入重命名前缀 (如 qoj, 留空则不重命名): ").strip()
+        contest_type = input("请输入比赛类型 (如 OI/OIs/XCPC, 可留空): ").strip()
+        contest_name = input("请输入这些文件所属的比赛名 (可留空): ").strip()
+    except EOFError:
+        print("未检测到输入，退出程序。")
+        return
+
+    code_dir = 'code'
+    if not os.path.exists(code_dir):
+        print(f"❌ 错误：当前目录下不存在 '{code_dir}' 文件夹！")
+        return
+        
+    success_count = 0
+    
+    for fname in os.listdir(code_dir):
+        if not fname.endswith('.cpp'): continue
+        
+        s = fname[:-4].strip() 
+        
+        # 【核心拦截】：只处理形如 A, B, C, A1, B2, AA 的比赛题号文件
+        if not re.match(r'^[A-Za-z]{1,2}\d*$', s):
+            continue
+            
+        filepath = os.path.join(code_dir, fname)
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f: 
+                lines = f.readlines()
+        except Exception:
+            continue
+            
+        link = ""
+        if len(lines) > 1:
+            l2 = re.sub(r'^[\s/*#]+', '', lines[1]).strip()
+            if l2.startswith("http"):
+                link = l2
+        if not link and len(lines) > 2:
+            link = re.sub(r'^[\s/*#]+', '', lines[2]).strip()
+            
+        # 严格提取题目编号：就是原文件名大写 (如 A.cpp 就是 A)
+        pid = s.upper()
+
+        new_base = s
+        if prefix and link:
+            nums = re.findall(r'\d+', link)
+            if nums:
+                new_base = f"{prefix}{nums[-1]}"
+                
+        new_cpp_path = os.path.join(code_dir, f"{new_base}.cpp")
+        if new_base != s:
+            try:
+                if filepath != new_cpp_path:
+                    os.rename(filepath, new_cpp_path)
+                    print(f"🔄 自动重命名: {fname} -> {new_base}.cpp")
+            except Exception as e:
+                print(f"❌ 重命名 {fname} 失败: {e}")
+                new_base = s
+                new_cpp_path = filepath
+        
+        conf_path = os.path.join(code_dir, f"{new_base}.conf")
+        try:
+            with open(conf_path, 'w', encoding='utf-8') as f:
+                f.write("\n")                # 第 1 行: 标签/难度
+                f.write(f"{contest_type}\n") # 第 2 行: 比赛归类
+                f.write(f"{link}\n")         # 第 3 行: 题目链接
+                f.write(f"{contest_name}\n") # 第 4 行: 比赛名
+                f.write(f"{pid}\n")          # 第 5 行: 题目编号
+                f.write("\n")                # 第 6 行: 备注
+                
+            print(f"✅ 生成 {new_base}.conf 成功！(题号: {pid})")
+            success_count += 1
+        except Exception as e:
+            print(f"❌ 写入文件 {new_base}.conf 失败: {e}")
+            
+    print(f"\n🎉 完毕！共处理了 {success_count} 个题号代码文件。")
+
+if __name__ == '__main__':
+    main()
+```
+
+其他文件已经无用。
