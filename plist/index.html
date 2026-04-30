@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo - 题目整理</title>
+    <title>📋 Problem List 题单总览 - 题目整理</title>
     <style>
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }
@@ -80,50 +80,28 @@
     <div class="container">
         <div class="nav-bar">
             <!-- 引入 base_url 支持跨文件夹跳回主目录 -->
-            <a href="index.html">🏠 Dashboard</a>
+            <a href="../index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
-            <a href="Summary.html">📚 Summary</a>
-            <a href="plist/index.html">📋 Problemlist</a>
+            <a href="../Summary.html">📚 Summary</a>
+            <a href="../plist/index.html">📋 Problemlist</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
-            <button class="btn toggle-remark-btn" onclick="toggleRemark()">🚫 隐藏备注</button>
+            
         </div>
-        <h1>Todo</h1>
-        <div class="stats-bar"><div class="stats-info"><span>📁 独立题目: 0</span><span>📝 有代码: 0</span><span>💡 有题解: 0</span></div></div>
+        <h1>📋 Problem List 题单总览</h1>
+        
         
     <div class="list-filter-bar">
-        <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
-        <div style="position: relative; display: inline-block;">
-            <input type="text" id="filter-tag-todo-table" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('todo-table')" style="min-width: 220px; padding-right: 30px;">
-            <span onclick="clearTagFilter('todo-table')" id="clear-btn-todo-table" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
-        </div>
-        
-        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
-        <input type="number" id="filter-diff-min-todo-table" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('todo-table')" onchange="filterListTable('todo-table')">
-        <span style="color:var(--border);">-</span>
-        <input type="number" id="filter-diff-max-todo-table" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('todo-table')" onchange="filterListTable('todo-table')">
-        
-        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📅 日期:</span>
-        <input type="date" id="filter-date-start-todo-table" onchange="filterListTable('todo-table')">
-        <span style="color:var(--border);">-</span>
-        <input type="date" id="filter-date-end-todo-table" onchange="filterListTable('todo-table')">
+        <strong style="color: var(--primary); font-size: 1.1em;">🔍 检索题单</strong>
+        <input type="text" id="plist-search" placeholder="输入题单名称进行检索..." onkeyup="filterPList()" style="width:100%; max-width:400px; margin-left:10px;">
     </div>
+    <div class="plist-grid">
+        <a href="核弹头系列.html" class="plist-card">
+            <h3>📂 核弹头系列</h3>
+            <div><span class="count">包含 2 道题目</span></div>
+        </a></div>
     
-    <div style="overflow-x: auto;">
-        <table class="normal-table" id="todo-table">
-            <thead>
-                <tr>
-                    <th style="padding-left: 20px;">题目与来源</th>
-                    <th>标签</th>
-                    <th onclick="sortListTable('todo-table', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
-                    <th onclick="sortListTable('todo-table', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
-                    <th class="remark-col">备注</th>
-                    <th>文件</th>
-                </tr>
-            </thead>
-            <tbody>
-    </tbody></table></div>
         <div class="footer">最后构建: 2026-04-30 21:59:14 | Algorithm Platform Generator</div>
     </div>
     <script>

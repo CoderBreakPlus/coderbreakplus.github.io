@@ -125,7 +125,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <a href="{base_url}index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="{base_url}Summary.html">📚 Summary</a>
-            <a href="{base_url}ProblemList.html">📋 题单总览</a>
+            <a href="{base_url}plist/index.html">📋 Problemlist</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
@@ -407,7 +407,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 <div class="card-header"><h2 class="card-title"><span>🗻</span> AtCoder</h2><span class="card-badge" style="color: #334155; background: #f1f5f9;">{at_c}</span></div>
                 <div class="card-stats"><span class="stat-number">{at_p}</span><span class="stat-label">题归档</span></div>
             </a>
-            <a href="ProblemList.html" class="card card-plist" style="grid-column: 1 / -1;">
+            <a href="plist/index.html" class="card card-plist" style="grid-column: 1 / -1;">
                 <div class="card-header"><h2 class="card-title"><span>📋</span> Problem List</h2><span class="card-badge" style="color: #ec4899; background: #fce7f3;">Menu</span></div>
                 <div class="card-stats"><span class="stat-number">{plist_count}</span><span class="stat-label">个自建题单</span></div>
             </a>
@@ -938,7 +938,7 @@ def build_problem_lists_index(plists, out_path, base_url=""):
     cards_html = ""
     for name, versions in plists.items():
         cards_html += f"""
-        <a href="plist/{name}.html" class="plist-card">
+        <a href="{name}.html" class="plist-card">
             <h3>📂 {name}</h3>
             <div><span class="count">包含 {len(versions)} 道题目</span></div>
         </a>"""
@@ -1102,12 +1102,14 @@ def main():
     build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table", base_url="")
     build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table", base_url="")
 
-    # --- 生成题单相关页面 ---
-    build_problem_lists_index(plists, os.path.join(out_dir, "ProblemList.html"), base_url="")
+   # --- 生成题单相关页面 ---
+    out_plist_dir = os.path.join(out_dir, 'plist')
+    os.makedirs(out_plist_dir, exist_ok=True) # 提前确保 plist 文件夹存在
+    
+    # 题单总目录输出为 plist/index.html，且传入 base_url="../" 确保导航栏能跳回主页
+    build_problem_lists_index(plists, os.path.join(out_plist_dir, "index.html"), base_url="../")
     
     if plists:
-        out_plist_dir = os.path.join(out_dir, 'plist')
-        os.makedirs(out_plist_dir, exist_ok=True)
         # 修正题单生成到 plist 目录下的相对 data 路径逻辑
         rel_plist_path = os.path.relpath(data_dir, out_plist_dir).replace('\\', '/')
         
