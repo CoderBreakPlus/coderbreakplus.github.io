@@ -66,7 +66,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .sort-btns button {{ margin-left: 8px; color: var(--primary); }}
         table {{ width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }}
         th, td {{ padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }}
-        .matrix-table, .normal-table {{ background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }}
+        /* 增加 .plist-table 复用基础边框背景样式 */
+        .matrix-table, .normal-table, .plist-table {{ background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }}
         thead {{ background: var(--panel-bg); }}
         th {{ color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }}
         td {{ border-bottom: 1px solid var(--border); }}
@@ -75,6 +76,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         tbody tr:hover td {{ background-color: #f8fafc; }}
         .matrix-table th, .matrix-table td {{ text-align: center; }}
         .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
+        
+        /* 严格保留的原 .normal-table 列宽分配，不要让其影响 5 列的题单 */
         .normal-table th:nth-child(1) {{ width: 35%; }}  
         .normal-table th:nth-child(2) {{ width: 15%; }}  
         .normal-table th:nth-child(3) {{ width: 9%; }}   
@@ -82,6 +85,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .normal-table th.remark-col {{ width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} 
         .normal-table th:last-child {{ width: 9%; }}     
         .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; }}
+        
         .prob-cell {{ display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }}
         .prob-link-wrap {{ font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }}
         .prob-link-wrap a {{ color: var(--primary); text-decoration: none; font-weight: 700; }}
@@ -104,6 +108,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .list-filter-bar input:focus {{ border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }}
         .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }}
         
+        /* 题单卡片相关样式 */
         .plist-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }}
         .plist-card {{ background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; }}
         .plist-card:hover {{ transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }}
@@ -115,10 +120,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <body>
     <div class="container">
         <div class="nav-bar">
-            <a href="index.html">🏠 Dashboard</a>
+            <!-- 引入 base_url 支持跨文件夹跳回主目录 -->
+            <a href="{base_url}index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
-            <a href="Summary.html">📚 Summary</a>
-            <a href="ProblemList.html">📋 题单总览</a>
+            <a href="{base_url}Summary.html">📚 Summary</a>
+            <a href="{base_url}ProblemList.html">📋 题单总览</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
@@ -720,7 +726,7 @@ def build_matrix_table(groups_dict, rel_path, is_official=False, first_col_width
     html += '</tbody></table></div>'
     return html
 
-def build_category_page(title, groups_dict, out_path, rel_path):
+def build_category_page(title, groups_dict, out_path, rel_path, base_url=""):
     all_versions = []
     if title == 'OI':
         for sub_gs in groups_dict.values():
@@ -792,11 +798,12 @@ def build_category_page(title, groups_dict, out_path, rel_path):
 
     html = HTML_TEMPLATE.format(
         title=title, stats_block=stats_block, nav_extra="",
-        content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        base_url=base_url
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table"):
+def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table", base_url=""):
     has_cpp = sum(1 for v in all_versions if v.files.get('cpp'))
     has_md = sum(1 for v in all_versions if v.files.get('md'))
 
@@ -887,7 +894,8 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
 
     html = HTML_TEMPLATE.format(
         title=title, stats_block=stats_block, nav_extra=nav_extra,
-        content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        base_url=base_url
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
@@ -912,9 +920,11 @@ def scan_problem_lists(plist_dir, groups):
                         break
                 
                 if target_group:
-                    for v_name in target_group.version_order:
-                        if v_name in target_group.versions:
-                            matched_versions.append(target_group.versions[v_name])
+                    # 优先取 Normal 版本，如果没有则取存在的第一个版本
+                    if 'Normal' in target_group.versions:
+                        matched_versions.append(target_group.versions['Normal'])
+                    else:
+                        matched_versions.append(list(target_group.versions.values())[0])
                 else:
                     dummy = ProblemVersion("Normal", pid)
                     dummy.link = "#"
@@ -923,11 +933,11 @@ def scan_problem_lists(plist_dir, groups):
             plists[name] = matched_versions
     return plists
 
-def build_problem_lists_index(plists, out_path):
+def build_problem_lists_index(plists, out_path, base_url=""):
     cards_html = ""
     for name, versions in plists.items():
         cards_html += f"""
-        <a href="plist_{name}.html" class="plist-card">
+        <a href="plist/{name}.html" class="plist-card">
             <h3>📂 {name}</h3>
             <div><span class="count">包含 {len(versions)} 道题目</span></div>
         </a>"""
@@ -942,12 +952,14 @@ def build_problem_lists_index(plists, out_path):
     
     html = HTML_TEMPLATE.format(
         title="📋 Problem List 题单总览", stats_block="", nav_extra="",
-        content_html=content, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        content_html=content, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        base_url=base_url
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def build_single_plist_page(name, versions, out_path, rel_path):
+def build_single_plist_page(name, versions, out_path, rel_path, base_url=""):
     table_id = f"plist-{name}"
+    # 使用新增的 plist-table 而不是 normal-table 避免 CSS 子元素固定宽度的冲突
     content_html = f"""
     <div class="list-filter-bar">
         <input type="text" id="filter-tag-{table_id}" placeholder="搜索本题单题目..." onkeyup="filterListTable('{table_id}')">
@@ -958,7 +970,7 @@ def build_single_plist_page(name, versions, out_path, rel_path):
         </div>
     </div>
     <div style="overflow-x: auto;">
-        <table class="normal-table" id="{table_id}">
+        <table class="plist-table" id="{table_id}">
             <thead>
                 <tr>
                     <th style="width: 45%; padding-left:20px;">题目</th>
@@ -1010,7 +1022,8 @@ def build_single_plist_page(name, versions, out_path, rel_path):
         stats_block=f'<div class="stats-bar"><div class="stats-info"><span>共 {len(versions)} 题</span></div></div>',
         nav_extra=nav_extra,
         content_html=content_html, 
-        gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        base_url=base_url
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
@@ -1093,19 +1106,28 @@ def main():
                 if not is_cf_at:
                     summary_versions.append(v)
 
-    print(f"🛠️ 正在生成 HTML 到 '{out_dir}' (当前目录)...")
+    print(f"🛠️ 正在生成 HTML 到 '{out_dir}'...")
     for cat in ['Codeforces', 'AtCoder', 'XCPC']:
-        build_category_page(cat, categories[cat], os.path.join(out_dir, f"{cat}.html"), rel_data_path)
+        build_category_page(cat, categories[cat], os.path.join(out_dir, f"{cat}.html"), rel_data_path, base_url="")
         
-    build_category_page('OI', {'OI': categories['OI'], 'OIs': categories['OIs']}, os.path.join(out_dir, "OI.html"), rel_data_path)
+    build_category_page('OI', {'OI': categories['OI'], 'OIs': categories['OIs']}, os.path.join(out_dir, "OI.html"), rel_data_path, base_url="")
         
-    build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table")
-    build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table")
+    build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table", base_url="")
+    build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table", base_url="")
 
-    # 生成题单系列 HTML
-    build_problem_lists_index(plists, os.path.join(out_dir, "ProblemList.html"))
-    for name, versions in plists.items():
-        build_single_plist_page(name, versions, os.path.join(out_dir, f"plist_{name}.html"), rel_data_path)
+    # --- 生成题单相关页面 ---
+    build_problem_lists_index(plists, os.path.join(out_dir, "ProblemList.html"), base_url="")
+    
+    if plists:
+        out_plist_dir = os.path.join(out_dir, 'plist')
+        os.makedirs(out_plist_dir, exist_ok=True)
+        # 计算 plist 文件夹下的相对 data 路径
+        rel_plist_path = os.path.relpath(data_dir, out_plist_dir).replace('\\', '/')
+        
+        for name, versions in plists.items():
+            out_file = os.path.join(out_plist_dir, f"{name}.html")
+            # 传入 base_url="../" 使得导航栏链接能正确跳转回上层目录
+            build_single_plist_page(name, versions, out_file, rel_plist_path, base_url="../")
 
     build_index_page(categories, summary_versions, todo_versions, plists, os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
