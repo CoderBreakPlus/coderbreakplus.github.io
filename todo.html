@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo - 题目整理</title>
     <style>
-        :root { var(--primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
+        /* 修复了原代码中的 var(...) 语法错误，使得全局变量正常生效，恢复完美 UI */
+        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }
         .container { width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
         h1 { color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }
@@ -24,7 +25,12 @@
         .sort-btns button { margin-left: 8px; color: var(--primary); }
         table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
         th, td { padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }
-        .matrix-table, .normal-table { background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        
+        /* 统一所有表格的美化外观，并防止窄屏下挤压变形 */
+        .matrix-table, .normal-table, .plist-table { background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .normal-table, .plist-table { min-width: 800px; }
+        .matrix-table { min-width: 600px; }
+        
         thead { background: var(--panel-bg); }
         th { color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
         td { border-bottom: 1px solid var(--border); }
@@ -33,6 +39,8 @@
         tbody tr:hover td { background-color: #f8fafc; }
         .matrix-table th, .matrix-table td { text-align: center; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
+        
+        /* normal-table 的固定 6 列占比分配 */
         .normal-table th:nth-child(1) { width: 35%; }  
         .normal-table th:nth-child(2) { width: 15%; }  
         .normal-table th:nth-child(3) { width: 9%; }   
@@ -40,6 +48,7 @@
         .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
         .normal-table th:last-child { width: 9%; }     
         .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
+        
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }
         .prob-link-wrap { font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }
         .prob-link-wrap a { color: var(--primary); text-decoration: none; font-weight: 700; }
@@ -61,12 +70,23 @@
         .list-filter-bar input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.95em; transition: border-color 0.2s; color: var(--text-main); }
         .list-filter-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }
+        
+        .plist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        .plist-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; }
+        .plist-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }
+        .plist-card h3 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }
+        .plist-card .count { font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; border: 1px solid var(--border); }
+        .opt-col { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="nav-bar">
+            <!-- 引入 base_url 支持跨文件夹跳回主目录 -->
             <a href="index.html">🏠 Dashboard</a>
+            <span style="color:#cbd5e1;">|</span>
+            <a href="Summary.html">📚 Summary</a>
+            <a href="ProblemList.html">📋 题单总览</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
@@ -107,7 +127,7 @@
             </thead>
             <tbody>
     </tbody></table></div>
-        <div class="footer">最后构建: 2026-04-30 21:36:19 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-04-30 21:41:29 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -190,7 +210,7 @@
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
 
-            if (tableId.includes('table')) {
+            if (tableId === 'summary-table' || tableId === 'todo-table') {
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
@@ -203,11 +223,11 @@
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             rows.forEach(row => {
-                const tags = row.getAttribute('data-tags').toLowerCase();
+                const tags = (row.getAttribute('data-tags') || '').toLowerCase();
                 const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
-                const diff = diffStr !== 'None' ? parseFloat(diffStr) : NaN;
+                const diff = diffStr && diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
                 if (searchTerms.length > 0) { matchTag = searchTerms.every(term => tags.includes(term) || baseName.includes(term)); }
@@ -226,7 +246,7 @@
 
         let sortDirection = {};
         function sortListTable(tableId, col) {
-            if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1 };
+            if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1, 'index': 1 };
             const tbody = document.querySelector('#' + tableId + ' tbody');
             if (!tbody) return;
             const rows = Array.from(tbody.querySelectorAll('tr'));
@@ -247,6 +267,10 @@
                     if (d1 === '未知') d1 = '';
                     if (d2 === '未知') d2 = '';
                     res = d1.localeCompare(d2) * dir;
+                } else if (col === 'index') {
+                    let i1 = parseInt(a.dataset.index) || 0;
+                    let i2 = parseInt(b.dataset.index) || 0;
+                    res = (i1 - i2) * dir;
                 }
                 if (res === 0) {
                     let baseA = a.dataset.base || '';
@@ -270,6 +294,13 @@
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }
+        
+        function filterPList() {
+            const val = document.getElementById('plist-search').value.toLowerCase();
+            document.querySelectorAll('.plist-card').forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(val) ? '' : 'none';
+            });
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -277,7 +308,7 @@
             const min = urlParams.get('min');
             const max = urlParams.get('max');
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input) {
+            if (input && (input.id === 'filter-tag-summary-table' || input.id === 'filter-tag-todo-table')) {
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);
