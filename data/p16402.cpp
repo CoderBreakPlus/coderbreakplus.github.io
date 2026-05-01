@@ -1,3 +1,5 @@
+// created time: 2026-05-01
+// https://www.luogu.com.cn/problem/P16402
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,18 +31,22 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); };
 
-ll n,m,k;
+ll n,x,y,a,b;
+const int M=1e7+1;
+ll buc[10000005];
 
 void procedure(){
-	n=read(),m=read(),k=read();
-	ll ans=0;
-	for(ll i=1;i<=n;i++){
-		ll p=read(),q=read(),t=read();
-		ans=max(ans, (k-1)/t*(q-p));
-	}	
-	for(ll i=1;i<=m;i++){
-		ll p=read(),q=read(),t=read(),s=read();
-		ans=max(ans, (k-1-t)/s*q+(q-p));
+	n=read(),x=read(),y=read(),a=read(),b=read();
+	while(n--){
+		int w=read();
+		buc[w-1]++;
+	}
+	for(int i=M-x;i>=0;i--)buc[i]+=buc[i+x];
+	ll ans=9e18;
+	for(int i=M-1;i>=0;i--){
+		buc[i]+=buc[i+1];
+		if((__int128)buc[i]*a+(__int128)(i+y-1)/y*b < (__int128)ans)
+			ans=buc[i]*a+(i+y-1)/y*b;
 	}
 	printf("%lld\n",ans);
 }
@@ -49,7 +55,7 @@ int main(){
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=read();
+	ll T=1;
 	// math_init();
 	// NTT::init();
 	while(T--) procedure();
