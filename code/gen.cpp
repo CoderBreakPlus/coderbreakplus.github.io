@@ -1,49 +1,37 @@
-// created time: 2026-04-30 08:14:12
-#include<bits/stdc++.h>
-using namespace std;
-typedef long long ll;
-typedef unsigned long long ull;
-#define fi first
-#define se second
-#define mkp make_pair
-#define pb emplace_back
-#define popcnt __builtin_popcountll
-const int mod = 998244353;
-inline ll read(){
-	ll x=0, f=1; int ch=getchar();
-	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
-	while(ch>='0' && ch<='9') x=x*10+ch-'0', ch=getchar();
-	return x*f;
-}
-inline int lg2(int x){ return 31^__builtin_clz(x); }
-inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
-inline void addmod(int &x){ if(x >= mod) x -= mod; }
-inline void addmod(ll &x){ if(x >= mod) x -= mod; }
-inline ll qpow(ll a,ll b){
-	ll ans=1, base=a;
-	while(b){
-		if(b&1) ans=ans*base%mod;
-		base=base*base%mod; b>>=1;
-	}
-	return ans;
-}
-inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <random>
+#include <chrono>
 
-ll n=1000000;
-void procedure(){
-	cout<<n<<endl;
-	ll x=rnd()%((ll)1e18);
-	for(ll i=1;i<=n;i++) cout<<x<<" ";
-	cout<<endl; 
-}
-int main(){
-	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
-	#endif
-	ll T=1;
-	// math_init();
-	while(T--) procedure();
-	return 0;
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+    
+    int T = 100; // 100组对拍数据
+    cout << T << "\n";
+    
+    while (T--) {
+        int n = uniform_int_distribution<int>(0, 10)(rng); // N加大到 3~10
+        
+        vector<pair<int, int>> all_coords;
+        // 坐标范围扩大到 [-8, 8]
+        int t = uniform_int_distribution<int>(3, 8)(rng);
+        for (int i = -t; i <= t; ++i) {
+            for (int j = -t; j <= t; ++j) {
+                all_coords.push_back({i, j});
+            }
+        }
+        
+        shuffle(all_coords.begin(), all_coords.end(), rng);
+        
+        cout << n << " " << all_coords[0].first << " " << all_coords[0].second << "\n";
+        for (int i = 1; i <= n; ++i) {
+            cout << all_coords[i].first << " " << all_coords[i].second << "\n";
+        }
+    }
+    return 0;
 }
