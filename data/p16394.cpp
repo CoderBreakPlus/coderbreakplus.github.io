@@ -1,3 +1,5 @@
+// created time: 2026-05-01
+// https://www.luogu.com.cn/problem/P16394
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;

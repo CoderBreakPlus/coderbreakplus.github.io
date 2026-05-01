@@ -1,3 +1,5 @@
+// created time: 2026-05-01
+// https://www.luogu.com.cn/problem/P16404
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,32 +30,45 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); };
+const int T=8;
+int dp[106][401][401][T+1];
 
-ll n,x,y,a,b;
-const int M=1e7+1;
-ll buc[10000005];
-
+int n,a,b,c,d;
 void procedure(){
-	n=read(),x=read(),y=read(),a=read(),b=read();
-	while(n--){
-		int w=read();
-		buc[w-1]++;
+	n=read(),a=read(),b=read(),d=read(),c=read();
+	// cout<<"n="<<n<<endl;
+	int t=0;
+	for(int i=0;i<=c;i++){
+		t=max(t,dp[n][a][b][i]+(c-i)*5);
 	}
-	for(int i=M-x;i>=0;i--)buc[i]+=buc[i+x];
-	ll ans=9e18;
-	for(int i=M-1;i>=0;i--){
-		buc[i]+=buc[i+1];
-		if((__int128)buc[i]*a+(__int128)(i+y-1)/y*b < (__int128)ans)
-			ans=buc[i]*a+(i+y-1)/y*b;
-	}
-	printf("%lld\n",ans);
+	__int128 m=t;
+	while(d--)m=m+m/5;
+	vector<char>ch;while(m)ch.pb(m%10+'0'),m/=10;
+	reverse(ch.begin(),ch.end());
+	for(auto x:ch)putchar(x);puts("");
 }
+int go1(int x){return 10*sqrt(x);}
+int go2(int x){return 0.7*x+30;}
+
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
+
+	for(int j=0;j<=400;j++)for(int k=0;k<=400;k++)for(int l=0;l<=T;l++){
+		for(int i=0;i<=100;i++){
+			dp[i][j][k][l]=-1e9;
+			if(!j&&!k&&!l) dp[i][j][k][l]=i;
+			if(j)dp[i][j][k][l]=max(dp[i][j][k][l],dp[go1(i)][j-1][k][l]);
+			if(k)dp[i][j][k][l]=max(dp[i][j][k][l],dp[go2(i)][j][k-1][l]);
+			if(l)dp[i][j][k][l]=max(dp[i][j][k][l],dp[i+5][j][k][l-1]);
+		}
+	}
+	// cout<<go1(go1(10))<<endl;
+	// cout<<go1(go2(go1(50)))<<endl;
+	// cout<<go1(go1(go2(50)))<<endl;
+	ll T=read();
 	// math_init();
 	// NTT::init();
 	while(T--) procedure();
