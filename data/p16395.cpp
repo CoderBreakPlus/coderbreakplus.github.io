@@ -34,14 +34,12 @@ inline ll INV(ll x){ return qpow(x, mod-2); };
 int n,q,a[100005],u,v,x[100005],y[100005],k[100005],lca[100005],dis[100005],dep[100005],dep2[100005];
 int rt,wh,mxs[100005],jp[100005],sz[100005],dfn[100005],f[20][100005],vis[100005],tim;
 
-// ---------- 链式前向星 ----------
 int head[100005], to[200005], nxt[200005], edge_cnt = 0;
 inline void add_edge(int u, int v) {
     to[++edge_cnt] = v;
     nxt[edge_cnt] = head[u];
     head[u] = edge_cnt;
 }
-// ---------------------------------
 
 vector<int> son[100005], tag[100005];
 __gnu_pbds::gp_hash_table<int, __gnu_pbds::null_type> st[100005];
@@ -128,7 +126,7 @@ inline void dfs2(int x,int fa){
 void procedure(){
 	n=read(),q=read();
 	tim=0;
-	edge_cnt = 0;  // 重要：清空前向星
+	edge_cnt = 0; 
 	memset(head, 0, sizeof(head));
 	for(int i=1;i<=n;i++) vec[i].clear(), tag[i].clear(), son[i].clear(), vis[i]=jp[i]=dep[i]=dep2[i]=0;
 	for(int i=1;i<=q;i++) st[i].clear(), mp[i].clear();
