@@ -1,4 +1,5 @@
-// created time: 2026-04-30 09:07:32
+// created time: 2026-05-03 14:06:48
+// https://www.luogu.com.cn/problem/P16413
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,27 +29,27 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-const int n = 3, q = 2;
+int n,k,a[200005],b[200005];
+int dp[200005];
 
 void procedure(){
-	vector<int>p(n);
-	for(int i=0;i<n;i++)p[i]=i;
-	shuffle(p.begin(),p.end(),rnd);
-	printf("%d %d\n", n, q);
-	for(int i=0;i<n;i++)printf("%d ",p[i]);puts("");
-	for(int i=1;i<=q;i++){
-		int x=rng(0,n-2),y=rng(0,n-2),l=rng(0,n-1),r=rng(0,n-1);
-		if(x>y)swap(x,y);y++;
-		if(l>r)swap(l,r);
-		printf("%d %d %d %d\n",x,y,l,r);
-	}	
+	n=read(),k=read();
+	for(int i=1;i<=n;i++)a[i]=read();
+	for(int i=1;i<=n;i++)b[i]=read();
+
+	for(int i=1;i<=n;i++)dp[i]=b[i];
+	for(int i=2;i<=n;i++)dp[i]=min(dp[i],dp[i-1]+k);
+	for(int i=n-1;i>=1;i--)dp[i]=min(dp[i],dp[i+1]+k);
+
+	ll ans=0;
+	for(int i=1;i<=n;i++)ans+=dp[a[i]];
+	printf("%lld\n",ans);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("tree.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
