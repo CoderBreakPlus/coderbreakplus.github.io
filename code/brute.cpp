@@ -10,7 +10,7 @@ typedef unsigned long long ull;
 #define pb emplace_back
 #define popcnt __builtin_popcountll
 
-const int N = 150005, M = 6e6, D = 19;
+const int N = 150005, M = 5e7, D = 19;
 
 int n,p[N+5];
 struct Node{
@@ -50,7 +50,7 @@ int newnode(int v){
 	return z;
 }
 void modify(int p){
-	for(auto x: lst[p]) stk[++tp]=x; lst[p].clear();
+	// for(auto x: lst[p]) stk[++tp]=x; lst[p].clear();
 	rt[p]=merge(rt[p<<1],rt[p<<1|1],0,lst[p]);
 }
 void build(int l,int r,int p){
@@ -76,7 +76,6 @@ void init(vector<int>p){
 	for(int i=0;i<n;i++) ::p[i]=p[i]; 
 	build(0,n-1,1);
 }
-
 double solve(int x,int y,int l,int r){
 	swap(p[x],p[y]);
 	swap(rt[id[x]],rt[id[y]]);
@@ -89,10 +88,10 @@ double solve(int x,int y,int l,int r){
 		if(u^v)modify(v);
 		u>>=1,v>>=1;
 	}
-	double ret=0;
-	int ok=query(0,n-1,l,r,1);
-	ret=t[ok].h;
-	for(auto x: bin) stk[++tp]=x;
-	bin.clear();
+	int cntt=cnt;
+	double ret=t[query(0,n-1,l,r,1)].h;
+	// for(auto x: bin) stk[++tp]=x;
+	// bin.clear();
+	cnt=cntt;
 	return ret;
 }
