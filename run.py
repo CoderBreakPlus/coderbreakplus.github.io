@@ -525,8 +525,9 @@ def apply_categories_and_links(groups, data_dir):
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
         m_luogu = re.match(r'^p(\d+)$', group.base_name, re.IGNORECASE)
         m_qoj = re.match(r'^qoj(\d+)$', group.base_name, re.IGNORECASE)
+        m_uoj = re.match(r'^uoj(\d+)$', group.base_name, re.IGNORECASE)  # 新增 UOJ 正则
         
-        is_cf, is_at, is_luogu, is_qoj = bool(m_cf), bool(m_ac), bool(m_luogu), bool(m_qoj)
+        is_cf, is_at, is_luogu, is_qoj, is_uoj = bool(m_cf), bool(m_ac), bool(m_luogu), bool(m_qoj), bool(m_uoj)
 
         group.appearances = []
         group.has_conf = False
@@ -647,6 +648,8 @@ def apply_categories_and_links(groups, data_dir):
                     primary_link = f"https://www.luogu.com.cn/problem/P{m_luogu.group(1)}"
                 elif is_qoj:
                     primary_link = f"https://qoj.ac/problem/{m_qoj.group(1)}"
+                elif is_uoj:
+                    primary_link = f"https://uoj.ac/problem/{m_uoj.group(1)}"  # 新增 UOJ 链接生成
                     
             v.link = primary_link
 
