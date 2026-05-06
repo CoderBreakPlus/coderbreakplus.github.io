@@ -110,20 +110,30 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .list-filter-bar input:focus {{ border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }}
         .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }}
         
+        /* 题单卡片相关样式 */
         .plist-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }}
         .plist-card {{ background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; }}
         .plist-card:hover {{ transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }}
         .plist-card h3 {{ margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }}
         .plist-card .count {{ font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; border: 1px solid var(--border); }}
+        
+        /* 博客列表专属样式 */
+        .blog-item {{ display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; text-decoration: none; color: inherit; transition: background 0.2s; }}
+        .blog-item:last-child {{ border-bottom: none; }}
+        .blog-item:hover {{ background: #f8fafc; }}
+        .blog-item-title {{ font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }}
+        .blog-item-date {{ color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="nav-bar">
+            <!-- 引入 base_url 支持跨文件夹跳回主目录 -->
             <a href="{base_url}index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="{base_url}Summary.html">📚 Summary</a>
-            <a href="{base_url}plist/index.html">📋 题单总览</a>
+            <a href="{base_url}plist/index.html">📋 题单</a>
+            <a href="{base_url}Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
@@ -360,13 +370,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         .card-stats {{ display: flex; align-items: baseline; gap: 8px; margin-bottom: 0; }}
         .stat-number {{ font-size: 3.2em; font-weight: 800; line-height: 1; }}
         .stat-label {{ color: var(--text-muted); font-size: 1.05em; font-weight: 500; }}
-        
-        /* 博客列表专属样式 */
-        .blog-item {{ display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; text-decoration: none; color: inherit; transition: background 0.2s; }}
-        .blog-item:last-child {{ border-bottom: none; }}
-        .blog-item:hover {{ background: #f8fafc; }}
-        .blog-item-title {{ font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }}
-        .blog-item-date {{ color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
 
         .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }}
         @media (max-width: 900px) {{ .info-grid {{ grid-template-columns: 1fr; }} }}
@@ -418,18 +421,10 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 <div class="card-header"><h2 class="card-title"><span>📋</span> Problem List</h2><span class="card-badge" style="color: #ec4899; background: #fce7f3;">Menu</span></div>
                 <div class="card-stats"><span class="stat-number">{plist_count}</span><span class="stat-label">个自建题单</span></div>
             </a>
-            <a href="#blog-module" class="card card-blog">
+            <a href="Blog.html" class="card card-blog">
                 <div class="card-header"><h2 class="card-title"><span>✍️</span> Blog</h2><span class="card-badge" style="color: #0f766e; background: #ccfbf1;">Notes</span></div>
                 <div class="card-stats"><span class="stat-number">{blog_count}</span><span class="stat-label">篇技术博客</span></div>
             </a>
-        </div>
-        
-        <!-- 博客列表模块 -->
-        <div class="blog-section" id="blog-module">
-            <h2 style="color: #0f172a; margin-bottom: 16px; font-size: 1.6em; font-weight: 800;"><span>✍️</span> 博客笔记目录</h2>
-            <div style="background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden;">
-                {blog_list_html}
-            </div>
         </div>
 
         <div class="info-grid">
@@ -1035,7 +1030,6 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url=""):
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
 def scan_blogs(blog_dir):
-    """扫描 blog 文件夹下的 .md 博客文章"""
     blogs = []
     if not os.path.exists(blog_dir):
         return blogs
@@ -1047,7 +1041,6 @@ def scan_blogs(blog_dir):
             mtime = os.path.getmtime(filepath)
             date_str = datetime.fromtimestamp(mtime).strftime("%Y-%m-%d")
 
-            # 尝试提取文章内的标题（读取前10行匹配第一个 # 号）
             try:
                 with open(filepath, 'r', encoding='utf-8') as file:
                     for i, line in enumerate(file):
@@ -1066,15 +1059,45 @@ def scan_blogs(blog_dir):
                 'mtime': mtime
             })
             
-    # 按照文件修改时间降序排序
     blogs.sort(key=lambda x: x['mtime'], reverse=True)
     return blogs
 
-def build_index_page(categories, summary_versions, todo_versions, plists, blogs, rel_blog_path, out_path):
+def build_blog_index_page(blogs, rel_blog_path, out_path, base_url=""):
+    if not blogs:
+        content_html = '<div style="padding: 30px; text-align: center; color: var(--text-muted); background: #fff; border-radius: 12px; border: 1px solid var(--border);">暂无博客文章。请在 blog/ 目录下放入 .md 文件。</div>'
+    else:
+        blog_list_html = ""
+        for b in blogs:
+            # 去掉 .md 后缀，完美适配 GitHub 自动渲染
+            link = f"{rel_blog_path}/{b['filename'][:-3]}"
+            blog_list_html += f"""
+            <a href="{link}" target="_blank" class="blog-item">
+                <div class="blog-item-title">📄 {b['title']}</div>
+                <div class="blog-item-date">{b['date']}</div>
+            </a>
+            """
+        
+        content_html = f"""
+        <div style="background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden;">
+            {blog_list_html}
+        </div>
+        """
+    
+    html = HTML_TEMPLATE.format(
+        title="✍️ 博客笔记目录", 
+        stats_block=f'<div class="stats-bar"><div class="stats-info"><span>共 {len(blogs)} 篇博客文章</span></div></div>', 
+        nav_extra="",
+        content_html=content_html, 
+        gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        base_url=base_url
+    )
+    with open(out_path, 'w', encoding='utf-8') as f: 
+        f.write(html)
+
+def build_index_page(categories, summary_versions, todo_versions, plists, blog_count, out_path):
     s_count = len(summary_versions)
     t_count = len(todo_versions)
     plist_count = len(plists)
-    blog_count = len(blogs)
     
     oi_p = sum(len(g.versions) for gs in categories.get('OI', {}).values() for g in gs) + sum(len(g.versions) for gs in categories.get('OIs', {}).values() for g in gs)
     oi_c = len(categories.get('OI', {})) + len(categories.get('OIs', {}))
@@ -1088,20 +1111,6 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blogs,
     at_p = sum(len(g.versions) for gs in categories.get('AtCoder', {}).values() for g in gs)
     at_c = len(categories.get('AtCoder', {}))
 
-    # 渲染博客列表 HTML
-    if blog_count == 0:
-        blog_list_html = '<div style="padding: 30px; text-align: center; color: var(--text-muted);">暂无博客文章。请在 blog/ 目录下放入 .md 文件。</div>'
-    else:
-        blog_list_html = ""
-        for b in blogs:
-            link = f"{rel_blog_path}/{b['filename']}"
-            blog_list_html += f"""
-            <a href="{link}" target="_blank" class="blog-item">
-                <div class="blog-item-title">📄 {b['title']}</div>
-                <div class="blog-item-date">{b['date']}</div>
-            </a>
-            """
-
     html = INDEX_HTML_TEMPLATE.format(
         s_count=s_count, t_count=t_count,
         oi_p=oi_p, oi_c=oi_c,
@@ -1110,7 +1119,6 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blogs,
         at_p=at_p, at_c=at_c,
         plist_count=plist_count,
         blog_count=blog_count,
-        blog_list_html=blog_list_html,
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
@@ -1182,6 +1190,9 @@ def main():
     build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table", base_url="")
     build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table", base_url="")
 
+    # --- 生成博客目录页 ---
+    build_blog_index_page(blogs, rel_blog_path, os.path.join(out_dir, "Blog.html"), base_url="")
+
     # --- 生成题单相关页面 ---
     out_plist_dir = os.path.join(out_dir, 'plist')
     os.makedirs(out_plist_dir, exist_ok=True)
@@ -1193,7 +1204,7 @@ def main():
             out_file = os.path.join(out_plist_dir, f"{name}.html")
             build_single_plist_page(name, versions, out_file, rel_plist_path, base_url="../")
 
-    build_index_page(categories, summary_versions, todo_versions, plists, blogs, rel_blog_path, os.path.join(out_dir, "index.html"))
+    build_index_page(categories, summary_versions, todo_versions, plists, len(blogs), os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
 
 if __name__ == '__main__':

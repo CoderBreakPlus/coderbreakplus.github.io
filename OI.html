@@ -68,20 +68,30 @@
         .list-filter-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }
         
+        /* 题单卡片相关样式 */
         .plist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
         .plist-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; }
         .plist-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }
         .plist-card h3 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }
         .plist-card .count { font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; border: 1px solid var(--border); }
+        
+        /* 博客列表专属样式 */
+        .blog-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; text-decoration: none; color: inherit; transition: background 0.2s; }
+        .blog-item:last-child { border-bottom: none; }
+        .blog-item:hover { background: #f8fafc; }
+        .blog-item-title { font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
+        .blog-item-date { color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="nav-bar">
+            <!-- 引入 base_url 支持跨文件夹跳回主目录 -->
             <a href="index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="Summary.html">📚 Summary</a>
-            <a href="plist/index.html">📋 题单总览</a>
+            <a href="plist/index.html">📋 题单</a>
+            <a href="Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
@@ -194,7 +204,7 @@
         <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3386/problem/17244" target="_blank">E</a><span class="diff-indicator" title="难度: 2700.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 75.0%, transparent 75.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2700</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17244.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17244" class="file-link" title="题解" style="text-decoration:none;">💡</a><a href="data/qoj17244.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
     </div></td><td></td></tr></tbody></table></div></div>
-        <div class="footer">最后构建: 2026-05-06 13:49:32 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-05-06 13:55:28 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
