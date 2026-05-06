@@ -80,7 +80,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .matrix-table th, .matrix-table td {{ text-align: center; }}
         .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
         
-        /* normal-table 的固定 6 列占比分配 */
         .normal-table th:nth-child(1) {{ width: 35%; }}  
         .normal-table th:nth-child(2) {{ width: 15%; }}  
         .normal-table th:nth-child(3) {{ width: 9%; }}   
@@ -121,11 +120,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <body>
     <div class="container">
         <div class="nav-bar">
-            <!-- 引入 base_url 支持跨文件夹跳回主目录 -->
             <a href="{base_url}index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="{base_url}Summary.html">📚 Summary</a>
-            <a href="{base_url}plist/index.html">📋 Problemlist</a>
+            <a href="{base_url}plist/index.html">📋 题单总览</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
@@ -355,13 +353,22 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         .card-cf::before {{ background: linear-gradient(90deg, #ef4444, #f87171); }}
         .card-at::before {{ background: linear-gradient(90deg, #1e293b, #475569); }}
         .card-plist::before {{ background: linear-gradient(90deg, #ec4899, #f43f5e); }}
+        .card-blog::before {{ background: linear-gradient(90deg, #14b8a6, #2dd4bf); }}
         .card-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }}
         .card-title {{ font-size: 1.4em; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }}
         .card-badge {{ font-size: 0.8em; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
         .card-stats {{ display: flex; align-items: baseline; gap: 8px; margin-bottom: 0; }}
         .stat-number {{ font-size: 3.2em; font-weight: 800; line-height: 1; }}
         .stat-label {{ color: var(--text-muted); font-size: 1.05em; font-weight: 500; }}
-        .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }}
+        
+        /* 博客列表专属样式 */
+        .blog-item {{ display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; text-decoration: none; color: inherit; transition: background 0.2s; }}
+        .blog-item:last-child {{ border-bottom: none; }}
+        .blog-item:hover {{ background: #f8fafc; }}
+        .blog-item-title {{ font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }}
+        .blog-item-date {{ color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
+
+        .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }}
         @media (max-width: 900px) {{ .info-grid {{ grid-template-columns: 1fr; }} }}
         .info-box {{ background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; display: flex; flex-direction: column; }}
         .info-box h3 {{ margin-top: 0; margin-bottom: 15px; color: #0f172a; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.1em; }}
@@ -407,11 +414,24 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 <div class="card-header"><h2 class="card-title"><span>🗻</span> AtCoder</h2><span class="card-badge" style="color: #334155; background: #f1f5f9;">{at_c}</span></div>
                 <div class="card-stats"><span class="stat-number">{at_p}</span><span class="stat-label">题归档</span></div>
             </a>
-            <a href="plist/index.html" class="card card-plist" style="grid-column: 1 / -1;">
+            <a href="plist/index.html" class="card card-plist">
                 <div class="card-header"><h2 class="card-title"><span>📋</span> Problem List</h2><span class="card-badge" style="color: #ec4899; background: #fce7f3;">Menu</span></div>
                 <div class="card-stats"><span class="stat-number">{plist_count}</span><span class="stat-label">个自建题单</span></div>
             </a>
+            <a href="#blog-module" class="card card-blog">
+                <div class="card-header"><h2 class="card-title"><span>✍️</span> Blog</h2><span class="card-badge" style="color: #0f766e; background: #ccfbf1;">Notes</span></div>
+                <div class="card-stats"><span class="stat-number">{blog_count}</span><span class="stat-label">篇技术博客</span></div>
+            </a>
         </div>
+        
+        <!-- 博客列表模块 -->
+        <div class="blog-section" id="blog-module">
+            <h2 style="color: #0f172a; margin-bottom: 16px; font-size: 1.6em; font-weight: 800;"><span>✍️</span> 博客笔记目录</h2>
+            <div style="background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden;">
+                {blog_list_html}
+            </div>
+        </div>
+
         <div class="info-grid">
             <div class="info-box">
                 <h3><span>⚙️</span> .conf 语法规则 (固定 6 行)</h3>
@@ -525,7 +545,7 @@ def apply_categories_and_links(groups, data_dir):
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
         m_luogu = re.match(r'^p(\d+)$', group.base_name, re.IGNORECASE)
         m_qoj = re.match(r'^qoj(\d+)$', group.base_name, re.IGNORECASE)
-        m_uoj = re.match(r'^uoj(\d+)$', group.base_name, re.IGNORECASE)  # 新增 UOJ 正则
+        m_uoj = re.match(r'^uoj(\d+)$', group.base_name, re.IGNORECASE)
         
         is_cf, is_at, is_luogu, is_qoj, is_uoj = bool(m_cf), bool(m_ac), bool(m_luogu), bool(m_qoj), bool(m_uoj)
 
@@ -562,9 +582,9 @@ def apply_categories_and_links(groups, data_dir):
                     if parts:
                         try:
                             v.difficulty = float(parts[-1])
-                            v.tags = sorted(parts[:-1])  
+                            v.tags = sorted(parts[:-1]) # 标签按字典序显示
                         except ValueError:
-                            v.tags = sorted(parts)       
+                            v.tags = sorted(parts)
                             v.difficulty = None
                             
                     cat_str = lines[1].strip()
@@ -649,7 +669,7 @@ def apply_categories_and_links(groups, data_dir):
                 elif is_qoj:
                     primary_link = f"https://qoj.ac/problem/{m_qoj.group(1)}"
                 elif is_uoj:
-                    primary_link = f"https://uoj.ac/problem/{m_uoj.group(1)}"  # 新增 UOJ 链接生成
+                    primary_link = f"https://uoj.ac/problem/{m_uoj.group(1)}"
                     
             v.link = primary_link
 
@@ -924,7 +944,6 @@ def scan_problem_lists(plist_dir, groups):
                         break
                 
                 if target_group:
-                    # 优先取 Normal 版本，如果没有则取存在的第一个版本
                     if 'Normal' in target_group.versions:
                         matched_versions.append(target_group.versions['Normal'])
                     else:
@@ -964,7 +983,6 @@ def build_problem_lists_index(plists, out_path, base_url=""):
 def build_single_plist_page(name, versions, out_path, rel_path, base_url=""):
     table_id = f"plist-{name}"
     
-    # 题单专属三列极简布局：无难度、无日期
     content_html = f"""
     <div class="list-filter-bar">
         <input type="text" id="filter-tag-{table_id}" placeholder="搜索本题单题目..." onkeyup="filterListTable('{table_id}')">
@@ -985,7 +1003,6 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url=""):
         tags_str = " ".join(v.tags) if v.tags else ""
         tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in v.tags])
         
-        # 补全 cpp、md、conf 文件跳转
         links = []
         if v.files.get('cpp'): links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" style="text-decoration:none;" title="代码">📝</a>')
         if v.files.get('md'): links.append(f'<a href="{rel_path}/{v.files["md"][:-3] if v.files["md"].endswith(".md") else v.files["md"]}" class="file-link" style="text-decoration:none;" title="题解">💡</a>')
@@ -1017,10 +1034,47 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url=""):
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def build_index_page(categories, summary_versions, todo_versions, plists, out_path):
+def scan_blogs(blog_dir):
+    """扫描 blog 文件夹下的 .md 博客文章"""
+    blogs = []
+    if not os.path.exists(blog_dir):
+        return blogs
+        
+    for f in os.listdir(blog_dir):
+        if f.endswith('.md'):
+            filepath = os.path.join(blog_dir, f)
+            title = os.path.splitext(f)[0]
+            mtime = os.path.getmtime(filepath)
+            date_str = datetime.fromtimestamp(mtime).strftime("%Y-%m-%d")
+
+            # 尝试提取文章内的标题（读取前10行匹配第一个 # 号）
+            try:
+                with open(filepath, 'r', encoding='utf-8') as file:
+                    for i, line in enumerate(file):
+                        if i > 10: break
+                        stripped = line.strip()
+                        if stripped.startswith('# '):
+                            title = stripped[2:].strip()
+                            break
+            except Exception:
+                pass
+
+            blogs.append({
+                'filename': f,
+                'title': title,
+                'date': date_str,
+                'mtime': mtime
+            })
+            
+    # 按照文件修改时间降序排序
+    blogs.sort(key=lambda x: x['mtime'], reverse=True)
+    return blogs
+
+def build_index_page(categories, summary_versions, todo_versions, plists, blogs, rel_blog_path, out_path):
     s_count = len(summary_versions)
     t_count = len(todo_versions)
     plist_count = len(plists)
+    blog_count = len(blogs)
     
     oi_p = sum(len(g.versions) for gs in categories.get('OI', {}).values() for g in gs) + sum(len(g.versions) for gs in categories.get('OIs', {}).values() for g in gs)
     oi_c = len(categories.get('OI', {})) + len(categories.get('OIs', {}))
@@ -1034,6 +1088,20 @@ def build_index_page(categories, summary_versions, todo_versions, plists, out_pa
     at_p = sum(len(g.versions) for gs in categories.get('AtCoder', {}).values() for g in gs)
     at_c = len(categories.get('AtCoder', {}))
 
+    # 渲染博客列表 HTML
+    if blog_count == 0:
+        blog_list_html = '<div style="padding: 30px; text-align: center; color: var(--text-muted);">暂无博客文章。请在 blog/ 目录下放入 .md 文件。</div>'
+    else:
+        blog_list_html = ""
+        for b in blogs:
+            link = f"{rel_blog_path}/{b['filename']}"
+            blog_list_html += f"""
+            <a href="{link}" target="_blank" class="blog-item">
+                <div class="blog-item-title">📄 {b['title']}</div>
+                <div class="blog-item-date">{b['date']}</div>
+            </a>
+            """
+
     html = INDEX_HTML_TEMPLATE.format(
         s_count=s_count, t_count=t_count,
         oi_p=oi_p, oi_c=oi_c,
@@ -1041,6 +1109,8 @@ def build_index_page(categories, summary_versions, todo_versions, plists, out_pa
         cf_p=cf_p, cf_c=cf_c,
         at_p=at_p, at_c=at_c,
         plist_count=plist_count,
+        blog_count=blog_count,
+        blog_list_html=blog_list_html,
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
@@ -1049,6 +1119,7 @@ def main():
     data_dir = sys.argv[1] if len(sys.argv) > 1 else 'data'
     out_dir = sys.argv[2] if len(sys.argv) > 2 else '.'
     plist_dir = 'plist'
+    blog_dir = 'blog'
 
     if not os.path.exists(data_dir):
         print(f"❌ 错误: 数据目录 '{data_dir}' 不存在！")
@@ -1056,6 +1127,7 @@ def main():
     if out_dir != '.' and not os.path.exists(out_dir): os.makedirs(out_dir)
 
     rel_data_path = os.path.relpath(data_dir, out_dir).replace('\\', '/')
+    rel_blog_path = os.path.relpath(blog_dir, out_dir).replace('\\', '/')
 
     print(f"🔍 正在扫描 '{data_dir}'...")
     groups = scan_and_group_files(data_dir)
@@ -1067,6 +1139,11 @@ def main():
     plists = scan_problem_lists(plist_dir, groups)
     if plists:
         print(f"✅ 找到 {len(plists)} 个题单。")
+        
+    print(f"✍️ 正在扫描博客目录 '{blog_dir}'...")
+    blogs = scan_blogs(blog_dir)
+    if blogs:
+        print(f"✅ 找到 {len(blogs)} 篇博客。")
 
     categories = {
         'Codeforces': defaultdict(list), 'AtCoder': defaultdict(list),
@@ -1105,23 +1182,18 @@ def main():
     build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table", base_url="")
     build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table", base_url="")
 
-   # --- 生成题单相关页面 ---
+    # --- 生成题单相关页面 ---
     out_plist_dir = os.path.join(out_dir, 'plist')
-    os.makedirs(out_plist_dir, exist_ok=True) # 提前确保 plist 文件夹存在
-    
-    # 题单总目录输出为 plist/index.html，且传入 base_url="../" 确保导航栏能跳回主页
+    os.makedirs(out_plist_dir, exist_ok=True)
     build_problem_lists_index(plists, os.path.join(out_plist_dir, "index.html"), base_url="../")
     
     if plists:
-        # 修正题单生成到 plist 目录下的相对 data 路径逻辑
         rel_plist_path = os.path.relpath(data_dir, out_plist_dir).replace('\\', '/')
-        
         for name, versions in plists.items():
             out_file = os.path.join(out_plist_dir, f"{name}.html")
-            # 传入 base_url="../" 使得导航栏链接能正确跳转回上级目录
             build_single_plist_page(name, versions, out_file, rel_plist_path, base_url="../")
 
-    build_index_page(categories, summary_versions, todo_versions, plists, os.path.join(out_dir, "index.html"))
+    build_index_page(categories, summary_versions, todo_versions, plists, blogs, rel_blog_path, os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
 
 if __name__ == '__main__':
