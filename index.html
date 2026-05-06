@@ -23,13 +23,22 @@
         .card-cf::before { background: linear-gradient(90deg, #ef4444, #f87171); }
         .card-at::before { background: linear-gradient(90deg, #1e293b, #475569); }
         .card-plist::before { background: linear-gradient(90deg, #ec4899, #f43f5e); }
+        .card-blog::before { background: linear-gradient(90deg, #14b8a6, #2dd4bf); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .card-title { font-size: 1.4em; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }
         .card-badge { font-size: 0.8em; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
         .card-stats { display: flex; align-items: baseline; gap: 8px; margin-bottom: 0; }
         .stat-number { font-size: 3.2em; font-weight: 800; line-height: 1; }
         .stat-label { color: var(--text-muted); font-size: 1.05em; font-weight: 500; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        
+        /* 博客列表专属样式 */
+        .blog-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; text-decoration: none; color: inherit; transition: background 0.2s; }
+        .blog-item:last-child { border-bottom: none; }
+        .blog-item:hover { background: #f8fafc; }
+        .blog-item-title { font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
+        .blog-item-date { color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
         @media (max-width: 900px) { .info-grid { grid-template-columns: 1fr; } }
         .info-box { background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
         .info-box h3 { margin-top: 0; margin-bottom: 15px; color: #0f172a; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.1em; }
@@ -75,11 +84,29 @@
                 <div class="card-header"><h2 class="card-title"><span>🗻</span> AtCoder</h2><span class="card-badge" style="color: #334155; background: #f1f5f9;">4</span></div>
                 <div class="card-stats"><span class="stat-number">14</span><span class="stat-label">题归档</span></div>
             </a>
-            <a href="plist/index.html" class="card card-plist" style="grid-column: 1 / -1;">
+            <a href="plist/index.html" class="card card-plist">
                 <div class="card-header"><h2 class="card-title"><span>📋</span> Problem List</h2><span class="card-badge" style="color: #ec4899; background: #fce7f3;">Menu</span></div>
                 <div class="card-stats"><span class="stat-number">1</span><span class="stat-label">个自建题单</span></div>
             </a>
+            <a href="#blog-module" class="card card-blog">
+                <div class="card-header"><h2 class="card-title"><span>✍️</span> Blog</h2><span class="card-badge" style="color: #0f766e; background: #ccfbf1;">Notes</span></div>
+                <div class="card-stats"><span class="stat-number">1</span><span class="stat-label">篇技术博客</span></div>
+            </a>
         </div>
+        
+        <!-- 博客列表模块 -->
+        <div class="blog-section" id="blog-module">
+            <h2 style="color: #0f172a; margin-bottom: 16px; font-size: 1.6em; font-weight: 800;"><span>✍️</span> 博客笔记目录</h2>
+            <div style="background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden;">
+                
+            <a href="blog/template.md" target="_blank" class="blog-item">
+                <div class="blog-item-title">📄 Practical Templates</div>
+                <div class="blog-item-date">2026-05-06</div>
+            </a>
+            
+            </div>
+        </div>
+
         <div class="info-grid">
             <div class="info-box">
                 <h3><span>⚙️</span> .conf 语法规则 (固定 6 行)</h3>
@@ -99,7 +126,7 @@
 <span class="cpp-keyword">#pragma</span> GCC target(<span class="cpp-include">"sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2"</span>)</code></pre>
             </div>
         </div>
-        <div class="footer">最后构建: 2026-05-06 13:42:22 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-05-06 13:49:32 | Algorithm Platform Generator</div>
     </div>
 </body>
 </html>
