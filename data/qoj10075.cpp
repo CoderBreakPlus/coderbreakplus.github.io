@@ -1,4 +1,5 @@
-// created time: 2026-05-06 16:11:32
+// created time: 2026-05-12 15:07:00
+// https://qoj.ac/contest/1906/problem/10075
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,21 +30,36 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-ll n=rng(1,8);
-
+ll t;
+ll cnt=0;
+inline ll calc(ll x){
+	ll ans=0;
+	for(ll l=1,r;l<=x;l=r+1){
+		ll tmp=x/l;
+		r=x/tmp;
+		ans+=(r-l+1)*tmp;
+	}
+	return ans;
+}
 void procedure(){
-	cout<<n<<endl;
-	for(ll i=1;i<=n;i++)cout<<rng(1,n)<<" ";cout<<endl;
+	t=read();
+	ll l=1,r=3e12,ans=0;
+	while(l<=r){
+		ll mid=(l+r)>>1;
+		if(calc(mid)<=t){
+			ans=mid;
+			l=mid+1;
+		}else r=mid-1;
+	}	
+	printf("%lld\n",ans);
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;cout<<T<<endl;
+	ll T=1;
 	// math_init();
 	while(T--) procedure();
 	return 0;
