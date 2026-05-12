@@ -1,4 +1,5 @@
-// created time: 2026-05-06 14:01:17
+// created time: 2026-05-12 15:13:54
+// https://qoj.ac/contest/1906/problem/10077
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,61 +30,44 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-
-int n,a[100005],b[100005],p[100005];
-int fa[100005],ip[100005];
-int find(int x){ if(x!=fa[x])fa[x]=find(fa[x]);return fa[x]; }
-
-void link(int x,int y){
-	p[x]=y,ip[y]=x;
-	assert(y>=a[x]);
-	fa[find(x)]=find(y);
+const int N = 500000;
+int fac[N+5],inv[N+5];
+void math_init(){
+	fac[0]=inv[0]=1;
+	for(int i=1;i<=N;i++) fac[i]=1ll*fac[i-1]*i%mod;
+	inv[N]=qpow(fac[N],mod-2);
+	for(int i=N-1;i>=1;i--) inv[i]=1ll*inv[i+1]*(i+1)%mod;
 }
+inline int binom(int x,int y){
+	if(x<0 || y<0 || x<y) return 0;
+	return 1ll*fac[x]*inv[y]%mod*inv[x-y]%mod;
+}
+inline int perm(int x,int y){
+	if(x<0 || y<0 || x<y) return 0;
+	return 1ll*fac[x]*inv[x-y]%mod;
+}
+int n; char s[200005];
+
 void procedure(){
-	n=read();
-	for(int i=1;i<=n;i++)a[i]=read(),fa[i]=i;
-	for(int i=1;i<=n;i++)b[i]=i;
-	sort(b+1,b+n+1,[](int x,int y){ return a[x]<a[y]; });
-
+	scanf("%s",s+1);n=strlen(s+1);
+	if(n&1){
+		puts("0");
+		return;
+	}
+	int c0=0,all=0;
 	for(int i=1;i<=n;i++){
-		if(a[b[i]]>i){
-			puts("No");
-			return;
-		}
-		link(b[i],i);
+		if(s[i]=='?')all++;
+		else if((i&1)==(s[i]=='1'))c0++;
 	}
-
-	int pt=n, node=n;
-	while(1){
-		while(pt>=1 && find(pt) == find(n)){
-			if(a[pt]<a[node]) node=pt;
-			pt--;
-		}
-		if(!pt) break;
-
-		if(a[node]>pt){
-			puts("No");
-			return;
-		}
-		int x=ip[pt],y=p[node];
-		link(node,pt), link(x,y);
-	}
-	puts("Yes");
-	int x=1;
-	do{
-		printf("%d ",x);
-		x=p[x];
-	}while(x!=1);
-	puts("");
-	fflush(stdout);
+	printf("%d\n",binom(all,n/2-c0));
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=read();
-	// math_init();
+	ll T=1;
+	math_init();
 	while(T--) procedure();
 	return 0;
 }
