@@ -55,23 +55,23 @@
         <div class="dashboard-grid">
             <a href="Summary.html" class="card card-summary">
                 <div class="card-header"><h2 class="card-title"><span>📚</span> Summary</h2><span class="card-badge" style="color: #8b5cf6; background: #ede9fe;">All</span></div>
-                <div class="card-stats"><span class="stat-number">160</span><span class="stat-label">个独立版本</span></div>
+                <div class="card-stats"><span class="stat-number">159</span><span class="stat-label">个独立版本</span></div>
             </a>
             <a href="todo.html" class="card card-todo">
                 <div class="card-header"><h2 class="card-title"><span>🎯</span> Todo</h2><span class="card-badge" style="color: #d97706; background: #fef3c7;">Task</span></div>
                 <div class="card-stats"><span class="stat-number">2</span><span class="stat-label">道待补题</span></div>
             </a>
             <a href="OI.html" class="card card-oi">
-                <div class="card-header"><h2 class="card-title"><span>🏅</span> OI</h2><span class="card-badge" style="color: #2563eb; background: #dbeafe;">18</span></div>
-                <div class="card-stats"><span class="stat-number">31</span><span class="stat-label">题归档</span></div>
+                <div class="card-header"><h2 class="card-title"><span>🏅</span> OI</h2><span class="card-badge" style="color: #2563eb; background: #dbeafe;">13</span></div>
+                <div class="card-stats"><span class="stat-number">23</span><span class="stat-label">题归档</span></div>
             </a>
             <a href="XCPC.html" class="card card-xcpc">
-                <div class="card-header"><h2 class="card-title"><span>🏆</span> XCPC</h2><span class="card-badge" style="color: #059669; background: #d1fae5;">16</span></div>
-                <div class="card-stats"><span class="stat-number">66</span><span class="stat-label">题归档</span></div>
+                <div class="card-header"><h2 class="card-title"><span>🏆</span> XCPC</h2><span class="card-badge" style="color: #059669; background: #d1fae5;">12</span></div>
+                <div class="card-stats"><span class="stat-number">50</span><span class="stat-label">题归档</span></div>
             </a>
             <a href="Codeforces.html" class="card card-cf">
-                <div class="card-header"><h2 class="card-title"><span>⚡</span> Codeforces</h2><span class="card-badge" style="color: #dc2626; background: #fee2e2;">29</span></div>
-                <div class="card-stats"><span class="stat-number">64</span><span class="stat-label">题归档</span></div>
+                <div class="card-header"><h2 class="card-title"><span>⚡</span> Codeforces</h2><span class="card-badge" style="color: #dc2626; background: #fee2e2;">31</span></div>
+                <div class="card-stats"><span class="stat-number">71</span><span class="stat-label">题归档</span></div>
             </a>
             <a href="AtCoder.html" class="card card-at">
                 <div class="card-header"><h2 class="card-title"><span>🗻</span> AtCoder</h2><span class="card-badge" style="color: #334155; background: #f1f5f9;">4</span></div>
@@ -89,14 +89,19 @@
 
         <div class="info-grid">
             <div class="info-box">
-                <h3><span>⚙️</span> .conf 语法规则 (固定 6 行)</h3>
-                <div class="syntax-code">
-                    <div class="line-def"><span class="line-num">1</span> <span class="line-desc"><span class="highlight">标签/关键词</span> (多个用空格隔开，末尾数字解析为难度)</span></div>
-                    <div class="line-def"><span class="line-num">2</span> <span class="line-desc"><span class="highlight">比赛分类</span> (支持 | 隔开，填 OI / OIs / XCPC。CF/AT 留空自动归档)</span></div>
-                    <div class="line-def"><span class="line-num">3</span> <span class="line-desc"><span class="highlight">URL 链接</span> (完整链接。Luogu/QOJ/CF/AT 等留空自动生成)</span></div>
-                    <div class="line-def"><span class="line-num">4</span> <span class="line-desc"><span class="highlight">比赛名称</span> (支持 | 隔开多场，如 XOJ Round 1|YOJ 2)</span></div>
-                    <div class="line-def"><span class="line-num">5</span> <span class="line-desc"><span class="highlight">题目编号</span> (支持 | 隔开多个，如 C|D)</span></div>
-                    <div class="line-def"><span class="line-num">6</span> <span class="line-desc"><span class="highlight">备注/备忘录</span> (在表格中独立成列展示，不需要可留空)</span></div>
+                <h3><span>⚙️</span> 新架构说明</h3>
+                <div class="syntax-code" style="padding-top: 15px; padding-bottom: 15px; display: block; line-height: 1.8;">
+                    <div style="font-weight: bold; color: var(--primary);">/data/*.conf (单个题目精简配置)</div>
+                    <div>1. <span class="highlight">标签/关键词</span> (空格隔开，末尾数字为难度)</div>
+                    <div>2. <span class="highlight">题目完整链接</span> (留空自动生成)</div>
+                    <div style="margin-bottom: 15px;">3. <span class="highlight">题目独立备注</span></div>
+                    <div style="font-weight: bold; color: #10b981;">/contest/*.conf (全新独立比赛配置)</div>
+                    <div>1. 比赛名称</div>
+                    <div>2. 比赛分类 (OI / OIs / XCPC)</div>
+                    <div>3. 比赛链接</div>
+                    <div>4. A qoj100 (题号映射)</div>
+                    <div>... 依此类推</div>
+                    <div>末行. 比赛专属备注</div>
                 </div>
             </div>
             <div class="info-box">
@@ -106,7 +111,7 @@
 <span class="cpp-keyword">#pragma</span> GCC target(<span class="cpp-include">"sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2"</span>)</code></pre>
             </div>
         </div>
-        <div class="footer">最后构建: 2026-05-14 16:53:06 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-05-15 15:28:16 | Algorithm Platform Generator</div>
     </div>
 </body>
 </html>
