@@ -38,6 +38,7 @@
         .matrix-table th, .matrix-table td { text-align: center; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
         
+        .remark-col { display: none; }
         .normal-table th:nth-child(1) { width: 35%; }  
         .normal-table th:nth-child(2) { width: 15%; }  
         .normal-table th:nth-child(3) { width: 9%; }   
@@ -45,6 +46,7 @@
         .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
         .normal-table th:last-child { width: 9%; }     
         .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
+        .matrix-table th.remark-col { width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
         
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }
         .prob-link-wrap { font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }
@@ -68,14 +70,12 @@
         .list-filter-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }
         
-        /* 题单卡片相关样式 */
         .plist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
         .plist-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; }
         .plist-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }
         .plist-card h3 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }
         .plist-card .count { font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; border: 1px solid var(--border); }
         
-        /* 博客列表专属样式 */
         .blog-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; text-decoration: none; color: inherit; transition: background 0.2s; }
         .blog-item:last-child { border-bottom: none; }
         .blog-item:hover { background: #f8fafc; }
@@ -86,7 +86,6 @@
 <body>
     <div class="container">
         <div class="nav-bar">
-            <!-- 引入 base_url 支持跨文件夹跳回主目录 -->
             <a href="index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="Summary.html">📚 Summary</a>
@@ -114,7 +113,7 @@
             
         </div>
         
-        <div class="footer">最后构建: 2026-05-14 16:53:06 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-05-15 15:28:16 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -135,17 +134,16 @@
             document.querySelectorAll('.diff-indicator').forEach(el => { el.style.display = isDiffVisible ? 'inline-flex' : 'none'; });
         }
         
-        let isRemarkVisible = true;
+        let isRemarkVisible = false;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => { el.style.display = isRemarkVisible ? 'table-cell' : 'none'; });
-            const btn = document.querySelector('.toggle-remark-btn');
-            if (btn) {
+            document.querySelectorAll('.toggle-remark-btn').forEach(btn => {
                 btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
                 btn.style.color = isRemarkVisible ? '#475569' : '#059669';
                 btn.style.borderColor = isRemarkVisible ? '#e2e8f0' : '#a7f3d0';
                 btn.style.background = isRemarkVisible ? '#f8fafc' : '#fff';
-            }
+            });
         }
 
         function sortContests(type) {

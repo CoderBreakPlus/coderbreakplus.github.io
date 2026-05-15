@@ -38,6 +38,7 @@
         .matrix-table th, .matrix-table td { text-align: center; }
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
         
+        .remark-col { display: none; }
         .normal-table th:nth-child(1) { width: 35%; }  
         .normal-table th:nth-child(2) { width: 15%; }  
         .normal-table th:nth-child(3) { width: 9%; }   
@@ -45,6 +46,7 @@
         .normal-table th.remark-col { width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
         .normal-table th:last-child { width: 9%; }     
         .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
+        .matrix-table th.remark-col { width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
         
         .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }
         .prob-link-wrap { font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }
@@ -68,14 +70,12 @@
         .list-filter-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }
         
-        /* 题单卡片相关样式 */
         .plist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
         .plist-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; }
         .plist-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }
         .plist-card h3 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }
         .plist-card .count { font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; border: 1px solid var(--border); }
         
-        /* 博客列表专属样式 */
         .blog-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; text-decoration: none; color: inherit; transition: background 0.2s; }
         .blog-item:last-child { border-bottom: none; }
         .blog-item:hover { background: #f8fafc; }
@@ -86,7 +86,6 @@
 <body>
     <div class="container">
         <div class="nav-bar">
-            <!-- 引入 base_url 支持跨文件夹跳回主目录 -->
             <a href="index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="Summary.html">📚 Summary</a>
@@ -146,17 +145,17 @@
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://atcoder.jp/contests/arc217/tasks/arc217_e" target="_blank">E</a><span class="diff-indicator" title="难度: 2700.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 75.0%, transparent 75.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2700</span></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/arc217e.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/arc217e.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/arc217e.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/arc217e.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a></span></div>
     </div></td></tr><tr data-name="ARC216" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">ARC216 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://atcoder.jp/contests/arc216/tasks/arc216_c" target="_blank">C</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
-        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/arc216c.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/arc216c.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a></span></div>
+        <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/arc216c.conf" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/arc216c.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a></span></div>
     </div></td><td></td><td></td></tr></tbody></table></div></div><div id="tab-AGC" class="atcoder-tab-content" style="display: none;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 AGC</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 20%; padding-left: 20px;">比赛名称</th><th style="width: 80.0%;">C</th></tr></thead><tbody><tr data-name="AGC066" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">AGC066 <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap"><a href="https://atcoder.jp/contests/agc066/tasks/agc066_c" target="_blank">C</a></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/agc066c.cpp" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/agc066c" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div>
     </div></td></tr></tbody></table></div></div>
-        <div class="footer">最后构建: 2026-05-14 16:53:06 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-05-15 15:28:16 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -177,17 +176,16 @@
             document.querySelectorAll('.diff-indicator').forEach(el => { el.style.display = isDiffVisible ? 'inline-flex' : 'none'; });
         }
         
-        let isRemarkVisible = true;
+        let isRemarkVisible = false;
         function toggleRemark() {
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => { el.style.display = isRemarkVisible ? 'table-cell' : 'none'; });
-            const btn = document.querySelector('.toggle-remark-btn');
-            if (btn) {
+            document.querySelectorAll('.toggle-remark-btn').forEach(btn => {
                 btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
                 btn.style.color = isRemarkVisible ? '#475569' : '#059669';
                 btn.style.borderColor = isRemarkVisible ? '#e2e8f0' : '#a7f3d0';
                 btn.style.background = isRemarkVisible ? '#f8fafc' : '#fff';
-            }
+            });
         }
 
         function sortContests(type) {

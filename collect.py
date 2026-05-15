@@ -2,88 +2,52 @@ import os
 import re
 
 def main():
-    try:
-        prefix = input("请输入重命名前缀 (如 qoj, 留空则不重命名): ").strip()
-        contest_type = input("请输入比赛类型 (如 OI/XCPC, 可留空): ").strip()
-        contest_name = input("请输入这些文件所属的比赛名 (可留空): ").strip()
-    except EOFError:
-        print("未检测到输入，退出程序。")
-        return
-
-    code_dir = 'code'
-    if not os.path.exists(code_dir):
-        print(f"❌ 错误：当前目录下不存在 '{code_dir}' 文件夹！")
-        return
-        
-    success_count = 0
+    contest_dir = 'contest'
+    os.makedirs(contest_dir, exist_ok=True)
     
-    for fname in os.listdir(code_dir):
-        if not fname.endswith('.cpp'): continue
+    print("=== 全新比赛信息录入 ===")
+    c_name = input("1. 请输入比赛名 (如 XOJ Round 1): ").strip()
+    c_type = input("2. 请输入比赛类型 (OI / OIs / XCPC): ").strip()
+    c_link = input("3. 请输入比赛完整链接 (可留空): ").strip()
+    
+    first_id = input("4. 请输入A题的题号 (如 qoj100, p1001, 100): ").strip()
+    try:
+        num = int(input("5. 请输入题目总数 (如 6): ").strip())
+    except ValueError:
+        print("❌ 题目数量必须是整数！")
+        return
         
-        s = fname[:-4].strip()  # 获取原文件名
+    c_remark = input("6. 请输入比赛备注 (可留空): ").strip()
+    
+    # 智能推断后续题号
+    m = re.match(r'^(.*?)(\d+)$', first_id)
+    if not m:
+        print("❌ 无法解析起始题号，题号末尾必须是数字！")
+        return
         
-        # 【核心拦截】：只处理形如 A, B, C, A1, B2, AA 的比赛题号文件
-        # 正则含义：1到2个字母 开头，后面跟着可选的数字（屏蔽掉诸如 brute, qoj10115, template 等其他文件）
-        if not re.match(r'^[A-Za-z]{1,2}\d*$', s):
-            continue
+    prefix = m.group(1)
+    start_num = int(m.group(2))
+    pad_len = len(m.group(2)) # 保留前导零特性
+    
+    # 寻找下一个可用的自增编号
+    existing = [f for f in os.listdir(contest_dir) if f.endswith('.conf')]
+    max_idx = 0
+    for f in existing:
+        try: max_idx = max(max_idx, int(f[:-5]))
+        except: pass
+    
+    new_conf = f"{max_idx + 1:04d}.conf"
+    
+    with open(os.path.join(contest_dir, new_conf), 'w', encoding='utf-8') as f:
+        f.write(f"{c_name}\n{c_type}\n{c_link}\n")
+        for i in range(num):
+            label = chr(ord('A') + i)
+            curr_num = str(start_num + i).zfill(pad_len)
+            f.write(f"{label} {prefix}{curr_num}\n")
+        if c_remark:
+            f.write(f"{c_remark}\n")
             
-        filepath = os.path.join(code_dir, fname)
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f: 
-                lines = f.readlines()
-        except Exception:
-            continue
-            
-        # 提取链接 (优先读第 2 行，如果没有 http 再看第 3 行以兼容旧版)
-        link = ""
-        if len(lines) > 1:
-            l2 = re.sub(r'^[\s/*#]+', '', lines[1]).strip()
-            if l2.startswith("http"):
-                link = l2
-        if not link and len(lines) > 2:
-            link = re.sub(r'^[\s/*#]+', '', lines[2]).strip()
-            
-        # 严格提取题目编号：就是原文件名大写 (如 A.cpp 就是 A)
-        pid = s.upper()
-
-        # 根据链接提取数字进行重命名
-        new_base = s
-        if prefix and link:
-            # 找到链接里所有的连续数字组合
-            nums = re.findall(r'\d+', link)
-            if nums:
-                # 取最后一串数字作为新名字
-                new_base = f"{prefix}{nums[-1]}"
-                
-        # 执行重命名
-        new_cpp_path = os.path.join(code_dir, f"{new_base}.cpp")
-        if new_base != s:
-            try:
-                if filepath != new_cpp_path:
-                    os.rename(filepath, new_cpp_path)
-                    print(f"🔄 自动重命名: {fname} -> {new_base}.cpp")
-            except Exception as e:
-                print(f"❌ 重命名 {fname} 失败: {e}")
-                new_base = s  # 失败则回退到原名
-                new_cpp_path = filepath
-        
-        # 写入 6 行版 conf 配置文件
-        conf_path = os.path.join(code_dir, f"{new_base}.conf")
-        try:
-            with open(conf_path, 'w', encoding='utf-8') as f:
-                f.write("\n")                # 第 1 行: 标签/难度
-                f.write(f"{contest_type}\n") # 第 2 行: 比赛归类
-                f.write(f"{link}\n")         # 第 3 行: 题目链接
-                f.write(f"{contest_name}\n") # 第 4 行: 比赛名
-                f.write(f"{pid}\n")          # 第 5 行: 严格提取的题目编号 (A, B, C...)
-                f.write("\n")                # 第 6 行: 备注 (留空待填)
-                
-            print(f"✅ 生成 {new_base}.conf 成功！(题号: {pid})")
-            success_count += 1
-        except Exception as e:
-            print(f"❌ 写入文件 {new_base}.conf 失败: {e}")
-            
-    print(f"\n🎉 完毕！共处理了 {success_count} 个题号代码文件。")
+    print(f"\n✅ 成功生成配置 -> {contest_dir}/{new_conf} (包含 A ~ {chr(ord('A') + num - 1)} 共 {num} 题)。")
 
 if __name__ == '__main__':
     main()

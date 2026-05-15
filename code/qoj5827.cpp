@@ -1,4 +1,4 @@
-// created time: 2026-05-13 15:16:47
+// created time: 2026-05-15 15:44:06
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -31,16 +31,12 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
 void procedure(){
-	printf("%d\n",124902);
-	for(int i=2,s=2;;i++,s+=i){
-		if(s>2e5)return;
-		for(int j=1;j<i;j++)putchar('a');
-		putchar('b');
-	}
+	
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
