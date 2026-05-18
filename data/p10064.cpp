@@ -60,43 +60,59 @@ void dfs(int x,int fa){
 int pw[9000005],iv[9000005],w;
 
 void upd(int x,int y){
+	for(int i=0;i<=w+y;i++)g[i]=0;
 	for(int i=0;i<=w;i++)for(int j=0;j<=y;j++)
-		g[i+j]=(g[i+j]+(ull)f[i]*iv[j*x]%mod*binom(y,j))%mod;
+		g[i+j]=(g[i+j]+(ull)f[i]*iv[x*j+j*(j-1)/2]%mod*binom(y,j))%mod;
 	w+=y;
 	for(int i=0;i<=w;i++)f[i]=g[i];
 }
 int final_test(){
 	int ans=0;
-	for(int i=0;i<=w;i++)
+	for(int i=0;i<=w;i++){
 		if(i&1) ans=(ans+(ull)(mod-f[i])*pw[n*(n-1)/2+i*(i-1)/2])%mod;
 		else ans=(ans+(ull)f[i]*pw[n*(n-1)/2+i*(i-1)/2])%mod;
+	}
 	return ans;
+}
+void adjustment(){
+	for(int i=0;i<=w;i++){
+		if(i&1) f[i]=(ull)(mod-f[i])*pw[n*(n-1)/2+i*(i-1)/2]%mod;
+		else f[i]=(ull)f[i]*pw[n*(n-1)/2+i*(i-1)/2]%mod;
+	}
 }
 int solve_point(int x){
 	if(E[x].size()==1) return pw[n*(n-1)/2-son[1]+1];
-	memset(f,0,sizeof(f));w=0;
-	for(auto y:E[x]){
-		if(sz[y]>sz[x]){
-			upd(sz[x],son[n]-son[x]);
-		}else{
-			upd(n-sz[y],son[y]);
-		}
-	}
-	return final_test();
+	memset(f,0,sizeof(f));f[0]=1,w=0;
+	for(auto y:E[x])
+		if(sz[y]<sz[x]) upd(n-sz[y],son[y]);
+	adjustment();
+	int ans=0;
+	int X=sz[x],Y=son[1]-son[x];
+	for(int i=0;i<=w;i++)
+		ans=(ans+(ull)f[i]*qpow(1+mod-iv[X-i],Y))%mod;
+	return ans;
 }
 int solve_edge(int x,int y){
 	if(sz[x]<sz[y]) swap(x,y);
-	memset(f,0,sizeof(f));w=0;
+	if(E[x].size()==1&&E[y].size()==1)return 1;
+	if(E[x].size()==1||E[y].size()==1)return pw[n*(n-1)/2-son[1]+1];
+	memset(f,0,sizeof(f));f[0]=1,w=0;
 	upd(n-sz[y],son[y]);
-	upd(sz[y],son[n]-son[y]);
-	return final_test();
+	adjustment();
+	
+	int ans=0;
+	int X=sz[y],Y=son[1]-son[y];
+	for(int i=0;i<=w;i++)
+		ans=(ans+(ull)f[i]*qpow(1+mod-iv[X-i],Y))%mod;
+	return ans;
 }
 void procedure(){
 	n=read();
 	pw[0]=1;
 	for(int i=1;i<=n*n;i++)addmod(pw[i]=2*pw[i-1]);
 	iv[n*n]=INV(pw[n*n]);
-	for(int i=n*n-1;i>=1;i--)addmod(iv[i]=2*iv[i+1]);
+	for(int i=n*n-1;i>=0;i--)addmod(iv[i]=2*iv[i+1]);
+
 	for(int i=1;i<n;i++){
 		int u=read(),v=read();
 		E[u].pb(v),E[v].pb(u);
@@ -105,13 +121,10 @@ void procedure(){
 	int ans=0;
 	for(int x=1;x<=n;x++){
 		int ans_x=solve_point(x);
-		cout<<"x="<<x<<" ans_x="<<ans_x<<endl;
 		addmod(ans+=ans_x);
 	}
-
 	for(int x=1;x<=n;x++)
-		for(auto y:E[x]) 
-			if(x<y) addmod(ans+=mod-solve_edge(x,y));
+		for(auto y:E[x]) if(x<y) addmod(ans+=mod-solve_edge(x,y));
 	printf("%d\n",ans);
 }
 int main(){
