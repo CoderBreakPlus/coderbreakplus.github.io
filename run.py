@@ -503,6 +503,7 @@ def scan_and_group_files(data_dir):
         base_name, version = None, 'Normal'
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
+        m_oj = re.match(r'^(qoj|uoj|p)(\d+)$', name, re.IGNORECASE) # [新增] 专门保护前缀+纯数字的OJ题号
 
         if m_cf:
             base_name = f"cf{m_cf.group(1)}{m_cf.group(2).lower()}"
@@ -510,6 +511,10 @@ def scan_and_group_files(data_dir):
         elif m_ac:
             base_name = f"{m_ac.group(1).lower()}{m_ac.group(2)}{m_ac.group(3).lower()}"
             version = 'Easy' if m_ac.group(4) == '1' else ('Hard' if m_ac.group(4) == '2' else 'Normal')
+        elif m_oj:
+            # [新增] 如果是 qoj18131、p1001、uoj11 等，原封不动作为基准名，不切末尾数字
+            base_name = name.lower()
+            version = 'Normal'
         else:
             name_lower = name.lower()
             matched_conf_base = None
