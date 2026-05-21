@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-文件整理工具 - 自动移动代码、题解和配置文件到data目录，删除可执行文件，并运行run.py
+文件整理工具 - 自动移动代码、题解和配置文件到data目录，删除可执行文件，并运行_run.py
 支持重名文件交互式选择
 """
 
@@ -416,45 +416,45 @@ class FileOrganizer:
         
         print("="*50)
     
-    def run_py_script(self):
-        """运行 run.py 脚本"""
-        run_py_path = self.current_dir / "run.py"
+    def _run_py_script(self):
+        """运行 _run.py 脚本"""
+        _run_py_path = self.current_dir / "_run.py"
         
-        if not run_py_path.exists():
-            print(f"\n⚠️  警告: run.py 不存在: {run_py_path}")
-            print("文件移动完成，但未执行 run.py")
+        if not _run_py_path.exists():
+            print(f"\n⚠️  警告: _run.py 不存在: {_run_py_path}")
+            print("文件移动完成，但未执行 _run.py")
             return False
         
-        print(f"\n🚀 正在执行 run.py...")
+        print(f"\n🚀 正在执行 _run.py...")
         print("="*50)
         
         try:
-            # 运行 run.py
+            # 运行 _run.py
             result = subprocess.run(
-                [sys.executable, str(run_py_path)],
+                [sys.executable, str(_run_py_path)],
                 cwd=str(self.current_dir),
                 capture_output=False,
                 text=True
             )
             
             if result.returncode == 0:
-                print("\n✅ run.py 执行成功")
+                print("\n✅ _run.py 执行成功")
                 return True
             else:
-                print(f"\n❌ run.py 执行失败，退出码: {result.returncode}")
+                print(f"\n❌ _run.py 执行失败，退出码: {result.returncode}")
                 return False
                 
         except Exception as e:
-            print(f"\n❌ 执行 run.py 时出错: {e}")
+            print(f"\n❌ 执行 _run.py 时出错: {e}")
             return False
     
-    def run(self, auto_run: bool = False, dry_run: bool = False, skip_clean: bool = False):
+    def _run(self, auto__run: bool = False, dry__run: bool = False, skip_clean: bool = False):
         """
         主运行函数
         
         Args:
-            auto_run: 是否自动运行 run.py
-            dry_run: 是否模拟运行
+            auto__run: 是否自动运行 _run.py
+            dry__run: 是否模拟运行
             skip_clean: 是否跳过清理可执行文件
         """
         print("="*50)
@@ -466,16 +466,16 @@ class FileOrganizer:
         print(f"支持的文件类型: {', '.join(self.supported_extensions)}")
         print(f"排除关键词: {', '.join(self.exclude_keywords)}")
         
-        if dry_run:
+        if dry__run:
             print("\n🔍 模拟运行模式 - 不会实际移动或删除文件")
         
         # 检查目录
         if not self.check_directories():
             return
         
-        if dry_run:
+        if dry__run:
             # 模拟运行，只显示会移动哪些文件
-            self.dry_run()
+            self.dry__run()
         else:
             # 实际移动文件
             if not self.scan_and_process():
@@ -483,27 +483,27 @@ class FileOrganizer:
             self.show_stats()
         
         # 清理可执行文件（如果不是模拟运行且没有跳过）
-        if not dry_run and not skip_clean:
+        if not dry__run and not skip_clean:
             self.clean_executables()
             if self.stats['executables_deleted'] > 0:
                 print(f"\n✅ 已删除 {self.stats['executables_deleted']} 个可执行文件")
         
-        # 询问是否运行 run.py
-        if not auto_run and not dry_run:
+        # 询问是否运行 _run.py
+        if not auto__run and not dry__run:
             print("\n" + "="*50)
-            response = input("是否继续运行 run.py? (y/n, 默认 y): ").strip().lower()
+            response = input("是否继续运行 _run.py? (y/n, 默认 y): ").strip().lower()
             
             if response == '' or response == 'y' or response == 'yes':
-                self.run_py_script()
+                self._run_py_script()
             else:
-                print("⏭️  跳过执行 run.py")
-        elif auto_run and not dry_run:
+                print("⏭️  跳过执行 _run.py")
+        elif auto__run and not dry__run:
             # 自动运行模式
-            self.run_py_script()
+            self._run_py_script()
         
         print("\n✨ 完成!")
     
-    def dry_run(self):
+    def dry__run(self):
         """模拟运行，只显示会移动和删除的文件"""
         print("\n📁 模拟扫描 code 目录...")
         
@@ -557,7 +557,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(
-        description='移动 code 目录中的 .cpp、.md、.conf 文件到 data 目录，删除可执行文件，并运行 run.py',
+        description='移动 code 目录中的 .cpp、.md、.conf 文件到 data 目录，删除可执行文件，并运行 _run.py',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 可执行文件识别规则:
@@ -570,11 +570,11 @@ def main():
   保留的文件类型: .cpp, .md, .conf, .py, .sh, .bash, .txt, .json, .xml, .yml, .yaml
 
 示例:
-  %(prog)s                    # 移动文件，清理可执行文件，并交互式询问是否运行 run.py
-  %(prog)s --auto-run         # 移动文件后自动运行 run.py
-  %(prog)s --no-run           # 只移动文件，不运行 run.py
+  %(prog)s                    # 移动文件，清理可执行文件，并交互式询问是否运行 _run.py
+  %(prog)s --auto-_run         # 移动文件后自动运行 _run.py
+  %(prog)s --no-_run           # 只移动文件，不运行 _run.py
   %(prog)s --skip-clean       # 跳过清理可执行文件
-  %(prog)s --dry-run          # 模拟运行，只显示会移动和删除哪些文件
+  %(prog)s --dry-_run          # 模拟运行，只显示会移动和删除哪些文件
   
 重名处理说明:
   当目标文件已存在时，会询问:
@@ -587,30 +587,30 @@ def main():
         """
     )
     
-    parser.add_argument('--auto-run', action='store_true', 
-                        help='移动文件后自动运行 run.py（不询问）')
-    parser.add_argument('--no-run', action='store_true', 
-                        help='移动文件后不运行 run.py')
+    parser.add_argument('--auto-_run', action='store_true', 
+                        help='移动文件后自动运行 _run.py（不询问）')
+    parser.add_argument('--no-_run', action='store_true', 
+                        help='移动文件后不运行 _run.py')
     parser.add_argument('--skip-clean', action='store_true', 
                         help='跳过清理可执行文件')
-    parser.add_argument('--dry-run', action='store_true', 
+    parser.add_argument('--dry-_run', action='store_true', 
                         help='模拟运行，不实际移动或删除文件')
     
     args = parser.parse_args()
     
-    # 处理 --no-run 和 --auto-run 冲突
-    if args.no_run and args.auto_run:
-        print("❌ 错误: --no-run 和 --auto-run 不能同时使用")
+    # 处理 --no-_run 和 --auto-_run 冲突
+    if args.no__run and args.auto__run:
+        print("❌ 错误: --no-_run 和 --auto-_run 不能同时使用")
         return
     
     organizer = FileOrganizer()
     
     # 确定是否自动运行
-    auto_run = args.auto_run or False
-    if args.no_run:
-        auto_run = False
+    auto__run = args.auto__run or False
+    if args.no__run:
+        auto__run = False
     
-    organizer.run(auto_run=auto_run, dry_run=args.dry_run, skip_clean=args.skip_clean)
+    organizer._run(auto__run=auto__run, dry__run=args.dry__run, skip_clean=args.skip_clean)
 
 
 if __name__ == "__main__":
