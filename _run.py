@@ -503,7 +503,7 @@ def scan_and_group_files(data_dir):
         base_name, version = None, 'Normal'
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
-        m_oj = re.match(r'^(qoj|uoj|p)(\d+)$', name, re.IGNORECASE) # [新增] 专门保护前缀+纯数字的OJ题号
+        m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', name, re.IGNORECASE) # 加入 soj # [新增] 专门保护前缀+纯数字的OJ题号
 
         if m_cf:
             base_name = f"cf{m_cf.group(1)}{m_cf.group(2).lower()}"
