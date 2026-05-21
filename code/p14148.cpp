@@ -37,7 +37,8 @@ int n,k,p[1000005];
 void procedure(){
 	n=read(),k=read();
 	for(int i=1;i<=n;i++)p[i]=i;
-	shuffle(p+1,p+n+1)
+	shuffle(p+1,p+n+1);
+
 }
 int main(){
 	#ifdef LOCAL
