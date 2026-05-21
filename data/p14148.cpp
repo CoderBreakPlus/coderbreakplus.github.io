@@ -36,9 +36,28 @@ int n,k,p[1000005];
 
 void procedure(){
 	n=read(),k=read();
+	if(n==1){
+		puts("-1");
+		return;
+	}
 	for(int i=1;i<=n;i++)p[i]=i;
-	shuffle(p+1,p+n+1);
+	shuffle(p+1,p+n+1,rnd);
+	
+	int val=0;
+	for(int i=1;i<=n;i++)val^=(p[i]+k*i);
 
+	int T=3e7;
+	while(val&&T--){
+		int x=rnd()%(n-1)+1;
+		val^=(p[x]+k*x)^(p[x+1]+k*(x+1));
+		swap(p[x],p[x+1]);
+		val^=(p[x]+k*x)^(p[x+1]+k*(x+1));
+	}
+	if(val){puts("-1");}
+	else{
+		for(int i=1;i<=n;i++)printf("%d ",p[i]);
+		puts("");
+	}
 }
 int main(){
 	#ifdef LOCAL
