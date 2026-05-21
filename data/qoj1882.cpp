@@ -1,4 +1,4 @@
-// created time: 2026-05-21 09:41:20
+// created time: 2026-05-21 08:32:29
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,24 +29,35 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-int n=20,q=1000,a[100005];
+
+int n,p,iv;
+int F[10005],G[10005];
+int *f=F+5000;
+int *g=G+5000;
+int ans;
 
 void procedure(){
-	cout<<n<<" "<<q<<endl;
-	for(int i=1;i<=n;i++)a[i]=i;
-	shuffle(a+1,a+n+1,rnd);
-	for(int i=1;i<=n;i++) cout<<a[i]<<" ";cout<<endl;
-	for(int i=1;i<=q;i++){
-		int l=rng(1,n),r=rng(1,n);
-		if(l>r)swap(l,r);
-		cout<<l<<" "<<r<<endl;
+	n=read(),p=read()*INV(100)%mod;
+	ans=iv=INV(2*n+1);
+	for(int i=-n;i<=n;i++)if(i)f[i]=iv;
+
+	for(int i=1;i<=n;i++){
+		int x=read();
+		memset(G,0,sizeof(G));
+		for(int j=-n;j<=n;j++){
+			if(!f[j])continue;
+			g[j]=(g[j]+(ull)p*f[j])%mod;
+			if(j+x==0)ans=(ans+(ull)(mod+1-p)*f[j])%mod;
+			else g[j+x]=(g[j+x]+(ull)(mod+1-p)*f[j])%mod;
+		}
+		memcpy(F,G,sizeof(F));
 	}
+	printf("%d\n",ans);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
