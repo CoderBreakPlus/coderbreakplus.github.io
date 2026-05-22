@@ -1,4 +1,4 @@
-// created time: 2026-05-22 10:45:57
+// created time: 2026-05-22 11:06:08
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,31 +29,35 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-int n=100, m=500, k=19, t=1233, sub=0;
 
+const int N = 19;
+
+
+int dp[N+5][N+5],ok[N+5];
 void procedure(){
-	cout<<n<<" "<<m<<" "<<k<<" "<<t<<" 0"<<endl;
-	for(int i=0;i+k<n;i+=k){
-		int l=i+k,r=min(n-1,i+2*k-1);
-		for(int j=i;j<i+k;j++){
-			int sb1=rng(l,r),sb2=rng(l,r);
-			while(sb1==sb2)sb2=rng(l,r);
-			if(sb1>sb2)swap(sb1,sb2);
-			cout<<j<<" "<<sb1<<" "<<rng(0,1e8)<<endl;
-			cout<<j<<" "<<sb2<<" "<<rng(0,1e8)<<endl;
-			m-=2;
-		}
+	dp[0][0]=1;
+	for(int i=0;i<N;i++)
+		for(int j=0;j<N;j++)
+			for(int k=0;j+k<=N;k++)
+				chkmax(dp[i+k-1][j+k],dp[i][j]*k);
+
+	for(int i=0;i<=N;i++){
+		for(int j=0;j<=N;j++)chkmax(ok[i],dp[i][j]);
+		cout<<ok[i]<<" ";
 	}
-	while(m--){
-		int l=rng(0,n-1),r=rng(0,n-1);while(l/k!=r/k || l==r)r=rng(0,n-1);
-		cout<<l<<" "<<r<<" "<<rng(0,1e8)<<endl;
+	cout<<endl;
+
+	int ans=0;
+	for(int i=0;i<(1<<N);i++){
+		int x=__builtin_popcount(i);
+		ans+=ok[x];
 	}
+	printf("%d\n",ans);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();

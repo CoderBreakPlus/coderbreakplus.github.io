@@ -1,4 +1,4 @@
-// created time: 2026-05-19 20:11:44
+// created time: 2026-05-22 08:57:27
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,115 +30,96 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,q,a[200005];
-struct Node{
-	int r;
-	vector<int>ret;
-	Node(){ r=1e9; }
-}ans[200005];
+inline void upd(int &x,ull y){ x=(x+y)%mod; }
 
-bool operator< (const Node &A, const Node &B){
-	return A.r<B.r;
-}
-vector<int>d0,d1;
+int n,m,k,t,sub,f[1<<19],g[1<<19],h[1<<19],val[100];
+vector<pair<int,int>>E[505];
+vector<pair<int,int>>G[505];
 
-int getmax(int x,int y){ return a[x]>a[y]?x:y; }
-int getmin(int x,int y){ return a[x]<a[y]?x:y; }
-
-int mx[20][200005],mn[20][200005];
-
-int qmax(int l,int r){
-	int p=lg2(r-l+1);
-	return getmax(mx[p][l],mx[p][r-(1<<p)+1]);
-}
-int qmin(int l,int r){
-	int p=lg2(r-l+1);
-	return getmin(mn[p][l],mn[p][r-(1<<p)+1]);
-}
-
-#define pii pair<int,int>
-void solve(int l,int r){
-	if(r-l<3)return;
-	int mid=(l+r)>>1;
-	vector<pii>vec;
-	for(int i=l;i<=r;i++)vec.pb(a[i],i);
-	sort(vec.begin(),vec.end());
-
-	{
-		int L=a[mid],R=a[mid];
-		int lpos=mid,rpos=mid;
-		int lp=lower_bound(vec.begin(),vec.end(),(pii){a[mid],mid})-vec.begin(),rp=lp;
-
-		priority_queue<int>qL;
-		int qR=1e9;
-
-		for(int i=mid-1;i>=l;i--){
-			if(L<=a[i]&&a[i]<=R)continue;
-			if(a[i]>R)R=a[i],rpos=i;
-			else if(a[i]<L)L=a[i],lpos=i;
-			while(lp>=0 && vec[lp].fi>L){
-				if(vec[lp].se<=mid) qL.push(vec[lp].se);
-				else chkmin(qR,vec[lp].se);
-				lp--;
-			}
-			while(rp<vec.size() && vec[rp].fi<R){
-				if(vec[rp].se<=mid) qL.push(vec[rp].se);
-				else chkmin(qR,vec[rp].se);
-				rp++;
-			}
-			while(!qL.empty()&&qL.top()>=i)qL.pop();
-			Node tmp; tmp.r=qR, tmp.ret={qL.top(),i,lpos^rpos^i,qR};
-			if(!qL.empty()) chkmin(ans[qL.top()], tmp);
-		}
-	}
-	{
-		int L=a[mid+1],R=a[mid+1];
-		int lpos=mid+1,rpos=mid+1;
-		int lp=lower_bound(vec.begin(),vec.end(),(pii){a[mid+1],mid+1})-vec.begin(),rp=lp;
-
-		priority_queue<int,vector<int>,greater<int>>qR;
-		int qL=0;
-
-		for(int i=mid-1;i>=l;i--){
-			if(L<=a[i]&&a[i]<=R)continue;
-			if(a[i]>R)R=a[i],rpos=i;
-			else if(a[i]<L)L=a[i],lpos=i;
-			while(lp>=0 && vec[lp].fi>L){
-				if(vec[lp].se>mid) qR.push(vec[lp].se);
-				else chkmax(qL,vec[lp].se);
-				lp--;
-			}
-			while(rp<vec.size() && vec[rp].fi<R){
-				if(vec[lp].se>mid) qR.push(vec[lp].se);
-				else chkmax(qL,vec[lp].se);
-				rp++;
-			}
-			while(!qR.empty()&&qR.top()<=i)qR.pop();
-			Node tmp; tmp.r=qR.top(), tmp.ret={qL,lpos^rpos^i,i,qR.top()};
-			if(!qR.empty()) chkmin(ans[qL], tmp);
-		}
-	}
-	solve(l,mid);solve(mid+1,r);
-}
+int nd[19],c;
 void procedure(){
-	n=read(),q=read();
-	for(int i=1;i<=n;i++) a[i]=read();
+	n=read(),m=read(),k=read(),t=read(),sub=read();
+	for(int i=0;i<n;i++)val[i]=t;
+	for(int i=1;i<=m;i++){
+		int u=read(),v=read(),p=(mod+1-read())%mod;
+		if(u>v)swap(u,v);
+		int q=(ull)p*(mod+1-p)%mod;
+		// cout<<"q="<<q<<endl;
+		addmod(val[u]+=p),addmod(val[v]+=p);
 
-	while(q--){
-		int l=read(),r=read();
-		int ans=0;
-		for(int i=l;i<r;i++) for(int j=i+1;j<r;j++) for(int k=j+1;k<=r;k++)
-			if(!(a[i]<=a[j]&&a[j]<=a[k]) && !(a[i]>=a[j]&&a[j]>=a[k])) ans=3;
+		if(u/k==v/k){
+			E[u].pb(v%k,q);
+		}else{
+			G[u].pb(v%k,q);
+		}
+	}
+	// for(int i=0;i<n;i++) cout<<val[i]<<" ";cout<<endl;
 
-		for(int i=l;i<r;i++) for(int j=i+1;j<r;j++)
-			for(int k=j+1;k<r;k++) for(int l=k+1;l<=r;l++){
-				// if(i==1&&j==2&&k==7&&l==8){
-				// 	cout<<a[k]<<"<"<<min(a[i],a[l])<<endl;
-				// 	cout<<min(a[i],a[l])<<"<"<<a[j]<<endl;
-				// }
-				if(min(a[j],a[k])<min(a[i],a[l])&&max(a[i],a[l])<max(a[j],a[k]))ans=4;
+	f[0]=1;
+	for(int e=0;e<n;e+=k){
+		int m=min(n-e,k);
+		for(int i=0;i<m;i++){
+			memset(g,0,sizeof(g));
+			for(int j=0;j<(1<<m);j++){
+				addmod(g[j]+=f[j]);
+				if((~j>>i)&1){
+					upd(g[j^(1<<i)], (ull)f[j]*val[e+i]);
+					for(auto [k,q]: E[e+i]){
+						if((~j>>k)&1)
+						upd(g[j^(1<<i)^(1<<k)], (ull)f[j]*q);
+					}
+				}
 			}
-		printf("%d\n",ans);
+			memcpy(f,g,sizeof(f));
+		}
+		if(e+k>=n){
+			printf("%d\n",f[(1<<m)-1]);
+			return;
+		}
+		// cout<<"e="<<e<<" first"<<endl;
+		// for(int i=0;i<(1<<m);i++){
+		// 	if(f[i]) cout<<i<<" f="<<f[i]<<endl;
+		// }
+		memset(g,0,sizeof(g));
+		for(int i=0;i<(1<<m);i++){
+			cout<<"i="<<i<<endl;
+			// cout<<i<<" f="<<f[i]<<endl;
+			// bool debug=(i==1);
+			c=0;
+			int to=0,flg=1,cf=1;
+			for(int j=0;j<m;j++)if((~i>>j)&1){
+				if(G[e+j].empty()) { flg=0; break; }
+				if(G[e+j].size()==1){
+					auto [x,y]=G[e+j][0];
+					if(to&(1<<x)) { flg=0; break; }
+					to|=(1<<x), cf=(ull)cf*y%mod;
+				}else{
+					nd[c++]=j;
+					// if(debug)cout<<"find "<<j<<" flexible"<<endl;
+				}
+			}
+			if(!flg)continue;
+			for(int s=0;s<(1<<c);s++){
+				int To=to,Flg=1,Cf=cf;
+				for(int k=0;k<c;k++){
+					int j=nd[k];
+					// cout<<"j="<<j<<endl;
+					auto [x,y]=G[e+j][(s>>k)&1];
+					// if(debug)cout<<x<<","<<y<<endl;
+					if(To&(1<<x)) { Flg=0; break; }
+					// assert(x>=0&&x<k);
+					To|=(1<<x),Cf=(ull)Cf*y%mod;
+				}
+				if(!Flg)continue;
+				if(Cf)cout<<"trans "<<i<<"->"<<To<<" cf = "<<Cf<<endl;
+				upd(g[To],(ull)f[i]*Cf%mod);
+			}
+		}
+		memcpy(f,g,sizeof(f));
+		// cout<<"e="<<e<<" second"<<endl;
+		// for(int i=0;i<(1<<m);i++){
+		// 	if(f[i]) cout<<i<<" f="<<f[i]<<endl;
+		// }
 	}
 }
 int main(){

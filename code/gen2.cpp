@@ -31,21 +31,10 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-int n=100, m=500, k=19, t=1233, sub=0;
+int n=19, m=35, k=2, t=1233, sub=0;
 
 void procedure(){
-	cout<<n<<" "<<m<<" "<<k<<" "<<t<<" 0"<<endl;
-	for(int i=0;i+k<n;i+=k){
-		int l=i+k,r=min(n-1,i+2*k-1);
-		for(int j=i;j<i+k;j++){
-			int sb1=rng(l,r),sb2=rng(l,r);
-			while(sb1==sb2)sb2=rng(l,r);
-			if(sb1>sb2)swap(sb1,sb2);
-			cout<<j<<" "<<sb1<<" "<<rng(0,1e8)<<endl;
-			cout<<j<<" "<<sb2<<" "<<rng(0,1e8)<<endl;
-			m-=2;
-		}
-	}
+	cout<<n<<" "<<m<<" "<<k<<" 0 0"<<endl;
 	while(m--){
 		int l=rng(0,n-1),r=rng(0,n-1);while(l/k!=r/k || l==r)r=rng(0,n-1);
 		cout<<l<<" "<<r<<" "<<rng(0,1e8)<<endl;
