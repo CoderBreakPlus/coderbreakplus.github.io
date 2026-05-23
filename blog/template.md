@@ -125,7 +125,28 @@ namespace SAM{
 	}
 }
 ```
+## 数论
 
+### floor_sum
+
+[QOJ18129](https://qoj.ac/contest/3749/problem/18129)
+
+```cpp
+LL floor_sum(LL n, LL m, LL a, LL b) {
+    LL ans = 0;
+    while (true) {
+        if (a >= m) { ans += n * (n - 1) / 2 * (a / m); a %= m; }
+        if (b >= m) { ans += n * (b / m); b %= m; }
+        LL ym = (a * n + b) / m;
+        if (ym == 0) break;
+        LL xm = ym * m - b;
+        ans += (n - (xm + a - 1) / a) * ym;
+        LL oa = a;
+        b = (oa - xm % oa) % oa; a = m; m = oa; n = ym;
+    }
+    return ans;
+}
+```
 ## Bitset 优化
 
 ### 匈牙利
