@@ -4,7 +4,7 @@ import re
 def get_offset(label):
     """
     计算题号字母的偏移量
-    A -> 0, B -> 1, C -> 2 ... Z -> 25, AA -> 26
+    A -> 0, B -> 1, C -> 2 ... Z -> 25
     """
     label = label.upper()
     res = 0
@@ -22,7 +22,7 @@ def main():
     deleted_count = 0
     valid_files = []
     
-    # 1. 扫描文件，删除无后缀可执行文件，收集需要改名的纯字母 cpp 文件
+    # 1. 扫描文件，删除无后缀可执行文件，收集需要改名的【单字母】cpp 文件
     for fname in os.listdir(code_dir):
         filepath = os.path.join(code_dir, fname)
         if not os.path.isfile(filepath):
@@ -38,21 +38,21 @@ def main():
                 print(f"❌ 删除 {fname} 失败: {e}")
             continue
 
-        # 收集符合 A.cpp, B.cpp... 规范的源码文件
+        # 收集符合规范的源码文件
         if fname.endswith('.cpp'):
             base = fname[:-4]
-            # 只匹配纯英文字母构成的文件名 (A, B, C, aa 等)
-            if re.match(r'^[A-Za-z]+$', base):
+            # 【核心修改】：正则表达式去掉了 +, 严格限制必须只有 1 个字母！
+            if re.match(r'^[A-Za-z]$', base):
                 valid_files.append((base.upper(), fname))
                 
     if deleted_count > 0:
         print(f"✅ 清理完成，共删除了 {deleted_count} 个无后缀可执行文件。\n")
 
     if not valid_files:
-        print(f"⚠️ 在 '{code_dir}' 中没有找到形如 A.cpp, B.cpp 的纯字母代码文件。其他文件已保持原样。")
+        print(f"⚠️ 在 '{code_dir}' 中没有找到形如 A.cpp, B.cpp 的单字母代码文件。其他文件已保持原样。")
         return
 
-    print(f"🔍 找到 {len(valid_files)} 个待处理的比赛题文件: {', '.join([f[1] for f in valid_files])}")
+    print(f"🔍 找到 {len(valid_files)} 个待处理的单字母题号文件: {', '.join([f[1] for f in valid_files])}")
     
     # 2. 获取基准题号
     first_id = input("\n请输入 A 题对应的起始题号 (如 qoj1000, p1001, 100): ").strip()
@@ -99,7 +99,7 @@ def main():
         except Exception as e:
             print(f"❌ 写入 {new_base}.conf 失败: {e}")
 
-    print(f"\n🎉 完毕！共成功处理了 {success_count} 个文件。其他带后缀的文件均已保持原封不动。")
+    print(f"\n🎉 完毕！共成功处理了 {success_count} 个文件。其他长名字的 cpp (如 main.cpp) 均已保持原封不动。")
 
 if __name__ == '__main__':
     main()
