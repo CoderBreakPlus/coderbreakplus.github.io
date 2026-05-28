@@ -1,3 +1,4 @@
+// created time: 2026-05-28
 // border length: i, j
 // let x=n-i, y=n-j
 // number of connected components: max(gcd(x,y), x+y-n)
