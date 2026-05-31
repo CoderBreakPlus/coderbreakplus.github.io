@@ -1,4 +1,4 @@
-// created time: 2026-05-29 11:32:25
+// created time: 2026-05-30 09:11:57
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,30 +29,29 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-char s[55];
-int n;
+
+ll n,a[400005];
 
 void procedure(){
 	n=read();
-	scanf("%s",s);
-	int ans=0;
-	for(int i=0;i<(1<<n);i++){
-		if(__builtin_parity(i))continue;
-		int d=0,f=1;
-		vector<char>vec;
-		for(int j=0;j<n;j++)if((i>>j)&1){
-			vec.pb(s[j]);
-			if(s[j]=='(')d++;
-			else d--;
-			f&=(d>=0);
+	for(ll i=1;i<=2*n;i++)a[i]=read();
+	set<pair<ll,ll>>q;
+	ll x=0,sz=0,lf=0;
+
+	vector<ll>ans;
+	for(ll i=1;i<=2*n;i++){
+		q.emplace(a[i],i),sz++;
+		while(lf<(i+1)/2){
+			ans.pb(prev(q.end())->se);
+			q.erase(prev(q.end()));
+			lf++;
 		}
-		f&=(d==0);
-		for(int i=1,j=(int)vec.size()-2;i<j;i++,j--){
-			f&=(vec[i]==vec[j]);
+		while(sz>n){
+			q.erase(q.begin());
+			sz--;
 		}
-		if(f)chkmax(ans, __builtin_popcount(i));
 	}	
-	printf("%d\n",ans);
+	for(auto x: ans) printf("%lld ",x);puts("");
 }
 int main(){
 	#ifdef LOCAL
