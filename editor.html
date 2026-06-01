@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>代码/配置 本地编辑器</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #1e1e1e; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: #252526; color: #fff; height: 50px; border-bottom: 1px solid #3c3c3c; box-sizing: border-box; }
+        .filename { font-weight: 600; font-family: monospace; font-size: 1.1em; color: #569cd6; }
+        .btn { background: #0e639c; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background 0.2s; font-size: 0.9em; }
+        .btn:hover { background: #1177bb; }
+        .btn-green { background: #166534; }
+        .btn-green:hover { background: #15803d; }
+        #editor-container { height: calc(100vh - 50px); width: 100%; }
+        #status { margin-left: 15px; color: #9cdcfe; font-size: 0.9em; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; display: none; text-align: center; }
+    </style>
+    <!-- 引入 VS Code 核心编辑器 Monaco -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
+</head>
+<body>
+    <div class="overlay" id="err-overlay">
+        <h2 style="color: #f87171;">⚠️ 无法连接到本地服务器</h2>
+        <p>你似乎直接双击打开了 HTML 文件 (file://)，由于浏览器安全限制，无法编辑文件。</p>
+        <p>请在项目根目录运行命令行：<code style="background: #334155; padding: 4px 8px; border-radius: 4px; color:#6ee7b7;">python server.py</code></p>
+        <p>然后通过浏览器访问 <a href="http://localhost:8000/index.html" style="color: #38bdf8;">http://localhost:8000</a> 即可解锁在线编辑！</p>
+    </div>
+    
+    <div class="toolbar">
+        <div style="display: flex; align-items: center;">
+            <button onclick="window.close()" style="background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 4px 10px; border-radius: 4px; margin-right: 15px; cursor: pointer;">← 关闭窗口</button>
+            <span class="filename" id="fname-display">loading...</span>
+            <span id="status"></span>
+        </div>
+        <div>
+            <button class="btn" onclick="saveFile()">💾 保存 (Ctrl+S)</button>
+            <button class="btn btn-green" style="margin-left: 10px;" onclick="saveAndRebuild()">🚀 保存并重构网页</button>
+        </div>
+    </div>
+    <div id="editor-container"></div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const file = params.get('file');
+        const action = params.get('action');
+        document.getElementById('fname-display').innerText = file || '未指定文件';
+
+        let editor;
+
+        // 检测 file:// 协议拦截
+        if (window.location.protocol === 'file:') {
+            document.getElementById('err-overlay').style.display = 'flex';
+        }
+
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            let lang = 'plaintext';
+            if (file.endsWith('.cpp')) lang = 'cpp';
+            if (file.endsWith('.md')) lang = 'markdown';
+            
+            fetch(`/api/read?file=${encodeURIComponent(file)}`)
+                .then(res => {
+                    if (res.status === 404 && action === 'create') {
+                        // 如果是新建，生成默认模板
+                        let def = '';
+                        if (lang === 'cpp') def = '#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    \n    return 0;\n}\n';
+                        if (lang === 'markdown') def = '# 题解\n\n';
+                        if (file.endsWith('.conf')) def = '\n\n\n';
+                        return {content: def};
+                    }
+                    if (!res.ok) throw new Error('File read failed');
+                    return res.json();
+                })
+                .then(data => {
+                    editor = monaco.editor.create(document.getElementById('editor-container'), {
+                        value: data.content || '',
+                        language: lang,
+                        theme: 'vs-dark',
+                        automaticLayout: true,
+                        fontSize: 15,
+                        fontFamily: 'Consolas, "Courier New", monospace'
+                    });
+                    
+                    // 绑定 Ctrl+S
+                    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() { saveFile(); });
+                })
+                .catch(err => {
+                    document.getElementById('status').innerText = '❌ 加载失败';
+                    if (window.location.protocol !== 'file:') {
+                        document.getElementById('err-overlay').style.display = 'flex';
+                    }
+                });
+        });
+
+        function saveFile() {
+            document.getElementById('status').innerText = '保存中...';
+            fetch('/api/write', {
+                method: 'POST',
+                body: JSON.stringify({ file: file, content: editor.getValue() })
+            }).then(r => r.json()).then(d => {
+                document.getElementById('status').innerText = '✅ 已保存';
+                setTimeout(() => document.getElementById('status').innerText = '', 2000);
+            });
+        }
+
+        function saveAndRebuild() {
+            document.getElementById('status').innerText = '保存并触发全站重构中...';
+            fetch('/api/write', {
+                method: 'POST',
+                body: JSON.stringify({ file: file, content: editor.getValue() })
+            }).then(r => r.json()).then(d => {
+                fetch('/api/rebuild', {method: 'POST'}).then(() => {
+                    document.getElementById('status').innerText = '🎉 保存并重构成功！';
+                    setTimeout(() => window.close(), 1500); 
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -5,8 +5,7 @@ from collections import defaultdict
 from datetime import datetime
 
 def get_diff_style(diff):
-    if diff >= 3300:
-        return 'background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;'
+    if diff >= 3300: return 'background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;'
     if diff < 400: color = '#808080'
     elif diff < 800: color = '#804000'
     elif diff < 1200: color = '#008000'
@@ -39,6 +38,131 @@ def contest_sort_key(name):
     non_num = "".join([p for p in parts if not p.isdigit()]).strip().lower()
     nums = [int(p) for p in parts if p.isdigit()]
     return (non_num, *nums)
+
+# ---------------------------------------------------------
+# 新增：极客风本地在线编辑器 HTML 模板 (支持 Monaco 高亮)
+# ---------------------------------------------------------
+EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>代码/配置 本地编辑器</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #1e1e1e; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: #252526; color: #fff; height: 50px; border-bottom: 1px solid #3c3c3c; box-sizing: border-box; }
+        .filename { font-weight: 600; font-family: monospace; font-size: 1.1em; color: #569cd6; }
+        .btn { background: #0e639c; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background 0.2s; font-size: 0.9em; }
+        .btn:hover { background: #1177bb; }
+        .btn-green { background: #166534; }
+        .btn-green:hover { background: #15803d; }
+        #editor-container { height: calc(100vh - 50px); width: 100%; }
+        #status { margin-left: 15px; color: #9cdcfe; font-size: 0.9em; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; display: none; text-align: center; }
+    </style>
+    <!-- 引入 VS Code 核心编辑器 Monaco -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
+</head>
+<body>
+    <div class="overlay" id="err-overlay">
+        <h2 style="color: #f87171;">⚠️ 无法连接到本地服务器</h2>
+        <p>你似乎直接双击打开了 HTML 文件 (file://)，由于浏览器安全限制，无法编辑文件。</p>
+        <p>请在项目根目录运行命令行：<code style="background: #334155; padding: 4px 8px; border-radius: 4px; color:#6ee7b7;">python server.py</code></p>
+        <p>然后通过浏览器访问 <a href="http://localhost:8000/index.html" style="color: #38bdf8;">http://localhost:8000</a> 即可解锁在线编辑！</p>
+    </div>
+    
+    <div class="toolbar">
+        <div style="display: flex; align-items: center;">
+            <button onclick="window.close()" style="background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 4px 10px; border-radius: 4px; margin-right: 15px; cursor: pointer;">← 关闭窗口</button>
+            <span class="filename" id="fname-display">loading...</span>
+            <span id="status"></span>
+        </div>
+        <div>
+            <button class="btn" onclick="saveFile()">💾 保存 (Ctrl+S)</button>
+            <button class="btn btn-green" style="margin-left: 10px;" onclick="saveAndRebuild()">🚀 保存并重构网页</button>
+        </div>
+    </div>
+    <div id="editor-container"></div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const file = params.get('file');
+        const action = params.get('action');
+        document.getElementById('fname-display').innerText = file || '未指定文件';
+
+        let editor;
+
+        // 检测 file:// 协议拦截
+        if (window.location.protocol === 'file:') {
+            document.getElementById('err-overlay').style.display = 'flex';
+        }
+
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            let lang = 'plaintext';
+            if (file.endsWith('.cpp')) lang = 'cpp';
+            if (file.endsWith('.md')) lang = 'markdown';
+            
+            fetch(`/api/read?file=${encodeURIComponent(file)}`)
+                .then(res => {
+                    if (res.status === 404 && action === 'create') {
+                        // 如果是新建，生成默认模板
+                        let def = '';
+                        if (lang === 'cpp') def = '#include <bits/stdc++.h>\\nusing namespace std;\\n\\nint main() {\\n    \\n    return 0;\\n}\\n';
+                        if (lang === 'markdown') def = '# 题解\\n\\n';
+                        if (file.endsWith('.conf')) def = '\\n\\n\\n';
+                        return {content: def};
+                    }
+                    if (!res.ok) throw new Error('File read failed');
+                    return res.json();
+                })
+                .then(data => {
+                    editor = monaco.editor.create(document.getElementById('editor-container'), {
+                        value: data.content || '',
+                        language: lang,
+                        theme: 'vs-dark',
+                        automaticLayout: true,
+                        fontSize: 15,
+                        fontFamily: 'Consolas, "Courier New", monospace'
+                    });
+                    
+                    // 绑定 Ctrl+S
+                    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() { saveFile(); });
+                })
+                .catch(err => {
+                    document.getElementById('status').innerText = '❌ 加载失败';
+                    if (window.location.protocol !== 'file:') {
+                        document.getElementById('err-overlay').style.display = 'flex';
+                    }
+                });
+        });
+
+        function saveFile() {
+            document.getElementById('status').innerText = '保存中...';
+            fetch('/api/write', {
+                method: 'POST',
+                body: JSON.stringify({ file: file, content: editor.getValue() })
+            }).then(r => r.json()).then(d => {
+                document.getElementById('status').innerText = '✅ 已保存';
+                setTimeout(() => document.getElementById('status').innerText = '', 2000);
+            });
+        }
+
+        function saveAndRebuild() {
+            document.getElementById('status').innerText = '保存并触发全站重构中...';
+            fetch('/api/write', {
+                method: 'POST',
+                body: JSON.stringify({ file: file, content: editor.getValue() })
+            }).then(r => r.json()).then(d => {
+                fetch('/api/rebuild', {method: 'POST'}).then(() => {
+                    document.getElementById('status').innerText = '🎉 保存并重构成功！';
+                    setTimeout(() => window.close(), 1500); 
+                });
+            });
+        }
+    </script>
+</body>
+</html>
+"""
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -86,7 +210,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .normal-table th:nth-child(3) {{ width: 9%; }}   
         .normal-table th:nth-child(4) {{ width: 10%; }}  
         .normal-table th.remark-col {{ width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} 
-        .normal-table th:last-child {{ width: 9%; }}     
+        .normal-table th:last-child {{ width: 12%; }}     
         .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; }}
         .matrix-table th.remark-col {{ width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} 
         
@@ -503,7 +627,6 @@ def scan_and_group_files(data_dir):
         base_name, version = None, 'Normal'
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
-        m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', name, re.IGNORECASE) # 加入 soj # [新增] 专门保护前缀+纯数字的OJ题号
 
         if m_cf:
             base_name = f"cf{m_cf.group(1)}{m_cf.group(2).lower()}"
@@ -511,10 +634,6 @@ def scan_and_group_files(data_dir):
         elif m_ac:
             base_name = f"{m_ac.group(1).lower()}{m_ac.group(2)}{m_ac.group(3).lower()}"
             version = 'Easy' if m_ac.group(4) == '1' else ('Hard' if m_ac.group(4) == '2' else 'Normal')
-        elif m_oj:
-            # [新增] 如果是 qoj18131、p1001、uoj11 等，原封不动作为基准名，不切末尾数字
-            base_name = name.lower()
-            version = 'Normal'
         else:
             name_lower = name.lower()
             matched_conf_base = None
@@ -581,11 +700,9 @@ def apply_categories_and_links(groups, data_dir):
     for group in groups.values():
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
-        m_luogu = re.match(r'^p(\d+)$', group.base_name, re.IGNORECASE)
-        m_qoj = re.match(r'^qoj(\d+)$', group.base_name, re.IGNORECASE)
-        m_uoj = re.match(r'^uoj(\d+)$', group.base_name, re.IGNORECASE)
+        m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', group.base_name, re.IGNORECASE)
         
-        is_cf, is_at, is_luogu, is_qoj, is_uoj = bool(m_cf), bool(m_ac), bool(m_luogu), bool(m_qoj), bool(m_uoj)
+        is_cf, is_at, is_oj = bool(m_cf), bool(m_ac), bool(m_oj)
 
         group.appearances = []
         group.has_conf = False
@@ -653,12 +770,13 @@ def apply_categories_and_links(groups, data_dir):
             if not primary_link or primary_link == "#":
                 if is_cf or is_at:
                     primary_link = cf_at_link
-                elif is_luogu:
-                    primary_link = f"https://www.luogu.com.cn/problem/P{m_luogu.group(1)}"
-                elif is_qoj:
-                    primary_link = f"https://qoj.ac/problem/{m_qoj.group(1)}"
-                elif is_uoj:
-                    primary_link = f"https://uoj.ac/problem/{m_uoj.group(1)}"
+                elif is_oj:
+                    oj_prefix = m_oj.group(1).lower()
+                    oj_num = m_oj.group(2)
+                    if oj_prefix == 'p': primary_link = f"https://www.luogu.com.cn/problem/P{oj_num}"
+                    elif oj_prefix == 'qoj': primary_link = f"https://qoj.ac/problem/{oj_num}"
+                    elif oj_prefix == 'uoj': primary_link = f"https://uoj.ac/problem/{oj_num}"
+                    elif oj_prefix == 'soj': primary_link = f"http://121.196.149.251:8080/problem/{oj_num}"
                     
             v.link = primary_link
 
@@ -668,7 +786,7 @@ def apply_categories_and_links(groups, data_dir):
 
     return contest_info
 
-def render_single_version(v, rel_path, contest_pid="", is_official=False):
+def render_single_version(v, rel_path, contest_pid="", is_official=False, base_url="", data_dir="data"):
     display_pid = v.base_filename
     if contest_pid:
         display_pid = contest_pid
@@ -681,13 +799,22 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False):
         style = get_diff_style(v.difficulty)
         diff_html = f'<span class="diff-indicator" title="难度: {v.difficulty}"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
     
+    # 构建 ⚙️📝💡 编辑器链接
+    conf_fname = v.files.get("conf") or f"{v.base_filename}.conf"
+    cpp_fname = v.files.get("cpp") or f"{v.base_filename}.cpp"
+    md_fname = v.files.get("md") or f"{v.base_filename}.md"
+    
     links = []
-    # 严格按照 ⚙️配置 -> 📝代码 -> 💡题解 排序
-    if v.files.get('conf'): links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
-    if v.files.get('cpp'): links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
+    if v.files.get('conf'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}" target="_blank" class="file-link" title="编辑配置" style="text-decoration:none;">⚙️</a>')
+    else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}&action=create" target="_blank" class="file-link" title="新建配置" style="text-decoration:none; opacity:0.3;">➕⚙️</a>')
+    
+    if v.files.get('cpp'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}" target="_blank" class="file-link" title="编辑代码" style="text-decoration:none;">📝</a>')
+    else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create" target="_blank" class="file-link" title="新建代码" style="text-decoration:none; opacity:0.3;">➕📝</a>')
+    
     if v.files.get('md'): 
-        md_href = v.files['md'][:-3] if v.files['md'].endswith('.md') else v.files['md']
-        links.append(f'<a href="{rel_path}/{md_href}" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
+        actual_md = v.files["md"]
+        links.append(f'<a href="{base_url}editor.html?file={data_dir}/{actual_md}" target="_blank" class="file-link" title="编辑题解" style="text-decoration:none;">💡</a>')
+    else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{md_fname}&action=create" target="_blank" class="file-link" title="新建题解" style="text-decoration:none; opacity:0.3;">➕💡</a>')
     
     return f"""
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -695,7 +822,7 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False):
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>
     </div>"""
 
-def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=False, first_col_width=20):
+def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=False, first_col_width=20, base_url="", data_dir="data"):
     if not groups_dict: return ""
     all_pids = set()
     for contest, c_groups in groups_dict.items():
@@ -708,11 +835,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
 
     html = f'<div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: {first_col_width}%; padding-left: 20px;">比赛名称</th>'
     
-    if not is_official:
-        col_width = (100 - first_col_width) / max(1, len(sorted_pids))
-    else:
-        col_width = (100 - first_col_width) / max(1, len(sorted_pids))
-        
+    col_width = (100 - first_col_width) / max(1, len(sorted_pids))
     for pid in sorted_pids: html += f'<th style="width: {col_width}%;">{pid}</th>'
     
     if not is_official:
@@ -742,16 +865,16 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
                 for g in sorted(pid_map[pid], key=lambda x: x.base_name):
                     if not is_official:
                         rep_v = 'Normal' if 'Normal' in g.versions else ('Hard' if 'Hard' in g.versions else 'Easy')
-                        html += render_single_version(g.versions[rep_v], rel_path, pid, is_official)
+                        html += render_single_version(g.versions[rep_v], rel_path, pid, is_official, base_url, data_dir)
                     elif 'Normal' in g.versions and len(g.versions) == 1:
-                        html += render_single_version(g.versions['Normal'], rel_path, pid, is_official)
+                        html += render_single_version(g.versions['Normal'], rel_path, pid, is_official, base_url, data_dir)
                     else:
                         html += '<div style="display: flex; gap: 4px; justify-content: center; width: 100%;">'
                         for v_name in ['Easy', 'Hard']:
                             if v_name in g.versions:
                                 border = 'border-right: 1px dashed #cbd5e1; padding-right: 4px;' if v_name == 'Easy' and 'Hard' in g.versions else ''
                                 html += f'<div style="flex: 1; {border}">'
-                                html += render_single_version(g.versions[v_name], rel_path, pid, is_official)
+                                html += render_single_version(g.versions[v_name], rel_path, pid, is_official, base_url, data_dir)
                                 html += '</div>'
                         html += '</div>'
             html += '</td>'
@@ -763,7 +886,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
     html += '</tbody></table></div>'
     return html
 
-def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_path, base_url=""):
+def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_path, base_url="", data_dir="data"):
     all_versions = []
     if title == 'OI':
         for sub_gs in groups_dict.values():
@@ -812,7 +935,7 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
             tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name}</h2>"
-            tables_html += build_matrix_table(sub_cats[sc_name], contest_info_dict.get('AtCoder', {}), rel_path, is_official, first_col_width)
+            tables_html += build_matrix_table(sub_cats[sc_name], contest_info_dict.get('AtCoder', {}), rel_path, is_official, first_col_width, base_url, data_dir)
             tables_html += '</div>'
             first = False
         tabs_html += '</div>'
@@ -829,13 +952,13 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
             tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {display_name}</h2>"
-            tables_html += build_matrix_table(groups_dict[sc_name], contest_info_dict.get(sc_name, {}), rel_path, is_official, first_col_width)
+            tables_html += build_matrix_table(groups_dict[sc_name], contest_info_dict.get(sc_name, {}), rel_path, is_official, first_col_width, base_url, data_dir)
             tables_html += '</div>'
             first = False
         tabs_html += '</div>'
         content_html = tabs_html + tables_html
     else:
-        content_html = build_matrix_table(groups_dict, contest_info_dict.get(title, {}), rel_path, is_official, first_col_width)
+        content_html = build_matrix_table(groups_dict, contest_info_dict.get(title, {}), rel_path, is_official, first_col_width, base_url, data_dir)
 
     html = HTML_TEMPLATE.format(
         title=title, stats_block=stats_block, nav_extra=nav_extra,
@@ -844,7 +967,7 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table", base_url=""):
+def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table", base_url="", data_dir="data"):
     has_cpp = sum(1 for v in all_versions if v.files.get('cpp'))
     has_md = sum(1 for v in all_versions if v.files.get('md'))
 
@@ -913,12 +1036,22 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
             style = get_diff_style(v.difficulty)
             diff_html = f'<span class="diff-indicator" title="难度: {v.difficulty}"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
         
+        conf_fname = v.files.get("conf") or f"{v.base_filename}.conf"
+        cpp_fname = v.files.get("cpp") or f"{v.base_filename}.cpp"
+        md_fname = v.files.get("md") or f"{v.base_filename}.md"
+        
         links = []
-        if v.files.get('conf'): links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
-        if v.files.get('cpp'): links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
+        if v.files.get('conf'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}" target="_blank" class="file-link" title="编辑配置" style="text-decoration:none;">⚙️</a>')
+        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}&action=create" target="_blank" class="file-link" title="新建配置" style="text-decoration:none; opacity:0.3;">➕⚙️</a>')
+        
+        if v.files.get('cpp'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}" target="_blank" class="file-link" title="编辑代码" style="text-decoration:none;">📝</a>')
+        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create" target="_blank" class="file-link" title="新建代码" style="text-decoration:none; opacity:0.3;">➕📝</a>')
+        
         if v.files.get('md'): 
-            md_href = v.files['md'][:-3] if v.files['md'].endswith('.md') else v.files['md']
-            links.append(f'<a href="{rel_path}/{md_href}" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
+            actual_md = v.files["md"]
+            links.append(f'<a href="{base_url}editor.html?file={data_dir}/{actual_md}" target="_blank" class="file-link" title="编辑题解" style="text-decoration:none;">💡</a>')
+        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{md_fname}&action=create" target="_blank" class="file-link" title="新建题解" style="text-decoration:none; opacity:0.3;">➕💡</a>')
+        
         v_html = f'<div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>'
         
         content_html += f"""
@@ -954,9 +1087,7 @@ def scan_problem_lists(plist_dir, groups):
             
             matched_versions = []
             for pid in ids:
-                # 兼容大小写搜寻
                 target_group = groups.get(pid.lower())
-                
                 if target_group:
                     if 'Normal' in target_group.versions:
                         matched_versions.append(target_group.versions['Normal'])
@@ -994,7 +1125,7 @@ def build_problem_lists_index(plists, out_path, base_url=""):
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def build_single_plist_page(name, versions, out_path, rel_path, base_url=""):
+def build_single_plist_page(name, versions, out_path, rel_path, base_url="", data_dir="data"):
     table_id = f"plist-{name}"
     
     content_html = f"""
@@ -1017,10 +1148,21 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url=""):
         tags_str = " ".join(v.tags) if v.tags else ""
         tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in v.tags])
         
+        conf_fname = v.files.get("conf") or f"{v.base_filename}.conf"
+        cpp_fname = v.files.get("cpp") or f"{v.base_filename}.cpp"
+        md_fname = v.files.get("md") or f"{v.base_filename}.md"
+        
         links = []
-        if v.files.get('conf'): links.append(f'<a href="{rel_path}/{v.files["conf"]}" class="file-link" style="text-decoration:none;" title="配置">⚙️</a>')
-        if v.files.get('cpp'): links.append(f'<a href="{rel_path}/{v.files["cpp"]}" class="file-link" style="text-decoration:none;" title="代码">📝</a>')
-        if v.files.get('md'): links.append(f'<a href="{rel_path}/{v.files["md"][:-3] if v.files["md"].endswith(".md") else v.files["md"]}" class="file-link" style="text-decoration:none;" title="题解">💡</a>')
+        if v.files.get('conf'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}" target="_blank" class="file-link" style="text-decoration:none;" title="编辑配置">⚙️</a>')
+        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}&action=create" target="_blank" class="file-link" style="text-decoration:none; opacity:0.3;" title="新建配置">➕⚙️</a>')
+        
+        if v.files.get('cpp'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}" target="_blank" class="file-link" style="text-decoration:none;" title="编辑代码">📝</a>')
+        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create" target="_blank" class="file-link" style="text-decoration:none; opacity:0.3;" title="新建代码">➕📝</a>')
+        
+        if v.files.get('md'): 
+            actual_md = v.files["md"]
+            links.append(f'<a href="{base_url}editor.html?file={data_dir}/{actual_md}" target="_blank" class="file-link" style="text-decoration:none;" title="编辑题解">💡</a>')
+        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{md_fname}&action=create" target="_blank" class="file-link" style="text-decoration:none; opacity:0.3;" title="新建题解">➕💡</a>')
 
         display_name = v.base_filename 
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">{display_name}</a>' if v.link != '#' else f'<b>{display_name}</b>'
@@ -1152,6 +1294,10 @@ def main():
         sys.exit(1)
     if out_dir != '.' and not os.path.exists(out_dir): os.makedirs(out_dir)
 
+    # 提取输出在线编辑器模板
+    with open(os.path.join(out_dir, "editor.html"), 'w', encoding='utf-8') as f:
+        f.write(EDITOR_HTML_TEMPLATE)
+
     rel_data_path = os.path.relpath(data_dir, out_dir).replace('\\', '/')
     rel_blog_path = os.path.relpath(blog_dir, out_dir).replace('\\', '/')
 
@@ -1201,12 +1347,12 @@ def main():
 
     print(f"🛠️ 正在生成 HTML 到 '{out_dir}'...")
     for cat in ['Codeforces', 'AtCoder', 'XCPC']:
-        build_category_page(cat, categories[cat], contest_info, os.path.join(out_dir, f"{cat}.html"), rel_data_path, base_url="")
+        build_category_page(cat, categories[cat], contest_info, os.path.join(out_dir, f"{cat}.html"), rel_data_path, base_url="", data_dir=data_dir)
         
-    build_category_page('OI', {'OI': categories['OI'], 'OIs': categories['OIs']}, contest_info, os.path.join(out_dir, "OI.html"), rel_data_path, base_url="")
+    build_category_page('OI', {'OI': categories['OI'], 'OIs': categories['OIs']}, contest_info, os.path.join(out_dir, "OI.html"), rel_data_path, base_url="", data_dir=data_dir)
         
-    build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table", base_url="")
-    build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table", base_url="")
+    build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table", base_url="", data_dir=data_dir)
+    build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table", base_url="", data_dir=data_dir)
 
     build_blog_index_page(blogs, rel_blog_path, os.path.join(out_dir, "Blog.html"), base_url="")
 
@@ -1218,7 +1364,7 @@ def main():
         rel_plist_path = os.path.relpath(data_dir, out_plist_dir).replace('\\', '/')
         for name, versions in plists.items():
             out_file = os.path.join(out_plist_dir, f"{name}.html")
-            build_single_plist_page(name, versions, out_file, rel_plist_path, base_url="../")
+            build_single_plist_page(name, versions, out_file, rel_plist_path, base_url="../", data_dir=data_dir)
 
     build_index_page(categories, summary_versions, todo_versions, plists, len(blogs), os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
