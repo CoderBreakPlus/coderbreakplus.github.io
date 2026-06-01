@@ -72,12 +72,12 @@
                     editor = monaco.editor.create(document.getElementById('editor-container'), {
                         value: data.content || '',
                         language: lang,
-                        theme: 'vs',                 // 修改：切换为明亮白底主题
+                        theme: 'vs',
                         automaticLayout: true,
                         fontSize: 15,
                         fontFamily: 'Consolas, "Courier New", monospace',
-                        mouseWheelZoom: true,        // 新增：支持 Ctrl+滚轮缩放
-                        wordWrap: 'on'               // 新增：超出宽度自动换行
+                        mouseWheelZoom: true,
+                        wordWrap: 'on'
                     });
                     
                     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() { saveFile(); });

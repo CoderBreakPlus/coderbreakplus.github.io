@@ -39,7 +39,6 @@ def contest_sort_key(name):
     nums = [int(p) for p in parts if p.isdigit()]
     return (non_num, *nums)
 
-# ----------------- 全白亮色风格：在线编辑器 HTML 模板 -----------------
 EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -114,12 +113,12 @@ EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
                     editor = monaco.editor.create(document.getElementById('editor-container'), {
                         value: data.content || '',
                         language: lang,
-                        theme: 'vs',                 // 修改：切换为明亮白底主题
+                        theme: 'vs',
                         automaticLayout: true,
                         fontSize: 15,
                         fontFamily: 'Consolas, "Courier New", monospace',
-                        mouseWheelZoom: true,        // 新增：支持 Ctrl+滚轮缩放
-                        wordWrap: 'on'               // 新增：超出宽度自动换行
+                        mouseWheelZoom: true,
+                        wordWrap: 'on'
                     });
                     
                     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() { saveFile(); });
@@ -226,7 +225,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .file-link {{ color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }}
         .file-link:hover {{ transform: scale(1.1); }}
         
-        /* 智能控制新建文件的透明按钮 */
         .add-file-btn {{ display: none; opacity: 0.4; transition: opacity 0.2s; }}
         .add-file-btn:hover {{ opacity: 1; }}
         
@@ -456,7 +454,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 if (q || min || max) {{ filterListTable(tableId); }}
             }}
             
-            // 【核心注入】：仅在本地访问时，激活在线编辑系统和新建按钮
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
                 document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
                 document.querySelectorAll('.file-link').forEach(el => {{
@@ -692,7 +689,7 @@ def apply_categories_and_links(groups, data_dir):
             path = os.path.join('contest', f)
             try:
                 with open(path, 'r', encoding='utf-8') as file:
-                    lines = [l.strip() for l in file.readlines()]
+                    lines = [l.split('#')[0].strip() for l in file.readlines()]
                 while len(lines) < 3: lines.append('')
                 
                 c_name, cat, c_link = lines[0], lines[1], lines[2]
@@ -744,7 +741,7 @@ def apply_categories_and_links(groups, data_dir):
                 fp = os.path.join(data_dir, v.files['conf'])
                 try:
                     with open(fp, 'r', encoding='utf-8') as f:
-                        lines = [line.strip() for line in f.readlines()]
+                        lines = [line.split('#')[0].strip() for line in f.readlines()]
                     while len(lines) < 3: lines.append('')
                     
                     parts = lines[0].split()
@@ -820,7 +817,6 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
     
     links = []
     
-    # ⚙️ 配置
     if v.files.get('conf'):
         raw_href = f"{rel_path}/{v.files['conf']}"
         editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['conf']}"
@@ -829,7 +825,6 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
         editor_href = f"{base_url}editor.html?file={data_dir}/{conf_fname}&action=create"
         links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a>')
         
-    # 📝 代码
     if v.files.get('cpp'):
         raw_href = f"{rel_path}/{v.files['cpp']}"
         editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['cpp']}"
@@ -838,7 +833,6 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
         editor_href = f"{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create"
         links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a>')
         
-    # 💡 题解
     if v.files.get('md'): 
         actual_md = v.files["md"]
         md_raw_fname = actual_md[:-3] if actual_md.endswith('.md') else actual_md
@@ -1131,7 +1125,8 @@ def scan_problem_lists(plist_dir, groups):
             name = f[:-5]
             path = os.path.join(plist_dir, f)
             with open(path, 'r', encoding='utf-8') as file:
-                ids = [line.strip() for line in file.readlines() if line.strip()]
+                ids = [line.split('#')[0].strip() for line in file.readlines()]
+                ids = [x for x in ids if x]
             
             matched_versions = []
             for pid in ids:
@@ -1357,7 +1352,6 @@ def main():
         sys.exit(1)
     if out_dir != '.' and not os.path.exists(out_dir): os.makedirs(out_dir)
 
-    # 提取输出在线编辑器模板
     with open(os.path.join(out_dir, "editor.html"), 'w', encoding='utf-8') as f:
         f.write(EDITOR_HTML_TEMPLATE)
 

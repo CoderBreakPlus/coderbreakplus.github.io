@@ -64,7 +64,6 @@
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
         
-        /* 智能控制新建文件的透明按钮 */
         .add-file-btn { display: none; opacity: 0.4; transition: opacity 0.2s; }
         .add-file-btn:hover { opacity: 1; }
         
@@ -164,7 +163,7 @@
         <div class="prob-link-wrap"><a href="https://atcoder.jp/contests/agc066/tasks/agc066_c" target="_blank">C</a></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc066c.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="data/agc066c.cpp" data-editor-href="editor.html?file=data/agc066c.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/agc066c" data-editor-href="editor.html?file=data/agc066c.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div>
     </div></td></tr></tbody></table></div></div>
-        <div class="footer">最后构建: 2026-06-01 19:38:52 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-06-01 19:40:39 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -354,7 +353,6 @@
                 if (q || min || max) { filterListTable(tableId); }
             }
             
-            // 【核心注入】：仅在本地访问时，激活在线编辑系统和新建按钮
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
                 document.querySelectorAll('.file-link').forEach(el => {

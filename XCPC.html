@@ -64,7 +64,6 @@
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
         
-        /* 智能控制新建文件的透明按钮 */
         .add-file-btn { display: none; opacity: 0.4; transition: opacity 0.2s; }
         .add-file-btn:hover { opacity: 1; }
         
@@ -432,7 +431,7 @@
         <div class="prob-link-wrap"><a href="https://qoj.ac/problem/7403" target="_blank">F</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7403.conf" data-editor-href="editor.html?file=data/qoj7403.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/qoj7403.cpp" data-editor-href="editor.html?file=data/qoj7403.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj7403" data-editor-href="editor.html?file=data/qoj7403.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div>
     </div></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-06-01 19:38:52 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-06-01 19:40:39 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -622,7 +621,6 @@
                 if (q || min || max) { filterListTable(tableId); }
             }
             
-            // 【核心注入】：仅在本地访问时，激活在线编辑系统和新建按钮
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
                 document.querySelectorAll('.file-link').forEach(el => {
