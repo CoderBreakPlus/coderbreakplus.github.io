@@ -43,6 +43,7 @@ void procedure(){
 	mp.clear();
 	for(int i=1;i<=m;i++){
 		int a=read(),b=read(),c=read();
+		
 	}
 }
 int main(){
