@@ -1,5 +1,4 @@
-// created time: 2026-05-30 09:11:57
-// 这个代码是假做法
+// created time: 2026-06-01 15:10:47
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -31,28 +30,20 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-ll n,a[400005];
+int n,m,c[200005],id;
+bool vis[1000005]
+map<ll,int>mp;
 
+ll getid(int x,int y){
+	if(!mp.count({x,y})) mp[{x,y}]=++id;
+	return mp[{x,y}];
+}
 void procedure(){
-	n=read();
-	for(ll i=1;i<=2*n;i++)a[i]=read();
-	set<pair<ll,ll>>q;
-	ll x=0,sz=0,lf=0;
-
-	vector<ll>ans;
-	for(ll i=1;i<=2*n;i++){
-		q.emplace(a[i],i),sz++;
-		while(lf<(i+1)/2){
-			ans.pb(prev(q.end())->se);
-			q.erase(prev(q.end()));
-			lf++;
-		}
-		while(sz>n){
-			q.erase(q.begin());
-			sz--;
-		}
-	}	
-	for(auto x: ans) printf("%lld ",x);puts("");
+	n=read(),m=read();
+	mp.clear();
+	for(int i=1;i<=m;i++){
+		int a=read(),b=read(),c=read();
+	}
 }
 int main(){
 	#ifdef LOCAL
