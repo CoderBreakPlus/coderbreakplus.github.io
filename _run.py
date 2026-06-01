@@ -39,40 +39,37 @@ def contest_sort_key(name):
     nums = [int(p) for p in parts if p.isdigit()]
     return (non_num, *nums)
 
-# ---------------------------------------------------------
-# 新增：极客风本地在线编辑器 HTML 模板 (支持 Monaco 高亮)
-# ---------------------------------------------------------
+# ----------------- 全白亮色风格：在线编辑器 HTML 模板 -----------------
 EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <title>代码/配置 本地编辑器</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #1e1e1e; }
-        .toolbar { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: #252526; color: #fff; height: 50px; border-bottom: 1px solid #3c3c3c; box-sizing: border-box; }
-        .filename { font-weight: 600; font-family: monospace; font-size: 1.1em; color: #569cd6; }
-        .btn { background: #0e639c; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background 0.2s; font-size: 0.9em; }
-        .btn:hover { background: #1177bb; }
-        .btn-green { background: #166534; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #ffffff; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: #f1f5f9; color: #334155; height: 50px; border-bottom: 1px solid #cbd5e1; box-sizing: border-box; }
+        .filename { font-weight: 600; font-family: monospace; font-size: 1.1em; color: #2563eb; }
+        .btn { background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background 0.2s; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .btn:hover { background: #1d4ed8; }
+        .btn-green { background: #16a34a; }
         .btn-green:hover { background: #15803d; }
         #editor-container { height: calc(100vh - 50px); width: 100%; }
-        #status { margin-left: 15px; color: #9cdcfe; font-size: 0.9em; }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; display: none; text-align: center; }
+        #status { margin-left: 15px; color: #059669; font-size: 0.95em; font-weight: 600; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); color: #0f172a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; display: none; text-align: center; }
     </style>
-    <!-- 引入 VS Code 核心编辑器 Monaco -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
 </head>
 <body>
     <div class="overlay" id="err-overlay">
-        <h2 style="color: #f87171;">⚠️ 无法连接到本地服务器</h2>
+        <h2 style="color: #ef4444;">⚠️ 无法连接到本地服务器</h2>
         <p>你似乎直接双击打开了 HTML 文件 (file://)，由于浏览器安全限制，无法编辑文件。</p>
-        <p>请在项目根目录运行命令行：<code style="background: #334155; padding: 4px 8px; border-radius: 4px; color:#6ee7b7;">python server.py</code></p>
-        <p>然后通过浏览器访问 <a href="http://localhost:8000/index.html" style="color: #38bdf8;">http://localhost:8000</a> 即可解锁在线编辑！</p>
+        <p>请在项目根目录运行命令行：<code style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; color:#0f172a;">python server.py</code></p>
+        <p>然后通过浏览器访问 <a href="http://localhost:8000/index.html" style="color: #2563eb;">http://localhost:8000</a> 即可解锁在线编辑！</p>
     </div>
     
     <div class="toolbar">
         <div style="display: flex; align-items: center;">
-            <button onclick="window.close()" style="background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 4px 10px; border-radius: 4px; margin-right: 15px; cursor: pointer;">← 关闭窗口</button>
+            <button onclick="window.close()" style="background: #fff; border: 1px solid #cbd5e1; color: #475569; padding: 4px 10px; border-radius: 4px; margin-right: 15px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">← 关闭窗口</button>
             <span class="filename" id="fname-display">loading...</span>
             <span id="status"></span>
         </div>
@@ -91,7 +88,6 @@ EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
 
         let editor;
 
-        // 检测 file:// 协议拦截
         if (window.location.protocol === 'file:') {
             document.getElementById('err-overlay').style.display = 'flex';
         }
@@ -105,7 +101,6 @@ EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
             fetch(`/api/read?file=${encodeURIComponent(file)}`)
                 .then(res => {
                     if (res.status === 404 && action === 'create') {
-                        // 如果是新建，生成默认模板
                         let def = '';
                         if (lang === 'cpp') def = '#include <bits/stdc++.h>\\nusing namespace std;\\n\\nint main() {\\n    \\n    return 0;\\n}\\n';
                         if (lang === 'markdown') def = '# 题解\\n\\n';
@@ -119,13 +114,14 @@ EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
                     editor = monaco.editor.create(document.getElementById('editor-container'), {
                         value: data.content || '',
                         language: lang,
-                        theme: 'vs-dark',
+                        theme: 'vs',                 // 修改：切换为明亮白底主题
                         automaticLayout: true,
                         fontSize: 15,
-                        fontFamily: 'Consolas, "Courier New", monospace'
+                        fontFamily: 'Consolas, "Courier New", monospace',
+                        mouseWheelZoom: true,        // 新增：支持 Ctrl+滚轮缩放
+                        wordWrap: 'on'               // 新增：超出宽度自动换行
                     });
                     
-                    // 绑定 Ctrl+S
                     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() { saveFile(); });
                 })
                 .catch(err => {
@@ -229,6 +225,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .version-row {{ margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }}
         .file-link {{ color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }}
         .file-link:hover {{ transform: scale(1.1); }}
+        
+        /* 智能控制新建文件的透明按钮 */
+        .add-file-btn {{ display: none; opacity: 0.4; transition: opacity 0.2s; }}
+        .add-file-btn:hover {{ opacity: 1; }}
+        
         .tag-pill {{ background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }}
         .tag-pill:hover {{ background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }}
         .list-filter-bar {{ background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }}
@@ -454,6 +455,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 if (maxInput && max) maxInput.value = max;
                 if (q || min || max) {{ filterListTable(tableId); }}
             }}
+            
+            // 【核心注入】：仅在本地访问时，激活在线编辑系统和新建按钮
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
+                document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
+                document.querySelectorAll('.file-link').forEach(el => {{
+                    if (el.hasAttribute('data-editor-href')) {{
+                        el.href = el.getAttribute('data-editor-href');
+                    }}
+                }});
+            }}
         }});
     </script>
 </body>
@@ -627,6 +638,7 @@ def scan_and_group_files(data_dir):
         base_name, version = None, 'Normal'
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
+        m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', name, re.IGNORECASE)
 
         if m_cf:
             base_name = f"cf{m_cf.group(1)}{m_cf.group(2).lower()}"
@@ -634,6 +646,9 @@ def scan_and_group_files(data_dir):
         elif m_ac:
             base_name = f"{m_ac.group(1).lower()}{m_ac.group(2)}{m_ac.group(3).lower()}"
             version = 'Easy' if m_ac.group(4) == '1' else ('Hard' if m_ac.group(4) == '2' else 'Normal')
+        elif m_oj:
+            base_name = name.lower()
+            version = 'Normal'
         else:
             name_lower = name.lower()
             matched_conf_base = None
@@ -799,22 +814,40 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
         style = get_diff_style(v.difficulty)
         diff_html = f'<span class="diff-indicator" title="难度: {v.difficulty}"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
     
-    # 构建 ⚙️📝💡 编辑器链接
     conf_fname = v.files.get("conf") or f"{v.base_filename}.conf"
     cpp_fname = v.files.get("cpp") or f"{v.base_filename}.cpp"
     md_fname = v.files.get("md") or f"{v.base_filename}.md"
     
     links = []
-    if v.files.get('conf'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}" target="_blank" class="file-link" title="编辑配置" style="text-decoration:none;">⚙️</a>')
-    else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}&action=create" target="_blank" class="file-link" title="新建配置" style="text-decoration:none; opacity:0.3;">➕⚙️</a>')
     
-    if v.files.get('cpp'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}" target="_blank" class="file-link" title="编辑代码" style="text-decoration:none;">📝</a>')
-    else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create" target="_blank" class="file-link" title="新建代码" style="text-decoration:none; opacity:0.3;">➕📝</a>')
-    
+    # ⚙️ 配置
+    if v.files.get('conf'):
+        raw_href = f"{rel_path}/{v.files['conf']}"
+        editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['conf']}"
+        links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
+    else:
+        editor_href = f"{base_url}editor.html?file={data_dir}/{conf_fname}&action=create"
+        links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a>')
+        
+    # 📝 代码
+    if v.files.get('cpp'):
+        raw_href = f"{rel_path}/{v.files['cpp']}"
+        editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['cpp']}"
+        links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
+    else:
+        editor_href = f"{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create"
+        links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a>')
+        
+    # 💡 题解
     if v.files.get('md'): 
         actual_md = v.files["md"]
-        links.append(f'<a href="{base_url}editor.html?file={data_dir}/{actual_md}" target="_blank" class="file-link" title="编辑题解" style="text-decoration:none;">💡</a>')
-    else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{md_fname}&action=create" target="_blank" class="file-link" title="新建题解" style="text-decoration:none; opacity:0.3;">➕💡</a>')
+        md_raw_fname = actual_md[:-3] if actual_md.endswith('.md') else actual_md
+        raw_href = f"{rel_path}/{md_raw_fname}"
+        editor_href = f"{base_url}editor.html?file={data_dir}/{actual_md}"
+        links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
+    else:
+        editor_href = f"{base_url}editor.html?file={data_dir}/{md_fname}&action=create"
+        links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a>')
     
     return f"""
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -1041,17 +1074,32 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         md_fname = v.files.get("md") or f"{v.base_filename}.md"
         
         links = []
-        if v.files.get('conf'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}" target="_blank" class="file-link" title="编辑配置" style="text-decoration:none;">⚙️</a>')
-        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}&action=create" target="_blank" class="file-link" title="新建配置" style="text-decoration:none; opacity:0.3;">➕⚙️</a>')
-        
-        if v.files.get('cpp'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}" target="_blank" class="file-link" title="编辑代码" style="text-decoration:none;">📝</a>')
-        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create" target="_blank" class="file-link" title="新建代码" style="text-decoration:none; opacity:0.3;">➕📝</a>')
-        
+        if v.files.get('conf'):
+            raw_href = f"{rel_path}/{v.files['conf']}"
+            editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['conf']}"
+            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
+        else:
+            editor_href = f"{base_url}editor.html?file={data_dir}/{conf_fname}&action=create"
+            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a>')
+            
+        if v.files.get('cpp'):
+            raw_href = f"{rel_path}/{v.files['cpp']}"
+            editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['cpp']}"
+            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
+        else:
+            editor_href = f"{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create"
+            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a>')
+            
         if v.files.get('md'): 
             actual_md = v.files["md"]
-            links.append(f'<a href="{base_url}editor.html?file={data_dir}/{actual_md}" target="_blank" class="file-link" title="编辑题解" style="text-decoration:none;">💡</a>')
-        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{md_fname}&action=create" target="_blank" class="file-link" title="新建题解" style="text-decoration:none; opacity:0.3;">➕💡</a>')
-        
+            md_raw_fname = actual_md[:-3] if actual_md.endswith('.md') else actual_md
+            raw_href = f"{rel_path}/{md_raw_fname}"
+            editor_href = f"{base_url}editor.html?file={data_dir}/{actual_md}"
+            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
+        else:
+            editor_href = f"{base_url}editor.html?file={data_dir}/{md_fname}&action=create"
+            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a>')
+            
         v_html = f'<div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>'
         
         content_html += f"""
@@ -1153,16 +1201,31 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url="", dat
         md_fname = v.files.get("md") or f"{v.base_filename}.md"
         
         links = []
-        if v.files.get('conf'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}" target="_blank" class="file-link" style="text-decoration:none;" title="编辑配置">⚙️</a>')
-        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{conf_fname}&action=create" target="_blank" class="file-link" style="text-decoration:none; opacity:0.3;" title="新建配置">➕⚙️</a>')
-        
-        if v.files.get('cpp'): links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}" target="_blank" class="file-link" style="text-decoration:none;" title="编辑代码">📝</a>')
-        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create" target="_blank" class="file-link" style="text-decoration:none; opacity:0.3;" title="新建代码">➕📝</a>')
-        
+        if v.files.get('conf'):
+            raw_href = f"{rel_path}/{v.files['conf']}"
+            editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['conf']}"
+            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
+        else:
+            editor_href = f"{base_url}editor.html?file={data_dir}/{conf_fname}&action=create"
+            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a>')
+            
+        if v.files.get('cpp'):
+            raw_href = f"{rel_path}/{v.files['cpp']}"
+            editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['cpp']}"
+            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
+        else:
+            editor_href = f"{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create"
+            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a>')
+            
         if v.files.get('md'): 
             actual_md = v.files["md"]
-            links.append(f'<a href="{base_url}editor.html?file={data_dir}/{actual_md}" target="_blank" class="file-link" style="text-decoration:none;" title="编辑题解">💡</a>')
-        else: links.append(f'<a href="{base_url}editor.html?file={data_dir}/{md_fname}&action=create" target="_blank" class="file-link" style="text-decoration:none; opacity:0.3;" title="新建题解">➕💡</a>')
+            md_raw_fname = actual_md[:-3] if actual_md.endswith('.md') else actual_md
+            raw_href = f"{rel_path}/{md_raw_fname}"
+            editor_href = f"{base_url}editor.html?file={data_dir}/{actual_md}"
+            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
+        else:
+            editor_href = f"{base_url}editor.html?file={data_dir}/{md_fname}&action=create"
+            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a>')
 
         display_name = v.base_filename 
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">{display_name}</a>' if v.link != '#' else f'<b>{display_name}</b>'

@@ -63,6 +63,11 @@
         .version-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
+        
+        /* 智能控制新建文件的透明按钮 */
+        .add-file-btn { display: none; opacity: 0.4; transition: opacity 0.2s; }
+        .add-file-btn:hover { opacity: 1; }
+        
         .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
         .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
         .list-filter-bar { background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }
@@ -137,9 +142,9 @@
             <td><span class="diff-indicator" title="难度: 3500.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3500</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
             <td class="remark-col">-</td>
-            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/cf1098f.conf" target="_blank" class="file-link" title="编辑配置" style="text-decoration:none;">⚙️</a><a href="editor.html?file=data/cf1098f.cpp&action=create" target="_blank" class="file-link" title="新建代码" style="text-decoration:none; opacity:0.3;">➕📝</a><a href="editor.html?file=data/cf1098f.md&action=create" target="_blank" class="file-link" title="新建题解" style="text-decoration:none; opacity:0.3;">➕💡</a></span></div></td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf1098f.conf" data-editor-href="editor.html?file=data/cf1098f.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="editor.html?file=data/cf1098f.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/cf1098f.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-06-01 14:25:16 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-06-01 14:56:39 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -327,6 +332,16 @@
                 const maxInput = document.getElementById('filter-diff-max-' + tableId);
                 if (maxInput && max) maxInput.value = max;
                 if (q || min || max) { filterListTable(tableId); }
+            }
+            
+            // 【核心注入】：仅在本地访问时，激活在线编辑系统和新建按钮
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
+                document.querySelectorAll('.file-link').forEach(el => {
+                    if (el.hasAttribute('data-editor-href')) {
+                        el.href = el.getAttribute('data-editor-href');
+                    }
+                });
             }
         });
     </script>

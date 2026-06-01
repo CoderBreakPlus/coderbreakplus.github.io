@@ -4,7 +4,8 @@ import urllib.parse
 import json
 import os
 
-PORT = 8000
+# 允许地址重用，防止退出后立即启动报错
+socketserver.TCPServer.allow_reuse_address = True
 
 class EditorHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -15,7 +16,6 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
             query = urllib.parse.parse_qs(parsed_path.query)
             filepath = query.get('file', [''])[0]
             
-            # 安全校验：防止跨目录访问
             if '..' in filepath or filepath.startswith('/'):
                 self.send_error(403, "Forbidden")
                 return
@@ -48,12 +48,10 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
             filepath = data.get('file', '')
             content = data.get('content', '')
             
-            # 安全校验
             if '..' in filepath or filepath.startswith('/'):
                 self.send_error(403, "Forbidden")
                 return
             
-            # 如果目录不存在自动创建
             os.makedirs(os.path.dirname(filepath) or '.', exist_ok=True)
             
             with open(filepath, 'w', encoding='utf-8') as f:
@@ -65,10 +63,10 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps({'status': 'ok'}).encode('utf-8'))
             return
             
-        # 接口 3: 触发网页重新构建 (run.py)
+        # 接口 3: 触发网页重新构建
         if parsed_path.path == '/api/rebuild':
             print("\n🔄 正在后台重新构建静态网页...")
-            os.system("python _run.py")
+            os.system("python3 _run.py")
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
@@ -78,15 +76,20 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
         return super().do_POST()
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("🚀 算法平台本地服务器已启动！")
-    print(f"👉 请在浏览器中打开: http://localhost:{PORT}/index.html")
-    print("✨ 你现在可以在网页上新建和编辑 .cpp, .md, .conf 了。")
-    print("⚠️ 请保持此窗口开启，按 Ctrl+C 可停止服务器。")
-    print("=" * 60)
-    
-    with socketserver.TCPServer(("", PORT), EditorHandler) as httpd:
+    # 自动探测可用端口，防止 98 报错
+    for port in range(8000, 9000):
         try:
+            httpd = socketserver.TCPServer(("", port), EditorHandler)
+            print("=" * 60)
+            print("🚀 算法平台本地服务器已启动！")
+            print(f"👉 请在浏览器中打开: http://localhost:{port}/index.html")
+            print("✨ 享受网页在线编辑代码与配置的快感吧。")
+            print("⚠️ 请保持此窗口开启，按 Ctrl+C 可停止服务器。")
+            print("=" * 60)
             httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\n⏹️ 服务器已关闭。")
+            break
+        except OSError as e:
+            if e.errno == 98:
+                continue
+            else:
+                raise
