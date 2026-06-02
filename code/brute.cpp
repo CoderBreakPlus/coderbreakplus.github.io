@@ -1,4 +1,4 @@
-// created time: 2026-06-02 14:53:26
+// created time: 2026-06-02 13:57:35
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,26 +29,34 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-const int n=20;
-int a[n+5];
+int n,q,p[500005],l[500005],r[500005],x[500005];
+vector<int>sl[500005],sr[500005],fac[500005];
 
+int fa[500005],sz[500005],tag[500005],pos[500005],val[500005],ans1[500005],ans2[500005];
+int merge(int x,int y){
+	if(!x||!y)return x|y;
+	if(sz[x]>sz[y])swap(x,y);
+	fa[x]=y,tag[x]-=tag[y],sz[y]+=sz[x];
+	return y;
+}
 void procedure(){
-	for(int i=1;i<=n;i++)a[i]=i;
-	shuffle(a+1,a+n+1,rnd);
-
-	cout<<n<<" "<<n<<endl;
-	for(int i=1;i<=n;i++)cout<<a[i]<<" ";cout<<endl;
-	for(int i=1;i<=n;i++){
-		int l=rng(1,n),r=rng(1,n),x=rng(1,n);if(l>r)swap(l,r);
-		cout<<l<<" "<<r<<" "<<x<<endl;
+	n=read(),q=read();
+	for(int i=1;i<=n;i++) p[i]=read();
+	for(int i=1;i<=q;i++){
+		l[i]=read(),r[i]=read(),x[i]=read();
+		int cnt=0;
+		for(int j=l[i];j<=r[i];j++){
+			if(x[i]%p[j]==0) x[i]/=p[j],cnt++;
+			else if(p[j]%x[i]==0) x[i]=p[j]/x[i],cnt++;	
+		}
+		printf("%d %d\n",x[i],cnt);
 	}
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.ans","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
