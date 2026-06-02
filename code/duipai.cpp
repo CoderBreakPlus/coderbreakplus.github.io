@@ -6,14 +6,14 @@ typedef unsigned long long ull;
 
 int main(){
 	int T=1000;
-	// A
-	// assert(!system("g++ A.cpp -o A -DLOCAL -fsanitize=address,undefined"));
+	// cf1098f
+	assert(!system("g++ cf1098f.cpp -o cf1098f -DLOCAL -fsanitize=address,undefined"));
 	// assert(!system("g++ brute.cpp -o brute -DLOCAL -fsanitize=address,undefined"));
 	assert(!system("g++ gen.cpp -o gen -DLOCAL -fsanitize=address,undefined"));
 	for(int i=1;i<=T;i++){
 		assert(!system("./gen"));
 		assert(!system("./brute"));
-		assert(!system("./A"));
+		assert(!system("./cf1098f"));
 		if(system("diff -Zq test.out test.ans")) {
 			cout<<"WA on "<<i<<endl;
 			exit(0);
