@@ -1,3 +1,4 @@
+// created time: 2026-06-03
 #pragma GCC optimize("Ofast,no-stack-protector,unroll-loops,fast-math")
 #pragma GCC target("sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2")
 #include<bits/stdc++.h>
