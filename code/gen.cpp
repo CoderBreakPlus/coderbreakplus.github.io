@@ -1,4 +1,4 @@
-// created time: 2026-06-02 14:53:26
+// created time: 2026-06-03 09:03:47
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,22 +29,24 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
+
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-
-const int n=20;
-int a[n+5];
-
+int n = 300;
 void procedure(){
-	for(int i=1;i<=n;i++)a[i]=i;
-	shuffle(a+1,a+n+1,rnd);
-
-	cout<<n<<" "<<n<<endl;
-	for(int i=1;i<=n;i++)cout<<a[i]<<" ";cout<<endl;
+	int cnt=0;
+	vector<int>vec;
 	for(int i=1;i<=n;i++){
-		int l=rng(1,n),r=rng(1,n),x=rng(1,n);if(l>r)swap(l,r);
-		cout<<l<<" "<<r<<" "<<x<<endl;
+		if(rnd()%2 || cnt==0) {
+			cnt++;
+			vec.pb(1);
+		}else{
+			cnt--;
+			vec.pb(0);
+		}
 	}
+	reverse(vec.begin(),vec.end());
+	for(int x: vec) cout<<x;
+	cout<<endl;
 }
 int main(){
 	#ifdef LOCAL
