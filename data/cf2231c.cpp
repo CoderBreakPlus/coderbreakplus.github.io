@@ -1,4 +1,4 @@
-// created time: 2026-06-04 18:14:36
+// created time: 2026-06-04 15:30:27
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,21 +29,56 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
+int n;
+map<int,pair<int,int>>mp;
 
+vector<pair<int,int>> develop(int x){
+	if(x==1) return {{1,0},{2,1}};
+	int c=0;vector<pair<int,int>>ret;
+	while(1){
+		ret.pb(x,c);
+		if(x==1)break;
+		if(x&1) x++;else x>>=1;
+		c++;
+	}
+	return ret;
+}
 void procedure(){
-	ll n=rng(1,10);
-	cout<<n<<endl;
-	for(ll i=1;i<=n;i++)cout<<rng(1,10)<<" ";cout<<endl;	
+	n=read();
+	mp.clear();
+	for(int i=1;i<=n;i++){
+		int x=read();
+		vector<pair<int,int>>vec = develop(x);
+		if(i==1){
+			for(auto [x,y]:vec){
+				// cout<<x<<","<<y<<" ";
+				mp[x].fi+=y;
+				mp[x].se++;
+			}
+		}else{
+			for(auto [x,y]:vec){
+				// cout<<x<<","<<y<<" ";
+				if(mp.count(x)){
+					mp[x].fi+=y;
+					mp[x].se++;
+				}
+			}
+		}
+		// cout<<endl;
+	}
+	int ans=1e9;
+	for(auto [x,p]: mp){
+		if(p.se==n)chkmin(ans,p.fi);
+	}
+	printf("%d\n",ans);
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;cout<<T<<endl;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
