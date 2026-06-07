@@ -1,4 +1,4 @@
-// created time: 2026-06-07 14:22:15
+// created time: 2026-06-07 09:48:43
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,18 +29,44 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-int N = 500000;
+int n,m,k,a[405][405];
+
 void procedure(){
-	cout<<N<<endl;
-	for(int i=1;i<=N;i++) cout<<rng(1,10)<<" ";
-	cout<<endl;	
+	n=read(),m=read(),k=read();
+	for(int i=1;i<=k;i++)
+		for(int j=1;j<=n;j++)a[j][i]=read();
+
+	int L=-k,R=k; ll ans=0;
+	ll sum=0;
+	for(int i=1;i<=n;i++){
+		sort(a[i]+1,a[i]+k+1);
+		for(int j=1;j<=k;j++)sum+=a[i][j];
+		a[i][k+1]=m;
+	}
+	
+	while(L<=R){
+		int mid=(L+R)>>1;
+		ll fk=0,w=0;
+		for(int i=1;i<=n;i++){
+			for(int j=1,d=-k;j<=k+1&&d<=mid;j++,d+=2){
+				fk+=(ll)(a[i][j]-a[i][j-1])*d;
+				w+=a[i][j]-a[i][j-1];
+			}
+		}
+		// cout<<"w="<<w<<endl;
+		if(w>=m){
+			// cout<<"mid="<<mid<<endl;
+			ans=fk-(ll)(w-m)*mid;
+			R=mid-1;
+		}else L=mid+1;
+	}
+	printf("%lld\n",(ans+sum)/2);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
