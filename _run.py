@@ -609,10 +609,32 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 }},
                 legend: {{
                     data: ['<2000', '2000-2599', '2600-2999', '≥3000', '未知难度'],
-                    bottom: 0,
+                    top: 0,
                     icon: 'circle'
                 }},
-                grid: {{ left: '2%', right: '2%', bottom: '10%', top: '5%', containLabel: true }},
+                grid: {{ left: '2%', right: '2%', bottom: '15%', top: '10%', containLabel: true }},
+                // 增加时间轴组件 (dataZoom)
+                dataZoom: [
+                    {{
+                        type: 'slider', // 底部拖动条
+                        show: true,
+                        xAxisIndex: [0],
+                        // 默认显示最近 30 天的数据（如果不满30天则显示全部）
+                        startValue: Math.max(0, chartData.dates.length - 30),
+                        endValue: chartData.dates.length - 1,
+                        bottom: 0,
+                        height: 24,
+                        borderColor: '#e2e8f0',
+                        backgroundColor: '#f8fafc',
+                        fillerColor: 'rgba(37, 99, 235, 0.15)', // 选中区域的颜色
+                        handleStyle: {{ color: '#2563eb' }},
+                        textStyle: {{ color: '#64748b' }}
+                    }},
+                    {{
+                        type: 'inside', // 允许使用鼠标滚轮直接在图表上缩放时间
+                        xAxisIndex: [0]
+                    }}
+                ],
                 xAxis: {{
                     type: 'category',
                     data: chartData.dates,
@@ -1384,17 +1406,34 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
     at_p = sum(len(g.versions) for gs in categories.get('AtCoder', {}).values() for g in gs)
     at_c = len(categories.get('AtCoder', {}))
 
-    # --- 图表数据聚合核心逻辑 ---
+    # --- 全局时间跨度与图表数据聚合 ---
     today = datetime.now()
-    # 建立近30天日期序列 (YYYY-MM-DD 格式作为主键)
-    date_list = [(today - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(29, -1, -1)]
-    # 初始化统计字典
+    valid_dates = [v.date for v in summary_versions if v.date and v.date != "未知"]
+    
+    # 获取最早的做题日期，如果没有则默认为30天前
+    if valid_dates:
+        min_date_str = min(valid_dates)
+        try:
+            min_date = datetime.strptime(min_date_str, "%Y-%m-%d")
+        except ValueError:
+            min_date = today - timedelta(days=30)
+    else:
+        min_date = today - timedelta(days=30)
+        
+    # 确保图表至少有 30 天的跨度，即使是从今天才开始做的
+    if (today - min_date).days < 30:
+        min_date = today - timedelta(days=30)
+
+    delta_days = (today - min_date).days
+    date_list = [(min_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(delta_days + 1)]
+    
+    # 初始化全局统计字典
     daily_stats = {d: {'l1': 0, 'l2': 0, 'l3': 0, 'l4': 0, 'u': 0} for d in date_list}
     
     for v in summary_versions:
         d = v.date
         if d in daily_stats:
-            # 难度切分，颜色划分与 Codeforces 经典分布段挂钩
+            # ✅ 已同步你的新难度分级：2000, 2600, 3000
             if v.difficulty is None: daily_stats[d]['u'] += 1
             elif v.difficulty < 2000: daily_stats[d]['l1'] += 1
             elif v.difficulty < 2600: daily_stats[d]['l2'] += 1
@@ -1402,8 +1441,7 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
             else: daily_stats[d]['l4'] += 1
 
     chart_data = {
-        # X轴取 MM-DD 更为清爽
-        'dates': [d[5:] for d in date_list], 
+        'dates': date_list,  # 跨度变长了，保留 YYYY-MM-DD 以防跨年看不懂
         'l1': [daily_stats[d]['l1'] for d in date_list],
         'l2': [daily_stats[d]['l2'] for d in date_list],
         'l3': [daily_stats[d]['l3'] for d in date_list],
@@ -1419,7 +1457,7 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
         at_p=at_p, at_c=at_c,
         plist_count=plist_count,
         blog_count=blog_count,
-        chart_data_json=json.dumps(chart_data), # 注入给 ECharts
+        chart_data_json=json.dumps(chart_data),
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
