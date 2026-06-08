@@ -1,9 +1,9 @@
 import os
 import sys
 import re
+import json  # <--- 新增
 from collections import defaultdict
-from datetime import datetime
-
+from datetime import datetime, timedelta  # <--- 增加了 timedelta
 def get_diff_style(diff):
     if diff >= 3300: return 'background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;'
     if diff < 400: color = '#808080'
@@ -474,6 +474,8 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>算法主页 | Algorithm Dashboard</title>
+    <!-- 引入 ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
     <style>
         :root {{ --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 40px 20px; line-height: 1.6; }}
@@ -522,6 +524,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             <h1>Algorithm Dashboard</h1>
             <div class="subtitle">个人算法竞赛题目归档与整理工作台</div>
         </header>
+        
         <div class="dashboard-grid">
             <a href="Summary.html" class="card card-summary">
                 <div class="card-header"><h2 class="card-title"><span>📚</span> Summary</h2><span class="card-badge" style="color: #8b5cf6; background: #ede9fe;">All</span></div>
@@ -557,6 +560,14 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             </a>
         </div>
 
+        <!-- === 做题活动热力图表 === -->
+        <div class="chart-container" style="background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 1.4em; display: flex; align-items: center; gap: 8px; color: #0f172a;">📈 近30天做题趋势</h2>
+            </div>
+            <div id="activity-chart" style="width: 100%; height: 350px;"></div>
+        </div>
+
         <div class="info-grid">
             <div class="info-box">
                 <h3><span>⚙️</span> 新架构说明</h3>
@@ -583,6 +594,50 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         </div>
         <div class="footer">最后构建: {gen_time} | Algorithm Platform Generator</div>
     </div>
+
+    <!-- ECharts 渲染脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {{
+            const chartData = {chart_data_json};
+            const chartDom = document.getElementById('activity-chart');
+            const myChart = echarts.init(chartDom);
+            
+            const option = {{
+                tooltip: {{
+                    trigger: 'axis',
+                    axisPointer: {{ type: 'shadow' }}
+                }},
+                legend: {{
+                    data: ['<1200 (基础)', '1200-1599 (进阶)', '1600-2199 (专家)', '≥2200 (大师)', '未知难度'],
+                    bottom: 0,
+                    icon: 'circle'
+                }},
+                grid: {{ left: '2%', right: '2%', bottom: '10%', top: '5%', containLabel: true }},
+                xAxis: {{
+                    type: 'category',
+                    data: chartData.dates,
+                    axisTick: {{ alignWithLabel: true }},
+                    axisLabel: {{ color: '#64748b' }},
+                    axisLine: {{ lineStyle: {{ color: '#cbd5e1' }} }}
+                }},
+                yAxis: {{
+                    type: 'value',
+                    minInterval: 1,
+                    axisLabel: {{ color: '#64748b' }},
+                    splitLine: {{ lineStyle: {{ color: '#f1f5f9', type: 'dashed' }} }}
+                }},
+                series: [
+                    {{ name: '<1200 (基础)', type: 'bar', stack: 'total', itemStyle: {{ color: '#94a3b8' }}, data: chartData.l1 }},
+                    {{ name: '1200-1599 (进阶)', type: 'bar', stack: 'total', itemStyle: {{ color: '#2dd4bf' }}, data: chartData.l2 }},
+                    {{ name: '1600-2199 (专家)', type: 'bar', stack: 'total', itemStyle: {{ color: '#3b82f6' }}, data: chartData.l3 }},
+                    {{ name: '≥2200 (大师)', type: 'bar', stack: 'total', itemStyle: {{ color: '#f43f5e' }}, data: chartData.l4 }},
+                    {{ name: '未知难度', type: 'bar', stack: 'total', itemStyle: {{ color: '#e2e8f0' }}, data: chartData.u }}
+                ]
+            }};
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        }});
+    </script>
 </body>
 </html>
 """
@@ -1329,6 +1384,33 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
     at_p = sum(len(g.versions) for gs in categories.get('AtCoder', {}).values() for g in gs)
     at_c = len(categories.get('AtCoder', {}))
 
+    # --- 图表数据聚合核心逻辑 ---
+    today = datetime.now()
+    # 建立近30天日期序列 (YYYY-MM-DD 格式作为主键)
+    date_list = [(today - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(29, -1, -1)]
+    # 初始化统计字典
+    daily_stats = {d: {'l1': 0, 'l2': 0, 'l3': 0, 'l4': 0, 'u': 0} for d in date_list}
+    
+    for v in summary_versions:
+        d = v.date
+        if d in daily_stats:
+            # 难度切分，颜色划分与 Codeforces 经典分布段挂钩
+            if v.difficulty is None: daily_stats[d]['u'] += 1
+            elif v.difficulty < 1200: daily_stats[d]['l1'] += 1
+            elif v.difficulty < 1600: daily_stats[d]['l2'] += 1
+            elif v.difficulty < 2200: daily_stats[d]['l3'] += 1
+            else: daily_stats[d]['l4'] += 1
+
+    chart_data = {
+        # X轴取 MM-DD 更为清爽
+        'dates': [d[5:] for d in date_list], 
+        'l1': [daily_stats[d]['l1'] for d in date_list],
+        'l2': [daily_stats[d]['l2'] for d in date_list],
+        'l3': [daily_stats[d]['l3'] for d in date_list],
+        'l4': [daily_stats[d]['l4'] for d in date_list],
+        'u': [daily_stats[d]['u'] for d in date_list],
+    }
+
     html = INDEX_HTML_TEMPLATE.format(
         s_count=s_count, t_count=t_count,
         oi_p=oi_p, oi_c=oi_c,
@@ -1337,6 +1419,7 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
         at_p=at_p, at_c=at_c,
         plist_count=plist_count,
         blog_count=blog_count,
+        chart_data_json=json.dumps(chart_data), # 注入给 ECharts
         gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
