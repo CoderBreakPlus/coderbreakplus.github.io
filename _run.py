@@ -608,7 +608,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     axisPointer: {{ type: 'shadow' }}
                 }},
                 legend: {{
-                    data: ['<2000 (基础)', '2000-2599 (进阶)', '2600-2999 (专家)', '≥3000 (大师)', '未知难度'],
+                    data: ['<2000', '2000-2599', '2600-2999', '≥3000', '未知难度'],
                     bottom: 0,
                     icon: 'circle'
                 }},
@@ -627,10 +627,10 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     splitLine: {{ lineStyle: {{ color: '#f1f5f9', type: 'dashed' }} }}
                 }},
                 series: [
-                    {{ name: '<2000 (基础)', type: 'bar', stack: 'total', itemStyle: {{ color: '#94a3b8' }}, data: chartData.l1 }},
-                    {{ name: '2000-2599 (进阶)', type: 'bar', stack: 'total', itemStyle: {{ color: '#2dd4bf' }}, data: chartData.l2 }},
-                    {{ name: '2600-2999 (专家)', type: 'bar', stack: 'total', itemStyle: {{ color: '#3b82f6' }}, data: chartData.l3 }},
-                    {{ name: '≥3000 (大师)', type: 'bar', stack: 'total', itemStyle: {{ color: '#f43f5e' }}, data: chartData.l4 }},
+                    {{ name: '<2000', type: 'bar', stack: 'total', itemStyle: {{ color: '#94a3b8' }}, data: chartData.l1 }},
+                    {{ name: '2000-2599', type: 'bar', stack: 'total', itemStyle: {{ color: '#2dd4bf' }}, data: chartData.l2 }},
+                    {{ name: '2600-2999', type: 'bar', stack: 'total', itemStyle: {{ color: '#3b82f6' }}, data: chartData.l3 }},
+                    {{ name: '≥3000', type: 'bar', stack: 'total', itemStyle: {{ color: '#f43f5e' }}, data: chartData.l4 }},
                     {{ name: '未知难度', type: 'bar', stack: 'total', itemStyle: {{ color: '#e2e8f0' }}, data: chartData.u }}
                 ]
             }};
