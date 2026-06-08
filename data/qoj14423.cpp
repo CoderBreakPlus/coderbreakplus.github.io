@@ -1,4 +1,4 @@
-// created time: 2026-05-14 07:19:06
+// created time: 2026-06-08 13:06:16
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,26 +30,46 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,a[100005];
-
+int n,a[2005],b[2005],ia[2005],ib[2005];
+vector<pair<int,int>>vec;
+void swapping(int x,int y){
+	vec.pb(x,y);
+	swap(a[x],a[y]);
+	swap(ia[a[x]],ia[a[y]]);
+}
 void procedure(){
+	vec.clear();
 	n=read();
-	int d=0;
-	for(int i=1;i<=n;i++)a[i]=read();
-	sort(a+1,a+n+1);
-	
-	for(int i=1;i<=n;i++)d=__gcd(d,a[i]);
-	
-	int cnt=a[n]/d-n;
-	if(cnt%3==0)puts("YES");
-	else puts("NO");
+	for(int i=1;i<=n;i++)a[i]=read(),ia[a[i]]=i;
+	for(int i=1;i<=n;i++)b[i]=read(),ib[b[i]]=i;
+
+	for(int i=1;i<=n;i++){
+		if(ia[i]==ib[i]) continue;
+		if(ia[i]>ib[i]){
+			puts("NO");
+			return;
+		}
+		for(int v=i+1;v<=a[ib[i]];v++)
+			if(ia[i]<ia[v] && ia[v]<=ib[i])
+				swapping(ia[i], ia[v]);
+
+		if(ia[i]!=ib[i]){
+			puts("NO2");
+			return;
+		}
+	}
+	puts("YES");
+	printf("%d\n",(int)vec.size());
+	for(auto [x,y]: vec){
+		printf("%d %d\n",x,y);
+	}
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;

@@ -1,4 +1,4 @@
-// created time: 2026-05-14 07:19:06
+// created time: 2026-05-14 08:07:14
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,26 +30,60 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,a[100005];
+int n,m,q,s[1000005],t[1000005],u[1000005],v[1000005],tim[1000005];
+int fa[1000005];
+unordered_map<int,int>mp[1000005];
 
+inline int find(int x){ if(x!=fa[x])fa[x]=find(fa[x]);return fa[x]; }
+inline void merge(int x,int y){ fa[find(x)]=find(y); }
 void procedure(){
-	n=read();
-	int d=0;
-	for(int i=1;i<=n;i++)a[i]=read();
-	sort(a+1,a+n+1);
-	
-	for(int i=1;i<=n;i++)d=__gcd(d,a[i]);
-	
-	int cnt=a[n]/d-n;
-	if(cnt%3==0)puts("YES");
-	else puts("NO");
+	n=read(),m=read(),q=read();
+	for(int i=0;i<n;i++)mp[i].clear();
+	for(int i=1;i<=m;i++){
+		s[i]=read(),t[i]=read();
+		mp[s[i]][t[i]]=mp[t[i]][s[i]]=i;
+		tim[i]=q+1;
+	}
+
+	int v2=0,v3=0;
+	for(int i=1;i<=q;i++){
+		u[i]=(read()+v2)%n,v[i]=(read()+v3)%n;
+		if(mp[u[i]].count(v[i])){
+			chkmin(tim[mp[u[i]][v[i]]],i);
+		}
+		v2=(v2*2+1)%n, v3=(v3*3+1)%n;
+	}
+
+	int L=1,R=q,ans=0;
+	while(L<=R){
+		int mid=(L+R)>>1;
+		for(int i=0;i<n;i++)fa[i]=i;
+		for(int i=1;i<=m;i++)
+			if(tim[i]>mid){
+				merge(s[i],t[i]);
+			}
+
+		bool ok=1;
+		for(int i=1;i<n;i++)
+			ok&=(find(i)==find(0));
+
+		if(ok){
+			ans=mid;
+			L=mid+1;
+		}else R=mid-1;
+	}
+
+	for(int i=1;i<=q;i++){
+		putchar((i<=ans)+'0');
+		putchar('\n');
+	}
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
