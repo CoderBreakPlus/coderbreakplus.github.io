@@ -1396,9 +1396,9 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
         if d in daily_stats:
             # 难度切分，颜色划分与 Codeforces 经典分布段挂钩
             if v.difficulty is None: daily_stats[d]['u'] += 1
-            elif v.difficulty < 1200: daily_stats[d]['l1'] += 1
-            elif v.difficulty < 1600: daily_stats[d]['l2'] += 1
-            elif v.difficulty < 2200: daily_stats[d]['l3'] += 1
+            elif v.difficulty < 2000: daily_stats[d]['l1'] += 1
+            elif v.difficulty < 2600: daily_stats[d]['l2'] += 1
+            elif v.difficulty < 3000: daily_stats[d]['l3'] += 1
             else: daily_stats[d]['l4'] += 1
 
     chart_data = {
