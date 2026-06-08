@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>算法主页 | Algorithm Dashboard</title>
+    <!-- 引入 ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
     <style>
         :root { --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 40px 20px; line-height: 1.6; }
@@ -52,6 +54,7 @@
             <h1>Algorithm Dashboard</h1>
             <div class="subtitle">个人算法竞赛题目归档与整理工作台</div>
         </header>
+        
         <div class="dashboard-grid">
             <a href="Summary.html" class="card card-summary">
                 <div class="card-header"><h2 class="card-title"><span>📚</span> Summary</h2><span class="card-badge" style="color: #8b5cf6; background: #ede9fe;">All</span></div>
@@ -87,6 +90,14 @@
             </a>
         </div>
 
+        <!-- === 做题活动热力图表 === -->
+        <div class="chart-container" style="background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 1.4em; display: flex; align-items: center; gap: 8px; color: #0f172a;">📈 近30天做题趋势</h2>
+            </div>
+            <div id="activity-chart" style="width: 100%; height: 350px;"></div>
+        </div>
+
         <div class="info-grid">
             <div class="info-box">
                 <h3><span>⚙️</span> 新架构说明</h3>
@@ -111,7 +122,51 @@
 <span class="cpp-keyword">#pragma</span> GCC target(<span class="cpp-include">"sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2"</span>)</code></pre>
             </div>
         </div>
-        <div class="footer">最后构建: 2026-06-08 09:03:21 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-06-08 09:05:37 | Algorithm Platform Generator</div>
     </div>
+
+    <!-- ECharts 渲染脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartData = {"dates": ["05-10", "05-11", "05-12", "05-13", "05-14", "05-15", "05-16", "05-17", "05-18", "05-19", "05-20", "05-21", "05-22", "05-23", "05-24", "05-25", "05-26", "05-27", "05-28", "05-29", "05-30", "05-31", "06-01", "06-02", "06-03", "06-04", "06-05", "06-06", "06-07", "06-08"], "l1": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "l2": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0], "l3": [0, 0, 3, 0, 1, 0, 1, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0], "l4": [0, 0, 6, 2, 7, 4, 5, 0, 4, 1, 6, 6, 4, 2, 2, 2, 1, 3, 5, 5, 4, 0, 3, 2, 4, 4, 0, 0, 3, 1], "u": [0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+            const chartDom = document.getElementById('activity-chart');
+            const myChart = echarts.init(chartDom);
+            
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' }
+                },
+                legend: {
+                    data: ['<1200 (基础)', '1200-1599 (进阶)', '1600-2199 (专家)', '≥2200 (大师)', '未知难度'],
+                    bottom: 0,
+                    icon: 'circle'
+                },
+                grid: { left: '2%', right: '2%', bottom: '10%', top: '5%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: chartData.dates,
+                    axisTick: { alignWithLabel: true },
+                    axisLabel: { color: '#64748b' },
+                    axisLine: { lineStyle: { color: '#cbd5e1' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    minInterval: 1,
+                    axisLabel: { color: '#64748b' },
+                    splitLine: { lineStyle: { color: '#f1f5f9', type: 'dashed' } }
+                },
+                series: [
+                    { name: '<1200 (基础)', type: 'bar', stack: 'total', itemStyle: { color: '#94a3b8' }, data: chartData.l1 },
+                    { name: '1200-1599 (进阶)', type: 'bar', stack: 'total', itemStyle: { color: '#2dd4bf' }, data: chartData.l2 },
+                    { name: '1600-2199 (专家)', type: 'bar', stack: 'total', itemStyle: { color: '#3b82f6' }, data: chartData.l3 },
+                    { name: '≥2200 (大师)', type: 'bar', stack: 'total', itemStyle: { color: '#f43f5e' }, data: chartData.l4 },
+                    { name: '未知难度', type: 'bar', stack: 'total', itemStyle: { color: '#e2e8f0' }, data: chartData.u }
+                ]
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        });
+    </script>
 </body>
 </html>
