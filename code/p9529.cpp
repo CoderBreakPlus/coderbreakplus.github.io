@@ -1,4 +1,14 @@
-// created time: 2026-06-09 16:45:52
+#ifdef LOCAL
+#include"dango.h"
+#endif
+#ifndef LOCAL
+#include<vector>
+void Solve(int N, int M);
+int Query(const std::vector<int> &x);
+void Answer(const std::vector<int> &a);
+#endif
+
+// created time: 2026-06-09 16:26:54
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,22 +40,42 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-const int N = 100, M = 3;
-int a[N*M+5];
-void procedure(){
-	cout<<N<<" "<<M<<endl;
-	for(int i=1;i<=N*M;i++)a[i]=(i-1)/M+1;
-	shuffle(a+1,a+N*M+1,rnd);
-	for(int i=1;i<=N*M;i++)
-		cout<<a[i]<<" ";
-	cout<<endl;
+vector<int>vec;
+
+bool vis[50005];
+
+void solve(vector<int> a,int m){
+#ifdef LOCAL
+	cout<<"[";
+	for(int x:a) cout<<x<<","; cout<<"] m = "<<m<<endl;
+#endif
+	if(!m)return;
+	if(m==1){
+		Answer(a);
+		return;
+	}
+	// int sz=a.size();
+	shuffle(a.begin(),a.end(),rnd);
+	auto query = [&](){
+		vector<int>tmp;
+		for(int i=0;i<a.size();i++)
+			if(!vis[i])tmp.emplace_back(a[i]);
+		return Query(tmp);
+	};
+	int sb=m/2;
+	for(int i=0;i<a.size();i++)vis[i]=0;
+	for(int i=0;i<a.size();i++){
+		vis[i]=1;
+		if(query()<sb)
+			vis[i]=0;
+	}
+	vector<int>v0,v1; 
+	for(int i=0;i<a.size();i++)
+		if(vis[i]) v1.pb(a[i]); else v0.pb(a[i]);
+	solve(v0,sb),solve(v1,m-sb);
 }
-int main(){
-	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
-	#endif
-	ll T=1;
-	// math_init();
-	while(T--) procedure();
-	return 0;
+void Solve(int N,int M){
+	vector<int>vec;
+	for(int i=1;i<=N*M;i++)vec.pb(i);
+	solve(vec,M);
 }

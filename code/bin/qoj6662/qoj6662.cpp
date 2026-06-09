@@ -1,4 +1,4 @@
-// created time: 2026-05-05 12:00:27
+// created time: 2026-06-09 13:54:23
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -8,7 +8,7 @@ typedef unsigned long long ull;
 #define mkp make_pair
 #define pb emplace_back
 #define popcnt __builtin_popcountll
-const int mod = 998244353;
+const int mod = 1e9+7;
 inline ll read(){
 	ll x=0, f=1; int ch=getchar();
 	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
@@ -17,8 +17,9 @@ inline ll read(){
 }
 inline int lg2(int x){ return 31^__builtin_clz(x); }
 inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
-inline void addmod(int &x){ if(x >= mod) x -= mod; }
-inline void addmod(ll &x){ if(x >= mod) x -= mod; }
+template<typename T>inline void addmod(T &x){ if(x >= mod) x -= mod; }
+template<typename T>inline void chkmax(T &a,T b){ a=max(a,b); }
+template<typename T>inline void chkmin(T &a,T b){ a=min(a,b); }
 inline ll qpow(ll a,ll b){
 	ll ans=1, base=a;
 	while(b){
@@ -28,25 +29,25 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-ll dp[45];
 
-void procedure(){
-	ll n=read();
-	dp[0]=dp[1]=1;
-	for(ll i=2;i<=n;i++){
-		dp[i]=dp[i-1]+dp[i-2];
-		for(ll j=3;j<=i;j++)
-			dp[i]+=dp[i-j]*2;
+int n;
+
+struct Node{
+	int cl,vl,cr,vr,len;
+	ll val;
+	Node(int len,int c){
+		if(len==vl) 
 	}
-	printf("%lld\n",dp[n]);	
+}t[10000005];
+int lc[10000005],rc[10000005];
+
+inline void merge(const &Node A,const &Node B,Node &C){
+	
 }
-int main(){
-	#ifdef LOCAL
-		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.out","w",stdout));
-	#endif
-	ll T=1;
-	// math_init();
-	while(T--) procedure();
-	return 0;
+void pushup(int x,int l,int r){
+	int mid=(l+r)>>1;
+	t[]
+}
+int maintenance_costs_sum(vector<int>u,vector<int>v,vector<int>w){
+	
 }
