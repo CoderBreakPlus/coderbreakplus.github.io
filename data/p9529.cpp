@@ -1,3 +1,5 @@
+// created time: 2026-06-09 16:26:54
+
 #ifdef LOCAL
 #include"dango.h"
 #endif
@@ -8,7 +10,6 @@ int Query(const std::vector<int> &x);
 void Answer(const std::vector<int> &a);
 #endif
 
-// created time: 2026-06-09 16:26:54
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
