@@ -969,7 +969,7 @@ def apply_categories_and_links(groups, data_dir):
                     if oj_prefix == 'p': primary_link = f"https://www.luogu.com.cn/problem/P{oj_num}"
                     elif oj_prefix == 'qoj': primary_link = f"https://qoj.ac/problem/{oj_num}"
                     elif oj_prefix == 'uoj': primary_link = f"https://uoj.ac/problem/{oj_num}"
-                    elif oj_prefix == 'soj': primary_link = f"http://121.196.149.251:8080/problem/{oj_num}"
+                    elif oj_prefix == 'soj': primary_link = f"http://114.215.202.174:8080/problem/{oj_num}"
                     
             v.link = primary_link
 
