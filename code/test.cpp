@@ -29,7 +29,7 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-
+// low
 void procedure(){
 	cout<<9ull*INV(4)%mod<<endl;
 }
