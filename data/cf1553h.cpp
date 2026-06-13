@@ -37,7 +37,7 @@ struct Node{
 	Node(){ l=r=-1, ans=1e9, len=1; }
 	Node(int L,int R,int Ans,int Len){ l=L,r=R,ans=Ans,len=Len; }
 }t[(1<<20)+5];
-int lc[(1<<20)+5],rc[(1<<20)+5],tag[(1<<20)+5],cnt;
+int lc[(1<<20)+5],rc[(1<<20)+5],cnt;
 
 void pushup(int p){
 	if(~t[lc[p]].l) t[p].l=t[lc[p]].l;
@@ -52,16 +52,10 @@ void pushup(int p){
 	if((~t[lc[p]].r)&&(~t[rc[p]].l)) chkmin(t[p].ans,t[lc[p]].r+t[rc[p]].l);
 }
 void upd(int p){
-	tag[p]^=1;
 	swap(lc[p],rc[p]);
-	swap(t[p].l,t[p].r);
-}
-void pushdown(int p){
-	if(tag[p])
-		upd(lc[p]),upd(rc[p]),tag[p]=0;
+	pushup(p);
 }
 void build(int l,int r,int p){
-	// cout<<l<<" "<<r<<" "<<p<<endl;
 	t[p].len=r-l+1;
 	if(l==r){
 		if(a[l])t[p]=Node(0,0,1e9,1);
@@ -70,15 +64,14 @@ void build(int l,int r,int p){
 	int mid=(l+r)>>1;
 	build(l,mid,lc[p]=(p<<1)),build(mid+1,r,rc[p]=(p<<1|1));
 	pushup(p);
-	cout<<l<<"->"<<r<<" here "<<t[p].l<<" "<<t[p].r<<" "<<t[p].len<<" "<<t[p].ans<<endl;
 }
-void upd(int p,int d,int gl){
+void upd(int l,int r,int p,int d,int gl){
 	if(d==gl){
 		upd(p);
 		return;
 	}
-	pushdown(p);
-	upd(lc[p],d-1,gl),upd(rc[p],d-1,gl);
+	int mid=(l+r)>>1;
+	upd(l,mid,lc[p],d-1,gl),upd(mid+1,r,rc[p],d-1,gl);
 	pushup(p);
 }
 int ans[1<<19];
@@ -91,7 +84,7 @@ void procedure(){
 		ans[cur]=t[1].ans+1;
 		// cout<<"cur="<<cur<<" ans="<<t[1].ans<<endl;
 		int x=k-1-__builtin_ctz(i);
-		upd(1,k-1,x);
+		upd(0,(1<<k)-1,1,k-1,x);
 		cur^=(1<<x);
 	}
 	for(int i=0;i<(1<<k);i++)
