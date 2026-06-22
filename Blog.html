@@ -45,13 +45,13 @@
         .normal-table tbody tr .row-index::before { counter-increment: row-num; content: counter(row-num); }
         
         /* 更新列宽以适应左侧序号 */
-        .normal-table th:nth-child(1) { width: 6%; text-align: center; } /* 序号 */
-        .normal-table th:nth-child(2) { width: 29%; } /* 题目 */
-        .normal-table th:nth-child(3) { width: 15%; } /* 标签 */
+        .normal-table th:nth-child(1) { width: 5%; text-align: center; } /* 序号 (稍微收紧一点) */
+        .normal-table th:nth-child(2) { width: 35%; } /* 题目与来源 (增加宽度) */
+        .normal-table th:nth-child(3) { width: 16%; } /* 标签 */
         .normal-table th:nth-child(4) { width: 9%; }  /* 难度 */
-        .normal-table th:nth-child(5) { width: 10%; } /* 日期 */
+        .normal-table th:nth-child(5) { width: 9%; }  /* 日期 */
         .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } /* 备注 */
-        .normal-table th:last-child { width: 12%; }   /* 文件 */
+        .normal-table th:last-child { width: 7%; }    /* 文件 (大幅压缩，由于图标紧凑，8%足够) */
         
         .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
         .matrix-table th.remark-col { width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
@@ -121,7 +121,7 @@
             
         </div>
         
-        <div class="footer">最后构建: 2026-06-23 07:28:54 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-06-23 07:32:21 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
