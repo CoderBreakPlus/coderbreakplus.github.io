@@ -564,14 +564,15 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             </a>
         </div>
 
-        <!-- === 做题活动可视化双模图表 === -->
+        <!-- === 做题活动可视化三模图表 === -->
         <div class="chart-container" style="background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 40px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                 <h2 style="margin: 0; font-size: 1.4em; display: flex; align-items: center; gap: 8px; color: #0f172a;">📈 趋势分析</h2>
                 
                 <div class="chart-controls">
-                    <button id="btn-bar" class="btn-toggle active">📊 每日柱状图</button>
-                    <button id="btn-line" class="btn-toggle">🌊 滑动平均曲线图</button>
+                    <button id="btn-bar" class="btn-toggle active" onclick="switchMode('bar')">📊 每日做题</button>
+                    <button id="btn-line" class="btn-toggle" onclick="switchMode('line')">🌊 平均趋势</button>
+                    <button id="btn-cum" class="btn-toggle" onclick="switchMode('cum')">📈 累计题量</button>
                     <div id="ma-settings" style="display: none; align-items: center; gap: 6px; font-size: 0.9em; color: #64748b; background: #f8fafc; padding: 4px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
                         平滑天数: 
                         <input type="number" id="ma-window" class="ma-input" value="7" min="3" max="30" step="2">
@@ -607,55 +608,62 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="footer">最后构建: {gen_time} | Algorithm Platform Generator</div>
     </div>
 
-    <!-- ECharts 双模渲染脚本 -->
+    <!-- ECharts 三模渲染脚本 -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {{
-            const chartData = {chart_data_json};
-            const chartDom = document.getElementById('activity-chart');
-            const myChart = echarts.init(chartDom);
-            
-            let currentMode = 'bar'; // 'bar' 或 'line'
-            
-            // 基础颜色映射
-            const colors = {{
-                l1: '#94a3b8', // <2000
-                l2: '#2dd4bf', // 2000-2599
-                l3: '#3b82f6', // 2600-2999
-                l4: '#f43f5e', // >=3000
-                u:  '#1e293b'  // 未知
-            }};
+        let myChart;
+        let currentMode = 'bar'; // 'bar', 'line', 'cum'
+        const chartData = {chart_data_json};
 
-            // 滑动平均计算逻辑（仅除以窗口内真实的有效天数，防止头尾数据断崖下跌）
-            function calculateMA(data, windowSize) {{
-                let result = [];
-                let half = Math.floor(windowSize / 2);
-                for (let i = 0; i < data.length; i++) {{
-                    let sum = 0;
-                    let count = 0;
-                    for (let j = i - half; j <= i + half; j++) {{
-                        if (j >= 0 && j < data.length) {{
-                            sum += data[j];
-                            count++;
-                        }}
-                    }}
-                    result.push((sum / count).toFixed(2));
+        // 基础颜色映射 (包含黑色的未知难度)
+        const colors = {{
+            l1: '#94a3b8', // <2000
+            l2: '#2dd4bf', // 2000-2599
+            l3: '#3b82f6', // 2600-2999
+            l4: '#f43f5e', // >=3000
+            u:  '#1e293b'  // 未知 (黑色)
+        }};
+
+        // 滑动平均计算逻辑
+        function calculateMA(data, windowSize) {{
+            let result = [];
+            let half = Math.floor(windowSize / 2);
+            for (let i = 0; i < data.length; i++) {{
+                let sum = 0, count = 0;
+                for (let j = i - half; j <= i + half; j++) {{
+                    if (j >= 0 && j < data.length) {{ sum += data[j]; count++; }}
                 }}
-                return result;
+                result.push((sum / count).toFixed(2));
             }}
+            return result;
+        }}
 
-            // 生成渐变色对象
-            function getGradient(colorBase) {{
-                // 简单的 Hex 转 RGB (不带透明度的hex)
-                let r = parseInt(colorBase.slice(1, 3), 16);
-                let g = parseInt(colorBase.slice(3, 5), 16);
-                let b = parseInt(colorBase.slice(5, 7), 16);
-                return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    {{ offset: 0, color: `rgba(${{r}}, ${{g}}, ${{b}}, 0.8)` }},
-                    {{ offset: 1, color: `rgba(${{r}}, ${{g}}, ${{b}}, 0.1)` }}
-                ]);
+        // 前缀和计算逻辑 (累计做题)
+        function calculateCum(data) {{
+            let result = [];
+            let currentSum = 0;
+            for (let i = 0; i < data.length; i++) {{
+                currentSum += data[i];
+                result.push(currentSum);
             }}
+            return result;
+        }}
 
-            // 保存当前时间轴的缩放比例，以便在切换视图时保持位置不变
+        // 渐变色生成器
+        function getGradient(colorBase) {{
+            let r = parseInt(colorBase.slice(1, 3), 16);
+            let g = parseInt(colorBase.slice(3, 5), 16);
+            let b = parseInt(colorBase.slice(5, 7), 16);
+            return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {{ offset: 0, color: `rgba(${{r}}, ${{g}}, ${{b}}, 0.8)` }},
+                {{ offset: 1, color: `rgba(${{r}}, ${{g}}, ${{b}}, 0.1)` }}
+            ]);
+        }}
+
+        document.addEventListener('DOMContentLoaded', function() {{
+            const chartDom = document.getElementById('activity-chart');
+            myChart = echarts.init(chartDom);
+            
+            // 保存当前时间轴的缩放比例
             let currentZoomStart = Math.max(0, chartData.dates.length - 30);
             let currentZoomEnd = chartData.dates.length - 1;
             
@@ -665,104 +673,106 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 currentZoomEnd = option.dataZoom[0].endValue;
             }});
 
-            // 获取公共配置 (坐标轴、时间轴等)
-            function getBaseOption() {{
-                return {{
-                    tooltip: {{
-                        trigger: 'axis',
-                        axisPointer: {{ type: currentMode === 'bar' ? 'shadow' : 'cross' }}
-                    }},
-                    legend: {{
-                        data: ['<2000', '2000-2599', '2600-2999', '≥3000', '未知难度'],
-                        top: 0, icon: 'circle'
-                    }},
-                    grid: {{ left: '2%', right: '2%', bottom: '15%', top: '12%', containLabel: true }},
-                    dataZoom: [
-                        {{
-                            type: 'slider', show: true, xAxisIndex: [0],
-                            startValue: currentZoomStart, endValue: currentZoomEnd,
-                            bottom: 0, height: 24,
-                            borderColor: '#e2e8f0', backgroundColor: '#f8fafc',
-                            fillerColor: 'rgba(37, 99, 235, 0.15)',
-                            handleStyle: {{ color: '#2563eb' }},
-                            textStyle: {{ color: '#64748b' }}
-                        }},
-                        {{ type: 'inside', xAxisIndex: [0] }}
-                    ],
-                    xAxis: {{
-                        type: 'category', data: chartData.dates,
-                        axisTick: {{ alignWithLabel: true }},
-                        axisLabel: {{ color: '#64748b' }},
-                        axisLine: {{ lineStyle: {{ color: '#cbd5e1' }} }}
-                    }},
-                    yAxis: {{
-                        type: 'value',
-                        name: currentMode === 'bar' ? '做题数' : '平均做题数',
-                        nameTextStyle: {{ color: '#64748b', padding: [0, 0, 0, 20] }},
-                        minInterval: currentMode === 'bar' ? 1 : 0,
-                        axisLabel: {{ color: '#64748b' }},
-                        splitLine: {{ lineStyle: {{ color: '#f1f5f9', type: 'dashed' }} }}
-                    }}
-                }};
-            }}
-
-            // 渲染视图的函数
-            function renderChart() {{
-                let option = getBaseOption();
-                
-                if (currentMode === 'bar') {{
-                    option.series = [
-                        {{ name: '<2000', type: 'bar', stack: 'total', itemStyle: {{ color: colors.l1 }}, data: chartData.l1 }},
-                        {{ name: '2000-2599', type: 'bar', stack: 'total', itemStyle: {{ color: colors.l2 }}, data: chartData.l2 }},
-                        {{ name: '2600-2999', type: 'bar', stack: 'total', itemStyle: {{ color: colors.l3 }}, data: chartData.l3 }},
-                        {{ name: '≥3000', type: 'bar', stack: 'total', itemStyle: {{ color: colors.l4 }}, data: chartData.l4 }},
-                        {{ name: '未知难度', type: 'bar', stack: 'total', itemStyle: {{ color: colors.u }}, data: chartData.u }}
-                    ];
-                }} else {{
-                    let w = parseInt(document.getElementById('ma-window').value) || 7;
-                    option.series = [
-                        {{ name: '<2000', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l1 }}, areaStyle: {{ color: getGradient(colors.l1) }}, itemStyle: {{ color: colors.l1 }}, data: calculateMA(chartData.l1, w) }},
-                        {{ name: '2000-2599', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l2 }}, areaStyle: {{ color: getGradient(colors.l2) }}, itemStyle: {{ color: colors.l2 }}, data: calculateMA(chartData.l2, w) }},
-                        {{ name: '2600-2999', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l3 }}, areaStyle: {{ color: getGradient(colors.l3) }}, itemStyle: {{ color: colors.l3 }}, data: calculateMA(chartData.l3, w) }},
-                        {{ name: '≥3000', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l4 }}, areaStyle: {{ color: getGradient(colors.l4) }}, itemStyle: {{ color: colors.l4 }}, data: calculateMA(chartData.l4, w) }},
-                        {{ name: '未知难度', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.u }}, areaStyle: {{ color: getGradient(colors.u) }}, itemStyle: {{ color: colors.u }}, data: calculateMA(chartData.u, w) }}
-                    ];
-                }}
-                
-                myChart.setOption(option, true); // true表示不合并前一个状态，完全重绘
-            }}
-
-            // 初始化渲染
-            renderChart();
-
-            // 监听按钮切换
-            document.getElementById('btn-bar').addEventListener('click', function() {{
-                currentMode = 'bar';
-                this.classList.add('active');
-                document.getElementById('btn-line').classList.remove('active');
-                document.getElementById('ma-settings').style.display = 'none';
-                renderChart();
-            }});
-
-            document.getElementById('btn-line').addEventListener('click', function() {{
-                currentMode = 'line';
-                this.classList.add('active');
-                document.getElementById('btn-bar').classList.remove('active');
-                document.getElementById('ma-settings').style.display = 'flex';
-                renderChart();
-            }});
-
-            // 监听天数输入框变动 (防抖，提升体验)
+            // 监听天数输入防抖
             let timeout = null;
             document.getElementById('ma-window').addEventListener('input', function() {{
                 clearTimeout(timeout);
-                timeout = setTimeout(() => {{
-                    if(currentMode === 'line') renderChart();
-                }}, 300);
+                timeout = setTimeout(() => {{ if(currentMode === 'line') renderChart(); }}, 300);
             }});
 
+            renderChart();
             window.addEventListener('resize', () => myChart.resize());
+            
+            // 暴露到全局以供按钮调用
+            window.renderChart = renderChart;
+            window.currentZoomStart = currentZoomStart;
+            window.currentZoomEnd = currentZoomEnd;
         }});
+
+        // 按钮切换逻辑
+        function switchMode(mode) {{
+            currentMode = mode;
+            ['btn-bar', 'btn-line', 'btn-cum'].forEach(id => document.getElementById(id).classList.remove('active'));
+            document.getElementById('btn-' + mode).classList.add('active');
+            document.getElementById('ma-settings').style.display = (mode === 'line') ? 'flex' : 'none';
+            window.renderChart();
+        }}
+
+        // 核心渲染逻辑
+        function renderChart() {{
+            let yName = '做题数';
+            if (currentMode === 'line') yName = '平均做题数';
+            else if (currentMode === 'cum') yName = '累计做题数';
+
+            let option = {{
+                tooltip: {{
+                    trigger: 'axis',
+                    axisPointer: {{ type: currentMode === 'bar' ? 'shadow' : 'cross' }}
+                }},
+                legend: {{
+                    data: ['<2000', '2000-2599', '2600-2999', '≥3000', '未知难度'],
+                    top: 0, icon: 'circle'
+                }},
+                grid: {{ left: '2%', right: '2%', bottom: '15%', top: '12%', containLabel: true }},
+                dataZoom: [
+                    {{
+                        type: 'slider', show: true, xAxisIndex: [0],
+                        startValue: window.currentZoomStart || Math.max(0, chartData.dates.length - 30), 
+                        endValue: window.currentZoomEnd || (chartData.dates.length - 1),
+                        bottom: 0, height: 24,
+                        borderColor: '#e2e8f0', backgroundColor: '#f8fafc',
+                        fillerColor: 'rgba(37, 99, 235, 0.15)',
+                        handleStyle: {{ color: '#2563eb' }},
+                        textStyle: {{ color: '#64748b' }}
+                    }},
+                    {{ type: 'inside', xAxisIndex: [0] }}
+                ],
+                xAxis: {{
+                    type: 'category', data: chartData.dates,
+                    axisTick: {{ alignWithLabel: true }},
+                    axisLabel: {{ color: '#64748b' }},
+                    axisLine: {{ lineStyle: {{ color: '#cbd5e1' }} }}
+                }},
+                yAxis: {{
+                    type: 'value',
+                    name: yName,
+                    nameTextStyle: {{ color: '#64748b', padding: [0, 0, 0, 20] }},
+                    minInterval: (currentMode === 'line') ? 0 : 1,
+                    axisLabel: {{ color: '#64748b' }},
+                    splitLine: {{ lineStyle: {{ color: '#f1f5f9', type: 'dashed' }} }}
+                }},
+                series: []
+            }};
+            
+            if (currentMode === 'bar') {{
+                option.series = [
+                    {{ name: '<2000', type: 'bar', stack: 'total', itemStyle: {{ color: colors.l1 }}, data: chartData.l1 }},
+                    {{ name: '2000-2599', type: 'bar', stack: 'total', itemStyle: {{ color: colors.l2 }}, data: chartData.l2 }},
+                    {{ name: '2600-2999', type: 'bar', stack: 'total', itemStyle: {{ color: colors.l3 }}, data: chartData.l3 }},
+                    {{ name: '≥3000', type: 'bar', stack: 'total', itemStyle: {{ color: colors.l4 }}, data: chartData.l4 }},
+                    {{ name: '未知难度', type: 'bar', stack: 'total', itemStyle: {{ color: colors.u }}, data: chartData.u }}
+                ];
+            }} else if (currentMode === 'line') {{
+                let w = parseInt(document.getElementById('ma-window').value) || 7;
+                option.series = [
+                    {{ name: '<2000', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l1 }}, areaStyle: {{ color: getGradient(colors.l1) }}, itemStyle: {{ color: colors.l1 }}, data: calculateMA(chartData.l1, w) }},
+                    {{ name: '2000-2599', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l2 }}, areaStyle: {{ color: getGradient(colors.l2) }}, itemStyle: {{ color: colors.l2 }}, data: calculateMA(chartData.l2, w) }},
+                    {{ name: '2600-2999', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l3 }}, areaStyle: {{ color: getGradient(colors.l3) }}, itemStyle: {{ color: colors.l3 }}, data: calculateMA(chartData.l3, w) }},
+                    {{ name: '≥3000', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l4 }}, areaStyle: {{ color: getGradient(colors.l4) }}, itemStyle: {{ color: colors.l4 }}, data: calculateMA(chartData.l4, w) }},
+                    {{ name: '未知难度', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.u }}, areaStyle: {{ color: getGradient(colors.u) }}, itemStyle: {{ color: colors.u }}, data: calculateMA(chartData.u, w) }}
+                ];
+            }} else if (currentMode === 'cum') {{
+                option.series = [
+                    {{ name: '<2000', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l1 }}, areaStyle: {{ color: getGradient(colors.l1) }}, itemStyle: {{ color: colors.l1 }}, data: calculateCum(chartData.l1) }},
+                    {{ name: '2000-2599', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l2 }}, areaStyle: {{ color: getGradient(colors.l2) }}, itemStyle: {{ color: colors.l2 }}, data: calculateCum(chartData.l2) }},
+                    {{ name: '2600-2999', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l3 }}, areaStyle: {{ color: getGradient(colors.l3) }}, itemStyle: {{ color: colors.l3 }}, data: calculateCum(chartData.l3) }},
+                    {{ name: '≥3000', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.l4 }}, areaStyle: {{ color: getGradient(colors.l4) }}, itemStyle: {{ color: colors.l4 }}, data: calculateCum(chartData.l4) }},
+                    {{ name: '未知难度', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.u }}, areaStyle: {{ color: getGradient(colors.u) }}, itemStyle: {{ color: colors.u }}, data: calculateCum(chartData.u) }}
+                ];
+            }}
+            
+            myChart.setOption(option, true);
+        }}
     </script>
 </body>
 </html>
