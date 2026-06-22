@@ -200,12 +200,20 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
         
         .remark-col {{ display: none; }}
-        .normal-table th:nth-child(1) {{ width: 35%; }}  
-        .normal-table th:nth-child(2) {{ width: 15%; }}  
-        .normal-table th:nth-child(3) {{ width: 9%; }}   
-        .normal-table th:nth-child(4) {{ width: 10%; }}  
-        .normal-table th.remark-col {{ width: 22%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} 
-        .normal-table th:last-child {{ width: 12%; }}     
+        
+        /* 💡 新增的 CSS 序号计数器 */
+        .normal-table tbody {{ counter-reset: row-num; }}
+        .normal-table tbody tr .row-index::before {{ counter-increment: row-num; content: counter(row-num); }}
+        
+        /* 更新列宽以适应左侧序号 */
+        .normal-table th:nth-child(1) {{ width: 6%; text-align: center; }} /* 序号 */
+        .normal-table th:nth-child(2) {{ width: 29%; }} /* 题目 */
+        .normal-table th:nth-child(3) {{ width: 15%; }} /* 标签 */
+        .normal-table th:nth-child(4) {{ width: 9%; }}  /* 难度 */
+        .normal-table th:nth-child(5) {{ width: 10%; }} /* 日期 */
+        .normal-table th.remark-col {{ width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} /* 备注 */
+        .normal-table th:last-child {{ width: 12%; }}   /* 文件 */
+        
         .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; }}
         .matrix-table th.remark-col {{ width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} 
         
@@ -254,6 +262,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <a href="{base_url}index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="{base_url}Summary.html">📚 Summary</a>
+            <a href="{base_url}todo.html">🎯 Todo</a>
             <a href="{base_url}plist/index.html">📋 题单</a>
             <a href="{base_url}Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
@@ -358,6 +367,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+            
+            // 💡 动态统计数据
+            let vCount = 0, cCount = 0, mCount = 0;
+
             rows.forEach(row => {{
                 const tags = (row.getAttribute('data-tags') || '').toLowerCase();
                 const baseName = (row.getAttribute('data-base') || '').toLowerCase();
@@ -376,8 +389,21 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
                 if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
 
-                row.style.display = (matchTag && matchDiff && matchDate) ? '' : 'none';
+                if (matchTag && matchDiff && matchDate) {{
+                    row.style.display = '';
+                    vCount++;
+                    if (row.getAttribute('data-has-code') === '1') cCount++;
+                    if (row.getAttribute('data-has-md') === '1') mCount++;
+                }} else {{
+                    row.style.display = 'none';
+                }}
             }});
+
+            // 💡 更新统计栏
+            const statsInfo = document.getElementById('stats-info-' + tableId);
+            if (statsInfo) {{
+                statsInfo.innerHTML = `<span>📁 独立题目: ${{vCount}}</span><span>📝 有代码: ${{cCount}}</span><span>💡 有题解: ${{mCount}}</span>`;
+            }}
         }}
 
         let sortDirection = {{}};
@@ -1190,7 +1216,8 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
     has_md = sum(1 for v in all_versions if v.files.get('md'))
 
     stats_html = f"<span>📁 独立题目: {len(all_versions)}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span>"
-    stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div></div>'
+    # 给外层添加 id="stats-info-..." 以便 JS 动态更新内容
+    stats_block = f'<div class="stats-bar"><div class="stats-info" id="stats-info-{table_id}">{stats_html}</div></div>'
     nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">📝 显示备注</button>'
     
     content_html = f"""
@@ -1216,7 +1243,8 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         <table class="normal-table" id="{table_id}">
             <thead>
                 <tr>
-                    <th style="padding-left: 20px;">题目与来源</th>
+                    <th style="text-align:center;">序号</th>
+                    <th>题目与来源</th>
                     <th>标签</th>
                     <th onclick="sortListTable('{table_id}', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
                     <th onclick="sortListTable('{table_id}', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
@@ -1287,8 +1315,12 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
             
         v_html = f'<div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>'
         
+        has_c_flag = '1' if v.files.get('cpp') else '0'
+        has_m_flag = '1' if v.files.get('md') else '0'
+
         content_html += f"""
-        <tr data-tags="{tags_str}" data-diff="{diff_val}" data-date="{v.date}" data-base="{v.base_filename}">
+        <tr data-tags="{tags_str}" data-diff="{diff_val}" data-date="{v.date}" data-base="{v.base_filename}" data-has-code="{has_c_flag}" data-has-md="{has_m_flag}">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
             <td style="padding-left: 20px;">{name_html}<br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">{origin}</span></td>
             <td>{tags_html}</td>
             <td>{diff_html}</td>
@@ -1305,7 +1337,6 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         base_url=base_url
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-
 def scan_problem_lists(plist_dir, groups):
     plists = {}
     if not os.path.exists(plist_dir):
