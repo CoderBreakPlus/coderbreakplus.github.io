@@ -1,0 +1,650 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <!--包含通用样式-->
+    
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<link rel="stylesheet" href="/v3/css/bootstrap.min.css" type="text/css" />
+<!-- <link rel="stylesheet" href="${prefix("v3/css/animate.css")}" type="text/css" /> -->
+<link rel="stylesheet" href="/v3/css/font-awesome.min.css" type="text/css" />
+<!-- <link rel="stylesheet" href="${prefix("v3/css/font-opensans.css")}" type="text/css" /> -->
+<link rel="stylesheet" href="/v3/css/v3-framework.css" type="text/css" />
+<link rel="stylesheet" href="/v3/css/v3-common.css?v=1.2" type="text/css" />
+<link rel="stylesheet" href="/v3/css/v3-site.css?v=1.31" type="text/css" />
+<script>
+	var frontAppContext = 'https://www.noi.cn/ccf/';
+	var siteID = "127";
+</script>
+<script src="/js/zcms_require.js" contextpath="https://www.noi.cn/ccf/"></script>
+<script src="https://www.noi.cn/ccf/framework/main.js"></script>
+<script>
+	if (isIE && ieVersion < 9 || isIE8) {
+		importJS('../v3/js/ie/html5shiv.js')
+		if (!isIE6 && !isIE7) {
+			importJS('../v3/js/ie/respond.min.js')
+		}
+		importJS('../v3/js/ie/excanvas.js')
+	}
+	if (/MSIE (6|7)\.0/.test(navigator.userAgent)) {
+		importCSS('../v3/css/bootstrap-ie6.css')
+		importJS('../v3/js/ie/bootstrap-ie6.js')
+	}
+	if (isIE && ieVersion < 9 || isIE8) {
+		importCSS('../v3/css/v3-site-ie.css')
+	}
+	if (inTouch) {
+		importJS('../v3/js/hammer.min.js')
+	}
+	importJS('../v3/js/responsiveslides.js')
+</script>
+    <title>名单公示</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <style>
+      .gscur{font-weight: bold;color: #b91317 !important;}
+      .more-upi{display:none;}
+      .show-more{display:none; border-top: 1px solid #dcdcdc;background: #fff;height: 40px;line-height: 40px;text-align: center;cursor:pointer;}
+      .show-more span{color:#b91317;margin-right:10px;}
+      @media screen and (max-width: 992px) {
+        .showlist-hwra{height:60px;min-height: 60px !important;overflow: hidden;}
+        .show-more{display:block}
+
+      }
+    </style>
+  </head>
+  <body style="background: #f2f5f6;">
+    <input type="hidden" value="001455000001" id="CatalogInnerCode">
+    <!-- 包含页头 -->
+    
+<!-- pc头部 S -->
+<div class="header">
+  <div class="header-logo">
+    <div class="container">
+      <a href="https://www.noi.cn/">
+        <img src="/images/logo.png" alt="">
+      </a>
+    </div>
+  </div>
+  <div class="header-nav">
+    <div class="container">
+      <div class="pcnav clearfix">
+        <ul>
+          <li><a href="https://www.noi.cn/">首页</a></li>
+          
+            
+              <li class="001453" attr="001453"><a href="javascript:void(0)">关于NOI<img src="/images/down.png" alt=""></a>
+                
+                  <ul class="pcmenubox">
+                    
+                      
+                        <li class="001453000001" attr="001453000001">
+                          <a href="/gynoi/jj/">简介</a>
+                        </li>
+                        <li class="001453000002" attr="001453000002">
+                          <a href="/gynoi/tlgd/">条例规定</a>
+                        </li>
+                        <li class="001453000003" attr="001453000003">
+                          <a href="/gynoi/jsgz/">技术规则</a>
+                        </li>
+                        <li class="001453000004" attr="001453000004">
+                          <a href="/gynoi/zzjg/">组织机构</a>
+                        </li>
+                    
+                  </ul>
+                
+              </li>
+              <li class="001454" attr="001454"><a href="/xw/">新闻</a>
+                
+              </li>
+              <li class="001455" attr="001455"><a href="javascript:void(0)">获奖名单<img src="/images/down.png" alt=""></a>
+                
+                  <ul class="pcmenubox">
+                    
+                      
+                        <li class="001455000001" attr="001455000001">
+                          <a href="/hjmd/mdgs/">名单公示</a>
+                        </li>
+                        <li class="001455000002" attr="001455000002">
+                          <a href="/hjmd/mdcx/">名单查询</a>
+                        </li>
+                    
+                  </ul>
+                
+              </li>
+              <li class="001456" attr="001456"><a href="javascript:void(0)">各省<img src="/images/down.png" alt=""></a>
+                
+                  <ul class="pcmenubox">
+                    
+                      
+                        <li class="001456000001" attr="001456000001">
+                          <a href="/gs/xw/">新闻</a>
+                        </li>
+                        <li class="001456000002" attr="001456000002">
+                          <a href="/gs/lxfs/">联系方式</a>
+                        </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li class="001457" attr="001457"><a href="javascript:void(0)">历年资料<img src="/images/down.png" alt=""></a>
+                
+                  <ul class="pcmenubox">
+                    
+                      
+                        <li class="001457000005" attr="001457000005">
+                          <a target="_block" href="/zxzy/hdsp/">活动视频</a>
+                        </li>
+                        <li class="001457000001" attr="001457000001">
+                          <a target="_block" href="/zxzy/lnzl/">题目与数据</a>
+                        </li>
+                        <li class="001457000004" attr="001457000004">
+                          <a target="_block" href="/zxzy/lncb/">承办单位</a>
+                        </li>
+                        <li class="001457000002" attr="001457000002">
+                          <a target="_block" href="/xw/2020-05-13/715542.shtml">在线培训</a>
+                        </li>
+                    
+                  </ul>
+                
+              </li>
+              <li class="001458" attr="001458"><a target="_block" href="https://cspsjtest.noi.cn/">NOI报名</a>
+                
+              </li>
+              <li class="001483" attr="001483"><a target="_block" href="/jspx/">教师培训</a>
+                
+              </li>
+          
+        </ul>
+        <div class="search-wra">
+          <form id="LuceneSearchFrom" name="LuceneSearchFrom" method="post" action="https://www.noi.cn/ccf/search/result">
+          <input placeholder="输入关键词..."  autocomplete="off" id="Query" name="Query">
+          <a  onclick="queryLucene()" href="javascript:void(0)"><img src="/images/search.png" alt=""></a>
+             <input type="hidden" id="SiteID" name="SiteID" value="127">
+            <input type="hidden" id="TitleOnly" name="TitleOnly" value="N">
+            <input type="hidden" id="PageIndex" name="PageIndex">
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- pc头部-end -->
+<!-- 移动端头部-s -->
+<div class="head">
+  <div class="headbtm">
+    <div class="container clearfix">
+      <div class="logobox">
+        <a href="https://www.noi.cn/">
+          <img src="/images/logo.png" />
+        </a>
+      </div>
+      <div class="fl menu-wrap">
+        <ul class="menu clearfix">
+          <li class="sy fl">
+            <a href="https://www.noi.cn/">首页</a>
+          </li>
+          
+            
+              <li class=" fl" attr="001453">
+                
+                <a href="javascript:void(0)">关于NOI</a>
+                  
+                
+                
+                  <span class="icon"></span>
+                  <ul class="menubox">
+                    
+                      
+                        <li class="" attr="001453000001">
+                          <a href="/gynoi/jj/">简介</a>
+                        </li>
+                        <li class="" attr="001453000002">
+                          <a href="/gynoi/tlgd/">条例规定</a>
+                        </li>
+                        <li class="" attr="001453000003">
+                          <a href="/gynoi/jsgz/">技术规则</a>
+                        </li>
+                        <li class="" attr="001453000004">
+                          <a href="/gynoi/zzjg/">组织机构</a>
+                        </li>
+                    
+                  </ul>
+                
+              </li>
+              <li class=" fl" attr="001454">
+                
+                
+<a href="/xw/">新闻</a>                
+                
+                
+              </li>
+              <li class=" fl" attr="001455">
+                
+                <a href="javascript:void(0)">获奖名单</a>
+                  
+                
+                
+                  <span class="icon"></span>
+                  <ul class="menubox">
+                    
+                      
+                        <li class="" attr="001455000001">
+                          <a href="/hjmd/mdgs/">名单公示</a>
+                        </li>
+                        <li class="" attr="001455000002">
+                          <a href="/hjmd/mdcx/">名单查询</a>
+                        </li>
+                    
+                  </ul>
+                
+              </li>
+              <li class=" fl" attr="001456">
+                
+                <a href="javascript:void(0)">各省</a>
+                  
+                
+                
+                  <span class="icon"></span>
+                  <ul class="menubox">
+                    
+                      
+                        <li class="" attr="001456000001">
+                          <a href="/gs/xw/">新闻</a>
+                        </li>
+                        <li class="" attr="001456000002">
+                          <a href="/gs/lxfs/">联系方式</a>
+                        </li>
+                    
+                  </ul>
+                
+              </li>
+              <li class=" fl" attr="001457">
+                
+                <a href="javascript:void(0)">历年资料</a>
+                  
+                
+                
+                  <span class="icon"></span>
+                  <ul class="menubox">
+                    
+                      
+                        <li class="" attr="001457000005">
+                          <a href="/zxzy/hdsp/">活动视频</a>
+                        </li>
+                        <li class="" attr="001457000001">
+                          <a href="/zxzy/lnzl/">题目与数据</a>
+                        </li>
+                        <li class="" attr="001457000004">
+                          <a href="/zxzy/lncb/">承办单位</a>
+                        </li>
+                        <li class="" attr="001457000002">
+                          <a href="/xw/2020-05-13/715542.shtml">在线培训</a>
+                        </li>
+                    
+                  </ul>
+                
+              </li>
+              <li class=" fl" attr="001458">
+                
+                
+<a href="https://cspsjtest.noi.cn/">NOI报名</a>                
+                
+                
+              </li>
+              <li class=" fl" attr="001483">
+                
+                
+<a href="/jspx/">教师培训</a>                
+                
+                
+              </li>
+          
+        </ul>
+      </div>
+      <div class="col-xs-10">
+        <div class="fl search-wra">
+          		<form id="LuceneSearchFrom2" name="LuceneSearchFrom" method="post" action="https://www.noi.cn/ccf/search/result">
+           <input id="Query2" class=xssearch"" autocomplete="off" placeholder="输入关键词..." type="text" name="Query">
+          <a onclick="queryLucene2()" href="javascript:void(0)"><img src="/images/search.png" alt=""></a>
+          <input type="hidden" autocomplete="off" id="SiteID" name="SiteID" value="127">
+                  <input type="hidden" id="TitleOnly" name="TitleOnly" value="Y">
+                  <input type="hidden" id="PageIndex" name="PageIndex">
+            	</form>
+        </div>
+      </div>
+      <div class="col-xs-2">
+        <div class="fr menubtn">
+          <div class="burger">
+            <div class="x"></div>
+            <div class="y" style="display: block;"></div>
+            <div class="z"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<!-- 移动端头部 E -->
+<script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
+<script>
+   function queryLucene(){
+    toSearch($V("Query"));
+  }
+  function toSearch(query){
+  if(query==null||query==""){
+    return
+  }
+    $S("Query",query);
+  $("#LuceneSearchFrom").submit();
+  }
+  
+  function queryLucene2(){
+    toSearch2($V("Query2"));
+  }
+  function toSearch2(query){
+  if(query==null||query==""){
+    return
+  }
+    $S("Query2",query);
+    $("#LuceneSearchFrom2").submit();
+  }
+  //搜索
+   /*function doSearch(self){
+     console.log($(self).siblings("input"))
+    if(!$(self).siblings("input").val() || !$(self).siblings("input").val().trim()){
+      console.log('searchParam is null ')
+      return;
+    }
+    var url = "https://www.noi.cn/search/result.shtml?SiteID=127&query="+encodeURIComponent($(self).siblings("input").val());
+    
+  	window.location.href=url;
+  }
+
+  $("#searchInput1").keydown(function(event){
+    if(event.keyCode ==13){
+      doSearch();
+      console.log('enter');
+    }
+  });
+   $("#searchInput2").keydown(function(event){
+    if(event.keyCode ==13){
+      doSearch();
+      console.log('enter');
+    }
+  })*/
+  //搜索-end
+  autoheight();
+  function autoheight() {
+    var width = $(window).width();
+    if (width > 992) {
+      $(".menubox").each(function () {
+        var tWidth = $(this).width();
+        if (tWidth > 145) {
+          $(this).css("margin-left", -tWidth / 2);
+        }
+        $(".menu-wrap").removeClass('hide');
+      })
+    } else {
+      $(".menu-wrap").addClass('hide');
+    }
+  }
+  $(window).resize(function () {
+    autoheight();
+  })
+  
+  
+  $('.burger').click(function (event) {
+    $(this).parent().toggleClass('opened');
+    $(".y").toggleClass('hide');
+    $(".x").toggleClass('collapse rotate30 rotate45');
+    $(".z").toggleClass('collapse rotate150 rotate135');
+    $(".menu-wrap").toggleClass('hide');
+  });
+  $(".menu .icon").click(function () {
+    if ($(this).parent("li").hasClass("cur")) {
+      $(this).next(".menubox").slideUp();
+      $(this).parent("li").removeClass("cur");
+    } else {
+      $(this).parent("li").addClass("cur").siblings("li").removeClass("cur");
+      $(this).next(".menubox").slideDown();
+      $(this).parent("li").siblings("li").find(".menubox").slideUp();
+    }
+  })
+  
+  
+  $(function () {
+    if ($(window).width() < 992) {
+      $(".menu li.cur .menubox").slideDown();
+    }
+  })
+</script>
+    <!-- 主体 S -->
+    <div class="main">
+      <div class="container">
+        <div class="row">
+          <!-- 内容 -->
+          <div style="margin:0px 20px 20px 15px; position:relative;">
+            <div class="row">
+              <!-- 左侧 -->
+             <div class="view-PROVINCE col-md-3 col-xs-12" style="margin-top: 32px;">
+                <div class="view-LIST-cont affix-top" xdata-spy="affix" xdata-offset-top="160"
+                xdata-offset-bottom="100" style="display: block;">
+                    <div class="panel panel-noidefault">
+                        <div class="panel-heading nospaceheading">
+                            <a href="/hjmd/mdgs/" class="btn btn-noi-prov-all">名单公示</a>
+                        </div>
+                      <div class="panel-body  noi-mdgslist showlist-hwra">
+                        <div class="showlist-h">
+                          
+                            <a href="/hjmd/mdgs/2026/" id="001455000001000032" class="btn btn-link">2026</a>
+                            <a href="/hjmd/mdgs/2025/" id="001455000001000031" class="btn btn-link">2025</a>
+                            <a href="/hjmd/mdgs/2024/" id="001455000001000030" class="btn btn-link">2024</a>
+                            <a href="/hjmd/mdgs/2023/" id="001455000001000029" class="btn btn-link">2023</a>
+                            <a href="/hjmd/mdgs/2022/" id="001455000001000027" class="btn btn-link">2022</a>
+                            <a href="/hjmd/mdgs/2021/" id="001455000001000022" class="btn btn-link">2021</a>
+                            <a href="/hjmd/mdgs/2020/" id="001455000001000001" class="btn btn-link">2020</a>
+                            <a href="/hjmd/mdgs/2019/" id="001455000001000002" class="btn btn-link">2019</a>
+                            <a href="/hjmd/mdgs/2018/" id="001455000001000003" class="btn btn-link">2018</a>
+                            <a href="/hjmd/mdgs/2017/" id="001455000001000004" class="btn btn-link">2017</a>
+                            <a href="/hjmd/mdgs/2016/" id="001455000001000005" class="btn btn-link">2016</a>
+                        
+                        
+                          <a href="/hjmd/mdgs/more/" id="001455000001000021" class="btn btn-link">more</a>
+                        
+                          </div>
+                      </div>
+                       <div class="show-more showno"><span>展开</span><img src="/images/more-downi.png" class="more-downi" alt=""><img src="/images/more-upi.png" class="more-upi" alt=""></div>
+                  </div>
+               </div>
+              </div>
+              <!-- 左侧-end -->
+              <!-- 右侧 -->
+              <div class="col-md-9 col-xs-12 news-show-ps view-MAIN detail-con" style="margin-top:32px">
+                <div class="panel panel-noidefault">
+                  <div class="panel-heading">
+                    <h2 class="panel-title noi-listtitle">
+                      
+                      
+                        
+                        
+                      名单公示</h2>
+                    <div class="noi-bar">
+                      <div class="noi-bar-left">&nbsp;</div>
+                      <div class="noi-bar-right">&nbsp;</div>
+                    </div>
+                  </div>
+                  <div class="panel-body news-all">
+                    
+                    
+                    
+                        <div class="news-item"><a href="/hjmd/mdgs/2025/2025-07-18/846584.shtml" title="CCF&#32;NOI2026获奖名单公示">CCF&#32;NOI2026获奖名单公示</a><small>2026-07-08 16:45:14</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2026/2026-05-10/890915.shtml" title="APIO&#32;2026中国区活动荣誉名单公示">APIO&#32;2026中国区活动荣誉名单公示</a><small>2026-05-10 21:10:02</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2026/2026-02-12/861333.shtml" title="第九届CCF&#32;NOI计算机程序设计片段教学比赛获奖名单">第九届CCF&#32;NOI计算机程序设计片段教学比赛获奖名单</a><small>2026-02-12 17:07:06</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2026/2026-02-12/861337.shtml" title="NOI冬令营2026获奖名单公示">NOI冬令营2026获奖名单公示</a><small>2026-02-12 17:07:04</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2025/2025-12-13/854073.shtml" title="第五届NOI女生竞赛获奖名单公示">第五届NOI女生竞赛获奖名单公示</a><small>2025-12-13 19:03:18</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2025/2025-12-13/854072.shtml" title="NOIP2025获奖名单公示">NOIP2025获奖名单公示</a><small>2025-12-13 18:32:26</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2025/2025-11-14/853130.shtml" title="CCF&#32;CSP-J/S2025第二轮认证评级名单">CCF&#32;CSP-J/S2025第二轮认证评级名单</a><small>2025-11-14 19:52:56</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2025/2025-07-18/846584.shtml" title="CCF&#32;NOI2025获奖名单公示">CCF&#32;NOI2025获奖名单公示</a><small>2025-07-18 16:45:14</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2025/2025-05-21/842409.shtml" title="APIO2025中国区活动获奖名单公示">APIO2025中国区活动获奖名单公示</a><small>2025-05-21 17:42:43</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2025/2025-01-23/837733.shtml" title="NOI2025冬令营获奖名单公示">NOI2025冬令营获奖名单公示</a><small>2025-01-23 21:30:30</small></div>
+                        <div class="news-item"><a href="/hjmd/mdgs/2025/2025-01-23/837732.shtml" title="第八届CCF&#32;NOI计算机程序设计片段教学比赛获奖名单">第八届CCF&#32;NOI计算机程序设计片段教学比赛获奖名单</a><small>2025-01-23 21:25:57</small></div>
+                    
+                    
+                  </div>
+                  <div class="panel-footer">
+                    <div><ul class="pagination"><li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden='true'>&laquo;</span></a></li><li class="active"><a href="#">1</a></li><li class=""><a href="index_2.shtml">2</a></li><li class=""><a href="index_3.shtml">3</a></li><li class=""><a href="index_4.shtml">4</a></li><li class=""><a href="index_5.shtml">5</a></li><li class=" hidden-xs"><a href="https://www.noi.cn/ccf/catalog/23257/pc/index_6.shtml">6</a></li><li class=" hidden-xs"><a href="https://www.noi.cn/ccf/catalog/23257/pc/index_7.shtml">7</a></li><li class=" hidden-xs"><a href="https://www.noi.cn/ccf/catalog/23257/pc/index_8.shtml">8</a></li><li class=" hidden-xs"><a href="https://www.noi.cn/ccf/catalog/23257/pc/index_9.shtml">9</a></li><li class=""><a href="index_2.shtml"><span aria-hidden='true'>&raquo;</span></a></li></ul></div>
+                  </div>
+                </div>
+              </div>  
+              <!-- 右侧-end -->
+            </div>
+          </div>
+          <!-- 内容-end -->
+        </div>
+      </div>
+    </div>
+    <!-- 主体 E -->
+    <!-- 包含页尾 -->
+    
+<!-- 尾部 S -->
+		<div class="footer">
+			<div class="container clearfix link-wra">
+              
+              <div style="color: #fff; border-bottom: 1px solid #958fcb;padding: 0 0 20px 0;text-align: left; margin-bottom:10px;">
+对于发布在CCF官方平台（CCF官网：https://www.ccf.org.cn/）、（NOI官网：(http://www.noi.cn）、（“中国计算机学会”微信公众号(ccfvoice)）的所有NOI新闻，未经NOI竞赛办公室书面授权，不得以任何形式非法侵权转载；任何机构或组织不得非法冒用我学会的NOI商标标识混淆视听。此类侵权行为，我学会一经发现必当严肃追究法律责任。
+</div>
+              
+				<ul class="yq-link">
+					<li class="footertit">友情链接</li>
+                  
+                     
+					<li><a href="https://www.ccf.org.cn/">中国计算机学会官网</a></li>
+					<li><a href="https://ioinformatics.org/">IOI官方网站</a></li>
+                        
+				</ul>
+				<ul class="about-link">
+					<li class="footertit">关于我们</li>
+					
+              <li><a href="/gynoi/jj/">关于NOI</a></li>
+            
+
+					<!--<li><a>意见反馈</a></li>-->
+				</ul>
+				<div class="liwm">
+					<div class="footertit">联系我们</div>
+					<ul class="liwmul">
+						<li>
+							<img src="/images/footer-email.png" alt="">
+							<div>
+								<p class="foottit2">noi@ccf.org.cn</p>
+								<p class="liwmulcon">NOI竞赛办公室</p>
+							</div>
+						</li>
+						<li>
+							<img src="/images/footer-phone.png" alt="">
+							<div>
+								<p class="foottit2">010-82612091</p>
+								<p class="liwmulcon">电话</p>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="footer-bottom">
+				<div class="container">
+                  © 中国计算机学会 版权所有   (<a href="https://beian.miit.gov.cn/" target="_blank">京ICP备13000930号-3</a> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802033127" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/images/gaba.png" style="float:left;"/>京公网安备 11010802033127号</a>)<!--   日访问:${(Site.todayhitcount)} 总访问:${(Site.TotalHitcount)}-->
+				</div>
+			</div>
+		</div>
+		<!-- 尾部 E -->
+<script src="/v3/js/bootstrap.min.js"></script>
+<!-- <script src="${prefix("v3/js/slimscroll/jquery.slimscroll.min.js")}"></script> -->
+<!-- <script src="${prefix("v3/js/appear/jquery.appear.js")}"></script> -->
+<script src="/v3/js/hammer.min.js"></script>
+<script src="/v3/js/scroll/smoothscroll.js"></script>
+<script src="/v3/js/v3_common.js"></script>
+<script src="/v3/js/v3_site.js"></script>
+        <script>
+    var gsid = '#'+$("#CatalogInnerCode").val();
+      $(gsid).addClass('gscur')
+    </script>
+        <script>
+      	$(".left-slide").height($(".right-con").height())
+      $(document).ready(onPageReadyWeidong);
+        function onPageReadyWeidong() {
+            if ($(window).width() > 768) {
+                setInterval(myAffix, 1000);
+                $(document).scroll(myAffix);
+            }
+            $(window).resize(function () {
+                if ($(window).width() > 768) {
+                    setInterval(myAffix, 1000);
+                    $(document).scroll(myAffix);
+                }
+            })
+        }
+        function myAffix() {
+            var xtop = 160, xbottom = 100, fixedtop = 200;
+            var dh = $(document).height();
+            var ch = $(".view-LIST-cont").height();
+            var wh = window.innerHeight;
+            var sctop = $(document).scrollTop();
+            if (sctop <= xtop) {
+                //$(".view-LIST-cont").css({"position":"absolute","top":xtop,"bottom":"auto"});
+                $(".view-LIST-cont").removeClass("affix-bottom").removeClass("affix-center").addClass("affix-top");
+                $(".view-LIST-cont").css("top", "");
+                // TOP
+            }
+            else if (sctop + fixedtop + ch + xbottom >= dh) {
+                //$(".view-LIST-cont").css({"position":"absolute","top":"auto","bottom":xbottom});
+                $(".view-LIST-cont").removeClass("affix-top").removeClass("affix-center").addClass("affix-bottom");
+                $(".view-LIST-cont").css("top", "");
+                // BOTTOM
+            }
+            else {
+                //$(".view-LIST-cont").css({"position":"fixed","top":fixedtop,"bottom":"auto"});
+                $(".view-LIST-cont").removeClass("affix-bottom").removeClass("affix-top").addClass("affix-center");
+                $(".view-LIST-cont").css("top", sctop - xtop);
+            }
+        }
+          //
+           $(window).resize(function () {
+          if ($(window).width() > 992) {
+            $('.showlist-hwra').removeAttr('style')
+             }
+      })
+    $('.show-more').click(function(){
+      var height = $('.showlist-h').height()+20
+      if ($(this).hasClass('showno')){
+     $('.showlist-hwra').animate({height: height}, 500)
+     $(this).removeClass('showno').addClass('showy')
+     $(this).children('span').text('收起')
+     $('.more-downi').hide()
+     $('.more-upi').show()
+      } else if($(this).hasClass('showy')){
+      $('.showlist-hwra').animate({height: 60}, 500)
+       $(this).removeClass('showy').addClass('showno')
+       $(this).children('span').text('展开')
+       $('.more-upi').hide()
+     $('.more-downi').show()
+      }
+		
+	})
+    </script>
+  
+<script src="https://www.noi.cn/ccf/stat/front/stat.js" type="text/javascript"></script>
+<script>
+if(window._zcms_stat)_zcms_stat("SiteID=127&CatalogInnerCode=001455000001&Type=null&Dest=https://www.noi.cn/ccf/stat/dealer");
+</script>
+
+<!-- App=ZCMS(CCF内容管理系统) 2.5.28290,CostTime=6,PublishDate=2026-05-10 21:10:02 -->
+</body>
+</html>
