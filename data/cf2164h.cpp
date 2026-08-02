@@ -1,4 +1,5 @@
 // created time: 2026-07-31 13:03:51
+#pragma GCC optimize(3,"Ofast","inline","unroll-loops")
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,7 +31,7 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,q;
+int n,q,l[500005],r[500005],ans[500005],L[500005],R[500005],M[500005];
 char s[500005];
 
 namespace A{
@@ -83,13 +84,13 @@ namespace A{
 	}
 }
 int rad[500005];
-set<int>S[500005];
 int lcp(int x,int y){
-	return min({rad[x], rad[y], A.query(x,y)});
+	return min({rad[x], rad[y], A::query(x,y)});
 }
 bool comp(int x,int y){
 	int d=lcp(x,y);
-	return (d==rad[x]?0:s[x+d]) < (d==rad[y]?0:s[y+d]);
+	int ret= (d==rad[x]?0:s[x+d]) < (d==rad[y]?0:s[y+d]);
+	return ret;
 }
 namespace B{
 	char t[1000005];
@@ -100,31 +101,201 @@ namespace B{
 		t[n*2+2]='@';
 
 		int mid=0,r=0;
-		for(int i=1;i<=n;i++){
+		for(int i=1;i<=n*2+1;i++){
 			if(i<mid+r) ext[i]=min(ext[2*mid-i],mid+r-i);
 			while(t[i-ext[i]]==t[i+ext[i]]) ++ext[i];
 			if(i+ext[i]>mid+r) mid=i,r=ext[i];
 		}
 	}
 }
-int ord[500005];
+
+struct BIT{
+	int c[500005];
+	void upd(int x,int w){
+		assert(x>=1);
+		while(x<=n){
+			chkmax(c[x],w);
+			x+=(x&-x);
+		}
+	}
+	int qry(int x){
+		if(x<=0)return 0;
+		int ret=0;
+		while(x){
+			chkmax(ret,c[x]);
+			x-=(x&-x);
+		}
+		return ret;
+	}
+	void clear(){ memset(c,0,sizeof(c)); }
+}b;
+int seq[500005],ord[500005],w[500005];
+set<int>S[500005];
+
+int ordq[500005];
+
+namespace D{
+	int fa[500005];
+	void init(){
+		for(int i=1;i<=n;i++)fa[i]=i;
+	}
+	int find(int x){ if(x!=fa[x]) fa[x]=find(fa[x]); return fa[x]; }
+	void merge(int x,int y){ fa[find(x)]=find(y); }
+}
+
+int tmp[500005];
+vector<tuple<int,int,int>>odd,even;
+
+void upd_odd(int l,int r,int w){
+	if(!w) return;
+	odd.pb(w,l,r);
+}
+void solve_odd(){	
+	for(int i=1;i<=n;i++) rad[i]=B::ext[2*i]/2,S[i]={i};
+	sort(seq+1,seq+n+1,comp);
+	
+	for(int i=2;i<=n;i++) w[i]=lcp(seq[i-1],seq[i]);
+	sort(ord+1,ord+n,[&](int x,int y){ return w[x]>w[y]; });
+	
+	D::init();	
+	for(int i=1;i<n;i++){
+		int ww=w[ord[i]];
+		int x=D::find(seq[ord[i]-1]),y=D::find(seq[ord[i]]);
+		
+		if(S[x].size()>S[y].size()) swap(x,y);
+		for(int u:S[x]){
+			auto it = S[y].lower_bound(u);
+			if(it!=S[y].end()) upd_odd(u,*it,ww);
+			if(it!=S[y].begin()) upd_odd(*prev(it),u,ww);
+		}
+		for(int u:S[x]) S[y].emplace(u); S[x].clear();
+		D::merge(x,y);
+	}
+}
+void ans_odd(){
+	sort(odd.begin(),odd.end(),greater<>());
+	for(int i=1;i<=q;i++)L[i]=1,R[i]=n/2;
+	
+	
+	bool flg=1;
+	while(flg){
+		memset(tmp,0,sizeof(tmp));
+		for(int i=1;i<=q;i++){
+			if(L[i]>R[i])continue;
+			M[i]=(L[i]+R[i])>>1;
+			tmp[M[i]]++;
+		}
+		
+		for(int i=n;i>=1;i--)tmp[i]+=tmp[i+1];
+		int k=tmp[1]; 
+		for(int i=1;i<=q;i++)
+			if(L[i]<=R[i])ordq[tmp[M[i]]--]=i;
+		
+		b.clear();
+		
+		int pt=0; flg=0;
+		for(int j=1;j<=k;j++){
+			int i=ordq[j];
+			
+			if(L[i]>R[i])continue;
+			while(pt<odd.size()){
+				int w=get<0>(odd[pt]);
+				int l=get<1>(odd[pt]);
+				int r=get<2>(odd[pt]);
+				if(w<M[i])break;
+				b.upd(r,l); pt++;
+			}
+			if(b.qry(r[i]-M[i]+1)>=l[i]+M[i]-1) chkmax(ans[i],2*M[i]-1),L[i]=M[i]+1;
+			else R[i]=M[i]-1;
+			flg|=(L[i]<=R[i]);
+		}
+	}	
+}
+
+void upd_even(int l,int r,int w){
+	if(!w) return;
+	even.pb(w,l,r);
+}
+void solve_even(){	
+	for(int i=1;i<=n;i++) rad[i]=B::ext[2*i-1]/2,S[i]={i};
+	sort(seq+1,seq+n+1,comp);
+	
+	for(int i=2;i<=n;i++) w[i]=lcp(seq[i-1],seq[i]);
+	sort(ord+1,ord+n,[&](int x,int y){ return w[x]>w[y]; });
+	
+	D::init();	
+	for(int i=1;i<n;i++){
+		int ww=w[ord[i]];
+		int x=D::find(seq[ord[i]-1]),y=D::find(seq[ord[i]]);
+		
+		if(S[x].size()>S[y].size()) swap(x,y);
+		for(int u:S[x]){
+			auto it = S[y].lower_bound(u);
+			if(it!=S[y].end()) upd_even(u,*it,ww);
+			if(it!=S[y].begin()) upd_even(*prev(it),u,ww);
+		}
+		for(int u:S[x]) S[y].emplace(u); S[x].clear();
+		D::merge(x,y);
+	}
+}
+
+void ans_even(){
+	sort(even.begin(),even.end(),greater<>());
+	for(int i=1;i<=q;i++)L[i]=1,R[i]=n/2;
+	bool flg=1;
+	while(flg){
+		memset(tmp,0,sizeof(tmp));
+		for(int i=1;i<=q;i++){
+			if(L[i]>R[i])continue;
+			M[i]=(L[i]+R[i])>>1;
+			tmp[M[i]]++;
+		}
+		
+		for(int i=n;i>=1;i--)tmp[i]+=tmp[i+1];
+		int k=tmp[1]; 
+		for(int i=1;i<=q;i++)
+			if(L[i]<=R[i])ordq[tmp[M[i]]--]=i;
+		b.clear();
+		
+		int pt=0; flg=0;
+		for(int j=1;j<=k;j++){
+			int i=ordq[j];
+			
+			if(L[i]>R[i])continue;
+			while(pt<even.size()){
+				int w=get<0>(even[pt]);
+				int l=get<1>(even[pt]);
+				int r=get<2>(even[pt]);
+				if(w<M[i])break;
+				b.upd(r,l); pt++;
+			}
+			if(b.qry(r[i]-M[i]+1)>=l[i]+M[i]) chkmax(ans[i],2*M[i]),L[i]=M[i]+1;
+			else R[i]=M[i]-1;
+			flg|=(L[i]<=R[i]);
+		}
+	}	
+}
 
 void procedure(){
 	n=read(),q=read();
 	scanf("%s",s+1); s[n+1]=0;
 	A::init(),B::init();
-	for(int i=1;i<=n;i++) ord[i]=i;
-
-	// odd
-	for(int i=1;i<=n;i++) rad[i]=B::ext[2*i-1]/2;
-	sort(ord+1,ord+n+1,comp);
-
-	// 
+	for(int i=1;i<=n;i++) seq[i]=i;
+	for(int i=1;i<n;i++) ord[i]=i+1;
+	
+	for(int i=1;i<=q;i++) l[i]=read(),r[i]=read(),ordq[i]=i;
+	
+	solve_odd();
+	ans_odd();
+	
+	solve_even(),ans_even();
+	
+	for(int i=1;i<=q;i++) printf("%d\n",ans[i]);
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.out","w",stdout));
+//		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
