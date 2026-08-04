@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>基本子串结构 · 阶梯状等价类划分</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --card: rgba(255,255,255,.93);
+      --text: #172033;
+      --muted: #68738a;
+      --line: #dbe1ec;
+      --accent: #315efb;
+      --accent-2: #2448c8;
+      --danger: #ef233c;
+      --shadow: 0 16px 45px rgba(27,39,78,.10);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(49,94,251,.11), transparent 32rem),
+        radial-gradient(circle at 92% 15%, rgba(24,178,111,.10), transparent 28rem),
+        var(--bg);
+    }
+
+    .page { width: min(1500px, calc(100% - 28px)); margin: 0 auto; padding: 28px 0 48px; }
+    .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; margin-bottom: 18px; }
+    .hero h1 { margin: 0; font-size: clamp(28px, 4vw, 44px); letter-spacing: -.04em; }
+    .hero p { margin: 8px 0 0; color: var(--muted); line-height: 1.7; }
+    .badge { flex: none; padding: 8px 12px; border-radius: 999px; background: #e9efff; color: #284fcf; font-weight: 750; font-size: 13px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(219,225,236,.9);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .controls { padding: 18px; margin-bottom: 18px; }
+    .control-grid { display: grid; grid-template-columns: minmax(240px, 1fr) auto; gap: 12px; align-items: end; }
+    label.title { display: block; font-weight: 760; margin-bottom: 8px; }
+    .input-wrap { display: flex; gap: 10px; }
+    input[type="text"] {
+      width: 100%; min-width: 0; height: 46px; padding: 0 14px;
+      border: 1px solid var(--line); border-radius: 12px; background: #fff;
+      color: var(--text); font: inherit; font-size: 16px; outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    input[type="text"]:focus { border-color: #7d99ff; box-shadow: 0 0 0 4px rgba(49,94,251,.12); }
+    button {
+      border: 0; border-radius: 11px; min-height: 42px; padding: 0 15px;
+      background: #eef2f8; color: #27324a; font: inherit; font-weight: 720;
+      cursor: pointer; transition: transform .12s, background .12s, opacity .12s;
+    }
+    button:hover { transform: translateY(-1px); background: #e4eaf4; }
+    button:active { transform: translateY(0); }
+    button.primary { height: 46px; background: var(--accent); color: #fff; padding-inline: 22px; }
+    button.primary:hover { background: var(--accent-2); }
+    button.ghost { background: #fff; border: 1px solid var(--line); }
+
+    .options { margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+    .check { display: inline-flex; align-items: center; gap: 7px; color: #3e4960; font-size: 14px; user-select: none; }
+    .check input { width: 16px; height: 16px; accent-color: var(--accent); }
+    .actions { margin-left: auto; display: flex; gap: 8px; }
+    .status { margin-top: 12px; color: var(--muted); font-size: 13px; min-height: 20px; }
+    .status.error { color: #c9283e; font-weight: 650; }
+
+    .main-grid { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
+    .stage-card { min-width: 0; overflow: hidden; }
+    .stage-head { padding: 15px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .stage-title { font-weight: 790; }
+    .stage-hint { color: var(--muted); font-size: 13px; }
+    .stage-scroll { position: relative; overflow: auto; min-height: 500px; max-height: 76vh; background: linear-gradient(180deg, #fff, #fafbfe); }
+    svg { display: block; min-width: 100%; }
+
+    .side { display: grid; gap: 18px; }
+    .panel { padding: 17px; }
+    .panel h2 { margin: 0 0 12px; font-size: 16px; }
+    .summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+    .metric { padding: 11px; border-radius: 12px; background: #f5f7fb; border: 1px solid #e7ebf2; }
+    .metric b { display: block; font-size: 21px; letter-spacing: -.02em; }
+    .metric span { color: var(--muted); font-size: 12px; }
+
+    .legend { display: grid; gap: 8px; max-height: 47vh; overflow: auto; padding-right: 3px; }
+    .legend-item {
+      width: 100%; text-align: left; display: grid; grid-template-columns: 14px minmax(0,1fr) auto;
+      gap: 9px; align-items: center; padding: 10px; min-height: 0; border: 1px solid #e3e8f1;
+      background: #fff; border-radius: 12px; font-weight: 600;
+    }
+    .legend-item:hover { background: #f8faff; }
+    .legend-item.active { outline: 3px solid rgba(49,94,251,.16); border-color: #8ca3ff; }
+    .swatch { width: 14px; height: 14px; border-radius: 4px; }
+    .legend-main { overflow: hidden; }
+    .legend-main strong { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .legend-main small { color: var(--muted); font-weight: 500; }
+    .legend-id { color: var(--muted); font-size: 12px; }
+
+    details { color: #3e4960; line-height: 1.75; }
+    details summary { cursor: pointer; font-weight: 760; color: var(--text); }
+    details ol { margin: 10px 0 0; padding-left: 20px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: #f0f3f8; padding: 2px 5px; border-radius: 5px; }
+
+    .tooltip {
+      position: fixed; z-index: 20; pointer-events: none; display: none;
+      max-width: min(360px, calc(100vw - 24px)); padding: 10px 12px; border-radius: 11px;
+      background: rgba(20,27,43,.94); color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+      font-size: 13px; line-height: 1.65;
+    }
+    .tooltip strong { color: #fff; }
+    .tooltip .muted { color: #bcc5d8; }
+
+    .cell-label { font-family: Georgia, "Times New Roman", "Songti SC", serif; font-style: italic; user-select: none; }
+    .axis-label { fill: #8a94a8; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; user-select: none; }
+    .cell-hit { cursor: pointer; }
+    .class-layer { transition: opacity .15s; }
+
+    @media (max-width: 980px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .side .panel:last-child { grid-column: 1 / -1; }
+      .legend { max-height: 340px; }
+    }
+    @media (max-width: 680px) {
+      .page { width: min(100% - 16px, 1500px); padding-top: 16px; }
+      .hero { align-items: flex-start; flex-direction: column; }
+      .control-grid { grid-template-columns: 1fr; }
+      .input-wrap { flex-wrap: wrap; }
+      .input-wrap input { flex-basis: 100%; }
+      .input-wrap button { flex: 1; }
+      .options { align-items: flex-start; }
+      .actions { width: 100%; margin-left: 0; }
+      .actions button { flex: 1; }
+      .side { grid-template-columns: 1fr; }
+      .side .panel:last-child { grid-column: auto; }
+      .stage-scroll { min-height: 420px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div>
+        <h1>基本子串结构可视化</h1>
+        <p>输入字符串 <code>s</code>，按 <code>ext</code> 等价关系绘制全部子串出现位置的阶梯状划分。</p>
+      </div>
+      <div class="badge">纯前端 · 单文件</div>
+    </header>
+
+    <section class="card controls">
+      <div class="control-grid">
+        <div>
+          <label class="title" for="stringInput">字符串 s</label>
+          <div class="input-wrap">
+            <input id="stringInput" type="text" value="abbab" autocomplete="off" spellcheck="false" aria-label="输入字符串" />
+            <button id="sampleBtn" type="button">示例 abbab</button>
+            <button id="randomBtn" type="button">随机串</button>
+          </div>
+        </div>
+        <button id="renderBtn" class="primary" type="button">生成划分</button>
+      </div>
+
+      <div class="options">
+        <label class="check"><input id="showText" type="checkbox" checked />显示子串</label>
+        <label class="check"><input id="showCoords" type="checkbox" />显示坐标</label>
+        <label class="check"><input id="showFill" type="checkbox" checked />填充等价类</label>
+        <label class="check"><input id="compactCell" type="checkbox" />紧凑网格</label>
+        <div class="actions">
+          <button id="exportSvgBtn" class="ghost" type="button">导出 SVG</button>
+          <button id="exportPngBtn" class="ghost" type="button">导出 PNG</button>
+        </div>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="main-grid">
+      <div class="card stage-card">
+        <div class="stage-head">
+          <div class="stage-title">阶梯划分</div>
+          <div class="stage-hint">悬停查看详情；单击某格或图例可聚焦等价类</div>
+        </div>
+        <div id="stageScroll" class="stage-scroll">
+          <svg id="viz" role="img" aria-label="基本子串结构阶梯状等价类划分"></svg>
+        </div>
+      </div>
+
+      <aside class="side">
+        <section class="card panel">
+          <h2>统计</h2>
+          <div id="summary" class="summary"></div>
+        </section>
+
+        <section class="card panel">
+          <h2>等价类图例</h2>
+          <div id="legend" class="legend"></div>
+        </section>
+
+        <section class="card panel">
+          <details open>
+            <summary>实现口径</summary>
+            <ol>
+              <li>枚举全部区间 <code>[l,r]</code> 及其子串。</li>
+              <li>对每个本质不同子串，向左右寻找所有出现位置都可同步扩展的最大公共上下文，得到 <code>ext(t)</code>。</li>
+              <li><code>ext(x)=ext(y)</code> 的子串归入同一等价类。</li>
+              <li>把出现位置放到 <code>(列=l, 行=n-1-r)</code>，再对同类四连通格追踪外轮廓。</li>
+            </ol>
+            <p>这是面向演示的 <code>O(n³)</code> 实现，默认限制为 60 个 Unicode 字符。</p>
+          </details>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div id="tooltip" class="tooltip"></div>
+
+  <script>
+    'use strict';
+
+    const MAX_N = 60;
+    const PALETTE = [
+      '#f2a900', '#00a85a', '#0878c9', '#8b5cf6', '#e55486', '#00a6a6',
+      '#d97706', '#5271ff', '#be185d', '#16a34a', '#7c3aed', '#0891b2',
+      '#dc2626', '#4f46e5', '#65a30d', '#c026d3', '#0f766e', '#ea580c'
+    ];
+
+    const el = (id) => document.getElementById(id);
+    const input = el('stringInput');
+    const svg = el('viz');
+    const statusEl = el('status');
+    const summaryEl = el('summary');
+    const legendEl = el('legend');
+    const tooltip = el('tooltip');
+
+    let currentModel = null;
+    let selectedClassId = null;
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      })[ch]);
+    }
+
+    function svgNode(name, attrs = {}, text = null) {
+      const node = document.createElementNS('http://www.w3.org/2000/svg', name);
+      for (const [key, value] of Object.entries(attrs)) {
+        if (value !== null && value !== undefined) node.setAttribute(key, String(value));
+      }
+      if (text !== null) node.textContent = text;
+      return node;
+    }
+
+    function hashString(text) {
+      let h = 2166136261;
+      for (const ch of text) {
+        h ^= ch.codePointAt(0);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    }
+
+    function colorForClass(index, rep) {
+      if (index < PALETTE.length) return PALETTE[index];
+      const hue = hashString(rep) % 360;
+      return `hsl(${hue} 68% 45%)`;
+    }
+
+    function hexToRgba(color, alpha) {
+      if (!color.startsWith('#')) return color.replace(')', ` / ${alpha})`).replace('hsl(', 'hsl(');
+      const hex = color.slice(1);
+      const bigint = parseInt(hex.length === 3 ? hex.split('').map(x => x + x).join('') : hex, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function calcExt(chars, positions, len) {
+      let left = 0;
+      while (true) {
+        let common = null;
+        let ok = true;
+        for (const p of positions) {
+          const idx = p - left - 1;
+          if (idx < 0) { ok = false; break; }
+          const ch = chars[idx];
+          if (common === null) common = ch;
+          else if (common !== ch) { ok = false; break; }
+        }
+        if (!ok) break;
+        left++;
+      }
+
+      let right = 0;
+      while (true) {
+        let common = null;
+        let ok = true;
+        for (const p of positions) {
+          const idx = p + len + right;
+          if (idx >= chars.length) { ok = false; break; }
+          const ch = chars[idx];
+          if (common === null) common = ch;
+          else if (common !== ch) { ok = false; break; }
+        }
+        if (!ok) break;
+        right++;
+      }
+
+      const start = positions[0] - left;
+      return {
+        text: chars.slice(start, positions[0] + len + right).join(''),
+        left,
+        right
+      };
+    }
+
+    function buildModel(raw) {
+      const chars = Array.from(raw);
+      const n = chars.length;
+      const substringMap = new Map();
+      const cells = [];
+
+      for (let l = 0; l < n; l++) {
+        let text = '';
+        for (let r = l; r < n; r++) {
+          text += chars[r];
+          let item = substringMap.get(text);
+          if (!item) {
+            item = { text, len: r - l + 1, positions: [], ext: null, classRef: null };
+            substringMap.set(text, item);
+          }
+          item.positions.push(l);
+          cells.push({ l, r, row: n - 1 - r, col: l, text, item, classRef: null, blockId: null });
+        }
+      }
+
+      const classMap = new Map();
+      for (const item of substringMap.values()) {
+        item.ext = calcExt(chars, item.positions, item.len);
+        let classRef = classMap.get(item.ext.text);
+        if (!classRef) {
+          classRef = {
+            rep: item.ext.text,
+            repLen: Array.from(item.ext.text).length,
+            occ: item.positions.length,
+            members: [],
+            blocks: [],
+            id: -1,
+            color: ''
+          };
+          classMap.set(item.ext.text, classRef);
+        }
+        classRef.members.push(item);
+        item.classRef = classRef;
+      }
+
+      const classes = Array.from(classMap.values()).sort((a, b) =>
+        b.repLen - a.repLen || a.rep.localeCompare(b.rep, 'zh-CN')
+      );
+      classes.forEach((c, i) => {
+        c.id = i;
+        c.color = colorForClass(i, c.rep);
+        c.members.sort((a, b) => b.len - a.len || a.text.localeCompare(b.text, 'zh-CN'));
+      });
+
+      for (const cell of cells) cell.classRef = cell.item.classRef;
+
+      const grid = new Map(cells.map(cell => [`${cell.col},${cell.row}`, cell]));
+      const visited = new Set();
+      const blocks = [];
+      const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+
+      for (const cell of cells) {
+        const key = `${cell.col},${cell.row}`;
+        if (visited.has(key)) continue;
+        const queue = [cell];
+        visited.add(key);
+        const component = [];
+        while (queue.length) {
+          const cur = queue.pop();
+          component.push(cur);
+          for (const [dx, dy] of dirs) {
+            const nk = `${cur.col + dx},${cur.row + dy}`;
+            const next = grid.get(nk);
+            if (!next || visited.has(nk) || next.classRef !== cell.classRef) continue;
+            visited.add(nk);
+            queue.push(next);
+          }
+        }
+        const block = { id: blocks.length, classRef: cell.classRef, cells: component };
+        blocks.push(block);
+        cell.classRef.blocks.push(block);
+        component.forEach(c => { c.blockId = block.id; });
+      }
+
+      return { raw, chars, n, cells, substringMap, classes, blocks, grid };
+    }
+
+    function exposedBoundaryPath(cellSet, cellW, cellH, marginX, marginY) {
+      let d = '';
+      const has = (x, y) => cellSet.has(`${x},${y}`);
+      for (const key of cellSet) {
+        const [col, row] = key.split(',').map(Number);
+        const x = marginX + col * cellW;
+        const y = marginY + row * cellH;
+        if (!has(col, row - 1)) d += `M ${x} ${y} H ${x + cellW} `;
+        if (!has(col + 1, row)) d += `M ${x + cellW} ${y} V ${y + cellH} `;
+        if (!has(col, row + 1)) d += `M ${x + cellW} ${y + cellH} H ${x} `;
+        if (!has(col - 1, row)) d += `M ${x} ${y + cellH} V ${y} `;
+      }
+      return d.trim();
+    }
+
+    function shortText(text, limit) {
+      const arr = Array.from(text);
+      if (arr.length <= limit) return text;
+      const left = Math.max(2, Math.floor((limit - 1) / 2));
+      const right = Math.max(2, limit - 1 - left);
+      return arr.slice(0, left).join('') + '…' + arr.slice(-right).join('');
+    }
+
+    function render() {
+      if (!currentModel) return;
+      const model = currentModel;
+      const compact = el('compactCell').checked;
+      const showText = el('showText').checked;
+      const showCoords = el('showCoords').checked;
+      const showFill = el('showFill').checked;
+
+      const cellW = compact ? 58 : 82;
+      const cellH = compact ? 48 : 64;
+      const marginX = 48;
+      const marginY = 42;
+      const rightPad = 40;
+      const bottomPad = 38;
+      const width = marginX + model.n * cellW + rightPad;
+      const height = marginY + model.n * cellH + bottomPad;
+
+      svg.replaceChildren();
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+
+      const bg = svgNode('rect', { x: 0, y: 0, width, height, fill: '#ffffff' });
+      svg.appendChild(bg);
+
+      if (showCoords) {
+        const axis = svgNode('g');
+        for (let col = 0; col < model.n; col++) {
+          axis.appendChild(svgNode('text', {
+            x: marginX + col * cellW + cellW / 2,
+            y: 23,
+            'text-anchor': 'middle',
+            class: 'axis-label'
+          }, `l=${col}`));
+        }
+        for (let row = 0; row < model.n; row++) {
+          const r = model.n - 1 - row;
+          axis.appendChild(svgNode('text', {
+            x: marginX - 9,
+            y: marginY + row * cellH + cellH / 2 + 4,
+            'text-anchor': 'end',
+            class: 'axis-label'
+          }, `r=${r}`));
+        }
+        svg.appendChild(axis);
+      }
+
+      // 先绘制按等价类组织的填充层，便于聚焦。
+      for (const cls of model.classes) {
+        const group = svgNode('g', {
+          class: 'class-layer',
+          'data-class-id': cls.id,
+          opacity: selectedClassId === null || selectedClassId === cls.id ? 1 : .16
+        });
+        if (showFill) {
+          for (const cell of model.cells.filter(c => c.classRef === cls)) {
+            group.appendChild(svgNode('rect', {
+              x: marginX + cell.col * cellW,
+              y: marginY + cell.row * cellH,
+              width: cellW,
+              height: cellH,
+              fill: hexToRgba(cls.color, .105)
+            }));
+          }
+        }
+        svg.appendChild(group);
+      }
+
+      // 全部合法区间的外轮廓，对应图片中的红色阶梯外框。
+      const allSet = new Set(model.cells.map(c => `${c.col},${c.row}`));
+      svg.appendChild(svgNode('path', {
+        d: exposedBoundaryPath(allSet, cellW, cellH, marginX, marginY),
+        fill: 'none', stroke: '#ff1f2d', 'stroke-width': 7,
+        'stroke-linecap': 'square', 'stroke-linejoin': 'miter', opacity: .96
+      }));
+
+      // 每个四连通块单独描边；同一等价类的多个块使用同色。
+      for (const block of model.blocks) {
+        const set = new Set(block.cells.map(c => `${c.col},${c.row}`));
+        svg.appendChild(svgNode('path', {
+          d: exposedBoundaryPath(set, cellW, cellH, marginX, marginY),
+          fill: 'none', stroke: block.classRef.color, 'stroke-width': 5,
+          'stroke-linecap': 'square', 'stroke-linejoin': 'miter',
+          opacity: selectedClassId === null || selectedClassId === block.classRef.id ? 1 : .15,
+          'data-class-id': block.classRef.id
+        }));
+      }
+
+      // 文字与交互命中区。
+      const textLayer = svgNode('g');
+      const hitLayer = svgNode('g');
+      for (const cell of model.cells) {
+        const x = marginX + cell.col * cellW;
+        const y = marginY + cell.row * cellH;
+        const muted = selectedClassId !== null && selectedClassId !== cell.classRef.id;
+
+        if (showText) {
+          const maxChars = compact ? 5 : 8;
+          const display = shortText(cell.text, maxChars);
+          const len = Array.from(display).length;
+          const fontSize = Math.max(compact ? 11 : 13, Math.min(compact ? 19 : 22, (cellW - 12) / Math.max(1, len * .78)));
+          textLayer.appendChild(svgNode('text', {
+            x: x + cellW / 2,
+            y: y + cellH / 2 + fontSize * .35,
+            'text-anchor': 'middle',
+            'font-size': fontSize,
+            fill: cell.classRef.color,
+            opacity: muted ? .18 : 1,
+            class: 'cell-label',
+            'data-class-id': cell.classRef.id
+          }, display));
+        }
+
+        const hit = svgNode('rect', {
+          x, y, width: cellW, height: cellH,
+          fill: 'transparent', class: 'cell-hit', tabindex: 0,
+          'aria-label': `[${cell.l},${cell.r}] ${cell.text}`
+        });
+        hit.addEventListener('mousemove', (event) => showTooltip(event, cell));
+        hit.addEventListener('mouseleave', hideTooltip);
+        hit.addEventListener('focus', (event) => showTooltip(event, cell, true));
+        hit.addEventListener('blur', hideTooltip);
+        hit.addEventListener('click', () => toggleClass(cell.classRef.id));
+        hitLayer.appendChild(hit);
+      }
+      svg.appendChild(textLayer);
+      svg.appendChild(hitLayer);
+
+      renderSummary();
+      renderLegend();
+      updateStatus();
+    }
+
+    function showTooltip(event, cell, keyboard = false) {
+      const cls = cell.classRef;
+      tooltip.innerHTML = `
+        <strong>${escapeHtml(cell.text)}</strong><br>
+        <span class="muted">区间</span> [${cell.l}, ${cell.r}]　
+        <span class="muted">长度</span> ${cell.r - cell.l + 1}<br>
+        <span class="muted">ext</span> ${escapeHtml(cls.rep)}<br>
+        <span class="muted">出现次数</span> ${cell.item.positions.length}　
+        <span class="muted">等价类</span> C${cls.id + 1}　
+        <span class="muted">块</span> B${cell.blockId + 1}
+      `;
+      tooltip.style.display = 'block';
+      const x = keyboard ? 20 : event.clientX + 14;
+      const y = keyboard ? 20 : event.clientY + 14;
+      const maxX = window.innerWidth - tooltip.offsetWidth - 10;
+      const maxY = window.innerHeight - tooltip.offsetHeight - 10;
+      tooltip.style.left = `${Math.max(8, Math.min(x, maxX))}px`;
+      tooltip.style.top = `${Math.max(8, Math.min(y, maxY))}px`;
+    }
+
+    function hideTooltip() { tooltip.style.display = 'none'; }
+
+    function toggleClass(id) {
+      selectedClassId = selectedClassId === id ? null : id;
+      render();
+    }
+
+    function renderSummary() {
+      const m = currentModel;
+      const distinct = m.substringMap.size;
+      const occurrences = m.n * (m.n + 1) / 2;
+      const metrics = [
+        ['字符数', m.n],
+        ['子串出现', occurrences],
+        ['本质不同子串', distinct],
+        ['ext 等价类', m.classes.length],
+        ['连通块', m.blocks.length],
+        ['最大出现次数', Math.max(...m.classes.map(c => c.occ))]
+      ];
+      summaryEl.innerHTML = metrics.map(([label, value]) => `
+        <div class="metric"><b>${value}</b><span>${label}</span></div>
+      `).join('');
+    }
+
+    function renderLegend() {
+      legendEl.replaceChildren();
+      for (const cls of currentModel.classes) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'legend-item' + (selectedClassId === cls.id ? ' active' : '');
+        button.title = `成员：${cls.members.map(x => x.text).join('、')}`;
+        button.innerHTML = `
+          <span class="swatch" style="background:${cls.color}"></span>
+          <span class="legend-main">
+            <strong>${escapeHtml(cls.rep)}</strong>
+            <small>occ=${cls.occ} · ${cls.members.length} 个本质子串 · ${cls.blocks.length} 块</small>
+          </span>
+          <span class="legend-id">C${cls.id + 1}</span>
+        `;
+        button.addEventListener('click', () => toggleClass(cls.id));
+        legendEl.appendChild(button);
+      }
+    }
+
+    function updateStatus(message = '', isError = false) {
+      statusEl.className = 'status' + (isError ? ' error' : '');
+      if (message) {
+        statusEl.textContent = message;
+        return;
+      }
+      const m = currentModel;
+      statusEl.textContent = `已生成 s = “${m.raw}” 的划分：${m.classes.length} 个等价类，${m.blocks.length} 个阶梯块。`;
+    }
+
+    function generate() {
+      const raw = input.value;
+      const n = Array.from(raw).length;
+      selectedClassId = null;
+      hideTooltip();
+      if (n === 0) {
+        currentModel = null;
+        svg.replaceChildren();
+        summaryEl.replaceChildren();
+        legendEl.replaceChildren();
+        updateStatus('请输入至少 1 个字符。', true);
+        return;
+      }
+      if (n > MAX_N) {
+        updateStatus(`当前输入含 ${n} 个 Unicode 字符；演示版最多支持 ${MAX_N} 个。`, true);
+        return;
+      }
+      const started = performance.now();
+      currentModel = buildModel(raw);
+      render();
+      const elapsed = performance.now() - started;
+      statusEl.textContent += ` 用时 ${elapsed.toFixed(1)} ms。`;
+    }
+
+    function serializeSvg() {
+      const clone = svg.cloneNode(true);
+      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      clone.querySelectorAll('.cell-hit').forEach(node => node.remove());
+      const css = `
+        .cell-label { font-family: Georgia, "Times New Roman", serif; font-style: italic; }
+        .axis-label { fill:#8a94a8; font-size:11px; font-family:monospace; }
+      `;
+      const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+      style.textContent = css;
+      clone.insertBefore(style, clone.firstChild);
+      return new XMLSerializer().serializeToString(clone);
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function safeFilename() {
+      const base = Array.from(input.value).slice(0, 18).join('').replace(/[\\/:*?"<>|\s]+/g, '_');
+      return base || 'string';
+    }
+
+    function exportSvg() {
+      if (!currentModel) return;
+      const data = serializeSvg();
+      downloadBlob(new Blob([data], { type: 'image/svg+xml;charset=utf-8' }), `basic-substring-${safeFilename()}.svg`);
+    }
+
+    function exportPng() {
+      if (!currentModel) return;
+      const data = serializeSvg();
+      const blob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const image = new Image();
+      image.onload = () => {
+        const scale = 2;
+        const vb = svg.viewBox.baseVal;
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.ceil(vb.width * scale);
+        canvas.height = Math.ceil(vb.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(scale, 0, 0, scale, 0, 0);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, vb.width, vb.height);
+        ctx.drawImage(image, 0, 0, vb.width, vb.height);
+        canvas.toBlob(png => {
+          if (png) downloadBlob(png, `basic-substring-${safeFilename()}.png`);
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      };
+      image.onerror = () => {
+        URL.revokeObjectURL(url);
+        updateStatus('PNG 导出失败；可先使用 SVG 导出。', true);
+      };
+      image.src = url;
+    }
+
+    el('renderBtn').addEventListener('click', generate);
+    el('sampleBtn').addEventListener('click', () => { input.value = 'abbab'; generate(); });
+    el('randomBtn').addEventListener('click', () => {
+      const alphabet = ['a', 'b', 'c'];
+      const n = 5 + Math.floor(Math.random() * 4);
+      input.value = Array.from({ length: n }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+      generate();
+    });
+    input.addEventListener('keydown', event => { if (event.key === 'Enter') generate(); });
+    ['showText', 'showCoords', 'showFill', 'compactCell'].forEach(id => el(id).addEventListener('change', render));
+    el('exportSvgBtn').addEventListener('click', exportSvg);
+    el('exportPngBtn').addEventListener('click', exportPng);
+    window.addEventListener('resize', hideTooltip);
+
+    generate();
+  </script>
+</body>
+</html>
