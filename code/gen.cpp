@@ -31,27 +31,22 @@ inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-int n = 10, q = n*(n+1)/2;
-int a[1005];
 
 void procedure(){
-	cout<<n<<" "<<q<<endl;
-	for(int i=1;i<=n;i++) a[i]=i;
-	shuffle(a+1,a+n+1,rnd);
+	int n = rng(1,10), m = rng(1,10), q = m*(m+1)/2;
+	cout<<n<<" "<<m<<" "<<q<<endl;
+	for(int i=1;i<=n;i++) cout<<(char)rng('a','b'); cout<<endl;
+	for(int i=1;i<=m;i++) cout<<(char)rng('a','b'); cout<<endl;
 
-	for(int i=1;i<=n;i++) cout<<a[i]<<" "; cout<<endl;
-
-	for(int i=2;i<=n;i++) cout<<rng(1,i-1)<<endl;
-
-	for(int i=1;i<=n;i++)
-		for(int j=i;j<=n;j++)
-			cout<<i<<" "<<j<<endl;
+	for(int l=1;l<=m;l++)
+		for(int r=l;r<=m;r++)
+			cout<<l<<" "<<r<<endl;
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","w",stdout));
 	#endif
-	ll T=1;
+	ll T=2; cout<<T<<endl;
 	// math_init();
 	while(T--) procedure();
 	return 0;

@@ -63,7 +63,9 @@ namespace SAM{
 }
 int bor[1000005];
 int sz[1000005],tt,buc[1000005];
+
 int ext[1000005];
+ll qz[1000005],cc[1000005];
 
 void procedure(){
 	n=read(),m=read(),q=read();
@@ -85,19 +87,33 @@ void procedure(){
 	SAM::idx=n-2;
 	for(int i=2;i<n;i++)SAM::ins(i-1,s[i]-'a');
 
-	for(int w=1;w<=q;w++){
-		l[w]=read(),r[w]=read();
-		int cur=0,sb=0;
+	int cur=0,sb=0;
+	for(int i=1;i<=m;i++){
+		int v=t[i]-'a';
+		while(cur&&!SAM::son[cur][v])
+			cur=SAM::fa[cur],sb=SAM::len[cur];
+		if(SAM::son[cur][v])cur=SAM::son[cur][v],sb++;
+		ext[i]=sb;
+		// cout<<i<<" ext="<<ext[i]<<" "; cout<<endl;
+	}
 
-		ll ans=0;
-		for(int i=l[w];i<=r[w];i++){
-			int v=t[i]-'a';
-			while(cur&&!SAM::son[cur][v])
-				cur=SAM::fa[cur],sb=SAM::len[cur];
-			if(SAM::son[cur][v])cur=SAM::son[cur][v],sb++;
-			ans+=buc[sb];
+	for(int i=1;i<=m;i++) qz[i]=qz[i-1]+buc[ext[i]];
+
+	int tl=0; ll all=0;
+	for(int i=1;i<=n;i++){
+		while(tl<tt && sz[tl+1]<=i) all+=sz[++tl];
+		cc[i]=(ll)(i+1)*tl-all;
+	}
+	for(int i=1;i<=q;i++){
+		l[i]=read(),r[i]=read();
+		int L=l[i],R=r[i],pt=l[i]-1;
+		while(L<=R){
+			int mid=(L+R)>>1;
+			if(mid-ext[mid]+1<l[i]) pt=mid,L=mid+1;
+			else R=mid-1;
 		}
-		printf("%lld\n",ans);
+		// cout<<"pt = "<<pt<<" sum = "<<qz[r[i]]<<"-"<<qz[pt]<<"+"<<cc[pt-l[i]+1]<<endl;
+		printf("%lld\n",qz[r[i]]-qz[pt]+cc[pt-l[i]+1]);
 	}
 
 	tt=0;
@@ -107,7 +123,7 @@ void procedure(){
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.ans","w",stdout));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=read();
 	// math_init();

@@ -34,7 +34,7 @@ void procedure(){
 	for(int t=1;t<=T;t++){
 		system("./gen");
 		system("./brute");
-		system("./p8528");
+		system("./qoj6963");
 		if(!system("diff -Zq test.out test.ans")){
 			cout<<"AC"<<endl;
 		}else{
