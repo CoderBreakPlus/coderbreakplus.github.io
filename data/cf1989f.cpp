@@ -1,3 +1,4 @@
+// created time: 2026-08-09
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,7 +31,7 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
 int n,m,q;
-int fa[400005],sz[400005],u[200005],v[200005];
+int fa[400005],sz[400005];
 
 int find(int x){ if(x!=fa[x]) fa[x]=find(fa[x]); return fa[x]; }
 ll W(int x){ if(x>1) return (ll)x*x; return 0;}
@@ -67,7 +68,7 @@ void tarjan(int x){
 void solve(int l,int r,vector<tuple<int,int,int>>E){
 	if(l==r){
 		for(auto [t,u,v]: E) merge(u,v);
-		if(r<=q) printf("%lld ",ans);
+		if(r<=q) printf("%lld\n",ans);
 		return;
 	}
 	int mid=(l+r)>>1; tim=0;
@@ -93,7 +94,7 @@ void solve(int l,int r,vector<tuple<int,int,int>>E){
 }
 void procedure(){
 	n=read(),m=read(),q=read();
-	for(int i=1;i<=n;i++) fa[i]=i,sz[i]=1;
+	for(int i=1;i<=n+m;i++) fa[i]=i,sz[i]=1;
 
 	vector<tuple<int,int,int>>E;
 	for(int x=1;x<=q;x++){
