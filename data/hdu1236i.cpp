@@ -1,3 +1,4 @@
+// created time: 2026-08-13 14:13:37
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -7,7 +8,7 @@ typedef unsigned long long ull;
 #define mkp make_pair
 #define pb emplace_back
 #define popcnt __builtin_popcountll
-const int mod = 1e9+7;
+const int mod = 998244353;
 inline ll read(){
 	ll x=0, f=1; int ch=getchar();
 	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
@@ -28,33 +29,51 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-const int N = 500000;
-int fac[N+5],inv[N+5];
-void math_init(){
-	fac[0]=inv[0]=1;
-	for(int i=1;i<=N;i++) fac[i]=1ll*fac[i-1]*i%mod;
-	inv[N]=qpow(fac[N],mod-2);
-	for(int i=N-1;i>=1;i--) inv[i]=1ll*inv[i+1]*(i+1)%mod;
-}
-inline int binom(int x,int y){
-	if(x<0 || y<0 || x<y) return 0;
-	return 1ll*fac[x]*inv[y]%mod*inv[x-y]%mod;
-}
-inline int perm(int x,int y){
-	if(x<0 || y<0 || x<y) return 0;
-	return 1ll*fac[x]*inv[x-y]%mod;
-}
+
+int n,a[400005],vis[400005],ok[400005];
+
 void procedure(){
-	int here = 5ull * INV(6) * qpow(INV(24), 4) % mod * fac[19] % mod * inv[20] % mod;
-	cout<<here<<endl;
+	n=read();
+	for(int i=1;i<=2*n;i++)vis[i]=ok[i]=0;
+	for(int i=1;i<=2*n;i++)a[i]=read();
+
+	int cnt=n;
+	int ans=0,mor=0;
+	for(int i=1;i<=2*n;i+=2){
+		if(a[i]&&a[i+1]){
+			ok[a[i]]=ok[a[i+1]]=1;
+			cnt--;
+		}else{
+			if(a[i])vis[a[i]]=1;
+			if(a[i+1])vis[a[i+1]]=1;
+			if(!a[i]&&!a[i+1])mor++;
+		}
+	}
+	ans=qpow(2,mor);
+	for(int i=1;i<=mor;i++)ans=(ull)ans*i%mod;
+	
+	int s1=cnt,t1=0,s2=cnt,t2=0;
+	for(int i=1,c=0;i<=2*n;i++){
+		if(ok[i])continue;
+		c++;
+		if(c>cnt) t2+=vis[i];
+		else t1+=vis[i];
+	}
+
+	s1-=t1,s2-=t2;
+	while(t1--) ans=(ull)ans*(s2--)%mod;
+
+	t2+=s2;
+	while(s1--) ans=(ull)ans*(t2--)%mod;
+	printf("%d\n",ans);
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
-	math_init();
+	ll T=read();
+	// math_init();
 	while(T--) procedure();
 	return 0;
 }

@@ -1,3 +1,4 @@
+// created time: 2026-08-13 14:24:03
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,25 +29,51 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
+int n,m,q,p[100005];
+bool ok[100005], vis[100005];
+vector<int>E[100005];
 
+int que[100005],hd,tl;
+bool check(int mid){
+	for(int i=1;i<=n;i++)ok[i]=1,vis[i]=0;
+	for(int i=1;i<=mid;i++) ok[p[i]]=0;
+
+	que[hd=tl=1]=1;
+	while(hd<=tl){
+		int x=que[hd++];
+		for(int y:E[x])
+			if(!vis[y]&&ok[y]) que[++tl]=y,vis[y]=1;
+	}
+	return vis[n];
+}
 void procedure(){
-	int n = rng(1,10), m = rng(1,10), q = m*(m+1)/2;
-	cout<<n<<" "<<m<<" "<<q<<endl;
-	for(int i=1;i<=n;i++) cout<<(char)rng('a','b'); cout<<endl;
-	for(int i=1;i<=m;i++) cout<<(char)rng('a','b'); cout<<endl;
+	n=read(),m=read(),q=read();
+	for(int i=1;i<=n;i++)E[i].clear();
+	for(int i=1;i<=m;i++){
+		int u=read(),v=read();
+		E[u].pb(v);
+	}	
+	for(int i=1;i<=q;i++)p[i]=read();
 
-	for(int l=1;l<=m;l++)
-		for(int r=l;r<=m;r++)
-			cout<<l<<" "<<r<<endl;
+	int L=0,R=q,ans=-1;
+	while(L<=R){
+		int mid=(L+R)>>1;
+		if(check(mid)) {
+			ans=mid;
+			L=mid+1;
+		}else R=mid-1;
+	}
+	if(ans==-1) puts("NO");
+	else if(ans==q) puts("YES");
+	else printf("%d\n",ans);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=2; cout<<T<<endl;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
