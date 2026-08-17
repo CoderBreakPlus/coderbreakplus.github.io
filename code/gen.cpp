@@ -29,24 +29,21 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n = 20, q = 20;
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+int n = 200;
 
 void procedure(){
-	cout<<n<<" "<<q<<endl;
-	for(int i=1;i<=n;i++) cout<<rng(1,10)<<" ";cout<<endl;
-
-	while(q--){
-		int l=rng(1,n),r=rng(1,n);if(l>r)swap(l,r);
-		cout<<rng(1,3)<<" "<<l<<" "<<r<<" "<<rng(1,n)<<endl;
+	cout<<n<<endl;
+	for(int i=1;i<=n;i++) cout<<"1 "; cout<<endl;
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=n;j++)cout<<1;
+		cout<<endl;
 	}
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","w",stdout));
 	#endif
-	ll T=1; cout<<T<<endl;
+	ll T=20; cout<<T<<endl;
 	// math_init();
 	while(T--) procedure();
 	return 0;
