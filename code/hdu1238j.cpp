@@ -1,3 +1,4 @@
+// created time: 2026-08-20 13:10:46
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,22 +30,30 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
+int n,m,a[100005],b[100005];
+unordered_map<int,int>mp;
+
+int s[100005],t;
 void procedure(){
-	int T = 10000;
-	for(int t=1;t<=T;t++){
-		system("./gen");
-		system("./g");
-		system("./g2");
-		if(!system("diff -Zq test.out test.ans")){
-			cout<<"AC"<<endl;
-		}else{
-			cout<<"WA"<<endl;
-			exit(0);
-		}
+	mp={};
+	n=read(),m=read();n*=m;
+	for(int i=1;i<=n;i++)a[i]=read(),mp[a[i]]=i;
+	t=0;
+	for(int i=1;i<=n;i++){
+		int cur=mp[read()];
+
+		int pos=lower_bound(s+1,s+t+1,cur)-s;
+		if(pos>t)t++;
+		s[pos]=cur;
 	}
+	printf("%d\n",n-t);
 }
 int main(){
-	ll T=1;
+	#ifdef LOCAL
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
+	#endif
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;

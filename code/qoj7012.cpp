@@ -80,7 +80,7 @@ void procedure(){
 		ans[x]=Info();
 	}
 	f[w[1]][1]=Info(1,c[1]);
-	for(int i=1;i<n;i++){
+	for(int i=1;i<=n;i++){
 		int x=seq[i];
 		for(int v=0;v<k;v++){
 			for(int y:E[x]) f[(v+w[y])%k][y]+=add(f[v][x],c[y]);
@@ -88,16 +88,17 @@ void procedure(){
 	}
 
 	g[w[n]][n]=Info(1,c[n]);
-	for(int i=n-1;i>=1;i--){
+	for(int i=n;i>=1;i--){
 		int x=seq[i];
 		for(int v=0;v<k;v++)
 			for(int y:E[x]) g[(v+w[x])%k][x]+=add(g[v][y],c[x]);
 	}
 
 	for(int i=1;i<=n;i++)vec[i].clear();
+	vector<Info> edge_val(m + 1, Info());
 	for(int i=1;i<=m;i++){
 		for(int s=0;s<k;s++){
-			Info tmp = f[s][u[i]]*g[(t+k-s)%k][v[i]];
+			edge_val[i] += f[s][u[i]] * g[(t+k-s)%k][v[i]];
 		}
 		vec[ord[u[i]]+1].pb(i);
 		vec[ord[v[i]]].pb(-i);
@@ -106,25 +107,35 @@ void procedure(){
 	auto pushup = [&](int x){
 		tr[x] = tr[x<<1] + tr[x<<1|1];
 	};
-	for(int s=0;s<k;s++){
-		for(int i=1;i<=2*m;i++)tr[i]=Info();
-		for(int i=1;i<=n;i++){
-			int x=seq[i];
-			for(int p: vec[i]){
-				if(p>0){
-					tr[p+m]=f[s][u[p]]*g[(t+k-s)%k][v[p]];
-					for((p+=m)>>=1;p;p>>=1) pushup(p);
-				}else{
-					tr[-p+m]=Info();
-					for((p=m-p)>>=1;p;p>>=1) pushup(p);
-				}
-			}
-			ans[x]+=tr[1];
-		}
-	}
+	
+	for(int i=1;i<=2*m+1;i++) tr[i]=Info();
+
 	for(int i=1;i<=n;i++){
-		if(ans[i].v>=0) printf("%lld %d\n",ans[i].v,ans[i].c);
-		else puts("-1");
+		int x=seq[i];
+		for(int p: vec[i]){
+			if(p>0){
+				tr[p+m] = edge_val[p];
+				for((p+=m)>>=1;p;p>>=1) pushup(p);
+			}else{
+				int edge_idx = -p;
+				int idx = edge_idx + m;
+				tr[idx] = Info();
+				for(idx>>=1;idx;idx>>=1) pushup(idx);
+			}
+		}
+		ans[x] += tr[1];
+	}
+	Info total_ans = f[t][n];
+	for(int i=1;i<=n;i++){
+		if (i == 1 || i == n) {
+			puts("-1");
+		} else if (ord[i] < ord[1] || ord[i] > ord[n]) {
+			if (total_ans.v >= 0) printf("%lld %d\n", total_ans.v, total_ans.c);
+			else puts("-1");
+		} else {
+			if(ans[i].v >= 0) printf("%lld %d\n", ans[i].v, ans[i].c);
+			else puts("-1");
+		}
 	}
 }
 int main(){

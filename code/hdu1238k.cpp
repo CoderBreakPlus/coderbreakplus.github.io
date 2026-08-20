@@ -1,3 +1,4 @@
+// created time: 2026-08-20 12:06:55
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,22 +29,26 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-
-int n = 200;
+set<int>S;
 
 void procedure(){
-	cout<<n<<endl;
-	for(int i=1;i<=n;i++) cout<<"1 "; cout<<endl;
-	for(int i=1;i<=n;i++){
-		for(int j=1;j<=n;j++)cout<<1;
-		cout<<endl;
-	}
+	int x=read();
+	auto it=S.lower_bound(x);
+	if(it==S.end())puts("-1");
+	else printf("%d\n",*it);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=20; cout<<T<<endl;
+
+
+	for(int i=1;i<=1e6;i++){
+		int cnt=__builtin_popcount(i);
+		if((i>>1)==cnt*cnt*cnt) S.emplace(i);
+	}
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
