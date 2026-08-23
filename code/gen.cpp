@@ -1,3 +1,4 @@
+// created time: 2026-08-21 15:31:24
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,21 +30,34 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
+mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
+ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+int n=5,m=rng(0,5);
+map<pair<int,int>,int>mp;
+
 void procedure(){
-	int T = 100;
-	for(int t=1;t<=T;t++){
-		system("./gen");
-		system("./brute");
-		system("./soj1780");
-		if(!system("diff -Zq test.out test.ans")){
-			cout<<"AC"<<endl;
-		}else{
-			cout<<"WA"<<endl;
-			exit(0);
-		}
+	cout<<n<<" "<<n-1+m<<" "<<n<<endl;
+	for(int i=1;i<=n;i++)cout<<0<<" "; cout<<endl;
+	for(int i=2;i<=n;i++){
+		int f=rng(1,i-1);
+		cout<<f<<" "<<i<<endl;
+		mp[{f,i}]=1;
 	}
+	for(int i=1;i<=m;i++){
+		int u,v;
+		do{
+			u=rng(1,n),v=rng(1,n);
+			while(u==v)v=rng(1,n);
+			if(u>v)swap(u,v);
+		}while(mp.count({u,v}));
+		cout<<u<<" "<<v<<endl;
+	}
+	for(int i=1;i<=n;i++)cout<<i<<endl;
 }
 int main(){
+	#ifdef LOCAL
+		assert(freopen("test.in","w",stdout));
+	#endif
 	ll T=1;
 	// math_init();
 	while(T--) procedure();
