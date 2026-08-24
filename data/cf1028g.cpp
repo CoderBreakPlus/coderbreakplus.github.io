@@ -1,3 +1,4 @@
+// created time: 2026-08-24 09:08:52
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -28,22 +29,46 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
+const int N = 1e4;
+ll dp[6][N+5];
 
+void solve(int i,ll l,ll r){
+	vector<ll>vec={l-1};
+
+	int s=min(l,(ll)N);
+	ll cur=l;
+	cout<<s<<" ";
+	for(int k=1;k<=s;k++){
+		cur+=dp[i-1][min(cur,(ll)N)];
+		cout<<cur<<" ";
+		vec.pb(cur);
+		cur++;
+	}
+	cout<<endl;
+	vec.pb(r+1);
+
+	int x;
+	if(!(cin>>x)) exit(0);
+	if(x==-1) return;
+
+	solve(i-1,vec[x]+1,vec[x+1]-1);
+}
 void procedure(){
-	int T = 100;
-	for(int t=1;t<=T;t++){
-		system("./gen2");
-		system("./bf");
-		system("./cf1152f2");
-		if(!system("diff -Zq test.out test.ans")){
-			cout<<"AC"<<endl;
-		}else{
-			cout<<"WA"<<endl;
-			exit(0);
+	for(int i=1;i<=5;i++){
+		for(int j=1;j<=(i<5?N:1);j++){
+			ll cur=j;
+			for(int k=1;k<=j+1;k++)
+				cur+=dp[i-1][min(cur,(ll)N)]+1;
+			dp[i][j]=cur-j-1;
 		}
 	}
+	solve(5,1,dp[5][1]);
 }
 int main(){
+	#ifdef LOCAL
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
+	#endif
 	ll T=1;
 	// math_init();
 	while(T--) procedure();

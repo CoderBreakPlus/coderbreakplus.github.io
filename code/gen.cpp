@@ -1,4 +1,4 @@
-// created time: 2026-08-21 15:31:24
+// created time: 2026-08-24 10:57:39
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,36 +29,22 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-int n=5,m=rng(0,5);
-map<pair<int,int>,int>mp;
+
+int n = 20, a[25];
 
 void procedure(){
-	cout<<n<<" "<<n-1+m<<" "<<n<<endl;
-	for(int i=1;i<=n;i++)cout<<0<<" "; cout<<endl;
-	for(int i=2;i<=n;i++){
-		int f=rng(1,i-1);
-		cout<<f<<" "<<i<<endl;
-		mp[{f,i}]=1;
-	}
-	for(int i=1;i<=m;i++){
-		int u,v;
-		do{
-			u=rng(1,n),v=rng(1,n);
-			while(u==v)v=rng(1,n);
-			if(u>v)swap(u,v);
-		}while(mp.count({u,v}));
-		cout<<u<<" "<<v<<endl;
-	}
-	for(int i=1;i<=n;i++)cout<<i<<endl;
+	cout<<n<<endl;
+	for(int i=1;i<=n;i++) a[i]=i;
+	shuffle(a+1,a+n+1,rnd);
+	for(int i=1;i<=n;i++) cout<<a[i]<<" "; cout<<endl;
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","w",stdout));
 	#endif
-	ll T=1;
+	ll T=10000; cout<<T<<endl;
 	// math_init();
 	while(T--) procedure();
 	return 0;

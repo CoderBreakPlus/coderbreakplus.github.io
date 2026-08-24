@@ -1,3 +1,4 @@
+// created time: 2026-08-24 10:40:09
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,22 +30,33 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
+int n,a[500005],b[500005],vis[500005];
+
 void procedure(){
-	int T = 100;
-	for(int t=1;t<=T;t++){
-		system("./gen2");
-		system("./bf");
-		system("./cf1152f2");
-		if(!system("diff -Zq test.out test.ans")){
-			cout<<"AC"<<endl;
-		}else{
-			cout<<"WA"<<endl;
-			exit(0);
+	n=read();
+	for(int i=1;i<=n;i++)
+		a[i]=i,b[i]=read(),vis[i]=0;
+
+	int mx=0;
+	for(int i=1;i<=n;i++){
+		int mn=1e9,pt=0;
+		for(int j=1;j<=n;j++)if(!vis[j]){
+			int val=max(b[j]-a[j],a[j]-b[j]);
+			if(val<mn)mn=val,pt=j;
 		}
+		chkmax(mx,mn);
+		vis[pt]=1;
+		for(int j=1;j<=n;j++)if(!vis[j])
+			a[j]-=(a[j]>a[pt]),b[j]-=(b[j]>b[pt]);
 	}
+	printf("%d\n",mx);
 }
 int main(){
-	ll T=1;
+	#ifdef LOCAL
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
+	#endif
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
