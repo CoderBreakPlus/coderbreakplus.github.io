@@ -1,4 +1,4 @@
-// created time: 2026-08-24 15:16:52
+// created time: 2026-08-24 14:08:15
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -8,7 +8,7 @@ typedef unsigned long long ull;
 #define mkp make_pair
 #define pb emplace_back
 #define popcnt __builtin_popcountll
-const int mod = 1e9+7;
+const int mod = 998244353;
 inline ll read(){
 	ll x=0, f=1; int ch=getchar();
 	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
@@ -29,111 +29,70 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-const int N = 500000;
-int fac[N+5],inv[N+5];
-void math_init(){
-	fac[0]=inv[0]=1;
-	for(int i=1;i<=N;i++) fac[i]=1ll*fac[i-1]*i%mod;
-	inv[N]=qpow(fac[N],mod-2);
-	for(int i=N-1;i>=1;i--) inv[i]=1ll*inv[i+1]*(i+1)%mod;
-}
-inline int binom(int x,int y){
-	if(x<0 || y<0 || x<y) return 0;
-	return 1ll*fac[x]*inv[y]%mod*inv[x-y]%mod;
-}
-inline int perm(int x,int y){
-	if(x<0 || y<0 || x<y) return 0;
-	return 1ll*fac[x]*inv[x-y]%mod;
-}
 
-int n,K,m,a[105],s[105];
-int f[15][8][50],g[15][50],dp[15][15][50];
+int n,a[1005],w;
+char s[1005][1005];
 
-inline void upd(int &a,ull b){ a=(a+b)%mod; }
-
-int mp[1<<21];
-int S[30005][15],cnt[30005],tt;
+void out(){
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=n;j++)putchar(s[i][j]);
+		puts("");
+	}
+}
+bool vis[1005];
 void procedure(){
-	n=read(),K=read(),m=read();
+	n=read();
+	for(int i=1;i<=n;i++){
+		a[i]=read();
+		for(int j=1;j<=n;j++)s[i][j]='.';
+	}
+	bool flg=1;
+	for(int i=1;i<=n;i++)
+		flg&=(a[i]==i);
 
-	for(int k=2;k<=K;k++)
-	{
-		for(int i=0;i<k;i++)a[i]=i;
+	if(flg){
+		printf("%d\n",n);
+		out(); return;
+	}	
+	for(int i=n;i>=1;i--){
+		if(vis[i])continue;
 
-		auto gethash = [&](int *seq){
-			int ret=0;
-			for(int i=1;i<k;i++)ret=ret*4+seq[i]-1;
-			return ret;
-		};
-		do{
-			bool flg=1;
-			for(int i=1;i<k;i++)
-				if(a[i-1]-a[i]>m){flg=0;break;}
-			if(!flg)continue;
+		if(a[i]==i){
+			vis[i]=1;
+			continue;
+		}
+		int p=a[i];
+		vector<int>vec;
+		while(!vis[p]){
+			vec.pb(p),vis[p]=1;
+			p=a[p];
+		}
 
-			for(int i=0;i<k;i++)s[i]=i;
-			for(int i=1;i<k;i++)
-				if(a[i]<a[i-1]) s[a[i-1]]=a[i];
 
-			for(int i=k-2;i>=0;i--)chkmin(s[i],s[i+1]);
+		// for(int x: vec) cout<<x<<" "; cout<<endl;
 
-			for(int i=1;i<k;i++){
-				s[i]=i-s[i];
-				if(!s[i])flg=0;
+		if(vec.back()!=n){
+			s[++w][vec[0]]='\\';
+			s[w][n]='\\';
+		}
+
+		for(int j=0;j+1<vec.size();j++){
+			if(vec[j]<vec[j+1]){
+				s[++w][vec[j]]='/';
+				s[w][vec[j+1]]='/';
+			}else{
+				s[++w][vec[j]]='\\';
+				s[w][vec[j+1]]='\\';
 			}
-			if(!flg)continue;
-
-			int tmp = gethash(s);
-			if(!mp[tmp]){
-				mp[tmp]=++tt,cnt[tt]=1;
-				memcpy(S[tt],s,sizeof(s));
-			}else cnt[mp[tmp]]++;
-
-		}while(next_permutation(a,a+k));
-
-		for(int p=1;p<=tt;p++){
-			int *s=S[p];
-			memset(f,0,sizeof(f));
-			f[0][0][0]=cnt[p];
-			for(int i=1;i<k;i++)
-				for(int j=0;j<(1<<m-1);j++){
-					int cur=j|(1<<m-1);
-					for(int d=1;d<=m;d++){
-						if(__builtin_popcount(cur>>d-1)>=s[i]){
-							for(int w=0;w<=3*(i-1);w++)
-								addmod(f[i][cur>>d][w+d-1]+=f[i-1][j][w]);
-						}else break;
-					}
-				}
-			for(int j=0;j<(1<<m-1);j++)
-				for(int w=0;w<=3*(k-1);w++)
-					addmod(g[k][w]+=f[k-1][j][w]);
 		}
 
-		for(int i=1;i<=tt;i++) cnt[i]=0;
-		tt=0;
-		memset(mp,0,sizeof(mp));
-	}
-	g[1][0]=1;
-	for(int i=1;i<=K;i++)
-		for(int j=0;j<=3*(i-1);j++){
-			if(!g[i][j])continue;
+		if(vec.back()!=n){
+			s[w][vec.back()]='/';
+			s[w][n]='/';
 		}
-
-	dp[0][0][0]=1;
-	for(int i=0;i<K;i++)
-		for(int j=0;j<=i;j++)for(int w=0;w<=3*(i-j);w++)if(dp[i][j][w])
-			for(int ii=1;i+ii<=K;ii++)
-			for(int ww=0;ww<=3*(ii-1);ww++)
-				upd(dp[i+ii][j+1][w+ww],(ull)dp[i][j][w]*g[ii][ww]);
-
-	int ans=0;
-	for(int j=1,res;j<=K;j++)for(int w=0;w<=3*(K-j);w++)if((res=n-K-w)>=0){
-		int now=(ull)dp[K][j][w]*inv[j]%mod; // * C(res+j,j)
-		for(int i=1;i<=j;i++) now=(ull)now*(res+i)%mod;
-		addmod(ans+=now);
 	}
-	printf("%d\n",ans);
+	printf("%d\n",n-1);
+	out();
 }
 int main(){
 	#ifdef LOCAL
@@ -141,7 +100,7 @@ int main(){
 		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
-	math_init();
+	// math_init();
 	while(T--) procedure();
 	return 0;
 }
