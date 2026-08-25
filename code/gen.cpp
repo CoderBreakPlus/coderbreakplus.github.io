@@ -1,4 +1,4 @@
-// created time: 2026-08-24 10:57:39
+// created time: 2026-08-25 08:53:24
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -31,20 +31,24 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-
-int n = 20, a[25];
+int n = rng(1,4), m = rng(1,4), q = n*m;
 
 void procedure(){
-	cout<<n<<endl;
-	for(int i=1;i<=n;i++) a[i]=i;
-	shuffle(a+1,a+n+1,rnd);
-	for(int i=1;i<=n;i++) cout<<a[i]<<" "; cout<<endl;
+	cout<<n<<" "<<m<<" "<<q<<endl;
+	for(int i=1;i<=n;i++)cout<<(rnd()%2?0:1);cout<<endl;
+	for(int i=1;i<=m;i++)cout<<(rnd()%2?0:1);cout<<endl;
+
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=m;j++){
+			cout<<i<<" "<<j<<endl;
+		}
+	}
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","w",stdout));
 	#endif
-	ll T=10000; cout<<T<<endl;
+	ll T=1;
 	// math_init();
 	while(T--) procedure();
 	return 0;

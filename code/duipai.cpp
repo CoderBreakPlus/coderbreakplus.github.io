@@ -32,15 +32,22 @@ inline ll INV(ll x){ return qpow(x, mod-2); }
 void procedure(){
 	int T = 100;
 	for(int t=1;t<=T;t++){
-		system("./gen2");
-		system("./bf");
-		system("./cf1152f2");
+		system("./gen");
+		system("./brute");
+		system("./brute2");
 		if(!system("diff -Zq test.out test.ans")){
 			cout<<"AC"<<endl;
 		}else{
 			cout<<"WA"<<endl;
 			exit(0);
 		}
+
+		// system("./gen");
+		// if(system("./brute")){
+		// 	cout<<"WA"<<endl;
+		// 	exit(0);
+		// }else
+		// 	cout<<"AC"<<endl;
 	}
 }
 int main(){
