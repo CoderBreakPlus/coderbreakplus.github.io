@@ -1,4 +1,4 @@
-// created time: 2026-08-25 08:53:24
+// created time: 2026-08-26 10:54:17
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -31,16 +31,24 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-int n = rng(1,4), m = rng(1,4), q = n*m;
+
+int n=1000,q=10000;
 
 void procedure(){
-	cout<<n<<" "<<m<<" "<<q<<endl;
-	for(int i=1;i<=n;i++)cout<<(rnd()%2?0:1);cout<<endl;
-	for(int i=1;i<=m;i++)cout<<(rnd()%2?0:1);cout<<endl;
+	cout<<n<<" "<<q<<endl;
+	for(int i=1;i<=n;i++) cout<<rng(1,n)<<" ";cout<<endl;
 
-	for(int i=1;i<=n;i++){
-		for(int j=1;j<=m;j++){
-			cout<<i<<" "<<j<<endl;
+	while(q--){
+		int x=rng(1,3);
+		cout<<x<<" ";
+		if(x==1){
+			cout<<rng(0,n-2)<<endl;
+		}else if(x==2){
+			int l=rng(0,n-1),r=rng(0,n-1);
+			if(l>r)swap(l,r); cout<<l<<" "<<r<<endl;
+		}else{
+			int l=rng(0,n-1),r=rng(0,n-1),w=rng(1,n);
+			if(l>r)swap(l,r); cout<<l<<" "<<r<<" "<<w<<endl;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// created time: 2026-08-25 15:15:34
+// created time: 2026-08-26 10:58:07
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,82 +30,33 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,k,a[20005];
-ll f[20005],g[20005];
+int s[10005];
+int n,q,a[10005];
 
-struct Line{
-	ll k,b;
-	ll val(ll x){ return k*x+b; }
-}s[40005]; int id,cnt;
-int t[2000005],lc[2000005],rc[2000005];
-int newline(ll k,ll b){
-	s[++id]=(Line){k,b};
-	return id;
-}
-void update(int l,int r,int x,int &p){
-	if(l>r) return;
-	if(!p){ t[p=++cnt]=x; return; }
-	int mid=(l+r)>>1;
-	if(s[x].val(mid)<s[t[p]].val(mid))swap(t[p],x);
-
-	if(s[x].k>s[t[p]].k) update(l,mid-1,x,lc[p]);
-	if(s[x].k<s[t[p]].k) update(mid+1,r,x,rc[p]);
-}
-void lovef(int l,int r,int x,int bef,int &p){
-	if(l>r) return;
-	if(!bef){ t[p=++cnt]=x; return; }
-	t[p=++cnt]=t[bef], lc[p]=lc[bef], rc[p]=rc[bef];
-
-	int mid=(l+r)>>1;
-	if(s[x].val(mid)<s[t[p]].val(mid))swap(t[p],x);
-
-	if(s[x].k>s[t[p]].k) lovef(l,mid-1,x,lc[bef],lc[p]);
-	if(s[x].k<s[t[p]].k) lovef(mid+1,r,x,rc[bef],rc[p]);
-}
-int merge(int x,int y,int l,int r){
-	if(!x||!y)return x;
-
-	int mid=(l+r)>>1;
-	if(s[t[y]].val(mid)<s[t[x]].val(mid)) swap(t[x],t[y]);
-	lc[x]=merge(lc[x],lc[y],l,mid);
-	rc[x]=merge(rc[x],rc[y],mid+1,r);
-
-	if(s[t[y]].k>s[t[x]].k) update(l,mid-1,t[y],lc[x]);
-	if(s[t[y]].k<s[t[x]].k) update(mid+1,r,t[y],rc[x]);
-	return x;
-}
-ll query(int l,int r,int x,int p){
-	if(!p) return 1e18;
-	int mid=(l+r)>>1;
-	if(x==mid) return s[t[p]].val(x);
-	return min(s[t[p]].val(x),
-		(x<mid)?query(l,mid-1,x,lc[p]):query(mid+1,r,x,rc[p]));
-}
-int stk[20005],rt[20005],info[20005],tp;
 void procedure(){
-	n=read(),k=read();
-	for(int i=1;i<=n;i++)a[i]=read();
-	memset(f,0x3f,sizeof(f));
-	f[0]=0;
+	n=read(),q=read();
+	for(int i=0;i<n;i++)a[i]=read();
 
-	for(int w=1;w<=k;w++){
-		// cout<<"------w="<<w<<"------"<<endl;
-		memset(g,0x3f,sizeof(g));
-		for(int i=0;i<n;i++){
-			int mx=0;
-			for(int j=i+1;j<=n;j++){
-				chkmax(mx,a[j]);
-				chkmin(g[j], f[i]+(ll)(j-i)*mx);
+	while(q--){
+		int op=read();
+		if(op==1){
+			int x=read(),val=a[x];
+			for(int i=x+1;i<n;i++){
+				if(a[i]>val){
+					s[i]++;
+					val=a[i];
+				}
 			}
+		}else if(op==2){
+			int l=read(),r=read();
+			int sum=0;
+			for(int i=l;i<=r;i++)sum+=s[i];
+			printf("%d\n",sum);
+		}else{
+			int l=read(),r=read(),w=read();
+			for(int i=l;i<=r;i++)a[i]+=w;
 		}
-		memcpy(f,g,sizeof(f));
-		for(int i=1;i<=cnt;i++)t[i]=lc[i]=rc[i]=0;
-
-		for(int i=w;i<=n;i++)
-			cout<<f[i]<<" "; cout<<endl;
-		cnt=0;
-	}
-	printf("%lld\n",f[n]);
+	}	
 }
 int main(){
 	#ifdef LOCAL
