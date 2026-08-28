@@ -45,13 +45,13 @@
         .normal-table tbody tr .row-index::before { counter-increment: row-num; content: counter(row-num); }
         
         /* 更新列宽以适应左侧序号 */
-        .normal-table th:nth-child(1) { width: 5%; text-align: center; } /* 序号 (稍微收紧一点) */
-        .normal-table th:nth-child(2) { width: 35%; } /* 题目与来源 (增加宽度) */
-        .normal-table th:nth-child(3) { width: 16%; } /* 标签 */
-        .normal-table th:nth-child(4) { width: 9%; }  /* 难度 */
-        .normal-table th:nth-child(5) { width: 9%; }  /* 日期 */
-        .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } /* 备注 */
-        .normal-table th:last-child { width: 7%; }    /* 文件 (大幅压缩，由于图标紧凑，8%足够) */
+        .normal-table th:nth-child(1) { width: 5%; text-align: center; } 
+        .normal-table th:nth-child(2) { width: 34%; } 
+        .normal-table th:nth-child(3) { width: 16%; } 
+        .normal-table th:nth-child(4) { width: 9%; }  
+        .normal-table th:nth-child(5) { width: 9%; }  
+        .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
+        .normal-table th:last-child { width: 8%; }    
         
         .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
         .matrix-table th.remark-col { width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
@@ -101,7 +101,7 @@
             <a href="index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="Summary.html">📚 Summary</a>
-            <a href="todo.html">🎯 Todo</a>
+            <a href="Plan.html">🎯 训练计划</a>
             <a href="plist/index.html">📋 题单</a>
             <a href="Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
@@ -113,39 +113,39 @@
         <div class="stats-bar"><div class="stats-info"><span>📁 独立题目: 47</span><span>📝 有代码: 47</span><span>💡 有题解: 8</span><span>⚙️ 有配置: 47</span><span>🏆 比赛数: 24</span></div><div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button><button class="btn" onclick="sortContests('name')">按比赛名字典序</button></div></div>
         <div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-OI" onclick="switchAtCoderTab('tab-OI', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">3~4题场</button><button class="atcoder-tab-btn" data-target="tab-OIs" onclick="switchAtCoderTab('tab-OIs', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">5+题场</button></div><div id="tab-OI" class="atcoder-tab-content" style="display: block;"><h2 style='margin-top: 10px; color: var(--primary);'>📌 3~4题场</h2><div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: 30%; padding-left: 20px;">比赛名称</th><th style="width: 17.5%;">A</th><th style="width: 17.5%;">B</th><th style="width: 17.5%;">C</th><th style="width: 17.5%;">D</th><th class="remark-col" style="text-align: left;">比赛备注</th></tr></thead><tbody><tr data-name="广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第十场）" data-count="3"><td class="contest-name-cell" style="padding-left: 20px;"><a href="http://xsy.gdgzez.com.cn/JudgeOnline/contest.php?cid=2436" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第十场）</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(3 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2628" target="_blank">A</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2628" target="_blank">A</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2628.conf" data-editor-href="editor.html?file=data/soj2628.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2628.cpp" data-editor-href="editor.html?file=data/soj2628.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2628.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2629" target="_blank">B</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2629" target="_blank">B</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2629.conf" data-editor-href="editor.html?file=data/soj2629.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2629.cpp" data-editor-href="editor.html?file=data/soj2629.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2629.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2630" target="_blank">C</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2630" target="_blank">C</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2630.conf" data-editor-href="editor.html?file=data/soj2630.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2630.cpp" data-editor-href="editor.html?file=data/soj2630.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2630.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第九场）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;"><a href="http://xsy.gdgzez.com.cn/JudgeOnline/contest.php?cid=2435" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第九场）</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2627" target="_blank">C</a><span class="diff-indicator" title="难度: 3300.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3300</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2627" target="_blank">C</a><span class="diff-indicator" title="难度: 3300.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3300</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2627.conf" data-editor-href="editor.html?file=data/soj2627.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2627.cpp" data-editor-href="editor.html?file=data/soj2627.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2627" data-editor-href="editor.html?file=data/soj2627.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div>
     </div></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第八场）" data-count="3"><td class="contest-name-cell" style="padding-left: 20px;"><a href="http://xsy.gdgzez.com.cn/JudgeOnline/contest.php?cid=2434" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第八场）</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(3 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2622" target="_blank">A</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2622" target="_blank">A</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2622.conf" data-editor-href="editor.html?file=data/soj2622.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2622.cpp" data-editor-href="editor.html?file=data/soj2622.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2622.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2623" target="_blank">B</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2623" target="_blank">B</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2623.conf" data-editor-href="editor.html?file=data/soj2623.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2623.cpp" data-editor-href="editor.html?file=data/soj2623.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2623.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2624" target="_blank">C</a><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2624" target="_blank">C</a><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2624.conf" data-editor-href="editor.html?file=data/soj2624.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2624.cpp" data-editor-href="editor.html?file=data/soj2624.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2624.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第七场）" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;"><a href="http://xsy.gdgzez.com.cn/JudgeOnline/contest.php?cid=2433" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第七场）</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2619" target="_blank">A</a><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2619" target="_blank">A</a><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2619.conf" data-editor-href="editor.html?file=data/soj2619.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2619.cpp" data-editor-href="editor.html?file=data/soj2619.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2619.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2620" target="_blank">B</a><span class="diff-indicator" title="难度: 2700.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 75.0%, transparent 75.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2700</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2620" target="_blank">B</a><span class="diff-indicator" title="难度: 2700.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 75.0%, transparent 75.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2700</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2620.conf" data-editor-href="editor.html?file=data/soj2620.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2620.cpp" data-editor-href="editor.html?file=data/soj2620.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2620.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第六场）" data-count="3"><td class="contest-name-cell" style="padding-left: 20px;"><a href="http://xsy.gdgzez.com.cn/JudgeOnline/contest.php?cid=2432" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第六场）</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(3 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -153,7 +153,7 @@
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/p9000.conf" data-editor-href="editor.html?file=data/p9000.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/p9000.cpp" data-editor-href="editor.html?file=data/p9000.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/p9000.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2617" target="_blank">B</a><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 100%, transparent 100%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3200</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2617" target="_blank">B</a><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 100%, transparent 100%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3200</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2617.conf" data-editor-href="editor.html?file=data/soj2617.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2617.cpp" data-editor-href="editor.html?file=data/soj2617.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2617.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -169,11 +169,11 @@
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/p14463.conf" data-editor-href="editor.html?file=data/p14463.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/p14463.cpp" data-editor-href="editor.html?file=data/p14463.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/p14463.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第一场）" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;"><a href="http://xsy.gdgzez.com.cn/JudgeOnline/contest.php?cid=2427" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第一场）</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2438" target="_blank">A</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2438" target="_blank">A</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2438.conf" data-editor-href="editor.html?file=data/soj2438.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2438.cpp" data-editor-href="editor.html?file=data/soj2438.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2438.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2439" target="_blank">B</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2439" target="_blank">B</a><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2439.conf" data-editor-href="editor.html?file=data/soj2439.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2439.cpp" data-editor-href="editor.html?file=data/soj2439.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2439.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="2023 年广东省重点中学信息学邀请赛 (GDKOI 2023) 提高组 第一试" data-count="3"><td class="contest-name-cell" style="padding-left: 20px;"><a href="https://qoj.ac/contest/1150" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">2023 年广东省重点中学信息学邀请赛 (GDKOI 2023) 提高组 第一试</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(3 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -205,23 +205,23 @@
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17177.conf" data-editor-href="editor.html?file=data/qoj17177.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/qoj17177.cpp" data-editor-href="editor.html?file=data/qoj17177.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/qoj17177.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="GZOI-NOI2026模拟赛（二十二）" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;"><a href="http://xsy.gdgzez.com.cn/JudgeOnline/contest.php?cid=2420" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">GZOI-NOI2026模拟赛（二十二）</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2569" target="_blank">A</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2569" target="_blank">A</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2569.conf" data-editor-href="editor.html?file=data/soj2569.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2569.cpp" data-editor-href="editor.html?file=data/soj2569.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2569.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2570" target="_blank">B</a><span class="diff-indicator" title="难度: 3100.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 75.0%, transparent 75.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3100</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2570" target="_blank">B</a><span class="diff-indicator" title="难度: 3100.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 75.0%, transparent 75.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3100</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2570.conf" data-editor-href="editor.html?file=data/soj2570.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2570.cpp" data-editor-href="editor.html?file=data/soj2570.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2570.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="GZOI-NOI2026模拟赛（二十）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;"><a href="http://xsy.gdgzez.com.cn/JudgeOnline/contest.php?cid=2418" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">GZOI-NOI2026模拟赛（二十）</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2554" target="_blank">C</a><span class="diff-indicator" title="难度: 3100.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 75.0%, transparent 75.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3100</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2554" target="_blank">C</a><span class="diff-indicator" title="难度: 3100.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 75.0%, transparent 75.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3100</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2554.conf" data-editor-href="editor.html?file=data/soj2554.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2554.cpp" data-editor-href="editor.html?file=data/soj2554.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2554" data-editor-href="editor.html?file=data/soj2554.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div>
     </div></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="GZOI-NOI2026模拟赛（十八）" data-count="2"><td class="contest-name-cell" style="padding-left: 20px;"><a href="http://xsy.gdgzez.com.cn/JudgeOnline/contest.php?cid=2416" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">GZOI-NOI2026模拟赛（十八）</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(2 题)</span></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2557" target="_blank">A</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2557" target="_blank">A</a><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2557.conf" data-editor-href="editor.html?file=data/soj2557.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2557.cpp" data-editor-href="editor.html?file=data/soj2557.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/soj2557.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
-        <div class="prob-link-wrap"><a href="http://114.215.202.174:8080/problem/2558" target="_blank">B</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
+        <div class="prob-link-wrap"><a href="http://121.196.149.251:8080/problem/2558" target="_blank">B</a><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2558.conf" data-editor-href="editor.html?file=data/soj2558.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2558.cpp" data-editor-href="editor.html?file=data/soj2558.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2558" data-editor-href="editor.html?file=data/soj2558.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div>
     </div></td><td></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr><tr data-name="GZOI-NOI2026模拟赛（十七）" data-count="1"><td class="contest-name-cell" style="padding-left: 20px;">GZOI-NOI2026模拟赛（十七） <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">(1 题)</span></td><td></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -300,7 +300,7 @@
         <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3386/problem/17244" target="_blank">E</a><span class="diff-indicator" title="难度: 2700.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 75.0%, transparent 75.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2700</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17244.conf" data-editor-href="editor.html?file=data/qoj17244.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/qoj17244.cpp" data-editor-href="editor.html?file=data/qoj17244.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17244" data-editor-href="editor.html?file=data/qoj17244.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div>
     </div></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr></tbody></table></div></div>
-        <div class="footer">最后构建: 2026-08-27 21:16:35 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-08-28 20:26:55 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -382,7 +382,7 @@
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
 
-            if (tableId === 'summary-table' || tableId === 'todo-table') {
+            if (tableId === 'summary-table' || tableId.startsWith('plan-table-')) {
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
@@ -395,7 +395,6 @@
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             
-            // 💡 动态统计数据
             let vCount = 0, cCount = 0, mCount = 0;
 
             rows.forEach(row => {
@@ -426,7 +425,6 @@
                 }
             });
 
-            // 💡 更新统计栏
             const statsInfo = document.getElementById('stats-info-' + tableId);
             if (statsInfo) {
                 statsInfo.innerHTML = `<span>📁 独立题目: ${vCount}</span><span>📝 有代码: ${cCount}</span><span>💡 有题解: ${mCount}</span>`;
@@ -483,6 +481,24 @@
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }
+
+        function switchPlanSubTable(targetId, btn) {
+            const parentTab = btn.closest('.atcoder-tab-content');
+            if (!parentTab) return;
+            
+            parentTab.querySelectorAll('.plan-sub-content').forEach(el => el.style.display = 'none');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) targetEl.style.display = 'block';
+            
+            parentTab.querySelectorAll('.plan-sub-btn').forEach(el => {
+                el.style.background = '#fff';
+                el.style.color = '#334155';
+                el.style.borderColor = '#e2e8f0';
+            });
+            btn.style.background = 'var(--primary)';
+            btn.style.color = '#fff';
+            btn.style.borderColor = 'var(--primary)';
+        }
         
         function filterPList() {
             const val = document.getElementById('plist-search').value.toLowerCase();
@@ -497,7 +513,7 @@
             const min = urlParams.get('min');
             const max = urlParams.get('max');
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input && (input.id === 'filter-tag-summary-table' || input.id === 'filter-tag-todo-table')) {
+            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-'))) {
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);

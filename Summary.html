@@ -45,13 +45,13 @@
         .normal-table tbody tr .row-index::before { counter-increment: row-num; content: counter(row-num); }
         
         /* 更新列宽以适应左侧序号 */
-        .normal-table th:nth-child(1) { width: 5%; text-align: center; } /* 序号 (稍微收紧一点) */
-        .normal-table th:nth-child(2) { width: 35%; } /* 题目与来源 (增加宽度) */
-        .normal-table th:nth-child(3) { width: 16%; } /* 标签 */
-        .normal-table th:nth-child(4) { width: 9%; }  /* 难度 */
-        .normal-table th:nth-child(5) { width: 9%; }  /* 日期 */
-        .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } /* 备注 */
-        .normal-table th:last-child { width: 7%; }    /* 文件 (大幅压缩，由于图标紧凑，8%足够) */
+        .normal-table th:nth-child(1) { width: 5%; text-align: center; } 
+        .normal-table th:nth-child(2) { width: 34%; } 
+        .normal-table th:nth-child(3) { width: 16%; } 
+        .normal-table th:nth-child(4) { width: 9%; }  
+        .normal-table th:nth-child(5) { width: 9%; }  
+        .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
+        .normal-table th:last-child { width: 8%; }    
         
         .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
         .matrix-table th.remark-col { width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
@@ -101,7 +101,7 @@
             <a href="index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="Summary.html">📚 Summary</a>
-            <a href="todo.html">🎯 Todo</a>
+            <a href="Plan.html">🎯 训练计划</a>
             <a href="plist/index.html">📋 题单</a>
             <a href="Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
@@ -110,7 +110,7 @@
             <button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">📝 显示备注</button>
         </div>
         <h1>Summary</h1>
-        <div class="stats-bar"><div class="stats-info" id="stats-info-summary-table"><span>📁 独立题目: 407</span><span>📝 有代码: 407</span><span>💡 有题解: 67</span></div></div>
+        
         
     <div class="list-filter-bar">
         <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
@@ -219,7 +219,7 @@
         </tr>
         <tr data-tags="combinatorics counting dp" data-diff="3200.0" data-date="2026-08-26" data-base="soj2659" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2659" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2659</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2659" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2659</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'summary-table')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'summary-table')" title="点击筛选/取消">counting</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span></td>
             <td><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 100%, transparent 100%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3200</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-26</td>
@@ -345,7 +345,7 @@
         </tr>
         <tr data-tags="ds graph tree" data-diff="2900.0" data-date="2026-08-21" data-base="soj1780" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/1780" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj1780</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/1780" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj1780</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('graph', 'summary-table')" title="点击筛选/取消">graph</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('tree', 'summary-table')" title="点击筛选/取消">tree</span></td>
             <td><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-21</td>
@@ -480,7 +480,7 @@
         </tr>
         <tr data-tags="combinatorics counting dp" data-diff="3300.0" data-date="2026-08-16" data-base="soj2640" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2640" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2640</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2640" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2640</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'summary-table')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'summary-table')" title="点击筛选/取消">counting</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span></td>
             <td><span class="diff-indicator" title="难度: 3300.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3300</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-16</td>
@@ -777,7 +777,7 @@
         </tr>
         <tr data-tags="binary-search ds" data-diff="3000.0" data-date="2026-08-02" data-base="soj2636" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2636" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2636</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2636" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2636</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('binary-search', 'summary-table')" title="点击筛选/取消">binary-search</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span></td>
             <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-02</td>
@@ -840,7 +840,7 @@
         </tr>
         <tr data-tags="dp template" data-diff="3000.0" data-date="2026-07-15" data-base="soj2635" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2635" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2635</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2635" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2635</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('template', 'summary-table')" title="点击筛选/取消">template</span></td>
             <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-07-15</td>
@@ -867,7 +867,7 @@
         </tr>
         <tr data-tags="divide fwt" data-diff="2900.0" data-date="2026-07-14" data-base="soj2545" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2545" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2545</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2545" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2545</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('divide', 'summary-table')" title="点击筛选/取消">divide</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('fwt', 'summary-table')" title="点击筛选/取消">fwt</span></td>
             <td><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-07-14</td>
@@ -1074,7 +1074,7 @@
         </tr>
         <tr data-tags="ds template" data-diff="2500.0" data-date="2026-07-07" data-base="soj2609" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2609" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2609</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2609" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2609</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('template', 'summary-table')" title="点击筛选/取消">template</span></td>
             <td><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-07-07</td>
@@ -1083,7 +1083,7 @@
         </tr>
         <tr data-tags="combinatorics fwt template" data-diff="3500.0" data-date="2026-07-07" data-base="soj2634" data-has-code="1" data-has-md="1">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2634" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2634</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2634" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2634</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'summary-table')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('fwt', 'summary-table')" title="点击筛选/取消">fwt</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('template', 'summary-table')" title="点击筛选/取消">template</span></td>
             <td><span class="diff-indicator" title="难度: 3500.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3500</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-07-07</td>
@@ -1164,7 +1164,7 @@
         </tr>
         <tr data-tags="combinatorics counting dp" data-diff="3300.0" data-date="2026-06-23" data-base="soj2627" data-has-code="1" data-has-md="1">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2627" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2627</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第九场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2627" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2627</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第九场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'summary-table')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'summary-table')" title="点击筛选/取消">counting</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span></td>
             <td><span class="diff-indicator" title="难度: 3300.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3300</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-23</td>
@@ -1227,7 +1227,7 @@
         </tr>
         <tr data-tags="ds" data-diff="3000.0" data-date="2026-06-22" data-base="soj2622" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2622" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2622</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第八场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2622" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2622</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第八场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span></td>
             <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-22</td>
@@ -1236,7 +1236,7 @@
         </tr>
         <tr data-tags="divide dp" data-diff="3000.0" data-date="2026-06-22" data-base="soj2623" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2623" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2623</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第八场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2623" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2623</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第八场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('divide', 'summary-table')" title="点击筛选/取消">divide</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span></td>
             <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-22</td>
@@ -1245,7 +1245,7 @@
         </tr>
         <tr data-tags="dp greedy" data-diff="2800.0" data-date="2026-06-22" data-base="soj2628" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2628" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2628</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第十场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2628" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2628</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第十场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('greedy', 'summary-table')" title="点击筛选/取消">greedy</span></td>
             <td><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-22</td>
@@ -1254,7 +1254,7 @@
         </tr>
         <tr data-tags="PAM string template" data-diff="3000.0" data-date="2026-06-22" data-base="soj2629" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2629" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2629</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第十场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2629" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2629</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第十场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('PAM', 'summary-table')" title="点击筛选/取消">PAM</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('string', 'summary-table')" title="点击筛选/取消">string</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('template', 'summary-table')" title="点击筛选/取消">template</span></td>
             <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-22</td>
@@ -1263,7 +1263,7 @@
         </tr>
         <tr data-tags="combinatorics counting" data-diff="2800.0" data-date="2026-06-22" data-base="soj2630" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2630" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2630</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第十场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2630" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2630</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第十场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'summary-table')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'summary-table')" title="点击筛选/取消">counting</span></td>
             <td><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-22</td>
@@ -1272,7 +1272,7 @@
         </tr>
         <tr data-tags="interactive" data-diff="2600.0" data-date="2026-06-20" data-base="soj2624" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2624" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2624</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第八场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2624" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2624</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第八场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('interactive', 'summary-table')" title="点击筛选/取消">interactive</span></td>
             <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-20</td>
@@ -1281,7 +1281,7 @@
         </tr>
         <tr data-tags="dp ds" data-diff="2600.0" data-date="2026-06-19" data-base="soj2619" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2619" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2619</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第七场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2619" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2619</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第七场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span></td>
             <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-19</td>
@@ -1290,7 +1290,7 @@
         </tr>
         <tr data-tags="dp ds" data-diff="2700.0" data-date="2026-06-19" data-base="soj2620" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2620" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2620</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第七场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2620" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2620</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第七场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span></td>
             <td><span class="diff-indicator" title="难度: 2700.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 75.0%, transparent 75.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2700</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-19</td>
@@ -1335,7 +1335,7 @@
         </tr>
         <tr data-tags="combinatorics counting probability" data-diff="3200.0" data-date="2026-06-17" data-base="soj2617" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2617" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2617</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第六场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2617" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2617</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第六场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'summary-table')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'summary-table')" title="点击筛选/取消">counting</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('probability', 'summary-table')" title="点击筛选/取消">probability</span></td>
             <td><span class="diff-indicator" title="难度: 3200.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 100%, transparent 100%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3200</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-17</td>
@@ -1470,7 +1470,7 @@
         </tr>
         <tr data-tags="ds template" data-diff="None" data-date="2026-06-11" data-base="soj2565" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2565" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2565</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2565" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2565</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('template', 'summary-table')" title="点击筛选/取消">template</span></td>
             <td>-</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-11</td>
@@ -1479,7 +1479,7 @@
         </tr>
         <tr data-tags="greedy" data-diff="2500.0" data-date="2026-06-10" data-base="soj2438" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2438" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2438</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第一场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2438" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2438</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第一场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('greedy', 'summary-table')" title="点击筛选/取消">greedy</span></td>
             <td><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-10</td>
@@ -1488,7 +1488,7 @@
         </tr>
         <tr data-tags="ds graph tree" data-diff="2800.0" data-date="2026-06-10" data-base="soj2439" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2439" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2439</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第一场）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2439" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2439</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - 广州市“强基计划”信息学学科基地 “六校NOI2026集训”（第一场）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('graph', 'summary-table')" title="点击筛选/取消">graph</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('tree', 'summary-table')" title="点击筛选/取消">tree</span></td>
             <td><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-10</td>
@@ -1704,7 +1704,7 @@
         </tr>
         <tr data-tags="counting fwt matrix template" data-diff="3500.0" data-date="2026-06-03" data-base="soj2561" data-has-code="1" data-has-md="1">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2561" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2561</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2561" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2561</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'summary-table')" title="点击筛选/取消">counting</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('fwt', 'summary-table')" title="点击筛选/取消">fwt</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('matrix', 'summary-table')" title="点击筛选/取消">matrix</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('template', 'summary-table')" title="点击筛选/取消">template</span></td>
             <td><span class="diff-indicator" title="难度: 3500.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3500</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-03</td>
@@ -2001,7 +2001,7 @@
         </tr>
         <tr data-tags="counting dp number" data-diff="2900.0" data-date="2026-05-25" data-base="soj2569" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2569" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2569</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（二十二）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2569" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2569</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（二十二）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'summary-table')" title="点击筛选/取消">counting</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('number', 'summary-table')" title="点击筛选/取消">number</span></td>
             <td><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-05-25</td>
@@ -2010,7 +2010,7 @@
         </tr>
         <tr data-tags="MST ds graph 连通性" data-diff="3100.0" data-date="2026-05-25" data-base="soj2570" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2570" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2570</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（二十二）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2570" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2570</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（二十二）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('MST', 'summary-table')" title="点击筛选/取消">MST</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('graph', 'summary-table')" title="点击筛选/取消">graph</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('连通性', 'summary-table')" title="点击筛选/取消">连通性</span></td>
             <td><span class="diff-indicator" title="难度: 3100.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 75.0%, transparent 75.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3100</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-05-25</td>
@@ -2235,7 +2235,7 @@
         </tr>
         <tr data-tags="dp tree 树剖" data-diff="3100.0" data-date="2026-05-20" data-base="soj2554" data-has-code="1" data-has-md="1">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2554" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2554</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（二十）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2554" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2554</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（二十）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('tree', 'summary-table')" title="点击筛选/取消">tree</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('树剖', 'summary-table')" title="点击筛选/取消">树剖</span></td>
             <td><span class="diff-indicator" title="难度: 3100.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 75.0%, transparent 75.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3100</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-05-20</td>
@@ -2379,7 +2379,7 @@
         </tr>
         <tr data-tags="ds" data-diff="2500.0" data-date="2026-05-15" data-base="soj2557" data-has-code="1" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2557" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2557</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十八）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2557" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2557</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十八）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'summary-table')" title="点击筛选/取消">ds</span></td>
             <td><span class="diff-indicator" title="难度: 2500.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 25.0%, transparent 25.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2500</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-05-15</td>
@@ -2388,7 +2388,7 @@
         </tr>
         <tr data-tags="convexity dp 决策单调性" data-diff="2900.0" data-date="2026-05-15" data-base="soj2558" data-has-code="1" data-has-md="1">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="http://114.215.202.174:8080/problem/2558" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2558</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十八）</span></td>
+            <td style="padding-left: 20px;"><a href="http://121.196.149.251:8080/problem/2558" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2558</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十八）</span></td>
             <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('convexity', 'summary-table')" title="点击筛选/取消">convexity</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'summary-table')" title="点击筛选/取消">dp</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('决策单调性', 'summary-table')" title="点击筛选/取消">决策单调性</span></td>
             <td><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-05-15</td>
@@ -3807,8 +3807,17 @@
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-03-31</td>
             <td class="remark-col">做法比题解复杂很多</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2529.conf" data-editor-href="editor.html?file=data/soj2529.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/soj2529.cpp" data-editor-href="editor.html?file=data/soj2529.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/soj2529" data-editor-href="editor.html?file=data/soj2529.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div></td>
+        </tr>
+        <tr data-tags="math" data-diff="3500.0" data-date="未知" data-base="agc016d" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc016/tasks/agc016_d" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc016d</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">AtCoder - AGC016</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('math', 'summary-table')" title="点击筛选/取消">math</span></td>
+            <td><span class="diff-indicator" title="难度: 3500.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3500</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/agc016d.conf" data-editor-href="editor.html?file=data/agc016d.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="editor.html?file=data/agc016d.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc016d.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-08-27 21:16:35 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-08-28 20:26:55 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -3890,7 +3899,7 @@
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
 
-            if (tableId === 'summary-table' || tableId === 'todo-table') {
+            if (tableId === 'summary-table' || tableId.startsWith('plan-table-')) {
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
@@ -3903,7 +3912,6 @@
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             
-            // 💡 动态统计数据
             let vCount = 0, cCount = 0, mCount = 0;
 
             rows.forEach(row => {
@@ -3934,7 +3942,6 @@
                 }
             });
 
-            // 💡 更新统计栏
             const statsInfo = document.getElementById('stats-info-' + tableId);
             if (statsInfo) {
                 statsInfo.innerHTML = `<span>📁 独立题目: ${vCount}</span><span>📝 有代码: ${cCount}</span><span>💡 有题解: ${mCount}</span>`;
@@ -3991,6 +3998,24 @@
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }
+
+        function switchPlanSubTable(targetId, btn) {
+            const parentTab = btn.closest('.atcoder-tab-content');
+            if (!parentTab) return;
+            
+            parentTab.querySelectorAll('.plan-sub-content').forEach(el => el.style.display = 'none');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) targetEl.style.display = 'block';
+            
+            parentTab.querySelectorAll('.plan-sub-btn').forEach(el => {
+                el.style.background = '#fff';
+                el.style.color = '#334155';
+                el.style.borderColor = '#e2e8f0';
+            });
+            btn.style.background = 'var(--primary)';
+            btn.style.color = '#fff';
+            btn.style.borderColor = 'var(--primary)';
+        }
         
         function filterPList() {
             const val = document.getElementById('plist-search').value.toLowerCase();
@@ -4005,7 +4030,7 @@
             const min = urlParams.get('min');
             const max = urlParams.get('max');
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input && (input.id === 'filter-tag-summary-table' || input.id === 'filter-tag-todo-table')) {
+            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-'))) {
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);

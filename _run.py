@@ -1,9 +1,10 @@
 import os
 import sys
 import re
-import json  # <--- 新增
+import json
 from collections import defaultdict
-from datetime import datetime, timedelta  # <--- 增加了 timedelta
+from datetime import datetime, timedelta
+
 def get_diff_style(diff):
     if diff >= 3300: return 'background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;'
     if diff < 400: color = '#808080'
@@ -206,13 +207,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .normal-table tbody tr .row-index::before {{ counter-increment: row-num; content: counter(row-num); }}
         
         /* 更新列宽以适应左侧序号 */
-        .normal-table th:nth-child(1) {{ width: 5%; text-align: center; }} /* 序号 (稍微收紧一点) */
-        .normal-table th:nth-child(2) {{ width: 35%; }} /* 题目与来源 (增加宽度) */
-        .normal-table th:nth-child(3) {{ width: 16%; }} /* 标签 */
-        .normal-table th:nth-child(4) {{ width: 9%; }}  /* 难度 */
-        .normal-table th:nth-child(5) {{ width: 9%; }}  /* 日期 */
-        .normal-table th.remark-col {{ width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} /* 备注 */
-        .normal-table th:last-child {{ width: 7%; }}    /* 文件 (大幅压缩，由于图标紧凑，8%足够) */
+        .normal-table th:nth-child(1) {{ width: 5%; text-align: center; }} 
+        .normal-table th:nth-child(2) {{ width: 34%; }} 
+        .normal-table th:nth-child(3) {{ width: 16%; }} 
+        .normal-table th:nth-child(4) {{ width: 9%; }}  
+        .normal-table th:nth-child(5) {{ width: 9%; }}  
+        .normal-table th.remark-col {{ width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} 
+        .normal-table th:last-child {{ width: 8%; }}    
         
         .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; }}
         .matrix-table th.remark-col {{ width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} 
@@ -262,7 +263,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <a href="{base_url}index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="{base_url}Summary.html">📚 Summary</a>
-            <a href="{base_url}todo.html">🎯 Todo</a>
+            <a href="{base_url}Plan.html">🎯 训练计划</a>
             <a href="{base_url}plist/index.html">📋 题单</a>
             <a href="{base_url}Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
@@ -355,7 +356,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
 
-            if (tableId === 'summary-table' || tableId === 'todo-table') {{
+            if (tableId === 'summary-table' || tableId.startsWith('plan-table-')) {{
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
@@ -368,7 +369,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             
-            // 💡 动态统计数据
             let vCount = 0, cCount = 0, mCount = 0;
 
             rows.forEach(row => {{
@@ -399,7 +399,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 }}
             }});
 
-            // 💡 更新统计栏
             const statsInfo = document.getElementById('stats-info-' + tableId);
             if (statsInfo) {{
                 statsInfo.innerHTML = `<span>📁 独立题目: ${{vCount}}</span><span>📝 有代码: ${{cCount}}</span><span>💡 有题解: ${{mCount}}</span>`;
@@ -456,6 +455,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }}
+
+        function switchPlanSubTable(targetId, btn) {{
+            const parentTab = btn.closest('.atcoder-tab-content');
+            if (!parentTab) return;
+            
+            parentTab.querySelectorAll('.plan-sub-content').forEach(el => el.style.display = 'none');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) targetEl.style.display = 'block';
+            
+            parentTab.querySelectorAll('.plan-sub-btn').forEach(el => {{
+                el.style.background = '#fff';
+                el.style.color = '#334155';
+                el.style.borderColor = '#e2e8f0';
+            }});
+            btn.style.background = 'var(--primary)';
+            btn.style.color = '#fff';
+            btn.style.borderColor = 'var(--primary)';
+        }}
         
         function filterPList() {{
             const val = document.getElementById('plist-search').value.toLowerCase();
@@ -470,7 +487,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const min = urlParams.get('min');
             const max = urlParams.get('max');
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input && (input.id === 'filter-tag-summary-table' || input.id === 'filter-tag-todo-table')) {{
+            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-'))) {{
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);
@@ -560,9 +577,9 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 <div class="card-header"><h2 class="card-title"><span>📚</span> Summary</h2><span class="card-badge" style="color: #8b5cf6; background: #ede9fe;">All</span></div>
                 <div class="card-stats"><span class="stat-number">{s_count}</span><span class="stat-label">个独立版本</span></div>
             </a>
-            <a href="todo.html" class="card card-todo">
-                <div class="card-header"><h2 class="card-title"><span>🎯</span> Todo</h2><span class="card-badge" style="color: #d97706; background: #fef3c7;">Task</span></div>
-                <div class="card-stats"><span class="stat-number">{t_count}</span><span class="stat-label">道待补题</span></div>
+            <a href="Plan.html" class="card card-todo">
+                <div class="card-header"><h2 class="card-title"><span>🎯</span> Plan</h2><span class="card-badge" style="color: #d97706; background: #fef3c7;">Task</span></div>
+                <div class="card-stats"><span class="stat-number">{plan_count}</span><span class="stat-label">个专属训练计划</span></div>
             </a>
             <a href="OI.html" class="card card-oi">
                 <div class="card-header"><h2 class="card-title"><span>🏅</span> OI</h2><span class="card-badge" style="color: #2563eb; background: #dbeafe;">{oi_c}</span></div>
@@ -1005,7 +1022,7 @@ def apply_categories_and_links(groups, data_dir):
                     if oj_prefix == 'p': primary_link = f"https://www.luogu.com.cn/problem/P{oj_num}"
                     elif oj_prefix == 'qoj': primary_link = f"https://qoj.ac/problem/{oj_num}"
                     elif oj_prefix == 'uoj': primary_link = f"https://uoj.ac/problem/{oj_num}"
-                    elif oj_prefix == 'soj': primary_link = f"http://114.215.202.174:8080/problem/{oj_num}"
+                    elif oj_prefix == 'soj': primary_link = f"http://121.196.149.251:8080/problem/{oj_num}"
                     
             v.link = primary_link
 
@@ -1211,15 +1228,7 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table", base_url="", data_dir="data"):
-    has_cpp = sum(1 for v in all_versions if v.files.get('cpp'))
-    has_md = sum(1 for v in all_versions if v.files.get('md'))
-
-    stats_html = f"<span>📁 独立题目: {len(all_versions)}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span>"
-    # 给外层添加 id="stats-info-..." 以便 JS 动态更新内容
-    stats_block = f'<div class="stats-bar"><div class="stats-info" id="stats-info-{table_id}">{stats_html}</div></div>'
-    nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">📝 显示备注</button>'
-    
+def generate_list_html(versions, table_id, rel_path, base_url, data_dir):
     content_html = f"""
     <div class="list-filter-bar">
         <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
@@ -1255,7 +1264,7 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
             <tbody>
     """
     
-    sorted_versions = sorted(all_versions, key=lambda x: x.base_filename)
+    sorted_versions = sorted(versions, key=lambda x: x.base_filename)
     sorted_versions.sort(key=lambda x: (x.date != "未知", x.date), reverse=True)
     
     for v in sorted_versions: 
@@ -1270,7 +1279,6 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         origin = "<br>".join(origin_parts)
         
         display_name = v.base_filename 
-        
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); text-decoration:none;"><b>{display_name}</b></a>' if v.link != '#' else f'<b>{display_name}</b>'
         tags_str = " ".join(v.tags) if v.tags else ""
         tags_html = "".join([f'<span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter(\'{t}\', \'{table_id}\')" title="点击筛选/取消">{t}</span>' for t in v.tags])
@@ -1314,7 +1322,6 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
             links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a>')
             
         v_html = f'<div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>'
-        
         has_c_flag = '1' if v.files.get('cpp') else '0'
         has_m_flag = '1' if v.files.get('md') else '0'
 
@@ -1330,41 +1337,183 @@ def build_list_page(title, all_versions, out_path, rel_path, table_id="list-tabl
         </tr>"""
         
     content_html += "</tbody></table></div>"
+    return content_html
 
+def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table", base_url="", data_dir="data"):
+    content_with_stats = generate_list_html(all_versions, table_id, rel_path, base_url, data_dir)
+    nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">📝 显示备注</button>'
     html = HTML_TEMPLATE.format(
-        title=title, stats_block=stats_block, nav_extra=nav_extra,
+        title=title, stats_block="", nav_extra=nav_extra,
+        content_html=content_with_stats, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        base_url=base_url
+    )
+    with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
+
+def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir="data"):
+    tabs_html = '<div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;">'
+    tables_html = ''
+    first = True
+    if not plans_dict:
+        tables_html = '<div style="padding: 30px; text-align: center; color: var(--text-muted); background: #fff; border-radius: 12px; border: 1px solid var(--border);">暂无训练计划。请在 plan/ 目录下放入 .conf 文件，每行一个题号。</div>'
+    
+    for p_name, versions in plans_dict.items():
+        btn_style = "background: var(--primary); color: #fff; border-color: var(--primary);" if first else "background: #fff; color: #334155; border-color: #e2e8f0;"
+        tabs_html += f'<button class="atcoder-tab-btn" data-target="tab-{p_name}" onclick="switchAtCoderTab(\'tab-{p_name}\', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; {btn_style}">{p_name}</button>'
+        display = "block" if first else "none"
+        
+        todo_versions = [v for v in versions if not v.files.get('cpp')]
+        done_versions = [v for v in versions if v.files.get('cpp')]
+        
+        tables_html += f'<div id="tab-{p_name}" class="atcoder-tab-content" style="display: {display};">'
+        
+        # 💡 子表格切换按钮组
+        active_btn = "background: var(--primary); color: #fff; border-color: var(--primary);"
+        inactive_btn = "background: #fff; color: #334155; border-color: #e2e8f0;"
+        
+        sub_bar = f"""
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-{p_name}', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; {active_btn}">
+                ⏳ 待补题 ({len(todo_versions)})
+            </button>
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-done-{p_name}', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; {inactive_btn}">
+                ✅ 已完成 ({len(done_versions)})
+            </button>
+        </div>
+        """
+        tables_html += sub_bar
+        
+        # 💡 待补题容器 (默认显示)
+        tables_html += f'<div id="sub-todo-{p_name}" class="plan-sub-content" style="display: block;">'
+        if todo_versions:
+            tables_html += generate_list_html(todo_versions, f"plan-table-todo-{p_name}", rel_path, base_url, data_dir)
+        else:
+            tables_html += "<div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #16a34a; font-weight: 600; text-align: center; border: 1px dashed #dcfce7; margin-bottom: 20px;'>🎉 太强了！此计划中的题目已全部通过！</div>"
+        tables_html += '</div>'
+        
+        # 💡 已完成容器 (默认隐藏)
+        tables_html += f'<div id="sub-done-{p_name}" class="plan-sub-content" style="display: none;">'
+        if done_versions:
+            tables_html += generate_list_html(done_versions, f"plan-table-done-{p_name}", rel_path, base_url, data_dir)
+        else:
+            tables_html += "<div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>还没有完成的题目，去挑战第一题吧！</div>"
+        tables_html += '</div>'
+        
+        tables_html += '</div>'
+        first = False
+        
+    tabs_html += '</div>'
+    content_html = (tabs_html + tables_html) if plans_dict else tables_html
+    nav_extra = '<button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">📝 显示备注</button>'
+    
+    html = HTML_TEMPLATE.format(
+        title=title, stats_block="", nav_extra=nav_extra,
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         base_url=base_url
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
+    
 def scan_problem_lists(plist_dir, groups):
     plists = {}
     if not os.path.exists(plist_dir):
         return plists
-    
+        
+    # 💡 建立全量精准映射，解决带后缀题号(如cf1152f2)无法命中的Bug
+    version_map = {}
+    for g in groups.values():
+        for v in g.versions.values():
+            version_map[v.base_filename.lower()] = v
+            
     for f in os.listdir(plist_dir):
         if f.endswith('.conf'):
             name = f[:-5]
             path = os.path.join(plist_dir, f)
+            changed = False
+            new_lines, ids = [], []
             with open(path, 'r', encoding='utf-8') as file:
-                ids = [line.split('#')[0].strip() for line in file.readlines()]
-                ids = [x for x in ids if x]
+                for line in file:
+                    content = line.split('#')[0]
+                    pid = content.strip()
+                    if pid:
+                        if '_' not in pid and pid != pid.lower():
+                            lower_pid = pid.lower()
+                            line = line.replace(pid, lower_pid, 1)
+                            pid = lower_pid
+                            changed = True
+                        ids.append(pid)
+                    new_lines.append(line)
+            if changed:
+                with open(path, 'w', encoding='utf-8') as file:
+                    file.writelines(new_lines)
             
             matched_versions = []
             for pid in ids:
-                target_group = groups.get(pid.lower())
-                if target_group:
-                    if 'Normal' in target_group.versions:
-                        matched_versions.append(target_group.versions['Normal'])
-                    else:
-                        matched_versions.append(list(target_group.versions.values())[0])
+                pid_lower = pid.lower()
+                if pid_lower in version_map:
+                    matched_versions.append(version_map[pid_lower])
                 else:
-                    dummy = ProblemVersion("Normal", pid)
-                    dummy.link = "#"
-                    matched_versions.append(dummy)
-                    
+                    target_group = groups.get(pid_lower)
+                    if target_group:
+                        if 'Normal' in target_group.versions:
+                            matched_versions.append(target_group.versions['Normal'])
+                        else:
+                            matched_versions.append(list(target_group.versions.values())[0])
+                    else:
+                        dummy = ProblemVersion("Normal", pid)
+                        dummy.link = "#"
+                        matched_versions.append(dummy)
             plists[name] = matched_versions
     return plists
+
+def scan_plans(plan_dir, groups):
+    plans = {}
+    if not os.path.exists(plan_dir):
+        return plans
+        
+    version_map = {}
+    for g in groups.values():
+        for v in g.versions.values():
+            version_map[v.base_filename.lower()] = v
+            
+    for f in os.listdir(plan_dir):
+        if f.endswith('.conf'):
+            name = f[:-5]
+            path = os.path.join(plan_dir, f)
+            changed = False
+            new_lines, ids = [], []
+            with open(path, 'r', encoding='utf-8') as file:
+                for line in file:
+                    content = line.split('#')[0]
+                    pid = content.strip()
+                    if pid:
+                        if '_' not in pid and pid != pid.lower():
+                            lower_pid = pid.lower()
+                            line = line.replace(pid, lower_pid, 1)
+                            pid = lower_pid
+                            changed = True
+                        ids.append(pid)
+                    new_lines.append(line)
+            if changed:
+                with open(path, 'w', encoding='utf-8') as file:
+                    file.writelines(new_lines)
+            
+            matched_versions = []
+            for pid in ids:
+                pid_lower = pid.lower()
+                if pid_lower in version_map:
+                    matched_versions.append(version_map[pid_lower])
+                else:
+                    target_group = groups.get(pid_lower)
+                    if target_group:
+                        if 'Normal' in target_group.versions:
+                            matched_versions.append(target_group.versions['Normal'])
+                        else:
+                            matched_versions.append(list(target_group.versions.values())[0])
+                    else:
+                        dummy = ProblemVersion("Normal", pid)
+                        dummy.link = "#"
+                        matched_versions.append(dummy)
+            plans[name] = matched_versions
+    return plans
 
 def build_problem_lists_index(plists, out_path, base_url=""):
     cards_html = ""
@@ -1534,9 +1683,9 @@ def build_blog_index_page(blogs, rel_blog_path, out_path, base_url=""):
     with open(out_path, 'w', encoding='utf-8') as f: 
         f.write(html)
 
-def build_index_page(categories, summary_versions, todo_versions, plists, blog_count, out_path):
+def build_index_page(categories, summary_versions, plans_dict, plists, blog_count, out_path):
     s_count = len(summary_versions)
-    t_count = len(todo_versions)
+    plan_count = len(plans_dict)
     plist_count = len(plists)
     
     oi_p = sum(len(g.versions) for gs in categories.get('OI', {}).values() for g in gs) + sum(len(g.versions) for gs in categories.get('OIs', {}).values() for g in gs)
@@ -1555,7 +1704,6 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
     today = datetime.now()
     valid_dates = [v.date for v in summary_versions if v.date and v.date != "未知"]
     
-    # 获取最早的做题日期，如果没有则默认为30天前
     if valid_dates:
         min_date_str = min(valid_dates)
         try:
@@ -1565,20 +1713,18 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
     else:
         min_date = today - timedelta(days=30)
         
-    # 确保图表至少有 30 天的跨度，即使是从今天才开始做的
     if (today - min_date).days < 30:
         min_date = today - timedelta(days=30)
 
     delta_days = (today - min_date).days
     date_list = [(min_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(delta_days + 1)]
     
-    # 初始化全局统计字典
     daily_stats = {d: {'l1': 0, 'l2': 0, 'l3': 0, 'l4': 0, 'u': 0} for d in date_list}
     
     for v in summary_versions:
         d = v.date
         if d in daily_stats:
-            # ✅ 已同步你的新难度分级：2000, 2600, 3000
+            # ✅ 新版难度分段: 2000, 2600, 3000
             if v.difficulty is None: daily_stats[d]['u'] += 1
             elif v.difficulty < 2000: daily_stats[d]['l1'] += 1
             elif v.difficulty < 2600: daily_stats[d]['l2'] += 1
@@ -1586,7 +1732,7 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
             else: daily_stats[d]['l4'] += 1
 
     chart_data = {
-        'dates': date_list,  # 跨度变长了，保留 YYYY-MM-DD 以防跨年看不懂
+        'dates': date_list,
         'l1': [daily_stats[d]['l1'] for d in date_list],
         'l2': [daily_stats[d]['l2'] for d in date_list],
         'l3': [daily_stats[d]['l3'] for d in date_list],
@@ -1595,7 +1741,7 @@ def build_index_page(categories, summary_versions, todo_versions, plists, blog_c
     }
 
     html = INDEX_HTML_TEMPLATE.format(
-        s_count=s_count, t_count=t_count,
+        s_count=s_count, plan_count=plan_count,
         oi_p=oi_p, oi_c=oi_c,
         xcpc_p=xcpc_p, xcpc_c=xcpc_c,
         cf_p=cf_p, cf_c=cf_c,
@@ -1611,6 +1757,7 @@ def main():
     data_dir = sys.argv[1] if len(sys.argv) > 1 else 'data'
     out_dir = sys.argv[2] if len(sys.argv) > 2 else '.'
     plist_dir = 'plist'
+    plan_dir = 'plan'
     blog_dir = 'blog'
 
     if not os.path.exists(data_dir):
@@ -1635,6 +1782,11 @@ def main():
     if plists:
         print(f"✅ 找到 {len(plists)} 个题单。")
         
+    print(f"🎯 正在扫描训练计划目录 '{plan_dir}'...")
+    plans = scan_plans(plan_dir, groups)
+    if plans: 
+        print(f"✅ 找到 {len(plans)} 个训练计划。")
+        
     print(f"✍️ 正在扫描博客目录 '{blog_dir}'...")
     blogs = scan_blogs(blog_dir)
     if blogs:
@@ -1646,7 +1798,6 @@ def main():
     }
     
     summary_versions = []
-    todo_versions = []
 
     for g in groups.values():
         added_to_cat = set()
@@ -1658,10 +1809,7 @@ def main():
                     added_to_cat.add(key)
             
         for v in g.versions.values():
-            is_todo = v.has_conf and not v.files.get('cpp')
-            if is_todo:
-                todo_versions.append(v)
-            elif v.has_conf:
+            if v.has_conf:
                 summary_versions.append(v)
             else:
                 is_cf_at = any(cat in ('Codeforces', 'AtCoder') for cat, c, p in v.appearances)
@@ -1675,7 +1823,8 @@ def main():
     build_category_page('OI', {'OI': categories['OI'], 'OIs': categories['OIs']}, contest_info, os.path.join(out_dir, "OI.html"), rel_data_path, base_url="", data_dir=data_dir)
         
     build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table", base_url="", data_dir=data_dir)
-    build_list_page('Todo', todo_versions, os.path.join(out_dir, 'todo.html'), rel_data_path, "todo-table", base_url="", data_dir=data_dir)
+    
+    build_plan_page('🎯 训练计划', plans, os.path.join(out_dir, 'Plan.html'), rel_data_path, base_url="", data_dir=data_dir)
 
     build_blog_index_page(blogs, rel_blog_path, os.path.join(out_dir, "Blog.html"), base_url="")
 
@@ -1689,7 +1838,7 @@ def main():
             out_file = os.path.join(out_plist_dir, f"{name}.html")
             build_single_plist_page(name, versions, out_file, rel_plist_path, base_url="../", data_dir=data_dir)
 
-    build_index_page(categories, summary_versions, todo_versions, plists, len(blogs), os.path.join(out_dir, "index.html"))
+    build_index_page(categories, summary_versions, plans, plists, len(blogs), os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")
 
 if __name__ == '__main__':

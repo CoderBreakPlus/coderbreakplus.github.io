@@ -45,13 +45,13 @@
         .normal-table tbody tr .row-index::before { counter-increment: row-num; content: counter(row-num); }
         
         /* 更新列宽以适应左侧序号 */
-        .normal-table th:nth-child(1) { width: 5%; text-align: center; } /* 序号 (稍微收紧一点) */
-        .normal-table th:nth-child(2) { width: 35%; } /* 题目与来源 (增加宽度) */
-        .normal-table th:nth-child(3) { width: 16%; } /* 标签 */
-        .normal-table th:nth-child(4) { width: 9%; }  /* 难度 */
-        .normal-table th:nth-child(5) { width: 9%; }  /* 日期 */
-        .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } /* 备注 */
-        .normal-table th:last-child { width: 7%; }    /* 文件 (大幅压缩，由于图标紧凑，8%足够) */
+        .normal-table th:nth-child(1) { width: 5%; text-align: center; } 
+        .normal-table th:nth-child(2) { width: 34%; } 
+        .normal-table th:nth-child(3) { width: 16%; } 
+        .normal-table th:nth-child(4) { width: 9%; }  
+        .normal-table th:nth-child(5) { width: 9%; }  
+        .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
+        .normal-table th:last-child { width: 8%; }    
         
         .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
         .matrix-table th.remark-col { width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
@@ -101,7 +101,7 @@
             <a href="../index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="../Summary.html">📚 Summary</a>
-            <a href="../todo.html">🎯 Todo</a>
+            <a href="../Plan.html">🎯 训练计划</a>
             <a href="../plist/index.html">📋 题单</a>
             <a href="../Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
@@ -163,7 +163,7 @@
             </td>
         </tr>
         <tr data-index="4" data-base="soj2561" data-tags="counting fwt matrix template">
-            <td style="padding-left:20px;"><a href="http://114.215.202.174:8080/problem/2561" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2561</a></td>
+            <td style="padding-left:20px;"><a href="http://121.196.149.251:8080/problem/2561" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2561</a></td>
             <td><span class="tag-pill">counting</span><span class="tag-pill">fwt</span><span class="tag-pill">matrix</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
@@ -172,7 +172,7 @@
             </td>
         </tr>
         <tr data-index="5" data-base="soj2565" data-tags="ds template">
-            <td style="padding-left:20px;"><a href="http://114.215.202.174:8080/problem/2565" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2565</a></td>
+            <td style="padding-left:20px;"><a href="http://121.196.149.251:8080/problem/2565" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2565</a></td>
             <td><span class="tag-pill">ds</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
@@ -181,7 +181,7 @@
             </td>
         </tr>
         <tr data-index="6" data-base="soj2634" data-tags="combinatorics fwt template">
-            <td style="padding-left:20px;"><a href="http://114.215.202.174:8080/problem/2634" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2634</a></td>
+            <td style="padding-left:20px;"><a href="http://121.196.149.251:8080/problem/2634" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2634</a></td>
             <td><span class="tag-pill">combinatorics</span><span class="tag-pill">fwt</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
@@ -189,7 +189,7 @@
                 </div>
             </td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-08-27 21:16:35 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-08-28 20:26:55 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -271,7 +271,7 @@
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
 
-            if (tableId === 'summary-table' || tableId === 'todo-table') {
+            if (tableId === 'summary-table' || tableId.startsWith('plan-table-')) {
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
@@ -284,7 +284,6 @@
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             
-            // 💡 动态统计数据
             let vCount = 0, cCount = 0, mCount = 0;
 
             rows.forEach(row => {
@@ -315,7 +314,6 @@
                 }
             });
 
-            // 💡 更新统计栏
             const statsInfo = document.getElementById('stats-info-' + tableId);
             if (statsInfo) {
                 statsInfo.innerHTML = `<span>📁 独立题目: ${vCount}</span><span>📝 有代码: ${cCount}</span><span>💡 有题解: ${mCount}</span>`;
@@ -372,6 +370,24 @@
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }
+
+        function switchPlanSubTable(targetId, btn) {
+            const parentTab = btn.closest('.atcoder-tab-content');
+            if (!parentTab) return;
+            
+            parentTab.querySelectorAll('.plan-sub-content').forEach(el => el.style.display = 'none');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) targetEl.style.display = 'block';
+            
+            parentTab.querySelectorAll('.plan-sub-btn').forEach(el => {
+                el.style.background = '#fff';
+                el.style.color = '#334155';
+                el.style.borderColor = '#e2e8f0';
+            });
+            btn.style.background = 'var(--primary)';
+            btn.style.color = '#fff';
+            btn.style.borderColor = 'var(--primary)';
+        }
         
         function filterPList() {
             const val = document.getElementById('plist-search').value.toLowerCase();
@@ -386,7 +402,7 @@
             const min = urlParams.get('min');
             const max = urlParams.get('max');
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input && (input.id === 'filter-tag-summary-table' || input.id === 'filter-tag-todo-table')) {
+            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-'))) {
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);
