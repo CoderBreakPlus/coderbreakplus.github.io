@@ -30,7 +30,7 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,m,id;
+int n,m,a[25][25],id;
 vector<int>sb;
 // 0 1 2
 // 3 4 5
@@ -89,20 +89,63 @@ vector<int>f[2*B]={
 	,6,4,2
 	,7,8,5} // 3*3 spin
 };
-vector<int>siz = {4,4,4,4,6,6,6,6,8,8,8,9};
+vector<int>siz = {4,4,4,4,6,6,6,6,8,8,8,8,9};
+
 
 int fa[362880],w[362880],dis[362880],fac[10],vis[362880];
-vector<int>perm[362880];
+int perm[362880][9];
 
-
-int decode(vector<int> perm){
-	int ret=0;
-	for(int i=0;i<9;i++){
-		ret+=perm[i]*fac[8-i];
-		for(int j=i+1;j<9;j++)
-			if(perm[j]>perm[i])perm[j]--;
+int decode(int perm[8]){
+	int ret=0, mask=0;
+	for(int i=0;i<8;i++){
+		int c = perm[i] - __builtin_popcount(mask & ((1 << perm[i]) - 1));
+		ret += c * fac[8-i];
+		mask |= 1 << perm[i];
 	}
 	return ret;
+}
+pair<int,int> pos[405];
+int code(int x,int y){ return x*3+y; }
+
+vector<vector<int>>lovef;
+
+void solve(int i0,int j0,int i1,int j1,int i2,int j2){
+	int cur[9]={0,1,2,3,4,5,6,7,8};
+	swap(cur[code(i1-i0,j1-j0)], cur[code(i2-i0,j2-j0)]);
+
+	vector<int>op;
+	int x=decode(cur);
+	while(x){
+		op.pb(w[x]),x=fa[x];
+	}
+	reverse(op.begin(),op.end());
+
+	vector<int>tab={
+		a[i0][j0],a[i0][j0+1],a[i0][j0+2],
+		a[i0+1][j0],a[i0+1][j0+1],a[i0+1][j0+2],
+		a[i0+2][j0],a[i0+2][j0+1],a[i0+2][j0+2]
+	};
+	for(int x:op){
+		for(int i=0;i<9;i++)
+			if(f[x][i]!=i){
+				int now=i;
+				vector<int>out;
+				do{
+					out.pb(tab[now]);
+					now=f[x][now];
+				}while(now!=i);
+				reverse(out.begin(),out.end());
+				lovef.pb(out);
+				break;
+			}
+		vector<int>tab2(9);
+		for(int i=0;i<9;i++)tab2[i]=tab[f[x][i]];
+		swap(tab,tab2);
+	}
+	int ww=0;
+	for(int p=0;p<3;p++)
+		for(int q=0;q<3;q++)
+			pos[a[i0+p][j0+q]=tab[ww++]]={i0+p,j0+q};
 }
 void procedure(){
 	fac[0]=1;
@@ -113,30 +156,35 @@ void procedure(){
 		for(int j=0;j<9;j++)
 			f[i+B][f[i][j]]=j;
 	}
-	for(int i=0;i<9;i++)sb.pb(i);
-	vector<int>www=sb;
-	do{
-		perm[id++]=sb;
-	}while(next_permutation(sb.begin(),sb.end()));
+	n=read(),m=read();
+	for(int i=1;i<=n;i++)
+		for(int j=1;j<=m;j++){
+			a[i][j]=read();
+			pos[a[i][j]]={i,j};
+		}
 
-	sb=www;
+	for(int i=0;i<9;i++)sb.pb(i);
+	do{
+		for(int i=0;i<9;i++)
+			perm[id][i]=sb[i];
+		id++;
+	}while(next_permutation(sb.begin(),sb.end()));
 
 	priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>>q;
 	q.push({0,0});
 	memset(dis,0x3f,sizeof(dis));
 	dis[0]=0;
 
-	int cnt=0;
+	int now[9];
 	while(!q.empty()){
-		cnt++;
 		int x=q.top().se;q.pop();
 		if(vis[x])continue;vis[x]=1;
 
-
 		for(int i=0;i<2*B;i++){
-			vector<int>now(9);
 			for(int j=0;j<9;j++)now[j]=perm[x][f[i][j]];
+
 			int y=decode(now);
+		
 			if(dis[y]>dis[x]+siz[i%B]){
 				dis[y]=dis[x]+siz[i%B];
 				fa[y]=x, w[y]=i;
@@ -145,14 +193,29 @@ void procedure(){
 		}
 	}
 
-	for(int i=0;i<9;i++)
-		for(int j=i+1;j<9;j++){
-			swap(sb[i],sb[j]);
+	int ww=0;
+	for(int i=1;i<=n;i++)for(int j=1;j<=m;j++){
+		auto [x,y]=pos[++ww];
+		while(x!=i||y!=j){
+			int xx,yy;
+			if(i<x) xx=max(x-2,i);
+			else xx=min(x+2,i);
 
-			int x=decode(i,j);
-			
+			if(j<y) yy=max(y-2,j);
+			else yy=min(y+2,j);
+
+			if(xx==i&&yy<j)xx++;
+
+			solve(min(n-2,min(xx,x)),min(m-2,min(yy,y)),xx,yy,x,y);
+			x=xx,y=yy;
 		}
-	cout<<"cnt="<<cnt<<endl;
+	}
+	printf("%d\n", (int)lovef.size());
+	for(auto out:lovef){
+		printf("%d ",(int)out.size());
+		for(int x:out) printf("%d ",x);
+		puts("");
+	}
 }
 int main(){
 	#ifdef LOCAL
