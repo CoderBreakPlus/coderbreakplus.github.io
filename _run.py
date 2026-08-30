@@ -854,6 +854,30 @@ class ProblemGroup:
             if c == contest: return p
         return ""
 
+def get_auto_link(pid):
+    """根据题号字符串自动推导在线 OJ 链接"""
+    m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(1|2)?$', pid, re.IGNORECASE)
+    m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+?)(1|2)?$', pid, re.IGNORECASE)
+    m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', pid, re.IGNORECASE)
+    
+    if m_cf:
+        suffix = m_cf.group(3) if m_cf.group(3) else ""
+        return f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{(m_cf.group(2) + suffix).upper()}"
+    elif m_ac:
+        suffix = m_ac.group(4) if m_ac.group(4) else ""
+        contest = m_ac.group(1).lower() + m_ac.group(2)
+        task = f"{contest}_{(m_ac.group(3) + suffix).lower()}"
+        return f"https://atcoder.jp/contests/{contest}/tasks/{task}"
+    elif m_oj:
+        oj_prefix = m_oj.group(1).lower()
+        oj_num = m_oj.group(2)
+        if oj_prefix == 'p': return f"https://www.luogu.com.cn/problem/P{oj_num}"
+        elif oj_prefix == 'qoj': return f"https://qoj.ac/problem/{oj_num}"
+        elif oj_prefix == 'uoj': return f"https://uoj.ac/problem/{oj_num}"
+        elif oj_prefix == 'soj': return f"http://121.196.149.251:8080/problem/{oj_num}"
+    
+    return "#"
+    
 def scan_and_group_files(data_dir):
     groups = {}
     conf_bases = set()
@@ -1417,7 +1441,6 @@ def scan_problem_lists(plist_dir, groups):
     if not os.path.exists(plist_dir):
         return plists
         
-    # 💡 建立全量精准映射，解决带后缀题号(如cf1152f2)无法命中的Bug
     version_map = {}
     for g in groups.values():
         for v in g.versions.values():
@@ -1459,7 +1482,8 @@ def scan_problem_lists(plist_dir, groups):
                             matched_versions.append(list(target_group.versions.values())[0])
                     else:
                         dummy = ProblemVersion("Normal", pid)
-                        dummy.link = "#"
+                        # 💡 在这里调用自动链接识别功能
+                        dummy.link = get_auto_link(pid)
                         matched_versions.append(dummy)
             plists[name] = matched_versions
     return plists
@@ -1510,7 +1534,8 @@ def scan_plans(plan_dir, groups):
                             matched_versions.append(list(target_group.versions.values())[0])
                     else:
                         dummy = ProblemVersion("Normal", pid)
-                        dummy.link = "#"
+                        # 💡 在这里调用自动链接识别功能
+                        dummy.link = get_auto_link(pid)
                         matched_versions.append(dummy)
             plans[name] = matched_versions
     return plans
