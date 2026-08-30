@@ -707,7 +707,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             myChart = echarts.init(chartDom);
             
             // 保存当前时间轴的缩放比例
-            let currentZoomStart = Math.max(0, chartData.dates.length - 30);
+            let currentZoomStart = Math.max(0, chartData.dates.length - 120);
             let currentZoomEnd = chartData.dates.length - 1;
             
             myChart.on('datazoom', function(params) {{
@@ -760,7 +760,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 dataZoom: [
                     {{
                         type: 'slider', show: true, xAxisIndex: [0],
-                        startValue: window.currentZoomStart || Math.max(0, chartData.dates.length - 30), 
+                        startValue: window.currentZoomStart || Math.max(0, chartData.dates.length - 120), 
                         endValue: window.currentZoomEnd || (chartData.dates.length - 1),
                         bottom: 0, height: 24,
                         borderColor: '#e2e8f0', backgroundColor: '#f8fafc',
