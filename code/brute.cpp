@@ -1,4 +1,4 @@
-// created time: 2026-08-26 10:58:07
+// created time: 2026-08-30 18:59:15
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,34 +29,29 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-
-int s[10005];
-int n,q,a[10005];
-
+int n,m,q,a[200005],c[200005],buc[200005];
+ll qz[200005];
 void procedure(){
-	n=read(),q=read();
-	for(int i=0;i<n;i++)a[i]=read();
+	n=read(),m=read(),q=read();
+	for(int i=1;i<=n;i++) a[i]=read(),qz[i]=qz[i-1]+a[i];
+	for(int i=1;i<=n;i++) c[i]=read();
+
 
 	while(q--){
-		int op=read();
+		int op=read(),l=read(),r=read();
 		if(op==1){
-			int x=read(),val=a[x];
-			for(int i=x+1;i<n;i++){
-				if(a[i]>val){
-					s[i]++;
-					val=a[i];
-				}
+			int j=l-1;
+			ll ans=0;
+			for(int i=l;i<=r;i++){
+				while(j<r && !buc[c[j+1]]) ++buc[c[++j]];
+				chkmax(ans,qz[j]-qz[i-1]);
+				--buc[c[i]];
 			}
-		}else if(op==2){
-			int l=read(),r=read();
-			int sum=0;
-			for(int i=l;i<=r;i++)sum+=s[i];
-			printf("%d\n",sum);
+			printf("%lld\n",ans);
 		}else{
-			int l=read(),r=read(),w=read();
-			for(int i=l;i<=r;i++)a[i]+=w;
+			c[l]=r;
 		}
-	}	
+	}
 }
 int main(){
 	#ifdef LOCAL

@@ -111,7 +111,7 @@
         </div>
         <h1>🎯 训练计划</h1>
         
-        <div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-cf3000" onclick="switchAtCoderTab('tab-cf3000', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">cf3000</button><button class="atcoder-tab-btn" data-target="tab-cf3100" onclick="switchAtCoderTab('tab-cf3100', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">cf3100</button></div><div id="tab-cf3000" class="atcoder-tab-content" style="display: block;">
+        <div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-cf3000" onclick="switchAtCoderTab('tab-cf3000', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">cf3000</button><button class="atcoder-tab-btn" data-target="tab-cf3100" onclick="switchAtCoderTab('tab-cf3100', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">cf3100</button><button class="atcoder-tab-btn" data-target="tab-zati100" onclick="switchAtCoderTab('tab-zati100', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati100</button></div><div id="tab-cf3000" class="atcoder-tab-content" style="display: block;">
         <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
             <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-cf3000', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">
                 ⏳ 待补题 (19)
@@ -585,8 +585,254 @@
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-06-12</td>
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf1240f.conf" data-editor-href="editor.html?file=data/cf1240f.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/cf1240f.cpp" data-editor-href="editor.html?file=data/cf1240f.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/cf1240f.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr></tbody></table></div></div></div><div id="tab-zati100" class="atcoder-tab-content" style="display: none;">
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-zati100', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">
+                ⏳ 待补题 (10)
+            </button>
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-done-zati100', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">
+                ✅ 已完成 (9)
+            </button>
+        </div>
+        <div id="sub-todo-zati100" class="plan-sub-content" style="display: block;">
+    <div class="list-filter-bar">
+        <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
+        <div style="position: relative; display: inline-block;">
+            <input type="text" id="filter-tag-plan-table-todo-zati100" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('plan-table-todo-zati100')" style="min-width: 220px; padding-right: 30px;">
+            <span onclick="clearTagFilter('plan-table-todo-zati100')" id="clear-btn-plan-table-todo-zati100" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
+        </div>
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
+        <input type="number" id="filter-diff-min-plan-table-todo-zati100" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-zati100')" onchange="filterListTable('plan-table-todo-zati100')">
+        <span style="color:var(--border);">-</span>
+        <input type="number" id="filter-diff-max-plan-table-todo-zati100" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-zati100')" onchange="filterListTable('plan-table-todo-zati100')">
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📅 日期:</span>
+        <input type="date" id="filter-date-start-plan-table-todo-zati100" onchange="filterListTable('plan-table-todo-zati100')">
+        <span style="color:var(--border);">-</span>
+        <input type="date" id="filter-date-end-plan-table-todo-zati100" onchange="filterListTable('plan-table-todo-zati100')">
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table class="normal-table" id="plan-table-todo-zati100">
+            <thead>
+                <tr>
+                    <th style="text-align:center;">序号</th>
+                    <th>题目与来源</th>
+                    <th>标签</th>
+                    <th onclick="sortListTable('plan-table-todo-zati100', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                    <th onclick="sortListTable('plan-table-todo-zati100', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
+                    <th class="remark-col">备注</th>
+                    <th>文件</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="abc348g" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>abc348g</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/abc348g.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/abc348g.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/abc348g.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc058d" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>agc058d</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc058d.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc058d.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc058d.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="cf2174f" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>cf2174f</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/cf2174f.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/cf2174f.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/cf2174f.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="p11392" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>p11392</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/p11392.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/p11392.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/p11392.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="p14424" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>p14424</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/p14424.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/p14424.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/p14424.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="p15585" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>p15585</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/p15585.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/p15585.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/p15585.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="p15587" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>p15587</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/p15587.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/p15587.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/p15587.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="p4747" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>p4747</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/p4747.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/p4747.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/p4747.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="p5044" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>p5044</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/p5044.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/p5044.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/p5044.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="qoj17256" data-has-code="0" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><b>qoj17256</b><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/qoj17256.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/qoj17256.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/qoj17256.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr></tbody></table></div></div><div id="sub-done-zati100" class="plan-sub-content" style="display: none;">
+    <div class="list-filter-bar">
+        <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
+        <div style="position: relative; display: inline-block;">
+            <input type="text" id="filter-tag-plan-table-done-zati100" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('plan-table-done-zati100')" style="min-width: 220px; padding-right: 30px;">
+            <span onclick="clearTagFilter('plan-table-done-zati100')" id="clear-btn-plan-table-done-zati100" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
+        </div>
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
+        <input type="number" id="filter-diff-min-plan-table-done-zati100" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('plan-table-done-zati100')" onchange="filterListTable('plan-table-done-zati100')">
+        <span style="color:var(--border);">-</span>
+        <input type="number" id="filter-diff-max-plan-table-done-zati100" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('plan-table-done-zati100')" onchange="filterListTable('plan-table-done-zati100')">
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📅 日期:</span>
+        <input type="date" id="filter-date-start-plan-table-done-zati100" onchange="filterListTable('plan-table-done-zati100')">
+        <span style="color:var(--border);">-</span>
+        <input type="date" id="filter-date-end-plan-table-done-zati100" onchange="filterListTable('plan-table-done-zati100')">
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table class="normal-table" id="plan-table-done-zati100">
+            <thead>
+                <tr>
+                    <th style="text-align:center;">序号</th>
+                    <th>题目与来源</th>
+                    <th>标签</th>
+                    <th onclick="sortListTable('plan-table-done-zati100', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                    <th onclick="sortListTable('plan-table-done-zati100', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
+                    <th class="remark-col">备注</th>
+                    <th>文件</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+        <tr data-tags="interative" data-diff="3300.0" data-date="2026-08-30" data-base="p14390" data-has-code="1" data-has-md="1">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://www.luogu.com.cn/problem/P14390" target="_blank" style="color:var(--primary); text-decoration:none;"><b>p14390</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('interative', 'plan-table-done-zati100')" title="点击筛选/取消">interative</span></td>
+            <td><span class="diff-indicator" title="难度: 3300.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3300</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-30</td>
+            <td class="remark-col">很厉害的交互</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/p14390.conf" data-editor-href="editor.html?file=data/p14390.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/p14390.cpp" data-editor-href="editor.html?file=data/p14390.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/p14390" data-editor-href="editor.html?file=data/p14390.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div></td>
+        </tr>
+        <tr data-tags="ds" data-diff="2800.0" data-date="2026-08-30" data-base="qoj5098" data-has-code="1" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://qoj.ac/problem/5098" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj5098</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'plan-table-done-zati100')" title="点击筛选/取消">ds</span></td>
+            <td><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-30</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj5098.conf" data-editor-href="editor.html?file=data/qoj5098.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/qoj5098.cpp" data-editor-href="editor.html?file=data/qoj5098.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/qoj5098.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="interactive" data-diff="2600.0" data-date="2026-08-30" data-base="qoj5309" data-has-code="1" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://qoj.ac/problem/5309" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj5309</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('interactive', 'plan-table-done-zati100')" title="点击筛选/取消">interactive</span></td>
+            <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-30</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj5309.conf" data-editor-href="editor.html?file=data/qoj5309.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/qoj5309.cpp" data-editor-href="editor.html?file=data/qoj5309.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/qoj5309.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="counting dp" data-diff="3000.0" data-date="2026-08-29" data-base="agc045d" data-has-code="1" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc045/tasks/agc045_d" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc045d</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">AtCoder - AGC045</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'plan-table-done-zati100')" title="点击筛选/取消">counting</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'plan-table-done-zati100')" title="点击筛选/取消">dp</span></td>
+            <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-29</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/agc045d.conf" data-editor-href="editor.html?file=data/agc045d.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/agc045d.cpp" data-editor-href="editor.html?file=data/agc045d.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/agc045d.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="combinatorics counting" data-diff="3500.0" data-date="2026-08-29" data-base="cf1844h" data-has-code="1" data-has-md="1">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://codeforces.com/problemset/problem/1844/H" target="_blank" style="color:var(--primary); text-decoration:none;"><b>cf1844h</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Codeforces - Codeforces Round 1844</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'plan-table-done-zati100')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'plan-table-done-zati100')" title="点击筛选/取消">counting</span></td>
+            <td><span class="diff-indicator" title="难度: 3500.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3500</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-29</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf1844h.conf" data-editor-href="editor.html?file=data/cf1844h.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/cf1844h.cpp" data-editor-href="editor.html?file=data/cf1844h.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/cf1844h" data-editor-href="editor.html?file=data/cf1844h.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div></td>
+        </tr>
+        <tr data-tags="combinatorics dp" data-diff="2800.0" data-date="2026-08-27" data-base="p8100" data-has-code="1" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://www.luogu.com.cn/problem/P8100" target="_blank" style="color:var(--primary); text-decoration:none;"><b>p8100</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'plan-table-done-zati100')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'plan-table-done-zati100')" title="点击筛选/取消">dp</span></td>
+            <td><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-27</td>
+            <td class="remark-col">好题，被创了，第一步很重要</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/p8100.conf" data-editor-href="editor.html?file=data/p8100.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/p8100.cpp" data-editor-href="editor.html?file=data/p8100.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/p8100.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="convexity dp" data-diff="3000.0" data-date="2026-08-26" data-base="cf2183h" data-has-code="1" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://codeforces.com/problemset/problem/2183/H" target="_blank" style="color:var(--primary); text-decoration:none;"><b>cf2183h</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Codeforces - Codeforces Round 2183</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('convexity', 'plan-table-done-zati100')" title="点击筛选/取消">convexity</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'plan-table-done-zati100')" title="点击筛选/取消">dp</span></td>
+            <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-26</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf2183h.conf" data-editor-href="editor.html?file=data/cf2183h.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/cf2183h.cpp" data-editor-href="editor.html?file=data/cf2183h.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/cf2183h.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="dp" data-diff="2800.0" data-date="2026-08-26" data-base="p13345" data-has-code="1" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://www.luogu.com.cn/problem/P13345" target="_blank" style="color:var(--primary); text-decoration:none;"><b>p13345</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'plan-table-done-zati100')" title="点击筛选/取消">dp</span></td>
+            <td><span class="diff-indicator" title="难度: 2800.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 0.0%, transparent 0.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2800</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-26</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/p13345.conf" data-editor-href="editor.html?file=data/p13345.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/p13345.cpp" data-editor-href="editor.html?file=data/p13345.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/p13345.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="ds" data-diff="2900.0" data-date="2026-08-26" data-base="p15589" data-has-code="1" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://www.luogu.com.cn/problem/P15589" target="_blank" style="color:var(--primary); text-decoration:none;"><b>p15589</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'plan-table-done-zati100')" title="点击筛选/取消">ds</span></td>
+            <td><span class="diff-indicator" title="难度: 2900.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 25.0%, transparent 25.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 2900</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-26</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/p15589.conf" data-editor-href="editor.html?file=data/p15589.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/p15589.cpp" data-editor-href="editor.html?file=data/p15589.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/p15589.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
         </tr></tbody></table></div></div></div>
-        <div class="footer">最后构建: 2026-08-30 16:40:24 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-08-30 20:04:53 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;

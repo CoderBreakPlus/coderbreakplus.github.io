@@ -30,11 +30,11 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
 void procedure(){
-	int T = 100;
+	int T = 1000;
 	for(int t=1;t<=T;t++){
 		system("./gen");
 		system("./brute");
-		system("./p15589");
+		system("./qoj5098");
 		if(!system("diff -Zq test.out test.ans")){
 			cout<<"AC"<<endl;
 		}else{
