@@ -1,4 +1,4 @@
-// created time: 2026-08-30 15:29:31
+// created time: 2026-08-30 16:29:08
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,15 +30,48 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n = 200000, k = 100;
+const int B = 3333;
+int n,a[B+5];
+mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
+ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
+bool calc(int x,int cur){
+	for(int i=1;i<=B;i++)
+		if(a[i]==x) {
+			n=cur-i;
+			return 1;
+		}
+	return 0;
+}
 void procedure(){
-	cout<<n<<" "<<k<<endl;
-	for(int i=1;i<=n;i++)cout<<i<<" ";cout<<endl;	
+	int m = 0;
+	for(int i=1;i<=B;i++){
+		cout<<"walk "<<rng(1,1e9)<<endl;
+		int x; cin>>x;
+		chkmax(m,x);
+	}
+
+	for(int i=1;i<=B;i++){
+		cout<<"walk 1"<<endl;
+		cin>>a[i];
+		for(int j=1;j<i;j++){
+			if(a[j]==a[i]){
+				cout<<"guess "<<i-j<<endl;
+				return;
+			}
+		}
+	}
+
+	cout<<"walk "<<m-B<<endl;
+	int x,cur=m;cin>>x;
+
+	while(!calc(x,cur)) cout<<"walk "<<B<<endl,cin>>x,cur+=B;
+	cout<<"guess "<<n<<endl;
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
