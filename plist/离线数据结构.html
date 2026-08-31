@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📁 题单: 离线数据结构 - 题目整理</title>
+    <title>📁 List: 离线数据结构 - 题目整理</title>
     <style>
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }
@@ -40,11 +40,11 @@
         
         .remark-col { display: none; }
         
-        /* 💡 新增的 CSS 序号计数器 */
+        /* CSS 序号计数器 */
         .normal-table tbody { counter-reset: row-num; }
         .normal-table tbody tr .row-index::before { counter-increment: row-num; content: counter(row-num); }
         
-        /* 更新列宽以适应左侧序号 */
+        /* 列宽设置 */
         .normal-table th:nth-child(1) { width: 5%; text-align: center; } 
         .normal-table th:nth-child(2) { width: 34%; } 
         .normal-table th:nth-child(3) { width: 16%; } 
@@ -101,19 +101,19 @@
             <a href="../index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="../Summary.html">📚 Summary</a>
-            <a href="../Plan.html">🎯 训练计划</a>
-            <a href="../plist/index.html">📋 题单</a>
+            <a href="../Plan.html">🎯 Plan</a>
+            <a href="../plist/index.html">📋 List</a>
             <a href="../Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
             
         </div>
-        <h1>📁 题单: 离线数据结构</h1>
+        <h1>📁 List: 离线数据结构</h1>
         <div class="stats-bar"><div class="stats-info"><span>共 18 题</span></div></div>
         
     <div class="list-filter-bar">
-        <input type="text" id="filter-tag-plist-离线数据结构" placeholder="搜索本题单题目..." onkeyup="filterListTable('plist-离线数据结构')">
+        <input type="text" id="filter-tag-plist-离线数据结构" placeholder="搜索本 List 题目..." onkeyup="filterListTable('plist-离线数据结构')">
     </div>
     <div style="overflow-x: auto;">
         <table class="plist-table" id="plist-离线数据结构">
@@ -288,7 +288,7 @@
                 </div>
             </td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-08-31 19:30:39 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-08-31 19:40:00 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -383,8 +383,6 @@
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             
-            let vCount = 0, cCount = 0, mCount = 0;
-
             rows.forEach(row => {
                 const tags = (row.getAttribute('data-tags') || '').toLowerCase();
                 const baseName = (row.getAttribute('data-base') || '').toLowerCase();
@@ -405,18 +403,10 @@
 
                 if (matchTag && matchDiff && matchDate) {
                     row.style.display = '';
-                    vCount++;
-                    if (row.getAttribute('data-has-code') === '1') cCount++;
-                    if (row.getAttribute('data-has-md') === '1') mCount++;
                 } else {
                     row.style.display = 'none';
                 }
             });
-
-            const statsInfo = document.getElementById('stats-info-' + tableId);
-            if (statsInfo) {
-                statsInfo.innerHTML = `<span>📁 独立题目: ${vCount}</span><span>📝 有代码: ${cCount}</span><span>💡 有题解: ${mCount}</span>`;
-            }
         }
 
         let sortDirection = {};
@@ -469,7 +459,7 @@
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
         }
-
+        
         function switchPlanSubTable(targetId, btn) {
             const parentTab = btn.closest('.atcoder-tab-content');
             if (!parentTab) return;
