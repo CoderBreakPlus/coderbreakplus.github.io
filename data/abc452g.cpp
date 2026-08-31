@@ -1,3 +1,4 @@
+// created time: 2026-04-04
 #include<bits/stdc++.h>
 using namespace std;
 struct node{int len,fa,s[10];}a[1000005];
