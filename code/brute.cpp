@@ -1,4 +1,4 @@
-// created time: 2026-08-30 18:59:15
+// created time: 2026-08-31 13:49:52
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,29 +29,45 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-int n,m,q,a[200005],c[200005],buc[200005];
-ll qz[200005];
-void procedure(){
-	n=read(),m=read(),q=read();
-	for(int i=1;i<=n;i++) a[i]=read(),qz[i]=qz[i-1]+a[i];
-	for(int i=1;i<=n;i++) c[i]=read();
+const int M=2e5;
+#define mid ((l+r)>>1)
+int n,a[100005],b[100005],c[100005],d[100005];
 
+bool solve(vector<int> s){
+	if(s.size() == 1) return 1;
 
-	while(q--){
-		int op=read(),l=read(),r=read();
-		if(op==1){
-			int j=l-1;
-			ll ans=0;
-			for(int i=l;i<=r;i++){
-				while(j<r && !buc[c[j+1]]) ++buc[c[++j]];
-				chkmax(ans,qz[j]-qz[i-1]);
-				--buc[c[i]];
+	{
+		sort(s.begin(),s.end(),[](int x,int y){ return a[x]<=a[y]; });
+		int mx=0;
+		for(int i=0; i+1<s.size(); i++){
+			chkmax(mx, c[s[i]]);
+			if(mx <= a[s[i+1]]) {
+				return solve(vector<int>(s.begin(), s.begin()+i+1))
+					&& solve(vector<int>(s.begin()+i+1, s.end()));
 			}
-			printf("%lld\n",ans);
-		}else{
-			c[l]=r;
 		}
 	}
+	{
+		sort(s.begin(),s.end(),[](int x,int y){ return b[x]<=b[y]; });
+		int mx=0;
+		for(int i=0; i+1<s.size(); i++){
+			chkmax(mx, d[s[i]]);
+			if(mx <= b[s[i+1]]) {
+				return solve(vector<int>(s.begin(), s.begin()+i+1))
+					&& solve(vector<int>(s.begin()+i+1, s.end()));
+			}
+		}
+	}
+	return 0;
+}
+void procedure(){
+	n=read();
+	vector<int>vec;
+	for(int i=1;i<=n;i++){
+		a[i]=read(),b[i]=read(),c[i]=read(),d[i]=read();
+		vec.pb(i);
+	}
+	puts(solve(vec)?"YES":"NO");
 }
 int main(){
 	#ifdef LOCAL

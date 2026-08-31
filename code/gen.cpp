@@ -1,4 +1,4 @@
-// created time: 2026-08-30 19:42:30
+// created time: 2026-08-31 15:14:28
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -32,23 +32,18 @@ inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-int n = 20, m = 20, q = 20;
+int n = 5, m = 5;
+
 
 void procedure(){
-	cout<<n<<" "<<m<<" "<<q<<endl;
-	for(int i=1;i<=n;i++)cout<<rng(0,5)<<" ";cout<<endl;
-	for(int i=1;i<=n;i++)cout<<rng(1,m)<<" ";cout<<endl;
+	cout<<n<<endl;
 
-	while(q--){
-		int op=rng(1,2);
-		if(op==1){
-			int l=rng(1,n),r=rng(1,n);if(l>r)swap(l,r);
-			cout<<op<<" "<<l<<" "<<r<<endl;
-		}else{
-			int x=rng(1,n),y=rng(1,m);
-			cout<<op<<" "<<x<<" "<<y<<endl;
-		}
-	}
+	for(int i=1;i<=n;i++) {
+		int a=rng(0,m),b=rng(0,m),c=rng(0,m),d=rng(0,m);
+		if(a>c)swap(a,c); if(b>d)swap(b,d);
+		c++,d++;
+		cout<<a<<" "<<b<<" "<<c<<" "<<d<<endl;
+	}	
 }
 int main(){
 	#ifdef LOCAL
