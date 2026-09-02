@@ -1,4 +1,4 @@
-// created time: 2026-09-01 15:46:56
+// created time: 2026-09-02 12:14:11
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,21 +29,39 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
+const int M = 500;
+int n,f[200005][M+5];
 
-int n = 2e5, a[200005];
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-
+void upd(int &x,ull y){
+	x=(x+y)%mod;
+}
 void procedure(){
-	cout<<n<<endl;
-	for(int i=1;i<=n;i++)a[i]=i;
-	shuffle(a+1,a+n+1,rnd);
+	n=read();
+	f[0][0]=1;
 
-	for(int i=1;i<=n;i++) cout<<a[i]<<" "; cout<<endl;
+	for(int i=0;i<=n;i++){
+		for(int j=0;i+2*j<=n && j<=M;j++)if(f[i][j]){
+			// as a single point
+			upd(f[i+2*j+1][j], (ull)f[i][j]*2*j);
+			// as a leaf
+			addmod(f[i+2*j+1][j+1]+=f[i][j]);
+			if(j)addmod(f[i+2*j][j]+=f[i][j]);
+			// as a double point
+			upd(f[i+2*j+1][j-1], (ull)f[i][j]*j%mod*(j-1));
+		}
+	}
+
+	int ans=0;
+	for(int i=n;i>=0;i-=2){
+		addmod(ans+=f[i][1]);
+		if(i==0)ans++;
+	}
+	printf("%d\n",ans);
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();

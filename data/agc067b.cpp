@@ -1,4 +1,4 @@
-// created time: 2026-08-31 13:49:52
+// created time: 2026-09-02 09:55:26
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,50 +29,51 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-const int M=2e5;
-#define mid ((l+r)>>1)
-int n,a[100005],b[100005],c[100005],d[100005];
 
-bool solve(vector<int> s){
-	if(s.size() == 1) return 1;
+int n,m,c,l[10005],r[10005],vis[105][105][105];
 
-	{
-		sort(s.begin(),s.end(),[](int x,int y){ return a[x]<=a[y]; });
-		int mx=0;
-		for(int i=0; i+1<s.size(); i++){
-			chkmax(mx, c[s[i]]);
-			if(mx <= a[s[i+1]]) {
-				return solve(vector<int>(s.begin(), s.begin()+i+1))
-					&& solve(vector<int>(s.begin()+i+1, s.end()));
-			}
-		}
-	}
-	{
-		sort(s.begin(),s.end(),[](int x,int y){ return b[x]<=b[y]; });
-		int mx=0;
-		for(int i=0; i+1<s.size(); i++){
-			chkmax(mx, d[s[i]]);
-			if(mx <= b[s[i+1]]) {
-				return solve(vector<int>(s.begin(), s.begin()+i+1))
-					&& solve(vector<int>(s.begin()+i+1, s.end()));
-			}
-		}
-	}
-	return 0;
-}
+int f[105][105],g[105][105];
+
 void procedure(){
-	n=read();
-	vector<int>vec;
-	for(int i=1;i<=n;i++){
-		a[i]=read(),b[i]=read(),c[i]=read(),d[i]=read();
-		vec.pb(i);
+	n=read(),m=read(),c=read();
+	for(int l=1;l<=n+1;l++)f[l][l-1]=1;
+
+	for(int i=1;i<=m;i++){
+		l[i]=read(),r[i]=read();
+		for(int k=l[i];k<=r[i];k++)vis[k][l[i]][r[i]]=1;
+	}	
+	
+	for(int k=1;k<=n;k++){
+		for(int i=n;i>=1;i--)
+			for(int j=i;j<=n;j++)if(vis[k][i][j]){
+				if(j<n)vis[k][i][j+1]=1;
+				if(i>1)vis[k][i-1][j]=1;
+			}
 	}
-	puts(solve(vec)?"YES":"NO");
+	for(int l=n;l>=1;l--){
+		memset(g,0,sizeof(g));
+		g[l-1][l-1]=1;
+		for(int r=l;r<=n;r++){
+			for(int i=l-1;i<r;i++){
+				for(int j=l-1;j<=i;j++){
+					if(vis[i][j+1][r-1]) continue;
+					g[r][j]=(g[r][j]+(ull)g[i][j]*f[i+1][r-1])%mod;
+					g[r][i]=(g[r][i]+(ull)g[i][j]*f[i+1][r-1]%mod*(c-1))%mod;
+				}
+			}
+			f[l][r]=qpow(c,r-l+1);
+			for(int i=l;i<=r;i++)
+				for(int j=l-1;j<=i;j++)if(!vis[i][j+1][r]){
+					f[l][r]=(f[l][r]+(ull)(mod-g[i][j])*f[i+1][r])%mod;
+				}
+		}
+	}
+	printf("%d\n",f[1][n]);
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.ans","w",stdout));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
