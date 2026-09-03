@@ -1,4 +1,4 @@
-// created time: 2026-09-03 11:13:56
+// created time: 2026-09-03 08:09:09
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,11 +29,39 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
+mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
+ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
+int n,m,k,a[505][505];
+ull Mod = (ull)1e16 + 2137, Base = rng(1e8,1e9);
+
+bitset<505>b[250005];
+int idx;
 void procedure(){
-	int &a; int b; int c=5;
+	n=read(),m=read(),k=read();
+	for(int i=1;i<=n;i++)
+		for(int j=1;j<=m;j++)a[i][j]=read();
 
-	a=c,b=c;
+	map<ull,int>mp;
+	int ret=0;
+	for(int j=1;j<=m;j++){
+		set<ull>tmp;
+		bitset<505>sb;
+		for(int i=1;i<=n-k+1;i++){
+			ull now=0;
+			for(int x=i+1;x<=i+k-1;x++)
+				now=((__int128)now*Base+a[x][j]-a[x-1][j]+100000)%Mod;
+			if(tmp.count(now))continue;
+			tmp.emplace(now);
+
+			if(mp.count(now)) sb|=b[mp[now]];
+			else mp[now]=++idx;
+
+			b[mp[now]][j]=1;
+		}
+		ret+=sb.count();
+	}
+	printf("%d\n",ret);
 }
 int main(){
 	#ifdef LOCAL

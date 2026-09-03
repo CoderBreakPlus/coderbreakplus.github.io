@@ -1,4 +1,4 @@
-// created time: 2026-09-03 11:13:56
+// created time: 2026-09-03 10:29:19
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,11 +29,48 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
+const int dx[4]={0,0,1,-1};
+const int dy[4]={1,-1,0,0};
+int n,m,a[505][505],cur[505][505],cnt[505][505];
 
 void procedure(){
-	int &a; int b; int c=5;
+	n=read(),m=read();
+	for(int i=1;i<=n;i++)
+		for(int j=1;j<=m;j++)a[i][j]=read();
 
-	a=c,b=c;
+	for(int i=1;i<=n;i++)
+		for(int j=1;j<=m;j++)
+			for(int k:{0,1,2,3}){
+				int x=i+dx[k],y=j+dy[k];
+				if(x>n||y>m||x<1||y<1)continue;
+				cnt[x][y]++;
+			}
+
+	int ans=0;
+	while(1){
+		bool flg=0;
+		for(int i=1;i<=n;i++)
+			for(int j=1;j<=m;j++){
+				if(cur[i][j]<a[i][j]){
+					flg=1;
+					int d=a[i][j]-cur[i][j];
+					int opt=(d+cnt[i][j])/(1+cnt[i][j]);
+
+					ans += opt;
+					// cout<<"opt "<<i<<","<<j<<" = "<<opt<<endl;
+					cur[i][j]+=opt*(1+cnt[i][j]);
+					for(int k:{0,1,2,3}){
+						int x=i+dx[k],y=j+dy[k];
+						cur[x][y]-=opt;
+					}
+				}
+			}
+		// for(int i=1;i<=n;i++){
+		// 	for(int j=1;j<=m;j++) cout<<cur[i][j]<<" "; cout<<endl;
+		// }
+		if(!flg)break;
+	}
+	printf("%d\n", ans);
 }
 int main(){
 	#ifdef LOCAL

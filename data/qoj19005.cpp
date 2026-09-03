@@ -1,4 +1,4 @@
-// created time: 2026-09-03 11:13:56
+// created time: 2026-09-03 09:57:22
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,16 +30,71 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-void procedure(){
-	int &a; int b; int c=5;
+int n,q,a[100005],val[100005],seq[100005],tl,out[100005];
 
-	a=c,b=c;
+int ok[10005],idx;
+ll sum;
+bool vis[5000005];
+int fk[5000005];
+vector<pair<int,int>>E[100005];
+
+void dfs(int x,int fa){
+	if(fa) val[x]=seq[++tl],fk[seq[tl]]=x;
+	sum+=(ull)val[x]*a[x];
+	for(auto [y,i]:E[x]){
+		if(y==fa)continue;
+		dfs(y,x);
+		out[i]=val[y]-val[x];
+	}
+}
+void procedure(){
+	n=read(),q=read();
+	for(int i=1;i<=n;i++)a[i]=read();
+	for(int i=1;i<n;i++){
+		int u=read(),v=read();
+		E[u].pb(v,i),E[v].pb(u,i);
+	}	
+	dfs(1,0);
+	for(int i=1;i<n;i++)printf("%d\n",out[i]); fflush(stdout);
+
+	while(q--){
+		printf("? 1\n"); fflush(stdout);
+		ll x=read()-sum;
+
+		ll w=1;
+		if(x<0)x=-x,w=-w;
+
+		// cout<<"x="<<x<<endl;
+		for(int i=1;i<=idx;i++){
+			while(x%ok[i]==0){
+				x/=ok[i],w*=ok[i];
+			}
+		}
+		int node=fk[x];
+		printf("! %d %d\n", node, a[node]+w); fflush(stdout);
+	}
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
+
+	for(int i=2;i<=5e6;i++){
+		if(!vis[i]){
+			for(int j=2*i;j<=5e6;j+=i) vis[j]=1;
+		}
+	}
+	for(int i=2;i<=1e4;i++){
+		if(!vis[i]) ok[++idx]=i;
+	}
+	for(int i=1e4+1;i<=5e6;i++){
+		if(!vis[i]){
+			seq[++tl]=i;
+			if(tl==1e5)break;
+		}
+	}
+	tl=0;
 	ll T=1;
 	// math_init();
 	while(T--) procedure();

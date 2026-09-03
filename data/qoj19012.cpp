@@ -1,4 +1,4 @@
-// created time: 2026-09-03 11:13:56
+// created time: 2026-09-03 08:16:05
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,10 +30,18 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-void procedure(){
-	int &a; int b; int c=5;
+int n,m,a[100005],b[100005];
 
-	a=c,b=c;
+void procedure(){
+	int ans=0;
+	n=read(),m=read();
+	for(int i=1;i<=n;i++)a[i]=read();
+	for(int i=1;i<=n;i++)ans+=(b[i]=read()),a[i]-=b[i];
+
+	sort(a+1,a+n+1,greater<>());
+	
+	for(int i=1;i<=m;i++)ans+=a[i];
+	printf("%d\n",ans);
 }
 int main(){
 	#ifdef LOCAL

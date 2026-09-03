@@ -1,4 +1,4 @@
-// created time: 2026-09-03 11:13:56
+// created time: 2026-09-03 08:42:31
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,10 +30,52 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-void procedure(){
-	int &a; int b; int c=5;
+int n,q,a[200005];
 
-	a=c,b=c;
+template<typename T>struct BIT{
+	T c[200005];
+	void upd(int x,T w){
+		while(x<=n){
+			c[x]+=w;
+			x+=(x&-x);
+		}
+	}
+	T qry(int x){
+		T ret=0;
+		while(x){
+			ret+=c[x];
+			x-=(x&-x);
+		}
+		return ret;
+	}
+};
+
+BIT<ll>b1;
+BIT<double>b2;
+
+void procedure(){
+	n=read(),q=read();
+	for(int i=1;i<=n;i++) {
+		a[i]=read(), b1.upd(i,INV(a[i])), b2.upd(i, 1.0/a[i]);
+	}
+
+	while(q--){
+		int o=read();
+		if(o==1){
+			int i=read(),x=read();
+			b1.upd(i, (mod-INV(a[i])+INV(x))%mod);
+			b2.upd(i, 1.0/x-1.0/a[i]);
+			a[i]=x;
+		}else{
+			int l=read(),r=read();
+			int val=((b1.qry(r)-b1.qry(l-1))%mod+mod)%mod;
+			int val2 = floor(b2.qry(r)-b2.qry(l-1));
+
+			// cout<<val<<","<<val2<<endl;
+
+			puts(abs(val-val2)<=5?"yes":"no");
+		}
+	}
 }
 int main(){
 	#ifdef LOCAL

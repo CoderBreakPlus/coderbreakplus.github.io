@@ -1,4 +1,4 @@
-// created time: 2026-09-03 11:13:56
+// created time: 2026-09-03 08:27:40
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,11 +29,39 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
+const int dx[4]={1,-1,0,0};
+const int dy[4]={0,0,1,-1};
+
+int n,m,q,a[5005][5005],ans[5005][5005];
+pair<int,int> ord[5005*5005];
 
 void procedure(){
-	int &a; int b; int c=5;
+	n=read(),m=read(),q=read();
+	for(int i=1;i<=n;i++)
+		for(int j=1;j<=m;j++)a[i][j]=read(), ord[(i-1)*m+j]={i,j};
+	
+	sort(ord+1,ord+n*m+1,[&](pair<int,int> A,pair<int,int> B){
+		auto [i,j]=A;
+		auto [k,l]=B;
+		return a[i][j]>a[k][l];
+	});
 
-	a=c,b=c;
+	for(int s=1;s<=n*m;s++){
+		auto [i,j]=ord[s];
+
+		ans[i][j]=0;
+		for(int d=0;d<4;d++){
+			int x=i+dx[d],y=j+dy[d];
+			if(x>n||y>m||x<1||y<1)continue;
+			if(a[x][y]<a[i][j])continue;
+			ans[i][j]|=(!ans[x][y]);
+		}
+	}
+
+	while(q--){
+		int x=read(),y=read();
+		printf("%d\n",ans[x][y]);
+	}
 }
 int main(){
 	#ifdef LOCAL
