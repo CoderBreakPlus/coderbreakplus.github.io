@@ -1,4 +1,3 @@
-// created time: 2026-02-28
 #pragma GCC optimize("Ofast,no-stack-protector,unroll-loops,fast-math")
 #pragma GCC target("sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2")
 #pragma GCC optimize(3,"Ofast","inline")
