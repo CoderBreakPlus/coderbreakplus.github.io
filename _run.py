@@ -1870,9 +1870,9 @@ def main():
         
     build_category_page('OI', {'OI': categories['OI'], 'OIs': categories['OIs']}, contest_info, os.path.join(out_dir, "OI.html"), rel_data_path, base_url="", data_dir=data_dir)
         
-    build_list_page('Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table", base_url="", data_dir=data_dir)
+    build_list_page('📚 Summary', summary_versions, os.path.join(out_dir, 'Summary.html'), rel_data_path, "summary-table", base_url="", data_dir=data_dir)
     
-    build_plan_page('Plan', plans, os.path.join(out_dir, 'Plan.html'), rel_data_path, base_url="", data_dir=data_dir)
+    build_plan_page('🎯 Plan', plans, os.path.join(out_dir, 'Plan.html'), rel_data_path, base_url="", data_dir=data_dir)
 
     build_blog_index_page(blogs, rel_blog_path, os.path.join(out_dir, "Blog.html"), base_url="")
 
