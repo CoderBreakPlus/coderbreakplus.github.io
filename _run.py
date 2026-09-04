@@ -279,6 +279,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .blog-item:hover {{ background: #f8fafc; }}
         .blog-item-title {{ font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }}
         .blog-item-date {{ color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
+
+        /* 💡 新增：分页器样式 */
+        .pagination-controls {{ display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }}
+        .pagination-btn {{ background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }}
+        .pagination-btn:hover:not(:disabled) {{ background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
+        .pagination-btn:disabled {{ opacity: 0.6; cursor: not-allowed; }}
+        .pagination-btn.active {{ background: var(--primary); color: #fff; border-color: var(--primary); }}
+        .pagination-info {{ color: var(--text-muted); font-size: 0.9em; font-weight: 500; }}
     </style>
 </head>
 <body>
@@ -365,6 +373,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             if (input) {{ input.value = ''; filterListTable(tableId); input.focus(); }}
         }}
 
+        // 💡 分页状态和配置
+        let currentPages = {{}}; // {{ tableId: currentPage }}
+        const itemsPerPage = 50; // 每页显示 50 题
+
         function filterListTable(tableId) {{
             const input = document.getElementById('filter-tag-' + tableId);
             const tagVal = input ? input.value.toLowerCase().trim() : '';
@@ -392,6 +404,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+            const visibleRows = [];
             
             rows.forEach(row => {{
                 const tags = (row.getAttribute('data-tags') || '').toLowerCase();
@@ -412,14 +425,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
 
                 if (matchTag && matchDiff && matchDate) {{
-                    row.style.display = '';
+                    row.style.display = ''; 
+                    visibleRows.push(row);
                 }} else {{
                     row.style.display = 'none';
                 }}
             }});
+            
+            updatePagination(tableId, visibleRows);
         }}
 
-        let sortDirection = {{}};
         function sortListTable(tableId, col) {{
             if (!sortDirection[tableId]) sortDirection[tableId] = {{ 'diff': 1, 'date': 1, 'index': 1 }};
             const tbody = document.querySelector('#' + tableId + ' tbody');
@@ -455,6 +470,118 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 return res;
             }});
             rows.forEach(r => tbody.appendChild(r));
+            
+            const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            updatePagination(tableId, visibleRows);
+        }}
+
+        function updatePagination(tableId, allVisibleRows) {{
+            const totalItems = allVisibleRows.length;
+            const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+            
+            if (!currentPages[tableId] || currentPages[tableId] > totalPages) {{
+                currentPages[tableId] = 1;
+            }}
+
+            renderPaginationControls(tableId, totalPages);
+            displayPageItems(tableId, allVisibleRows, currentPages[tableId]);
+        }}
+
+        function renderPaginationControls(tableId, totalPages) {{
+            const paginationContainers = [
+                document.getElementById('pagination-controls-top-' + tableId),
+                document.getElementById('pagination-controls-bottom-' + tableId)
+            ].filter(Boolean); 
+            
+            paginationContainers.forEach(container => {{
+                if (totalPages <= 1) {{ 
+                    container.style.display = 'none';
+                    return;
+                }}
+                container.style.display = 'flex';
+                container.innerHTML = ''; 
+                
+                const currentPage = currentPages[tableId];
+
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'pagination-btn';
+                prevBtn.innerText = '« 上一页';
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.onclick = () => changePage(tableId, currentPage - 1);
+                container.appendChild(prevBtn);
+
+                const pageWindow = 2; 
+                let startPage = Math.max(1, currentPage - pageWindow);
+                let endPage = Math.min(totalPages, currentPage + pageWindow);
+
+                if (startPage > 1) {{
+                    container.appendChild(createPageButton(tableId, 1, currentPage));
+                    if (startPage > 2) {{
+                        const ellipsis = document.createElement('span');
+                        ellipsis.innerText = '...';
+                        ellipsis.className = 'pagination-info';
+                        container.appendChild(ellipsis);
+                    }}
+                }}
+
+                for (let i = startPage; i <= endPage; i++) {{
+                    container.appendChild(createPageButton(tableId, i, currentPage));
+                }}
+
+                if (endPage < totalPages) {{
+                    if (endPage < totalPages - 1) {{
+                        const ellipsis = document.createElement('span');
+                        ellipsis.innerText = '...';
+                        ellipsis.className = 'pagination-info';
+                        container.appendChild(ellipsis);
+                    }}
+                    container.appendChild(createPageButton(tableId, totalPages, currentPage));
+                }}
+
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'pagination-btn';
+                nextBtn.innerText = '下一页 »';
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.onclick = () => changePage(tableId, currentPage + 1);
+                container.appendChild(nextBtn);
+
+                const pageInfo = document.createElement('span');
+                pageInfo.className = 'pagination-info';
+                pageInfo.innerText = '第 ' + currentPage + ' / ' + totalPages + ' 页';
+                container.appendChild(pageInfo);
+            }});
+        }}
+
+        function createPageButton(tableId, pageNum, currentPage) {{
+            const btn = document.createElement('button');
+            btn.className = 'pagination-btn ' + (pageNum === currentPage ? 'active' : '');
+            btn.innerText = pageNum;
+            btn.onclick = () => changePage(tableId, pageNum);
+            return btn;
+        }}
+
+        function changePage(tableId, newPage) {{
+            currentPages[tableId] = newPage;
+            const tbody = document.querySelector('#' + tableId + ' tbody');
+            const allVisibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none' || true); // Need to get ALL matched rows, but DOM manipulation might hide them.
+            // Safe way: re-filter to get visible rows.
+            filterListTable(tableId); 
+            // scroll to top of table
+            const tableEl = document.getElementById(tableId);
+            if(tableEl) tableEl.scrollIntoView({{behavior: 'smooth', block: 'start'}});
+        }}
+
+        function displayPageItems(tableId, allVisibleRows, page) {{
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            allVisibleRows.forEach((row, index) => {{
+                if (index >= startIndex && index < endIndex) {{
+                    row.style.display = ''; 
+                }} else {{
+                    row.style.display = 'none'; 
+                }}
+            }});
         }}
 
         function switchAtCoderTab(targetId, btn) {{
@@ -468,6 +595,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             btn.style.background = 'var(--primary)';
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
+            
+            const currentTableId = document.querySelector(`#${{targetId}} .normal-table`)?.id;
+            if (currentTableId) {{
+                filterListTable(currentTableId);
+            }}
         }}
         
         function switchPlanSubTable(targetId, btn) {{
@@ -486,6 +618,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             btn.style.background = 'var(--primary)';
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
+
+            const currentTableId = document.querySelector(`#${{targetId}} .normal-table`)?.id;
+            if (currentTableId) {{
+                filterListTable(currentTableId);
+            }}
         }}
         
         function filterPList() {{
@@ -508,8 +645,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 if (minInput && min) minInput.value = min;
                 const maxInput = document.getElementById('filter-diff-max-' + tableId);
                 if (maxInput && max) maxInput.value = max;
-                if (q || min || max) {{ filterListTable(tableId); }}
+                
+                filterListTable(tableId); 
             }}
+
+            document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {{
+                filterListTable(table.id);
+            }});
             
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
                 document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
@@ -1262,6 +1404,8 @@ def generate_list_html(versions, table_id, rel_path, base_url, data_dir):
         <input type="date" id="filter-date-end-{table_id}" onchange="filterListTable('{table_id}')">
     </div>
     
+    <div id="pagination-controls-top-{table_id}" class="pagination-controls" style="display: none;"></div>
+
     <div style="overflow-x: auto;">
         <table class="normal-table" id="{table_id}">
             <thead>
@@ -1349,6 +1493,7 @@ def generate_list_html(versions, table_id, rel_path, base_url, data_dir):
         </tr>"""
         
     content_html += "</tbody></table></div>"
+    content_html += f"""<div id="pagination-controls-bottom-{table_id}" class="pagination-controls" style="display: none;"></div>"""
     return content_html
 
 def build_list_page(title, all_versions, out_path, rel_path, table_id="list-table", base_url="", data_dir="data"):
