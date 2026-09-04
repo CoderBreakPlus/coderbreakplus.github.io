@@ -146,8 +146,6 @@
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-plan-table-todo-cf3000" onchange="filterListTable('plan-table-todo-cf3000')">
     </div>
-    
-    <div id="pagination-controls-top-plan-table-todo-cf3000" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="plan-table-todo-cf3000">
@@ -307,8 +305,6 @@
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-plan-table-done-cf3000" onchange="filterListTable('plan-table-done-cf3000')">
     </div>
-    
-    <div id="pagination-controls-top-plan-table-done-cf3000" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="plan-table-done-cf3000">
@@ -459,8 +455,6 @@
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-plan-table-todo-cf3100" onchange="filterListTable('plan-table-todo-cf3100')">
     </div>
-    
-    <div id="pagination-controls-top-plan-table-todo-cf3100" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="plan-table-todo-cf3100">
@@ -647,8 +641,6 @@
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-plan-table-done-cf3100" onchange="filterListTable('plan-table-done-cf3100')">
     </div>
-    
-    <div id="pagination-controls-top-plan-table-done-cf3100" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="plan-table-done-cf3100">
@@ -754,8 +746,6 @@
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-plan-table-todo-zati100" onchange="filterListTable('plan-table-todo-zati100')">
     </div>
-    
-    <div id="pagination-controls-top-plan-table-todo-zati100" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="plan-table-todo-zati100">
@@ -852,8 +842,6 @@
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-plan-table-done-zati100" onchange="filterListTable('plan-table-done-zati100')">
     </div>
-    
-    <div id="pagination-controls-top-plan-table-done-zati100" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="plan-table-done-zati100">
@@ -1004,8 +992,6 @@
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-plan-table-todo-zati90" onchange="filterListTable('plan-table-todo-zati90')">
     </div>
-    
-    <div id="pagination-controls-top-plan-table-todo-zati90" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="plan-table-todo-zati90">
@@ -1129,8 +1115,6 @@
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-plan-table-done-zati90" onchange="filterListTable('plan-table-done-zati90')">
     </div>
-    
-    <div id="pagination-controls-top-plan-table-done-zati90" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="plan-table-done-zati90">
@@ -1183,7 +1167,7 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/abc452g.conf" data-editor-href="editor.html?file=data/abc452g.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/abc452g.cpp" data-editor-href="editor.html?file=data/abc452g.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/abc452g.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
         </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-done-zati90" class="pagination-controls" style="display: none;"></div></div></div>
-        <div class="footer">最后构建: 2026-09-04 14:21:19 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-04 14:23:57 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -1252,7 +1236,7 @@
 
         // 💡 分页状态和配置
         let currentPages = {}; // { tableId: currentPage }
-        const itemsPerPage = 50; // 每页显示 50 题
+        const itemsPerPage = 20; // 每页显示 50 题
 
         function filterListTable(tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
@@ -1366,9 +1350,8 @@
 
         function renderPaginationControls(tableId, totalPages) {
             const paginationContainers = [
-                document.getElementById('pagination-controls-top-' + tableId),
                 document.getElementById('pagination-controls-bottom-' + tableId)
-            ].filter(Boolean); 
+            ].filter(Boolean);
             
             paginationContainers.forEach(container => {
                 if (totalPages <= 1) { 

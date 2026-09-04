@@ -375,7 +375,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         // 💡 分页状态和配置
         let currentPages = {{}}; // {{ tableId: currentPage }}
-        const itemsPerPage = 50; // 每页显示 50 题
+        const itemsPerPage = 20; // 每页显示 50 题
 
         function filterListTable(tableId) {{
             const input = document.getElementById('filter-tag-' + tableId);
@@ -489,9 +489,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         function renderPaginationControls(tableId, totalPages) {{
             const paginationContainers = [
-                document.getElementById('pagination-controls-top-' + tableId),
                 document.getElementById('pagination-controls-bottom-' + tableId)
-            ].filter(Boolean); 
+            ].filter(Boolean);
             
             paginationContainers.forEach(container => {{
                 if (totalPages <= 1) {{ 
@@ -1403,8 +1402,6 @@ def generate_list_html(versions, table_id, rel_path, base_url, data_dir):
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-{table_id}" onchange="filterListTable('{table_id}')">
     </div>
-    
-    <div id="pagination-controls-top-{table_id}" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="{table_id}">

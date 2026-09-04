@@ -137,8 +137,6 @@
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-summary-table" onchange="filterListTable('summary-table')">
     </div>
-    
-    <div id="pagination-controls-top-summary-table" class="pagination-controls" style="display: none;"></div>
 
     <div style="overflow-x: auto;">
         <table class="normal-table" id="summary-table">
@@ -4196,7 +4194,7 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17256.conf" data-editor-href="editor.html?file=data/qoj17256.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/qoj17256.cpp" data-editor-href="editor.html?file=data/qoj17256.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/qoj17256.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
         </tr></tbody></table></div><div id="pagination-controls-bottom-summary-table" class="pagination-controls" style="display: none;"></div>
-        <div class="footer">最后构建: 2026-09-04 14:21:19 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-04 14:23:57 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -4265,7 +4263,7 @@
 
         // 💡 分页状态和配置
         let currentPages = {}; // { tableId: currentPage }
-        const itemsPerPage = 50; // 每页显示 50 题
+        const itemsPerPage = 20; // 每页显示 50 题
 
         function filterListTable(tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
@@ -4379,9 +4377,8 @@
 
         function renderPaginationControls(tableId, totalPages) {
             const paginationContainers = [
-                document.getElementById('pagination-controls-top-' + tableId),
                 document.getElementById('pagination-controls-bottom-' + tableId)
-            ].filter(Boolean); 
+            ].filter(Boolean);
             
             paginationContainers.forEach(container => {
                 if (totalPages <= 1) { 

@@ -197,7 +197,7 @@
                 </div>
             </td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-09-04 14:21:19 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-04 14:23:57 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -266,7 +266,7 @@
 
         // 💡 分页状态和配置
         let currentPages = {}; // { tableId: currentPage }
-        const itemsPerPage = 50; // 每页显示 50 题
+        const itemsPerPage = 20; // 每页显示 50 题
 
         function filterListTable(tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
@@ -380,9 +380,8 @@
 
         function renderPaginationControls(tableId, totalPages) {
             const paginationContainers = [
-                document.getElementById('pagination-controls-top-' + tableId),
                 document.getElementById('pagination-controls-bottom-' + tableId)
-            ].filter(Boolean); 
+            ].filter(Boolean);
             
             paginationContainers.forEach(container => {
                 if (totalPages <= 1) { 
