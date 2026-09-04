@@ -1583,7 +1583,7 @@ def build_problem_lists_index(plists, out_path, base_url=""):
     """
     
     html = HTML_TEMPLATE.format(
-        title="📋 List 总览", stats_block="", nav_extra="",
+        title="📋 List", stats_block="", nav_extra="",
         content_html=content, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         base_url=base_url
     )
@@ -1723,7 +1723,7 @@ def build_blog_index_page(blogs, rel_blog_path, out_path, base_url=""):
         """
     
     html = HTML_TEMPLATE.format(
-        title="✍️ 博客笔记目录", 
+        title="✍️ Blog", 
         stats_block=f'<div class="stats-bar"><div class="stats-info"><span>共 {len(blogs)} 篇博客文章</span></div></div>', 
         nav_extra="",
         content_html=content_html, 
