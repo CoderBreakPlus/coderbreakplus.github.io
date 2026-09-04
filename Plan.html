@@ -1167,7 +1167,7 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/abc452g.conf" data-editor-href="editor.html?file=data/abc452g.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/abc452g.cpp" data-editor-href="editor.html?file=data/abc452g.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/abc452g.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
         </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-done-zati90" class="pagination-controls" style="display: none;"></div></div></div>
-        <div class="footer">最后构建: 2026-09-04 14:23:57 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-04 14:25:16 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;
@@ -1422,13 +1422,7 @@
 
         function changePage(tableId, newPage) {
             currentPages[tableId] = newPage;
-            const tbody = document.querySelector('#' + tableId + ' tbody');
-            const allVisibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none' || true); // Need to get ALL matched rows, but DOM manipulation might hide them.
-            // Safe way: re-filter to get visible rows.
             filterListTable(tableId); 
-            // scroll to top of table
-            const tableEl = document.getElementById(tableId);
-            if(tableEl) tableEl.scrollIntoView({behavior: 'smooth', block: 'start'});
         }
 
         function displayPageItems(tableId, allVisibleRows, page) {

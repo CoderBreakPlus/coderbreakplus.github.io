@@ -561,13 +561,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         function changePage(tableId, newPage) {{
             currentPages[tableId] = newPage;
-            const tbody = document.querySelector('#' + tableId + ' tbody');
-            const allVisibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none' || true); // Need to get ALL matched rows, but DOM manipulation might hide them.
-            // Safe way: re-filter to get visible rows.
             filterListTable(tableId); 
-            // scroll to top of table
-            const tableEl = document.getElementById(tableId);
-            if(tableEl) tableEl.scrollIntoView({{behavior: 'smooth', block: 'start'}});
         }}
 
         function displayPageItems(tableId, allVisibleRows, page) {{
