@@ -1,14 +1,1 @@
-at 2 contri 1 * 120
-at 3 contri 1 * 30
-at 5 contri 1 * 6
-considered 2 cf = 998244351
-considered 3 cf = 998244350
-at 6 contri 998244350 * 6
-considered 4 cf = 998244351
-considered 5 cf = 998244350
-at 10 contri 998244350 * 1
-considered 5 cf = 998244351
-at 15 contri 998244351 * 1
-considered 5 cf = 2
-at 30 contri 2 * 1
-135
+4

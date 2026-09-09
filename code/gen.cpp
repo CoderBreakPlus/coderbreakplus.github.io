@@ -1,8 +1,8 @@
+// created time: 2026-09-09 15:00:47
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
 typedef unsigned long long ull;
-typedef pair<ll,ll> P;
 #define fi first
 #define se second
 #define mkp make_pair
@@ -17,8 +17,9 @@ inline ll read(){
 }
 inline int lg2(int x){ return 31^__builtin_clz(x); }
 inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
-inline void addmod(int &x){ if(x >= mod) x -= mod; }
-inline void addmod(ll &x){ if(x >= mod) x -= mod; }
+template<typename T>inline void addmod(T &x){ if(x >= mod) x -= mod; }
+template<typename T>inline void chkmax(T &a,T b){ a=max(a,b); }
+template<typename T>inline void chkmin(T &a,T b){ a=min(a,b); }
 inline ll qpow(ll a,ll b){
 	ll ans=1, base=a;
 	while(b){
@@ -28,12 +29,22 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
+int n = 40000, k = 9;
+
 void procedure(){
-	cout<<rng(1,6)<<" "<<rng(1,6)<<" "<<rng(1,6)<<endl;	
+	cout<<n<<" "<<k<<endl;
+	for(int i=1;i<n;i++){
+		for(int a=0;a<k;a++){
+			for(int b=0;b<k;b++){
+				cout<<(rnd()%9==0);
+			}
+			cout<<endl;
+		}
+		cout<<endl;
+	}
 }
 int main(){
 	#ifdef LOCAL
@@ -41,7 +52,6 @@ int main(){
 	#endif
 	ll T=1;
 	// math_init();
-	// NTT::init();
 	while(T--) procedure();
 	return 0;
 }

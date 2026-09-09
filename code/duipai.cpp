@@ -2,10 +2,10 @@
 using namespace std;
 
 int main(){
-	int T = 100;
+	int T = 1000;
 	while(T--){
 		system("./gen");
-		system("./agc040d");
+		system("./qoj8085");
 		system("./std");
 		if(system("diff -Zq test.out test.ans")){
 			cout<<"WA\n";exit(0);
