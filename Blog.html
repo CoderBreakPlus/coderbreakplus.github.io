@@ -39,6 +39,8 @@
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
         
         .remark-col { display: none; }
+        /* 💡 垃圾箱专属：强行默认显示备注列，且无视右上角的全局隐藏按钮 */
+        table[id*="-trash-"] .remark-col { display: table-cell !important; }
         
         /* CSS 序号计数器 */
         .normal-table tbody { counter-reset: row-num; }
@@ -129,7 +131,7 @@
             
         </div>
         
-        <div class="footer">最后构建: 2026-09-10 15:56:28 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-10 16:00:24 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;

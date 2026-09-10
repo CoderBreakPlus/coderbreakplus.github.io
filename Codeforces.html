@@ -39,6 +39,8 @@
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
         
         .remark-col { display: none; }
+        /* 💡 垃圾箱专属：强行默认显示备注列，且无视右上角的全局隐藏按钮 */
+        table[id*="-trash-"] .remark-col { display: table-cell !important; }
         
         /* CSS 序号计数器 */
         .normal-table tbody { counter-reset: row-num; }
@@ -628,7 +630,7 @@
         <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/464/E" target="_blank">E</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf464e.conf" data-editor-href="editor.html?file=data/cf464e.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/cf464e.cpp" data-editor-href="editor.html?file=data/cf464e.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/cf464e.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div>
     </div></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-09-10 15:56:28 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-10 16:00:24 | Algorithm Platform Generator</div>
     </div>
     <script>
         let isDiffVisible = true;

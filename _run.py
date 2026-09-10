@@ -225,6 +225,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
         
         .remark-col {{ display: none; }}
+        /* 💡 垃圾箱专属：强行默认显示备注列，且无视右上角的全局隐藏按钮 */
+        table[id*="-trash-"] .remark-col {{ display: table-cell !important; }}
         
         /* CSS 序号计数器 */
         .normal-table tbody {{ counter-reset: row-num; }}
