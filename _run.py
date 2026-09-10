@@ -2008,12 +2008,14 @@ def main():
                     added_to_cat.add(key)
             
         for v in g.versions.values():
-            if v.has_conf:
-                summary_versions.append(v)
-            else:
-                is_cf_at = any(cat in ('Codeforces', 'AtCoder') for cat, c, p in v.appearances)
-                if not is_cf_at:
+            # 💡 修改这里：只有当题目拥有 .cpp 文件时，才将其纳入全局的 Summary 和首页图表统计！
+            if v.files.get('cpp'):
+                if v.has_conf:
                     summary_versions.append(v)
+                else:
+                    is_cf_at = any(cat in ('Codeforces', 'AtCoder') for cat, c, p in v.appearances)
+                    if not is_cf_at:
+                        summary_versions.append(v)
 
     print(f"🛠️ 正在生成 HTML 到 '{out_dir}'...")
     for cat in ['Codeforces', 'AtCoder', 'XCPC']:
