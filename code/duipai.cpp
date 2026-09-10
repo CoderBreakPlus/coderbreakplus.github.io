@@ -5,9 +5,11 @@ int main(){
 	int T = 1000;
 	while(T--){
 		system("./gen");
-		if(system("./cf1758f")){
-			cout<<"WA\n";exit(0);
+		system("./g");
+		system("./brute");
+		if(system("diff -Zq test.out test.ans")){
+			cout<<"WA"<<endl;exit(0);
 		}else
-			cout<<"AC\n";
+			cout<<"AC"<<endl;
 	}
 }

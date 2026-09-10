@@ -1,4 +1,4 @@
-// created time: 2026-09-05 07:31:06
+// created time: 2026-09-10 07:33:29
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,31 +30,23 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n;
-vector<int>p[2];
-void procedure(){
-	n=read();
-	for(int i=1;i<=n;i++){
-		int x=read();
-		p[x&1].pb(x);
-	}
-	reverse(p[0].begin(),p[0].end());
-	reverse(p[1].begin(),p[1].end());
+char s[500005];
 
-	while(!p[0].empty()||!p[1].empty()){
-		if(p[1].empty()||(!p[0].empty()&&p[0].back()<p[1].back()))
-			printf("%d ",p[0].back()),p[0].pop_back();
-		else
-			printf("%d ",p[1].back()),p[1].pop_back();
-	}
-	puts("");
+int n;
+void procedure(){
+	scanf("%s",s);n=strlen(s);
+	int ans=n-2;
+
+	for(int i=1;i<n;i++)
+		if(s[i-1]==s[i])ans=n-1;
+	printf("%d\n",ans);
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;

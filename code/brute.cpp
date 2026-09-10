@@ -1,5 +1,5 @@
-// created time: 2026-09-09 10:02:11
-#include<bits/extc++.h>
+// created time: 2026-09-10 09:51:25
+#include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
 typedef unsigned long long ull;
@@ -29,63 +29,35 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-const int N = 200000;
-int fac[N+5],inv[N+5];
-void math_init(){
-	fac[0]=inv[0]=1;
-	for(int i=1;i<=N;i++) fac[i]=1ll*fac[i-1]*i%mod;
-	inv[N]=qpow(fac[N],mod-2);
-	for(int i=N-1;i>=1;i--) inv[i]=1ll*inv[i+1]*(i+1)%mod;
-}
-inline int binom(int x,int y){
-	if(x<0 || y<0 || x<y) return 0;
-	return 1ll*fac[x]*inv[y]%mod*inv[x-y]%mod;
-}
-inline int perm(int x,int y){
-	if(x<0 || y<0 || x<y) return 0;
-	return 1ll*fac[x]*inv[x-y]%mod;
-}
 
-int n,vis[N+5],pure[N+5],siz[N+5];
-vector<int>fac1[N+5];
-vector<int>fac2[N+5];
-
-__gnu_pbds::gp_hash_table<ll,int>mp;
-
-int cf[10000005],val[10000005],luvf;
-ll rl[10000005];
+int n,q;
+int d[300005],x[300005],tp;
 
 void procedure(){
-	n=read();
-	if(n==1){ puts("1"); return; }
-	int ans = 1;
-	for(int i=2;i<=n*n;i++){
-		int x=i,flg=0,cf=mod-1;
-		for(int j=2;j<=n;j++)
-			if(x%j==0){
-				if(x%(j*j)==0){flg=1;break;}
-				x/=j,cf=mod-cf;
+	n=read(),q=read();
+	while(q--){
+		int op=read();
+		if(op==1){
+			d[++tp]=read(); x[tp]=read();
+		}else{
+			int l=read(),r=read();
+			int ans=0;
+			for(int w=l;w<=r;w++){
+				int mn=1e9;
+				for(int i=1;i<=tp;i++){
+					if(d[i]==0){
+						if(x[i]<w) continue;
+						chkmin(mn,x[i]-w);
+					}else{
+						if(x[i]>w) continue;
+						chkmin(mn,w-x[i]);
+					}
+				}
+				chkmax(ans,mn);
 			}
-		if(flg||x>1)continue;
-
-		addmod(ans += mod-cf);
-
-		for(int x=1;x<n;x++){
-			if(x%i==0||(x+1)%i==0) continue;
-
-			if(x*(x+1)%i==0){
-				if(__gcd(x+1,i)==2) cf=499122178ull*cf%mod;
-				else cf=2ull*cf%mod;
-
-				cout<<"considered "<<x<<" cf = "<<cf<<endl;
-			}
+			printf("%d\n",ans<=n?ans:-1);
 		}
-
-		ans = (ans + (ull)cf * perm(n, n/i)) % mod;
-
-		cout<<"at "<<i<<" contri "<<cf<<" * "<<perm(n,n/i)<<endl;
 	}
-	printf("%d\n", ans);
 }
 int main(){
 	#ifdef LOCAL
@@ -93,25 +65,7 @@ int main(){
 		assert(freopen("test.ans","w",stdout));
 	#endif
 	ll T=1;
-	for(int i=2;i<=N;i++)if(!vis[i])
-		for(int j=2*i;j<=N;j+=i)
-			vis[j]=1;
-
-	for(int i=1;i<=N;i++){
-		pure[i]=1;
-		for(int j:fac1[i]){
-			if(j*j>i)break;
-			if(i%(j*j==0)){ pure[i]=0; break; }
-		}
-		for(int j=i;j<=N;j+=i)
-			fac1[j].pb(i);
-	}
-	for(int i=1;i<=N;i++)if(pure[i]){
-		siz[i]=lg2((int)fac1[i].size());
-		for(int j=i;j<=N;j+=i)
-			fac2[j].pb(i);
-	}
-	math_init();
+	// math_init();
 	while(T--) procedure();
 	return 0;
 }

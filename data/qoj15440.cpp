@@ -1,4 +1,4 @@
-// created time: 2026-09-05 07:31:06
+// created time: 2026-09-10 08:22:15
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -8,7 +8,7 @@ typedef unsigned long long ull;
 #define mkp make_pair
 #define pb emplace_back
 #define popcnt __builtin_popcountll
-const int mod = 998244353;
+const int mod = 1e9+7;
 inline ll read(){
 	ll x=0, f=1; int ch=getchar();
 	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
@@ -30,24 +30,37 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n;
-vector<int>p[2];
-void procedure(){
-	n=read();
-	for(int i=1;i<=n;i++){
-		int x=read();
-		p[x&1].pb(x);
-	}
-	reverse(p[0].begin(),p[0].end());
-	reverse(p[1].begin(),p[1].end());
+int n,m,p[505][505],ip[505][505],f[505][505],g[505][505];
+int sl[505],sr[505];
 
-	while(!p[0].empty()||!p[1].empty()){
-		if(p[1].empty()||(!p[0].empty()&&p[0].back()<p[1].back()))
-			printf("%d ",p[0].back()),p[0].pop_back();
-		else
-			printf("%d ",p[1].back()),p[1].pop_back();
+bool chk[505][505];
+
+void procedure(){
+	n=read(),m=read();
+	for(int i=1;i<=m;i++){
+		for(int j=1;j<=n;j++)p[i][j]=read(),ip[i][p[i][j]]=j;
 	}
-	puts("");
+	for(int l=1;l<=n;l++){
+		memset(sl,0x3f,sizeof(sl));
+		memset(sr,0xc0,sizeof(sr));
+		for(int r=l;r<=n;r++){
+			chk[l][r]=1;
+			for(int i=1;i<=m;i++){
+				chkmin(sl[i],ip[i][p[1][r]]),chkmax(sr[i],ip[i][p[1][r]]);
+				chk[l][r]&=(p[i][sl[i]]==p[1][l]);
+				chk[l][r]&=(r-l==sr[i]-sl[i]);
+			}
+		}
+	}
+	for(int i=1;i<=n+1;i++)g[i][i-1]=1;
+	for(int l=n;l>=1;l--)
+		for(int r=l;r<=n;r++){
+			if(chk[l][r]) f[l][r]=g[l+1][r];
+			for(int k=l;k<=r;k++)
+				g[l][r]=(g[l][r]+(ull)g[l][k-1]*f[k][r])%mod;
+		}
+
+	printf("%d\n",f[1][n]);
 }
 int main(){
 	#ifdef LOCAL

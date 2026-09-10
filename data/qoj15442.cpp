@@ -1,4 +1,4 @@
-// created time: 2026-09-05 07:31:06
+// created time: 2026-09-10 08:10:25
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,22 +30,35 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n;
-vector<int>p[2];
+int n,a[1000005],nxt[1000005];
+int stk[1000005],tp;
+
+vector<int>res,res2;
 void procedure(){
 	n=read();
-	for(int i=1;i<=n;i++){
-		int x=read();
-		p[x&1].pb(x);
+	vector<int>().swap(res);
+	for(int i=1;i<=n;i++)a[i]=a[i+n]=read(),res.pb(i);	
+	stk[tp=1]=2*n; a[2*n]=2e9;
+	for(int i=2*n-1;i>=1;i--){
+		while(a[i]>=a[stk[tp]]) tp--;
+		nxt[i]=stk[tp];
+		stk[++tp]=i;
 	}
-	reverse(p[0].begin(),p[0].end());
-	reverse(p[1].begin(),p[1].end());
-
-	while(!p[0].empty()||!p[1].empty()){
-		if(p[1].empty()||(!p[0].empty()&&p[0].back()<p[1].back()))
-			printf("%d ",p[0].back()),p[0].pop_back();
-		else
-			printf("%d ",p[1].back()),p[1].pop_back();
+	int sz=0;
+	while(sz<n){
+		int ww=n-sz;
+		int mn=2e9,len=0;
+		for(int x: res){
+			int exp=min(ww,nxt[x]-x);
+			if(a[x]<mn) mn=a[x],len=exp;
+			else if(a[x]==mn) chkmax(len,exp);
+		}
+		vector<int>().swap(res2);
+		for(int x: res){
+			if(a[x]==mn && min(ww,nxt[x]-x)==len) res2.pb(x+len);
+		}
+		swap(res,res2),sz+=len;
+		while(len--)printf("%d ",mn);
 	}
 	puts("");
 }
@@ -54,7 +67,7 @@ int main(){
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;

@@ -1,4 +1,4 @@
-// created time: 2026-09-05 07:31:06
+// created time: 2026-09-10 08:31:56
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,31 +30,37 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n;
-vector<int>p[2];
+int n,l[3];
+vector<int>v[3];
 void procedure(){
-	n=read();
-	for(int i=1;i<=n;i++){
-		int x=read();
-		p[x&1].pb(x);
-	}
-	reverse(p[0].begin(),p[0].end());
-	reverse(p[1].begin(),p[1].end());
+	n=read(),l[0]=read(),l[1]=read(),l[2]=read();
+	for(int i:{0,1,2})v[i].clear();
 
-	while(!p[0].empty()||!p[1].empty()){
-		if(p[1].empty()||(!p[0].empty()&&p[0].back()<p[1].back()))
-			printf("%d ",p[0].back()),p[0].pop_back();
-		else
-			printf("%d ",p[1].back()),p[1].pop_back();
+	int tot=0;
+	for(int i=1;i<=n;i++){
+		int p=read()-1,c=read();
+		v[p].pb(c); tot+=c;
 	}
-	puts("");
+	for(int i:{0,1,2})sort(v[i].begin(),v[i].end());
+	ll t=read();
+	
+	while(tot){
+		t-=tot;
+		int now=-1;
+		for(int i:{0,1,2})if(!v[i].empty())
+			if(tot<=l[i] && (now==-1 || v[i].back()>v[now].back()))now=i;
+		if(now==-1){ puts("NO"); return; } 
+		tot-=v[now].back(), v[now].pop_back();
+	}
+
+	puts(t>0?"YES":"NO");
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
