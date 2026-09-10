@@ -1512,38 +1512,54 @@ def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir
         tabs_html += f'<button class="atcoder-tab-btn" data-target="tab-{p_name}" onclick="switchAtCoderTab(\'tab-{p_name}\', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; {btn_style}">{p_name}</button>'
         display = "block" if first else "none"
         
-        todo_versions = [v for v in versions if not v.files.get('cpp')]
+        # 💡 按新逻辑分类题目状态
+        todo_versions = [v for v in versions if not v.has_conf and not v.files.get('cpp')]
         done_versions = [v for v in versions if v.files.get('cpp')]
+        trash_versions = [v for v in versions if v.has_conf and not v.files.get('cpp')]
         
         tables_html += f'<div id="tab-{p_name}" class="atcoder-tab-content" style="display: {display};">'
         
         active_btn = "background: var(--primary); color: #fff; border-color: var(--primary);"
         inactive_btn = "background: #fff; color: #334155; border-color: #e2e8f0;"
         
+        # 💡 加入第三个按钮
         sub_bar = f"""
-        <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap;">
             <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-{p_name}', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; {active_btn}">
                 ⏳ 待补题 ({len(todo_versions)})
             </button>
             <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-done-{p_name}', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; {inactive_btn}">
                 ✅ 已完成 ({len(done_versions)})
             </button>
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-trash-{p_name}', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; {inactive_btn}">
+                🗑️ 垃圾箱 ({len(trash_versions)})
+            </button>
         </div>
         """
         tables_html += sub_bar
         
+        # --- 待补题面板 ---
         tables_html += f'<div id="sub-todo-{p_name}" class="plan-sub-content" style="display: block;">'
         if todo_versions:
             tables_html += generate_list_html(todo_versions, f"plan-table-todo-{p_name}", rel_path, base_url, data_dir)
         else:
-            tables_html += "<div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #16a34a; font-weight: 600; text-align: center; border: 1px dashed #dcfce7; margin-bottom: 20px;'>🎉 太强了！此计划中的题目已全部通过！</div>"
+            tables_html += "<div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #16a34a; font-weight: 600; text-align: center; border: 1px dashed #dcfce7; margin-bottom: 20px;'>🎉 太强了！此计划中的待补题已全部清空！</div>"
         tables_html += '</div>'
         
+        # --- 已完成面板 ---
         tables_html += f'<div id="sub-done-{p_name}" class="plan-sub-content" style="display: none;">'
         if done_versions:
             tables_html += generate_list_html(done_versions, f"plan-table-done-{p_name}", rel_path, base_url, data_dir)
         else:
             tables_html += "<div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>还没有完成的题目，去挑战第一题吧！</div>"
+        tables_html += '</div>'
+
+        # --- 垃圾箱面板 ---
+        tables_html += f'<div id="sub-trash-{p_name}" class="plan-sub-content" style="display: none;">'
+        if trash_versions:
+            tables_html += generate_list_html(trash_versions, f"plan-table-trash-{p_name}", rel_path, base_url, data_dir)
+        else:
+            tables_html += "<div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>垃圾箱空空如也~ 没有任何被抛弃的题目！</div>"
         tables_html += '</div>'
         
         tables_html += '</div>'
@@ -1559,7 +1575,6 @@ def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir
         base_url=base_url
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
-
 def scan_problem_lists(plist_dir, groups):
     plists = {}
     if not os.path.exists(plist_dir):
