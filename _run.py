@@ -225,12 +225,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
         
         .remark-col {{ display: none; }}
-        /* 💡 垃圾箱专属：强行默认显示备注列，且无视右上角的全局隐藏按钮 */
+        /* 💡 垃圾箱专属：强行默认显示备注列，无视全局隐藏按钮 */
         table[id*="-trash-"] .remark-col {{ display: table-cell !important; }}
         
         /* CSS 序号计数器 */
         .normal-table tbody {{ counter-reset: row-num; }}
-        .normal-table tbody tr .row-index::before {{ counter-increment: row-num; content: counter(row-num); }}
+        .normal-table tbody tr:not([style*="display: none"]) .row-index::before {{ counter-increment: row-num; content: counter(row-num); }}
         
         /* 列宽设置 */
         .normal-table th:nth-child(1) {{ width: 5%; text-align: center; }} 
@@ -282,7 +282,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .blog-item-title {{ font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }}
         .blog-item-date {{ color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
 
-        /* 💡 新增：分页器样式 */
+        /* 分页器样式 */
         .pagination-controls {{ display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }}
         .pagination-btn {{ background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }}
         .pagination-btn:hover:not(:disabled) {{ background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
@@ -311,6 +311,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="footer">最后构建: {gen_time} | Algorithm Platform Generator</div>
     </div>
     <script>
+        // 💡 全局开关：改为 true 即可一键恢复表格分页功能，改为 false 则展示所有题目
+        const ENABLE_PAGINATION = false; 
+
         let isDiffVisible = true;
         function toggleDiff() {{
             isDiffVisible = !isDiffVisible;
@@ -375,9 +378,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             if (input) {{ input.value = ''; filterListTable(tableId); input.focus(); }}
         }}
 
-        // 💡 分页状态和配置
-        let currentPages = {{}}; // {{ tableId: currentPage }}
-        const itemsPerPage = 20; // 每页显示 50 题
+        // 分页状态和配置
+        let currentPages = {{}};
+        const itemsPerPage = 20;
 
         function filterListTable(tableId) {{
             const input = document.getElementById('filter-tag-' + tableId);
@@ -434,9 +437,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 }}
             }});
             
-            updatePagination(tableId, visibleRows);
+            if (ENABLE_PAGINATION) {{
+                updatePagination(tableId, visibleRows);
+            }} else {{
+                // 如果关闭了分页，隐藏所有分页器控件
+                const controls = document.getElementById('pagination-controls-bottom-' + tableId);
+                if (controls) controls.style.display = 'none';
+            }}
         }}
 
+        let sortDirection = {{}};
         function sortListTable(tableId, col) {{
             if (!sortDirection[tableId]) sortDirection[tableId] = {{ 'diff': 1, 'date': 1, 'index': 1 }};
             const tbody = document.querySelector('#' + tableId + ' tbody');
@@ -473,11 +483,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
             rows.forEach(r => tbody.appendChild(r));
             
-            const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
-            updatePagination(tableId, visibleRows);
+            if (ENABLE_PAGINATION) {{
+                const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+                updatePagination(tableId, visibleRows);
+            }}
         }}
 
         function updatePagination(tableId, allVisibleRows) {{
+            if (!ENABLE_PAGINATION) return;
             const totalItems = allVisibleRows.length;
             const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
             
@@ -490,67 +503,64 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         }}
 
         function renderPaginationControls(tableId, totalPages) {{
-            const paginationContainers = [
-                document.getElementById('pagination-controls-bottom-' + tableId)
-            ].filter(Boolean);
+            const container = document.getElementById('pagination-controls-bottom-' + tableId);
+            if (!container) return;
             
-            paginationContainers.forEach(container => {{
-                if (totalPages <= 1) {{ 
-                    container.style.display = 'none';
-                    return;
+            if (totalPages <= 1) {{ 
+                container.style.display = 'none';
+                return;
+            }}
+            container.style.display = 'flex';
+            container.innerHTML = ''; 
+            
+            const currentPage = currentPages[tableId];
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pagination-btn';
+            prevBtn.innerText = '« 上一页';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => changePage(tableId, currentPage - 1);
+            container.appendChild(prevBtn);
+
+            const pageWindow = 2; 
+            let startPage = Math.max(1, currentPage - pageWindow);
+            let endPage = Math.min(totalPages, currentPage + pageWindow);
+
+            if (startPage > 1) {{
+                container.appendChild(createPageButton(tableId, 1, currentPage));
+                if (startPage > 2) {{
+                    const ellipsis = document.createElement('span');
+                    ellipsis.innerText = '...';
+                    ellipsis.className = 'pagination-info';
+                    container.appendChild(ellipsis);
                 }}
-                container.style.display = 'flex';
-                container.innerHTML = ''; 
-                
-                const currentPage = currentPages[tableId];
+            }}
 
-                const prevBtn = document.createElement('button');
-                prevBtn.className = 'pagination-btn';
-                prevBtn.innerText = '« 上一页';
-                prevBtn.disabled = currentPage === 1;
-                prevBtn.onclick = () => changePage(tableId, currentPage - 1);
-                container.appendChild(prevBtn);
+            for (let i = startPage; i <= endPage; i++) {{
+                container.appendChild(createPageButton(tableId, i, currentPage));
+            }}
 
-                const pageWindow = 2; 
-                let startPage = Math.max(1, currentPage - pageWindow);
-                let endPage = Math.min(totalPages, currentPage + pageWindow);
-
-                if (startPage > 1) {{
-                    container.appendChild(createPageButton(tableId, 1, currentPage));
-                    if (startPage > 2) {{
-                        const ellipsis = document.createElement('span');
-                        ellipsis.innerText = '...';
-                        ellipsis.className = 'pagination-info';
-                        container.appendChild(ellipsis);
-                    }}
+            if (endPage < totalPages) {{
+                if (endPage < totalPages - 1) {{
+                    const ellipsis = document.createElement('span');
+                    ellipsis.innerText = '...';
+                    ellipsis.className = 'pagination-info';
+                    container.appendChild(ellipsis);
                 }}
+                container.appendChild(createPageButton(tableId, totalPages, currentPage));
+            }}
 
-                for (let i = startPage; i <= endPage; i++) {{
-                    container.appendChild(createPageButton(tableId, i, currentPage));
-                }}
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pagination-btn';
+            nextBtn.innerText = '下一页 »';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => changePage(tableId, currentPage + 1);
+            container.appendChild(nextBtn);
 
-                if (endPage < totalPages) {{
-                    if (endPage < totalPages - 1) {{
-                        const ellipsis = document.createElement('span');
-                        ellipsis.innerText = '...';
-                        ellipsis.className = 'pagination-info';
-                        container.appendChild(ellipsis);
-                    }}
-                    container.appendChild(createPageButton(tableId, totalPages, currentPage));
-                }}
-
-                const nextBtn = document.createElement('button');
-                nextBtn.className = 'pagination-btn';
-                nextBtn.innerText = '下一页 »';
-                nextBtn.disabled = currentPage === totalPages;
-                nextBtn.onclick = () => changePage(tableId, currentPage + 1);
-                container.appendChild(nextBtn);
-
-                const pageInfo = document.createElement('span');
-                pageInfo.className = 'pagination-info';
-                pageInfo.innerText = '第 ' + currentPage + ' / ' + totalPages + ' 页';
-                container.appendChild(pageInfo);
-            }});
+            const pageInfo = document.createElement('span');
+            pageInfo.className = 'pagination-info';
+            pageInfo.innerText = '第 ' + currentPage + ' / ' + totalPages + ' 页';
+            container.appendChild(pageInfo);
         }}
 
         function createPageButton(tableId, pageNum, currentPage) {{
@@ -579,7 +589,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
-        function switchAtCoderTab(targetId, btn) {{
+        // 💡 修改：加入 URL 状态更新逻辑
+        function switchAtCoderTab(targetId, btn, updateUrl=true) {{
             document.querySelectorAll('.atcoder-tab-content').forEach(el => el.style.display = 'none');
             document.getElementById(targetId).style.display = 'block';
             document.querySelectorAll('.atcoder-tab-btn').forEach(el => {{
@@ -591,13 +602,21 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
             
-            const currentTableId = document.querySelector(`#${{targetId}} .normal-table`)?.id;
+            if (updateUrl) {{
+                const url = new URL(window.location);
+                url.searchParams.set('tab', targetId.replace('tab-', ''));
+                url.searchParams.delete('sub'); // 切换主计划时，清除子状态
+                window.history.replaceState({{}}, '', url);
+            }}
+            
+            const currentTableId = document.querySelector(`#${{targetId}} .plan-sub-content[style*="display: block"] .normal-table`)?.id 
+                                || document.querySelector(`#${{targetId}} .normal-table`)?.id;
             if (currentTableId) {{
                 filterListTable(currentTableId);
             }}
         }}
         
-        function switchPlanSubTable(targetId, btn) {{
+        function switchPlanSubTable(targetId, btn, updateUrl=true) {{
             const parentTab = btn.closest('.atcoder-tab-content');
             if (!parentTab) return;
             
@@ -613,6 +632,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             btn.style.background = 'var(--primary)';
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
+
+            if (updateUrl) {{
+                const url = new URL(window.location);
+                const parts = targetId.split('-');
+                if (parts.length >= 2) {{
+                    url.searchParams.set('sub', parts[1]); // todo, done, trash
+                    window.history.replaceState({{}}, '', url);
+                }}
+            }}
 
             const currentTableId = document.querySelector(`#${{targetId}} .normal-table`)?.id;
             if (currentTableId) {{
@@ -632,6 +660,28 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const q = urlParams.get('q');
             const min = urlParams.get('min');
             const max = urlParams.get('max');
+            const tabParam = urlParams.get('tab');
+            const subParam = urlParams.get('sub');
+
+            // 💡 恢复 URL 中的 Tab 状态
+            if (tabParam) {{
+                const btn = document.querySelector(`button[data-target="tab-${{tabParam}}"]`);
+                if (btn) switchAtCoderTab(`tab-${{tabParam}}`, btn, false);
+            }}
+
+            // 💡 恢复 URL 中的 Sub-Tab 状态
+            if (subParam) {{
+                const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
+                if (activeTab) {{
+                    const targetIdPrefix = `sub-${{subParam}}-`;
+                    const subBtn = Array.from(activeTab.querySelectorAll('.plan-sub-btn')).find(b => b.getAttribute('onclick').includes(targetIdPrefix));
+                    if (subBtn) {{
+                        const match = subBtn.getAttribute('onclick').match(/'([^']+)'/);
+                        if (match) switchPlanSubTable(match[1], subBtn, false);
+                    }}
+                }}
+            }}
+
             const input = document.querySelector('input[id^="filter-tag-"]');
             if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-'))) {{
                 const tableId = input.id.replace('filter-tag-', '');
@@ -644,9 +694,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 filterListTable(tableId); 
             }}
 
+            // 初始化可见表格
             document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {{
                 filterListTable(table.id);
             }});
+            if (document.getElementById('summary-table')) {{
+                filterListTable('summary-table');
+            }}
             
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
                 document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
@@ -1317,9 +1371,8 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
     else:
         total_contests = len(groups_dict)
 
-    stats_html = f"<span>📁 独立题目: {len(all_versions)}</span><span>📝 有代码: {has_cpp}</span><span>💡 有题解: {has_md}</span><span>⚙️ 有配置: {has_conf}</span><span>🏆 比赛数: {total_contests}</span>"
     sort_html = """<div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button><button class="btn" onclick="sortContests('name')">按比赛名字典序</button></div>"""
-    stats_block = f'<div class="stats-bar"><div class="stats-info">{stats_html}</div>{sort_html}</div>'
+    stats_block = f'<div class="stats-bar"><div class="stats-info"><span>共 {total_contests} 场比赛</span></div>{sort_html}</div>'
 
     is_official = (title in ['Codeforces', 'AtCoder'])
     first_col_width = 30 if title == 'OI' else 20
@@ -1514,7 +1567,6 @@ def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir
         tabs_html += f'<button class="atcoder-tab-btn" data-target="tab-{p_name}" onclick="switchAtCoderTab(\'tab-{p_name}\', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; {btn_style}">{p_name}</button>'
         display = "block" if first else "none"
         
-        # 💡 按新逻辑分类题目状态
         todo_versions = [v for v in versions if not v.has_conf and not v.files.get('cpp')]
         done_versions = [v for v in versions if v.files.get('cpp')]
         trash_versions = [v for v in versions if v.has_conf and not v.files.get('cpp')]
@@ -1524,7 +1576,6 @@ def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir
         active_btn = "background: var(--primary); color: #fff; border-color: var(--primary);"
         inactive_btn = "background: #fff; color: #334155; border-color: #e2e8f0;"
         
-        # 💡 加入第三个按钮
         sub_bar = f"""
         <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap;">
             <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-{p_name}', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; {active_btn}">
@@ -1540,7 +1591,6 @@ def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir
         """
         tables_html += sub_bar
         
-        # --- 待补题面板 ---
         tables_html += f'<div id="sub-todo-{p_name}" class="plan-sub-content" style="display: block;">'
         if todo_versions:
             tables_html += generate_list_html(todo_versions, f"plan-table-todo-{p_name}", rel_path, base_url, data_dir)
@@ -1548,7 +1598,6 @@ def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir
             tables_html += "<div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #16a34a; font-weight: 600; text-align: center; border: 1px dashed #dcfce7; margin-bottom: 20px;'>🎉 太强了！此计划中的待补题已全部清空！</div>"
         tables_html += '</div>'
         
-        # --- 已完成面板 ---
         tables_html += f'<div id="sub-done-{p_name}" class="plan-sub-content" style="display: none;">'
         if done_versions:
             tables_html += generate_list_html(done_versions, f"plan-table-done-{p_name}", rel_path, base_url, data_dir)
@@ -1556,7 +1605,6 @@ def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir
             tables_html += "<div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>还没有完成的题目，去挑战第一题吧！</div>"
         tables_html += '</div>'
 
-        # --- 垃圾箱面板 ---
         tables_html += f'<div id="sub-trash-{p_name}" class="plan-sub-content" style="display: none;">'
         if trash_versions:
             tables_html += generate_list_html(trash_versions, f"plan-table-trash-{p_name}", rel_path, base_url, data_dir)
@@ -1577,6 +1625,7 @@ def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir
         base_url=base_url
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
+
 def scan_problem_lists(plist_dir, groups):
     plists = {}
     if not os.path.exists(plist_dir):
@@ -2010,7 +2059,6 @@ def main():
                     added_to_cat.add(key)
             
         for v in g.versions.values():
-            # 💡 修改这里：只有当题目拥有 .cpp 文件时，才将其纳入全局的 Summary 和首页图表统计！
             if v.files.get('cpp'):
                 if v.has_conf:
                     summary_versions.append(v)

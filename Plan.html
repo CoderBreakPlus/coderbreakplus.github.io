@@ -39,12 +39,12 @@
         .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
         
         .remark-col { display: none; }
-        /* 💡 垃圾箱专属：强行默认显示备注列，且无视右上角的全局隐藏按钮 */
+        /* 💡 垃圾箱专属：强行默认显示备注列，无视全局隐藏按钮 */
         table[id*="-trash-"] .remark-col { display: table-cell !important; }
         
         /* CSS 序号计数器 */
         .normal-table tbody { counter-reset: row-num; }
-        .normal-table tbody tr .row-index::before { counter-increment: row-num; content: counter(row-num); }
+        .normal-table tbody tr:not([style*="display: none"]) .row-index::before { counter-increment: row-num; content: counter(row-num); }
         
         /* 列宽设置 */
         .normal-table th:nth-child(1) { width: 5%; text-align: center; } 
@@ -96,7 +96,7 @@
         .blog-item-title { font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
         .blog-item-date { color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 
-        /* 💡 新增：分页器样式 */
+        /* 分页器样式 */
         .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
         .pagination-btn { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
         .pagination-btn:hover:not(:disabled) { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -1556,9 +1556,12 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/abc452g.conf" data-editor-href="editor.html?file=data/abc452g.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/abc452g.cpp" data-editor-href="editor.html?file=data/abc452g.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/abc452g.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
         </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-done-zati90" class="pagination-controls" style="display: none;"></div></div><div id="sub-trash-zati90" class="plan-sub-content" style="display: none;"><div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>垃圾箱空空如也~ 没有任何被抛弃的题目！</div></div></div>
-        <div class="footer">最后构建: 2026-09-11 15:51:57 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-11 16:00:56 | Algorithm Platform Generator</div>
     </div>
     <script>
+        // 💡 全局开关：改为 true 即可一键恢复表格分页功能，改为 false 则展示所有题目
+        const ENABLE_PAGINATION = false; 
+
         let isDiffVisible = true;
         function toggleDiff() {
             isDiffVisible = !isDiffVisible;
@@ -1623,9 +1626,9 @@
             if (input) { input.value = ''; filterListTable(tableId); input.focus(); }
         }
 
-        // 💡 分页状态和配置
-        let currentPages = {}; // { tableId: currentPage }
-        const itemsPerPage = 20; // 每页显示 50 题
+        // 分页状态和配置
+        let currentPages = {};
+        const itemsPerPage = 20;
 
         function filterListTable(tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
@@ -1682,9 +1685,16 @@
                 }
             });
             
-            updatePagination(tableId, visibleRows);
+            if (ENABLE_PAGINATION) {
+                updatePagination(tableId, visibleRows);
+            } else {
+                // 如果关闭了分页，隐藏所有分页器控件
+                const controls = document.getElementById('pagination-controls-bottom-' + tableId);
+                if (controls) controls.style.display = 'none';
+            }
         }
 
+        let sortDirection = {};
         function sortListTable(tableId, col) {
             if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1, 'index': 1 };
             const tbody = document.querySelector('#' + tableId + ' tbody');
@@ -1721,11 +1731,14 @@
             });
             rows.forEach(r => tbody.appendChild(r));
             
-            const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
-            updatePagination(tableId, visibleRows);
+            if (ENABLE_PAGINATION) {
+                const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+                updatePagination(tableId, visibleRows);
+            }
         }
 
         function updatePagination(tableId, allVisibleRows) {
+            if (!ENABLE_PAGINATION) return;
             const totalItems = allVisibleRows.length;
             const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
             
@@ -1738,67 +1751,64 @@
         }
 
         function renderPaginationControls(tableId, totalPages) {
-            const paginationContainers = [
-                document.getElementById('pagination-controls-bottom-' + tableId)
-            ].filter(Boolean);
+            const container = document.getElementById('pagination-controls-bottom-' + tableId);
+            if (!container) return;
             
-            paginationContainers.forEach(container => {
-                if (totalPages <= 1) { 
-                    container.style.display = 'none';
-                    return;
+            if (totalPages <= 1) { 
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'flex';
+            container.innerHTML = ''; 
+            
+            const currentPage = currentPages[tableId];
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pagination-btn';
+            prevBtn.innerText = '« 上一页';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => changePage(tableId, currentPage - 1);
+            container.appendChild(prevBtn);
+
+            const pageWindow = 2; 
+            let startPage = Math.max(1, currentPage - pageWindow);
+            let endPage = Math.min(totalPages, currentPage + pageWindow);
+
+            if (startPage > 1) {
+                container.appendChild(createPageButton(tableId, 1, currentPage));
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.innerText = '...';
+                    ellipsis.className = 'pagination-info';
+                    container.appendChild(ellipsis);
                 }
-                container.style.display = 'flex';
-                container.innerHTML = ''; 
-                
-                const currentPage = currentPages[tableId];
+            }
 
-                const prevBtn = document.createElement('button');
-                prevBtn.className = 'pagination-btn';
-                prevBtn.innerText = '« 上一页';
-                prevBtn.disabled = currentPage === 1;
-                prevBtn.onclick = () => changePage(tableId, currentPage - 1);
-                container.appendChild(prevBtn);
+            for (let i = startPage; i <= endPage; i++) {
+                container.appendChild(createPageButton(tableId, i, currentPage));
+            }
 
-                const pageWindow = 2; 
-                let startPage = Math.max(1, currentPage - pageWindow);
-                let endPage = Math.min(totalPages, currentPage + pageWindow);
-
-                if (startPage > 1) {
-                    container.appendChild(createPageButton(tableId, 1, currentPage));
-                    if (startPage > 2) {
-                        const ellipsis = document.createElement('span');
-                        ellipsis.innerText = '...';
-                        ellipsis.className = 'pagination-info';
-                        container.appendChild(ellipsis);
-                    }
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.innerText = '...';
+                    ellipsis.className = 'pagination-info';
+                    container.appendChild(ellipsis);
                 }
+                container.appendChild(createPageButton(tableId, totalPages, currentPage));
+            }
 
-                for (let i = startPage; i <= endPage; i++) {
-                    container.appendChild(createPageButton(tableId, i, currentPage));
-                }
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pagination-btn';
+            nextBtn.innerText = '下一页 »';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => changePage(tableId, currentPage + 1);
+            container.appendChild(nextBtn);
 
-                if (endPage < totalPages) {
-                    if (endPage < totalPages - 1) {
-                        const ellipsis = document.createElement('span');
-                        ellipsis.innerText = '...';
-                        ellipsis.className = 'pagination-info';
-                        container.appendChild(ellipsis);
-                    }
-                    container.appendChild(createPageButton(tableId, totalPages, currentPage));
-                }
-
-                const nextBtn = document.createElement('button');
-                nextBtn.className = 'pagination-btn';
-                nextBtn.innerText = '下一页 »';
-                nextBtn.disabled = currentPage === totalPages;
-                nextBtn.onclick = () => changePage(tableId, currentPage + 1);
-                container.appendChild(nextBtn);
-
-                const pageInfo = document.createElement('span');
-                pageInfo.className = 'pagination-info';
-                pageInfo.innerText = '第 ' + currentPage + ' / ' + totalPages + ' 页';
-                container.appendChild(pageInfo);
-            });
+            const pageInfo = document.createElement('span');
+            pageInfo.className = 'pagination-info';
+            pageInfo.innerText = '第 ' + currentPage + ' / ' + totalPages + ' 页';
+            container.appendChild(pageInfo);
         }
 
         function createPageButton(tableId, pageNum, currentPage) {
@@ -1827,7 +1837,8 @@
             });
         }
 
-        function switchAtCoderTab(targetId, btn) {
+        // 💡 修改：加入 URL 状态更新逻辑
+        function switchAtCoderTab(targetId, btn, updateUrl=true) {
             document.querySelectorAll('.atcoder-tab-content').forEach(el => el.style.display = 'none');
             document.getElementById(targetId).style.display = 'block';
             document.querySelectorAll('.atcoder-tab-btn').forEach(el => {
@@ -1839,13 +1850,21 @@
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
             
-            const currentTableId = document.querySelector(`#${targetId} .normal-table`)?.id;
+            if (updateUrl) {
+                const url = new URL(window.location);
+                url.searchParams.set('tab', targetId.replace('tab-', ''));
+                url.searchParams.delete('sub'); // 切换主计划时，清除子状态
+                window.history.replaceState({}, '', url);
+            }
+            
+            const currentTableId = document.querySelector(`#${targetId} .plan-sub-content[style*="display: block"] .normal-table`)?.id 
+                                || document.querySelector(`#${targetId} .normal-table`)?.id;
             if (currentTableId) {
                 filterListTable(currentTableId);
             }
         }
         
-        function switchPlanSubTable(targetId, btn) {
+        function switchPlanSubTable(targetId, btn, updateUrl=true) {
             const parentTab = btn.closest('.atcoder-tab-content');
             if (!parentTab) return;
             
@@ -1861,6 +1880,15 @@
             btn.style.background = 'var(--primary)';
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
+
+            if (updateUrl) {
+                const url = new URL(window.location);
+                const parts = targetId.split('-');
+                if (parts.length >= 2) {
+                    url.searchParams.set('sub', parts[1]); // todo, done, trash
+                    window.history.replaceState({}, '', url);
+                }
+            }
 
             const currentTableId = document.querySelector(`#${targetId} .normal-table`)?.id;
             if (currentTableId) {
@@ -1880,6 +1908,28 @@
             const q = urlParams.get('q');
             const min = urlParams.get('min');
             const max = urlParams.get('max');
+            const tabParam = urlParams.get('tab');
+            const subParam = urlParams.get('sub');
+
+            // 💡 恢复 URL 中的 Tab 状态
+            if (tabParam) {
+                const btn = document.querySelector(`button[data-target="tab-${tabParam}"]`);
+                if (btn) switchAtCoderTab(`tab-${tabParam}`, btn, false);
+            }
+
+            // 💡 恢复 URL 中的 Sub-Tab 状态
+            if (subParam) {
+                const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
+                if (activeTab) {
+                    const targetIdPrefix = `sub-${subParam}-`;
+                    const subBtn = Array.from(activeTab.querySelectorAll('.plan-sub-btn')).find(b => b.getAttribute('onclick').includes(targetIdPrefix));
+                    if (subBtn) {
+                        const match = subBtn.getAttribute('onclick').match(/'([^']+)'/);
+                        if (match) switchPlanSubTable(match[1], subBtn, false);
+                    }
+                }
+            }
+
             const input = document.querySelector('input[id^="filter-tag-"]');
             if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-'))) {
                 const tableId = input.id.replace('filter-tag-', '');
@@ -1892,9 +1942,13 @@
                 filterListTable(tableId); 
             }
 
+            // 初始化可见表格
             document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {
                 filterListTable(table.id);
             });
+            if (document.getElementById('summary-table')) {
+                filterListTable('summary-table');
+            }
             
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
