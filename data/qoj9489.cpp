@@ -30,7 +30,7 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,m,f[505][255][130];
+int n,m,f[505][130][255];
 char s[505];
 
 void procedure(){
