@@ -1,4 +1,4 @@
-// created time: 2026-09-10 10:47:32
+// created time: 2026-09-11 14:29:21
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -31,26 +31,19 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-
-int n = 100, q = 100;
-
+int n = 20, p[55];
 void procedure(){
-	cout<<n<<" "<<q<<endl;
-	for(int i=1;i<=q;i++){
-		int op=rng(1,2);
-		if(op==1) cout<<1<<" "<<rng(0,1)<<" "<<rng(1,n)<<endl;
-		else{
-			int l=rng(1,n),r=rng(1,n);
-			if(l>r)swap(l,r);
-			cout<<2<<" "<<l<<" "<<r<<endl;
-		}
-	}	
+	cout<<n<<endl;
+	for(int i=1;i<=n;i++)p[i]=i;
+	shuffle(p+1,p+n+1,rnd);
+	for(int i=1;i<=n;i++)cout<<p[i]<<" "; cout<<endl;
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","w",stdout));
+		// assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
+	ll T=1; cout<<T<<endl;
 	// math_init();
 	while(T--) procedure();
 	return 0;
