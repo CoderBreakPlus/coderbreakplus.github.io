@@ -1,4 +1,4 @@
-// created time: 2026-09-15 18:21:11
+// created time: 2026-09-15 14:19:31
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -8,7 +8,7 @@ typedef unsigned long long ull;
 #define mkp make_pair
 #define pb emplace_back
 #define popcnt __builtin_popcountll
-const int mod = 998244353;
+const int mod = 1e9+7;
 inline ll read(){
 	ll x=0, f=1; int ch=getchar();
 	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
@@ -29,26 +29,18 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 
-int n=100,m=20;
-ull a[105];
+int n,a[200005],b[200005];
+
 void procedure(){
-	for(int n=1;n<=20;n++){
-		for(int m=1;m<=40;m++){
-			int T=1000; ll sum=0;
-			for(int t=1;t<=T;t++){
-				set<ull>S;
-				for(int j=1;j<=n;j++)a[j]=rnd()&((1ull<<m)-1);
+	n=read();
+	for(int i=1;i<=n;i++)a[i]=read(),b[i]=read();
 
-				for(int j=1;j<=n;j++)
-					for(int k=j+1;k<=n;k++) S.emplace(a[j]^a[k]);
-				sum+=(int)S.size();
-			}
-			cout<<sum/1000<<" ";
-		}
-		cout<<endl;
+	int s=0;
+	for(int i=2;i<n;i++){
+		s=(s+(ull)(a[i]-a[1]+mod)*(b[i+1]-b[1]+mod)+(ull)(-a[i+1]+a[1]+mod)*(b[i]-b[1]+mod))%mod;
 	}
+	printf("%llu\n",(ull)s*INV(6)%mod);
 }
 int main(){
 	#ifdef LOCAL
