@@ -358,7 +358,7 @@
         <div class="prob-link-wrap"><a href="https://qoj.ac/contest/3386/problem/17244" target="_blank">E</a><span class="diff-indicator" title="难度: 2700.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 75.0%, transparent 75.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2700</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17244.conf" data-editor-href="editor.html?file=data/qoj17244.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/qoj17244.cpp" data-editor-href="editor.html?file=data/qoj17244.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="data/qoj17244" data-editor-href="editor.html?file=data/qoj17244.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span></div>
     </div></td><td></td><td></td><td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;"></td></tr></tbody></table></div></div>
-        <div class="footer">最后构建: 2026-09-15 20:15:38 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-15 20:28:21 | Algorithm Platform Generator</div>
     </div>
     <script>
         // 💡 全局开关：改为 true 即可一键恢复表格分页功能，改为 false 则展示所有题目
@@ -446,17 +446,22 @@
             const maxStr = maxInput ? maxInput.value : '';
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
+            
+            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
+            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
-            if (tableId === 'summary-table' || tableId.startsWith('plan-table-')) {
+            // 💡 获取“仅看题解”复选框状态
+            const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+            const requireMd = mdCheckbox ? mdCheckbox.checked : false;
+
+            if (tableId === 'summary-table' || tableId.startsWith('plan-table-') || tableId.startsWith('plist-')) {
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
                 if (maxStr) url.searchParams.set('max', maxStr); else url.searchParams.delete('max');
+                if (requireMd) url.searchParams.set('has_md', '1'); else url.searchParams.delete('has_md');
                 window.history.replaceState({}, '', url);
             }
-
-            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
-            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             const visibleRows = [];
@@ -466,6 +471,7 @@
                 const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
+                const hasMd = row.getAttribute('data-has-md') === '1';
                 const diff = diffStr && diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
@@ -478,8 +484,10 @@
                 let matchDate = true;
                 if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
                 if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
+                
+                let matchMd = !requireMd || hasMd;
 
-                if (matchTag && matchDiff && matchDate) {
+                if (matchTag && matchDiff && matchDate && matchMd) {
                     row.style.display = ''; 
                     visibleRows.push(row);
                 } else {
@@ -490,7 +498,6 @@
             if (ENABLE_PAGINATION) {
                 updatePagination(tableId, visibleRows);
             } else {
-                // 如果关闭了分页，隐藏所有分页器控件
                 const controls = document.getElementById('pagination-controls-bottom-' + tableId);
                 if (controls) controls.style.display = 'none';
             }
@@ -710,16 +717,15 @@
             const q = urlParams.get('q');
             const min = urlParams.get('min');
             const max = urlParams.get('max');
+            const hasMdParam = urlParams.get('has_md');
             const tabParam = urlParams.get('tab');
             const subParam = urlParams.get('sub');
 
-            // 💡 恢复 URL 中的 Tab 状态
             if (tabParam) {
                 const btn = document.querySelector(`button[data-target="tab-${tabParam}"]`);
                 if (btn) switchAtCoderTab(`tab-${tabParam}`, btn, false);
             }
 
-            // 💡 恢复 URL 中的 Sub-Tab 状态
             if (subParam) {
                 const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
                 if (activeTab) {
@@ -733,7 +739,7 @@
             }
 
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-'))) {
+            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-') || input.id.startsWith('filter-tag-plist-'))) {
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);
@@ -741,10 +747,12 @@
                 const maxInput = document.getElementById('filter-diff-max-' + tableId);
                 if (maxInput && max) maxInput.value = max;
                 
+                const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+                if (mdCheckbox && hasMdParam === '1') mdCheckbox.checked = true;
+                
                 filterListTable(tableId); 
             }
 
-            // 初始化可见表格
             document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {
                 filterListTable(table.id);
             });

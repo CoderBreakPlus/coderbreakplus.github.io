@@ -396,17 +396,22 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const maxStr = maxInput ? maxInput.value : '';
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
+            
+            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
+            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
-            if (tableId === 'summary-table' || tableId.startsWith('plan-table-')) {{
+            // 💡 获取“仅看题解”复选框状态
+            const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+            const requireMd = mdCheckbox ? mdCheckbox.checked : false;
+
+            if (tableId === 'summary-table' || tableId.startsWith('plan-table-') || tableId.startsWith('plist-')) {{
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
                 if (maxStr) url.searchParams.set('max', maxStr); else url.searchParams.delete('max');
+                if (requireMd) url.searchParams.set('has_md', '1'); else url.searchParams.delete('has_md');
                 window.history.replaceState({{}}, '', url);
             }}
-
-            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
-            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             const visibleRows = [];
@@ -416,6 +421,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
+                const hasMd = row.getAttribute('data-has-md') === '1';
                 const diff = diffStr && diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
@@ -428,8 +434,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 let matchDate = true;
                 if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
                 if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
+                
+                let matchMd = !requireMd || hasMd;
 
-                if (matchTag && matchDiff && matchDate) {{
+                if (matchTag && matchDiff && matchDate && matchMd) {{
                     row.style.display = ''; 
                     visibleRows.push(row);
                 }} else {{
@@ -440,7 +448,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             if (ENABLE_PAGINATION) {{
                 updatePagination(tableId, visibleRows);
             }} else {{
-                // 如果关闭了分页，隐藏所有分页器控件
                 const controls = document.getElementById('pagination-controls-bottom-' + tableId);
                 if (controls) controls.style.display = 'none';
             }}
@@ -660,16 +667,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const q = urlParams.get('q');
             const min = urlParams.get('min');
             const max = urlParams.get('max');
+            const hasMdParam = urlParams.get('has_md');
             const tabParam = urlParams.get('tab');
             const subParam = urlParams.get('sub');
 
-            // 💡 恢复 URL 中的 Tab 状态
             if (tabParam) {{
                 const btn = document.querySelector(`button[data-target="tab-${{tabParam}}"]`);
                 if (btn) switchAtCoderTab(`tab-${{tabParam}}`, btn, false);
             }}
 
-            // 💡 恢复 URL 中的 Sub-Tab 状态
             if (subParam) {{
                 const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
                 if (activeTab) {{
@@ -683,7 +689,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }}
 
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-'))) {{
+            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-') || input.id.startsWith('filter-tag-plist-'))) {{
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);
@@ -691,10 +697,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 const maxInput = document.getElementById('filter-diff-max-' + tableId);
                 if (maxInput && max) maxInput.value = max;
                 
+                const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+                if (mdCheckbox && hasMdParam === '1') mdCheckbox.checked = true;
+                
                 filterListTable(tableId); 
             }}
 
-            // 初始化可见表格
             document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {{
                 filterListTable(table.id);
             }});
@@ -1450,6 +1458,11 @@ def generate_list_html(versions, table_id, rel_path, base_url, data_dir):
         <input type="date" id="filter-date-start-{table_id}" onchange="filterListTable('{table_id}')">
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-{table_id}" onchange="filterListTable('{table_id}')">
+        
+        <label style="color:var(--text-muted); margin-left: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="filter-has-md-{table_id}" onchange="filterListTable('{table_id}')">
+            仅看有题解 💡
+        </label>
     </div>
 
     <div style="overflow-x: auto;">
@@ -1526,9 +1539,11 @@ def generate_list_html(versions, table_id, rel_path, base_url, data_dir):
             links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a>')
             
         v_html = f'<div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>'
+        
+        has_m_flag = '1' if v.files.get('md') else '0'
 
         content_html += f"""
-        <tr data-tags="{tags_str}" data-diff="{diff_val}" data-date="{v.date}" data-base="{v.base_filename}">
+        <tr data-tags="{tags_str}" data-diff="{diff_val}" data-date="{v.date}" data-base="{v.base_filename}" data-has-md="{has_m_flag}">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
             <td style="padding-left: 20px;">{name_html}<br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">{origin}</span></td>
             <td>{tags_html}</td>
@@ -1797,6 +1812,10 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url="", dat
     content_html = f"""
     <div class="list-filter-bar">
         <input type="text" id="filter-tag-{table_id}" placeholder="搜索本 List 题目..." onkeyup="filterListTable('{table_id}')">
+        <label style="color:var(--text-muted); margin-left: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="filter-has-md-{table_id}" onchange="filterListTable('{table_id}')">
+            仅看有题解 💡
+        </label>
     </div>
     <div style="overflow-x: auto;">
         <table class="plist-table" id="{table_id}">
@@ -1847,9 +1866,10 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url="", dat
 
         display_name = v.base_filename 
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">{display_name}</a>' if v.link != '#' else f'<b>{display_name}</b>'
+        has_m_flag = '1' if v.files.get('md') else '0'
 
         content_html += f"""
-        <tr data-index="{i}" data-base="{v.base_filename}" data-tags="{tags_str}">
+        <tr data-index="{i}" data-base="{v.base_filename}" data-tags="{tags_str}" data-has-md="{has_m_flag}">
             <td style="padding-left:20px;">{name_html}</td>
             <td>{tags_html}</td>
             <td>

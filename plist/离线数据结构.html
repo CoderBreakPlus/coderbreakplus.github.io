@@ -124,6 +124,10 @@
         
     <div class="list-filter-bar">
         <input type="text" id="filter-tag-plist-离线数据结构" placeholder="搜索本 List 题目..." onkeyup="filterListTable('plist-离线数据结构')">
+        <label style="color:var(--text-muted); margin-left: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="filter-has-md-plist-离线数据结构" onchange="filterListTable('plist-离线数据结构')">
+            仅看有题解 💡
+        </label>
     </div>
     <div style="overflow-x: auto;">
         <table class="plist-table" id="plist-离线数据结构">
@@ -136,7 +140,7 @@
             </thead>
             <tbody>
     
-        <tr data-index="0" data-base="qoj1877" data-tags="ds template">
+        <tr data-index="0" data-base="qoj1877" data-tags="ds template" data-has-md="0">
             <td style="padding-left:20px;"><a href="https://qoj.ac/problem/1877" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">qoj1877</a></td>
             <td><span class="tag-pill">ds</span><span class="tag-pill">template</span></td>
             <td>
@@ -145,7 +149,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="1" data-base="uoj608" data-tags="SAM ds string">
+        <tr data-index="1" data-base="uoj608" data-tags="SAM ds string" data-has-md="0">
             <td style="padding-left:20px;"><a href="https://uoj.ac/problem/608" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">uoj608</a></td>
             <td><span class="tag-pill">SAM</span><span class="tag-pill">ds</span><span class="tag-pill">string</span></td>
             <td>
@@ -154,7 +158,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="2" data-base="cf2164h" data-tags="ds string">
+        <tr data-index="2" data-base="cf2164h" data-tags="ds string" data-has-md="1">
             <td style="padding-left:20px;"><a href="https://codeforces.com/problemset/problem/2164/H" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">cf2164h</a></td>
             <td><span class="tag-pill">ds</span><span class="tag-pill">string</span></td>
             <td>
@@ -163,7 +167,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="3" data-base="p15810" data-tags="ds">
+        <tr data-index="3" data-base="p15810" data-tags="ds" data-has-md="0">
             <td style="padding-left:20px;"><a href="https://www.luogu.com.cn/problem/P15810" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">p15810</a></td>
             <td><span class="tag-pill">ds</span></td>
             <td>
@@ -172,7 +176,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="4" data-base="qoj1878" data-tags="graph 线段树分治 连通性">
+        <tr data-index="4" data-base="qoj1878" data-tags="graph 线段树分治 连通性" data-has-md="1">
             <td style="padding-left:20px;"><a href="https://qoj.ac/problem/1878" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">qoj1878</a></td>
             <td><span class="tag-pill">graph</span><span class="tag-pill">线段树分治</span><span class="tag-pill">连通性</span></td>
             <td>
@@ -181,7 +185,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="5" data-base="cf2222f" data-tags="MST ds 线段树分治 连通性">
+        <tr data-index="5" data-base="cf2222f" data-tags="MST ds 线段树分治 连通性" data-has-md="0">
             <td style="padding-left:20px;"><a href="https://codeforces.com/problemset/problem/2222/F" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">cf2222f</a></td>
             <td><span class="tag-pill">MST</span><span class="tag-pill">ds</span><span class="tag-pill">线段树分治</span><span class="tag-pill">连通性</span></td>
             <td>
@@ -190,7 +194,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="6" data-base="cf1098f" data-tags="SAM divide ds tree">
+        <tr data-index="6" data-base="cf1098f" data-tags="SAM divide ds tree" data-has-md="1">
             <td style="padding-left:20px;"><a href="https://codeforces.com/problemset/problem/1098/F" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">cf1098f</a></td>
             <td><span class="tag-pill">SAM</span><span class="tag-pill">divide</span><span class="tag-pill">ds</span><span class="tag-pill">tree</span></td>
             <td>
@@ -199,7 +203,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="7" data-base="p16607" data-tags="ds">
+        <tr data-index="7" data-base="p16607" data-tags="ds" data-has-md="1">
             <td style="padding-left:20px;"><a href="https://www.luogu.com.cn/problem/P16607" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">p16607</a></td>
             <td><span class="tag-pill">ds</span></td>
             <td>
@@ -208,7 +212,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="8" data-base="qoj18413" data-tags="binary-search ds tree">
+        <tr data-index="8" data-base="qoj18413" data-tags="binary-search ds tree" data-has-md="1">
             <td style="padding-left:20px;"><a href="https://qoj.ac/problem/18413" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">qoj18413</a></td>
             <td><span class="tag-pill">binary-search</span><span class="tag-pill">ds</span><span class="tag-pill">tree</span></td>
             <td>
@@ -217,7 +221,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="9" data-base="p11947" data-tags="">
+        <tr data-index="9" data-base="p11947" data-tags="" data-has-md="0">
             <td style="padding-left:20px;"><a href="https://www.luogu.com.cn/problem/P11947" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">p11947</a></td>
             <td></td>
             <td>
@@ -226,7 +230,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="10" data-base="soj2570" data-tags="MST ds graph 连通性">
+        <tr data-index="10" data-base="soj2570" data-tags="MST ds graph 连通性" data-has-md="0">
             <td style="padding-left:20px;"><a href="http://47.114.34.42:8080/problem/2570" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2570</a></td>
             <td><span class="tag-pill">MST</span><span class="tag-pill">ds</span><span class="tag-pill">graph</span><span class="tag-pill">连通性</span></td>
             <td>
@@ -235,7 +239,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="11" data-base="qoj14422" data-tags="binary-search dp ds">
+        <tr data-index="11" data-base="qoj14422" data-tags="binary-search dp ds" data-has-md="0">
             <td style="padding-left:20px;"><a href="https://qoj.ac/problem/14422" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">qoj14422</a></td>
             <td><span class="tag-pill">binary-search</span><span class="tag-pill">dp</span><span class="tag-pill">ds</span></td>
             <td>
@@ -244,7 +248,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="12" data-base="soj2623" data-tags="divide dp">
+        <tr data-index="12" data-base="soj2623" data-tags="divide dp" data-has-md="0">
             <td style="padding-left:20px;"><a href="http://47.114.34.42:8080/problem/2623" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2623</a></td>
             <td><span class="tag-pill">divide</span><span class="tag-pill">dp</span></td>
             <td>
@@ -253,7 +257,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="13" data-base="soj2622" data-tags="ds">
+        <tr data-index="13" data-base="soj2622" data-tags="ds" data-has-md="0">
             <td style="padding-left:20px;"><a href="http://47.114.34.42:8080/problem/2622" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2622</a></td>
             <td><span class="tag-pill">ds</span></td>
             <td>
@@ -262,7 +266,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="14" data-base="p10174" data-tags="">
+        <tr data-index="14" data-base="p10174" data-tags="" data-has-md="0">
             <td style="padding-left:20px;"><a href="https://www.luogu.com.cn/problem/P10174" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">p10174</a></td>
             <td></td>
             <td>
@@ -271,7 +275,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="15" data-base="zr3445" data-tags="">
+        <tr data-index="15" data-base="zr3445" data-tags="" data-has-md="0">
             <td style="padding-left:20px;"><b>zr3445</b></td>
             <td></td>
             <td>
@@ -280,7 +284,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="16" data-base="zr3508" data-tags="convexity divide ds">
+        <tr data-index="16" data-base="zr3508" data-tags="convexity divide ds" data-has-md="0">
             <td style="padding-left:20px;"><a href="" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">zr3508</a></td>
             <td><span class="tag-pill">convexity</span><span class="tag-pill">divide</span><span class="tag-pill">ds</span></td>
             <td>
@@ -289,7 +293,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="17" data-base="p7124" data-tags="divide ds tree">
+        <tr data-index="17" data-base="p7124" data-tags="divide ds tree" data-has-md="0">
             <td style="padding-left:20px;"><a href="https://www.luogu.com.cn/problem/P7124" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">p7124</a></td>
             <td><span class="tag-pill">divide</span><span class="tag-pill">ds</span><span class="tag-pill">tree</span></td>
             <td>
@@ -298,7 +302,7 @@
                 </div>
             </td>
         </tr>
-        <tr data-index="18" data-base="qoj7872" data-tags="divide ds">
+        <tr data-index="18" data-base="qoj7872" data-tags="divide ds" data-has-md="1">
             <td style="padding-left:20px;"><a href="https://qoj.ac/problem/7872" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">qoj7872</a></td>
             <td><span class="tag-pill">divide</span><span class="tag-pill">ds</span></td>
             <td>
@@ -307,7 +311,7 @@
                 </div>
             </td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-09-15 20:15:38 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-15 20:28:21 | Algorithm Platform Generator</div>
     </div>
     <script>
         // 💡 全局开关：改为 true 即可一键恢复表格分页功能，改为 false 则展示所有题目
@@ -395,17 +399,22 @@
             const maxStr = maxInput ? maxInput.value : '';
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
+            
+            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
+            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
-            if (tableId === 'summary-table' || tableId.startsWith('plan-table-')) {
+            // 💡 获取“仅看题解”复选框状态
+            const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+            const requireMd = mdCheckbox ? mdCheckbox.checked : false;
+
+            if (tableId === 'summary-table' || tableId.startsWith('plan-table-') || tableId.startsWith('plist-')) {
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
                 if (maxStr) url.searchParams.set('max', maxStr); else url.searchParams.delete('max');
+                if (requireMd) url.searchParams.set('has_md', '1'); else url.searchParams.delete('has_md');
                 window.history.replaceState({}, '', url);
             }
-
-            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
-            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
             const visibleRows = [];
@@ -415,6 +424,7 @@
                 const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
+                const hasMd = row.getAttribute('data-has-md') === '1';
                 const diff = diffStr && diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
@@ -427,8 +437,10 @@
                 let matchDate = true;
                 if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
                 if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
+                
+                let matchMd = !requireMd || hasMd;
 
-                if (matchTag && matchDiff && matchDate) {
+                if (matchTag && matchDiff && matchDate && matchMd) {
                     row.style.display = ''; 
                     visibleRows.push(row);
                 } else {
@@ -439,7 +451,6 @@
             if (ENABLE_PAGINATION) {
                 updatePagination(tableId, visibleRows);
             } else {
-                // 如果关闭了分页，隐藏所有分页器控件
                 const controls = document.getElementById('pagination-controls-bottom-' + tableId);
                 if (controls) controls.style.display = 'none';
             }
@@ -659,16 +670,15 @@
             const q = urlParams.get('q');
             const min = urlParams.get('min');
             const max = urlParams.get('max');
+            const hasMdParam = urlParams.get('has_md');
             const tabParam = urlParams.get('tab');
             const subParam = urlParams.get('sub');
 
-            // 💡 恢复 URL 中的 Tab 状态
             if (tabParam) {
                 const btn = document.querySelector(`button[data-target="tab-${tabParam}"]`);
                 if (btn) switchAtCoderTab(`tab-${tabParam}`, btn, false);
             }
 
-            // 💡 恢复 URL 中的 Sub-Tab 状态
             if (subParam) {
                 const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
                 if (activeTab) {
@@ -682,7 +692,7 @@
             }
 
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-'))) {
+            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-') || input.id.startsWith('filter-tag-plist-'))) {
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);
@@ -690,10 +700,12 @@
                 const maxInput = document.getElementById('filter-diff-max-' + tableId);
                 if (maxInput && max) maxInput.value = max;
                 
+                const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+                if (mdCheckbox && hasMdParam === '1') mdCheckbox.checked = true;
+                
                 filterListTable(tableId); 
             }
 
-            // 初始化可见表格
             document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {
                 filterListTable(table.id);
             });
