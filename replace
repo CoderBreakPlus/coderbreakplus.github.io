@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+import os
+import sys
+
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: ./replace textA textB")
+        sys.exit(1)
+    
+    old = sys.argv[1]
+    new = sys.argv[2]
+    
+    for root, dirs, files in os.walk('.'):
+        # 排除 .git 目录
+        if '.git' in dirs:
+            dirs.remove('.git')
+        
+        for file in files:
+            path = os.path.join(root, file)
+            if not os.path.isfile(path):
+                continue
+            
+            try:
+                # 以二进制读取，检测是否为文本
+                with open(path, 'rb') as f:
+                    data = f.read()
+                
+                # 尝试 UTF-8 解码，失败则视为二进制文件，跳过
+                try:
+                    text = data.decode('utf-8')
+                except UnicodeDecodeError:
+                    continue
+                
+                # 如果包含要替换的文本，则进行替换
+                if old in text:
+                    new_text = text.replace(old, new)
+                    with open(path, 'w', encoding='utf-8') as f:
+                        f.write(new_text)
+                    print(f"Modified: {path}")
+            except Exception as e:
+                print(f"Error processing {path}: {e}", file=sys.stderr)
+
+if __name__ == '__main__':
+    main()

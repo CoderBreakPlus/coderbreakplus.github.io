@@ -60,7 +60,7 @@ def get_auto_link(pid):
         if oj_prefix == 'p': return f"https://www.luogu.com.cn/problem/P{oj_num}"
         elif oj_prefix == 'qoj': return f"https://qoj.ac/problem/{oj_num}"
         elif oj_prefix == 'uoj': return f"https://uoj.ac/problem/{oj_num}"
-        elif oj_prefix == 'soj': return f"http://121.196.149.251:8080/problem/{oj_num}"
+        elif oj_prefix == 'soj': return f"http://47.114.34.42:8080/problem/{oj_num}"
     
     return "#"
 
@@ -1227,7 +1227,7 @@ def apply_categories_and_links(groups, data_dir):
                     if oj_prefix == 'p': primary_link = f"https://www.luogu.com.cn/problem/P{oj_num}"
                     elif oj_prefix == 'qoj': primary_link = f"https://qoj.ac/problem/{oj_num}"
                     elif oj_prefix == 'uoj': primary_link = f"https://uoj.ac/problem/{oj_num}"
-                    elif oj_prefix == 'soj': primary_link = f"http://121.196.149.251:8080/problem/{oj_num}"
+                    elif oj_prefix == 'soj': primary_link = f"http://47.114.34.42:8080/problem/{oj_num}"
                     
             v.link = primary_link
 
