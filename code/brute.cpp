@@ -1,4 +1,4 @@
-// created time: 2026-09-16 09:02:23
+// created time: 2026-09-18 08:09:52
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,63 +30,8 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,a[805],pos[805],vis[805];
-
-namespace ans{
-	int p[805];
-	void init(){
-		mt19937_64 rnd(1233);
-		for(int i=1;i<=n;i++) p[i]=i;
-		shuffle(p+1,p+n+1,rnd);
-		if(p[1]>n/2) for(int i=1;i<=n;i++)p[i]=n+1-p[i];
-
-		for(int i=1;i<=n;i++) cout<<p[i]<<" "; cout<<endl;
-	}
-}
-bool query(vector<int> vec, int ban=0){
-	int sz=(int)vec.size()-!!ban; if(sz==1)return 1;
-	cout<<"? "<<sz<<" ";
-	for(int x: vec)if(x!=ban) cout<<x<<" "; cout<<endl;
-
-	#ifdef LOCAL
-		int sig=0;
-		for(int x: vec) if(x!=ban)sig+=ans::p[x];
-		return sig%sz==0;
-	#endif
-	
-	int x; cin>>x; return x;
-}
-void dream_end(){
-	if(a[1]>n/2)
-		for(int i=1;i<=n;i++)a[i]=n+1-a[i];
-	cout<<"! ";
-	for(int i=1;i<=n;i++) cout<<a[i]<<" ";
-	cout<<endl;
-
-	#ifdef LOCAL
-		for(int i=1;i<=n;i++) assert(a[i]==ans::p[i]);
-	#endif
-	exit(0);
-}
 void procedure(){
-	cin>>n;
-	ans::init();
-	for(int l=1,r=n;l<r;l++,r--){
-		vector<int>vec;
-		for(int i=1;i<=n;i++)if(!vis[i])
-			vec.pb(i);
-
-		for(int i=1;i<=n;i++)if(!vis[i]){
-			if(query(vec,i)){
-				vis[i]=1;
-				if(!pos[l]) pos[l]=i;
-				else pos[r]=i;
-			}
-		}
-		if(l>1 && query({pos[l],pos[l-1]})) swap(pos[l],pos[r]);
-		a[pos[l]]=l, a[pos[r]]=r;
-	}
-	dream_end();
+	
 }
 int main(){
 	#ifdef LOCAL
