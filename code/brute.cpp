@@ -1,129 +1,102 @@
-// created time: 2026-09-18 16:15:22
-#include<bits/stdc++.h>
-using namespace std;
-typedef long long ll;
-typedef unsigned long long ull;
-#define fi first
-#define se second
-#define mkp make_pair
-#define pb emplace_back
-#define popcnt __builtin_popcountll
-const int mod = 998244353;
-inline ll read(){
-	ll x=0, f=1; int ch=getchar();
-	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
-	while(ch>='0' && ch<='9') x=x*10+ch-'0', ch=getchar();
-	return x*f;
+#include <set>
+
+#include <cstdio>
+
+const int N = 200005 ;
+
+#define _be begin
+#define _en rbegin
+
+#define era erase
+#define ins insert
+
+using namespace std ;
+
+set <int> col[N] ;
+
+int seg[N * 3] ;
+int mnv[N * 3] ;
+int mxt[N * 3] ;
+int tag[N * 3] ;
+int lcon[N * 3] ;
+int rcon[N * 3] ;
+
+#define lc (rt << 1)
+#define rc (rt << 1 | 1)
+
+inline void _down(int rt){
+    if (tag[rt]){
+        mnv[lc] += tag[rt] ;
+        mnv[rc] += tag[rt] ;
+        tag[lc] += tag[rt] ;
+        tag[rc] += tag[rt] ;
+        tag[rt] = 0 ;
+    }
 }
-inline int lg2(int x){ return 31^__builtin_clz(x); }
-inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
-template<typename T>inline void addmod(T &x){ if(x >= mod) x -= mod; }
-template<typename T>inline void chkmax(T &a,T b){ a=max(a,b); }
-template<typename T>inline void chkmin(T &a,T b){ a=min(a,b); }
-inline ll qpow(ll a,ll b){
-	ll ans=1, base=a;
-	while(b){
-		if(b&1) ans=ans*base%mod;
-		base=base*base%mod; b>>=1;
-	}
-	return ans;
+inline void _up(int rt){
+    int ls = rt << 1 ;
+    int rs = rt << 1 | 1 ;
+    mxt[rt] = max(mxt[ls], mxt[rs]) ;
+    mnv[rt] = min(mnv[ls], mnv[rs]) ;
+    if (mnv[ls] < mnv[rs]){
+        seg[rt] = seg[ls] ;
+        lcon[rt] = lcon[ls] ;
+        rcon[rt] = max(mxt[rs], rcon[ls]) ;
+        //此处由于最后要覆盖，所以 max_Time(rc) 本质上就是包含右端点的值。
+    }
+    else if (mnv[ls] > mnv[rs]){
+        seg[rt] = seg[rs] ;
+        rcon[rt] = rcon[rs] ;
+        lcon[rt] = max(mxt[ls], lcon[rs]) ;
+    }
+    else {
+        lcon[rt] = lcon[ls] ; rcon[rt] = rcon[rs] ;
+        seg[rt] = seg[ls] + seg[rs] + max(lcon[rs], rcon[ls]) ;
+    }
 }
-inline ll INV(ll x){ return qpow(x, mod-2); }
-
-int n,kk,x,m,l[2005],r[2005];
-int pos[4005],t;
-ll cc[4005][4005];
-
-int calc(int i,int j){
-	if(!j) return 0;
-	return max(0,min(r[i],pos[j]+m)-max(l[i],pos[j]));
+void upd(int rt, int l, int r, int ul, int ur, int v){
+    if (ul > ur) return ;
+    if (ul <= l && r <= ur)
+        return mnv[rt] += v, void(tag[rt] += v) ;
+    int mid = (l + r) >> 1 ; _down(rt) ;
+    if (ul <= mid) upd(lc, l, mid, ul, ur, v) ;
+    if (ur > mid)  upd(rc, mid + 1, r, ul, ur, v) ;
+    _up(rt) ;
 }
-
-pair<ll,ll> dp[4005];
-
-pair<ll,ll> solve(ll v){
-	for(int i=1;i<=t;i++) dp[i]={-1e18,0};
-	pair<ll,ll> ans={0,0};
-	for(int i=1;i<=t;i++){
-		for(int j=0;j<i;j++) {
-			pair<ll,ll> tmp={dp[j].fi+cc[j][i]-v,dp[j].se+1};
-			chkmax(dp[i], tmp);
-		}
-		chkmax(ans,dp[i]);
-	}
-	return ans;
+void cov(int rt, int l, int r, int p, int v){
+    if (l == r)
+        return void(mxt[rt] = lcon[rt] = v) ;
+    int mid = (l + r) >> 1 ; _down(rt) ;
+    if (p <= mid) cov(lc, l, mid, p, v) ;
+    else cov(rc, mid + 1, r, p, v) ; _up(rt) ;
 }
-void procedure(){
-	n=read(),kk=read(),x=read(),m=read();
-	ll ans=(ll)n*(x-m);
-	for(int i=1;i<=n;i++){
-		l[i]=read(),r[i]=read();
-		pos[++t]=min(x-m,l[i]);
-		pos[++t]=max(0,r[i]-m);
-		ans-=r[i]-l[i];
-	}	
-	sort(pos+1,pos+t+1);t=unique(pos+1,pos+t+1)-(pos+1);
-
-	// for(int i=0;i<t;i++)
-	// 	for(int j=i+1;j<=t;j++)
-	// 		for(int x=1;x<=n;x++) cc[i][j]+=max(0,calc(x,j)-calc(x,i));
-
-	for(int x=1;x<=n;x++){
-		int L=0,R=t+1;
-		while(L<t&&pos[L+1]+m<r[x]&&pos[L+1]<l[x])L++;
-		while(R>1&&pos[R-1]>l[x]&&pos[R-1]+m>r[x])R--;
-
-		for(int j=1;j<=t;j++){
-			int val=calc(x,j);
-			{
-				int lft=0,rht=L,pt=-1;
-				while(lft<=rht){
-					int mid=(lft+rht)>>1;
-					if(calc(x,mid)<val)pt=mid,lft=mid+1;
-					else rht=mid-1;
-				}
-				for(int i=0;i<=pt;i++){
-					if(!i)
-						cc[i][j]+=val-calc(x,i);
-					else
-						cc[i][j]+=val-max(0,(pos[i]+m)-l[x]);
-				}
-			}
-			{
-				int lft=R,rht=t,pt=n+1;
-				while(lft<=rht){
-					int mid=(lft+rht)>>1;
-					if(calc(x,mid)<val)pt=mid,rht=mid-1;
-					else lft=mid+1;
-				}
-
-				for(int i=pt;i<=t;i++){
-					// cc[i][j]+=val-calc(x,i);
-					cc[i][j]+=val-max(0,r[x]-pos[i]);
-				}
-			}
-		}
-	}
-
-	ll l=0,r=1e12;
-	while(l+1<r){
-		ll mid=(l+r)>>1;
-		if(solve(mid).se>kk) l=mid; 
-		else r=mid;
-	}
-	auto [a,b]=solve(l);
-	auto [c,d]=solve(r);
-	
-	ll mx=min(a+l*kk,c+r*kk);
-	printf("%lld\n",ans+mx);
+int n, q ;
+int base[N] ;
+void mdf(int c, int mk){
+    int w ;
+    if (!(w = col[c].size())) return ;
+//	printf("%d %d %d %d %d\n", c, mk, *col[c]._be(), *-- col[c]._en(), (int)col[c].size()) ;
+    cov(1, 1, n, *col[c]._be(), mk > 0 ? w : 0) ;
+    upd(1, 1, n, *col[c]._be(), *col[c]._en() - 1, mk) ;
 }
+int val_it(){ return n - seg[1] - lcon[1] - rcon[1] ; }
+
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.out","w",stdout));
+		freopen("test.in","r",stdin);
+		freopen("test.ans","w",stdout);
 	#endif
-	ll T=1;
-	// math_init();
-	while(T--) procedure();
-	return 0;
+    int x, y, z ;
+    scanf("%d%d", &n, &q) ;
+    for (int i = 1 ; i <= n ; ++ i)
+        scanf("%d", &base[i]), col[base[i]].ins(i) ;
+    for (int i = 1 ; i < N ; ++ i)
+        mdf(i, 1) ; printf("%d\n", val_it()) ;
+    while (q --){
+        scanf("%d%d", &x, &y) ; z = base[x] ;
+        mdf(z, -1) ; col[z].era(x) ; mdf(z, 1) ;
+        mdf(y, -1) ; col[y].ins(x) ; mdf(y, 1) ;
+        printf("%d\n", val_it()) ; base[x] = y ;
+    }
+    return 0 ;
 }
