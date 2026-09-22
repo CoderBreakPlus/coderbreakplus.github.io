@@ -31,16 +31,14 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-int n = 10, q = 10;
+int n = 8, q = 10;
 
 void procedure(){
-	cout<<n<<" "<<q<<endl;
-	for(int i=1;i<=n;i++) cout<<rng(1,n)<<" "; cout<<endl;
+	cout<<n<<endl;
+	for(int i=2;i<=n;i++) cout<<rng(1,i-1)<<" "; cout<<endl;
 
-	while(q--){
-		int x=rng(1,n),y=rng(1,n);
-		cout<<x<<" "<<y<<endl;
-	}
+	cout<<q<<endl;
+	for(int i=1;i<=q;i++) cout<<i<<" "; cout<<endl;
 }
 int main(){
 	#ifdef LOCAL
