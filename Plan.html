@@ -121,7 +121,203 @@
         </div>
         <h1>🎯 Plan</h1>
         
-        <div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-cf3000" onclick="switchAtCoderTab('tab-cf3000', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">cf3000</button><button class="atcoder-tab-btn" data-target="tab-cf3100" onclick="switchAtCoderTab('tab-cf3100', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">cf3100</button><button class="atcoder-tab-btn" data-target="tab-cf3200" onclick="switchAtCoderTab('tab-cf3200', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">cf3200</button><button class="atcoder-tab-btn" data-target="tab-zati080" onclick="switchAtCoderTab('tab-zati080', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati080</button><button class="atcoder-tab-btn" data-target="tab-zati090" onclick="switchAtCoderTab('tab-zati090', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati090</button><button class="atcoder-tab-btn" data-target="tab-zati100" onclick="switchAtCoderTab('tab-zati100', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati100</button></div><div id="tab-cf3000" class="atcoder-tab-content" style="display: block;">
+        <div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-agc" onclick="switchAtCoderTab('tab-agc', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">agc</button><button class="atcoder-tab-btn" data-target="tab-cf3000" onclick="switchAtCoderTab('tab-cf3000', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">cf3000</button><button class="atcoder-tab-btn" data-target="tab-cf3100" onclick="switchAtCoderTab('tab-cf3100', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">cf3100</button><button class="atcoder-tab-btn" data-target="tab-cf3200" onclick="switchAtCoderTab('tab-cf3200', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">cf3200</button><button class="atcoder-tab-btn" data-target="tab-todo" onclick="switchAtCoderTab('tab-todo', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">todo</button><button class="atcoder-tab-btn" data-target="tab-zati080" onclick="switchAtCoderTab('tab-zati080', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati080</button><button class="atcoder-tab-btn" data-target="tab-zati090" onclick="switchAtCoderTab('tab-zati090', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati090</button><button class="atcoder-tab-btn" data-target="tab-zati100" onclick="switchAtCoderTab('tab-zati100', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati100</button></div><div id="tab-agc" class="atcoder-tab-content" style="display: block;">
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap;">
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-agc', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">
+                ⏳ 待补题 (11)
+            </button>
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-done-agc', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">
+                ✅ 已完成 (1)
+            </button>
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-trash-agc', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">
+                🗑️ 垃圾箱 (0)
+            </button>
+        </div>
+        <div id="sub-todo-agc" class="plan-sub-content" style="display: block;">
+    <div class="list-filter-bar">
+        <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
+        <div style="position: relative; display: inline-block;">
+            <input type="text" id="filter-tag-plan-table-todo-agc" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('plan-table-todo-agc')" style="min-width: 220px; padding-right: 30px;">
+            <span onclick="clearTagFilter('plan-table-todo-agc')" id="clear-btn-plan-table-todo-agc" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
+        </div>
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
+        <input type="number" id="filter-diff-min-plan-table-todo-agc" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-agc')" onchange="filterListTable('plan-table-todo-agc')">
+        <span style="color:var(--border);">-</span>
+        <input type="number" id="filter-diff-max-plan-table-todo-agc" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-agc')" onchange="filterListTable('plan-table-todo-agc')">
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📅 日期:</span>
+        <input type="date" id="filter-date-start-plan-table-todo-agc" onchange="filterListTable('plan-table-todo-agc')">
+        <span style="color:var(--border);">-</span>
+        <input type="date" id="filter-date-end-plan-table-todo-agc" onchange="filterListTable('plan-table-todo-agc')">
+        
+        <label style="color:var(--text-muted); margin-left: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="filter-has-md-plan-table-todo-agc" onchange="filterListTable('plan-table-todo-agc')">
+            仅看有题解 💡
+        </label>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="normal-table" id="plan-table-todo-agc">
+            <thead>
+                <tr>
+                    <th style="text-align:center;">序号</th>
+                    <th>题目与来源</th>
+                    <th>标签</th>
+                    <th onclick="sortListTable('plan-table-todo-agc', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                    <th onclick="sortListTable('plan-table-todo-agc', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
+                    <th class="remark-col">备注</th>
+                    <th>文件</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc022d" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc022/tasks/agc022_d" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc022d</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc022d.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc022d.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc022d.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc022f" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc022/tasks/agc022_f" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc022f</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc022f.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc022f.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc022f.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc026f" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc026/tasks/agc026_f" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc026f</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc026f.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc026f.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc026f.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc030e" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc030/tasks/agc030_e" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc030e</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc030e.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc030e.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc030e.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc035e" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc035/tasks/agc035_e" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc035e</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc035e.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc035e.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc035e.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc036d" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc036/tasks/agc036_d" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc036d</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc036d.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc036d.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc036d.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc036e" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc036/tasks/agc036_e" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc036e</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc036e.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc036e.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc036e.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc038e" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc038/tasks/agc038_e" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc038e</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc038e.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc038e.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc038e.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc040e" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc040/tasks/agc040_e" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc040e</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc040e.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc040e.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc040e.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc044e" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc044/tasks/agc044_e" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc044e</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc044e.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc044e.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc044e.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr>
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="agc052d" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc052/tasks/agc052_d" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc052d</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc052d.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/agc052d.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc052d.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-todo-agc" class="pagination-controls" style="display: none;"></div></div><div id="sub-done-agc" class="plan-sub-content" style="display: none;">
+    <div class="list-filter-bar">
+        <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
+        <div style="position: relative; display: inline-block;">
+            <input type="text" id="filter-tag-plan-table-done-agc" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('plan-table-done-agc')" style="min-width: 220px; padding-right: 30px;">
+            <span onclick="clearTagFilter('plan-table-done-agc')" id="clear-btn-plan-table-done-agc" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
+        </div>
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
+        <input type="number" id="filter-diff-min-plan-table-done-agc" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('plan-table-done-agc')" onchange="filterListTable('plan-table-done-agc')">
+        <span style="color:var(--border);">-</span>
+        <input type="number" id="filter-diff-max-plan-table-done-agc" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('plan-table-done-agc')" onchange="filterListTable('plan-table-done-agc')">
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📅 日期:</span>
+        <input type="date" id="filter-date-start-plan-table-done-agc" onchange="filterListTable('plan-table-done-agc')">
+        <span style="color:var(--border);">-</span>
+        <input type="date" id="filter-date-end-plan-table-done-agc" onchange="filterListTable('plan-table-done-agc')">
+        
+        <label style="color:var(--text-muted); margin-left: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="filter-has-md-plan-table-done-agc" onchange="filterListTable('plan-table-done-agc')">
+            仅看有题解 💡
+        </label>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="normal-table" id="plan-table-done-agc">
+            <thead>
+                <tr>
+                    <th style="text-align:center;">序号</th>
+                    <th>题目与来源</th>
+                    <th>标签</th>
+                    <th onclick="sortListTable('plan-table-done-agc', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                    <th onclick="sortListTable('plan-table-done-agc', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
+                    <th class="remark-col">备注</th>
+                    <th>文件</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+        <tr data-tags="" data-diff="None" data-date="2026-08-12" data-base="agc061d" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc061/tasks/agc061_d" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc061d</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">AtCoder - AGC061</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-08-12</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/agc061d.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="data/agc061d.cpp" data-editor-href="editor.html?file=data/agc061d.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/agc061d.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-done-agc" class="pagination-controls" style="display: none;"></div></div><div id="sub-trash-agc" class="plan-sub-content" style="display: none;"><div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>垃圾箱空空如也~ 没有任何被抛弃的题目！</div></div></div><div id="tab-cf3000" class="atcoder-tab-content" style="display: none;">
         <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap;">
             <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-cf3000', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">
                 ⏳ 待补题 (34)
@@ -2002,7 +2198,66 @@
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
             <td class="remark-col">转成带花树</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf1089b.conf" data-editor-href="editor.html?file=data/cf1089b.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="editor.html?file=data/cf1089b.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/cf1089b.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
-        </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-trash-cf3200" class="pagination-controls" style="display: none;"></div></div></div><div id="tab-zati080" class="atcoder-tab-content" style="display: none;">
+        </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-trash-cf3200" class="pagination-controls" style="display: none;"></div></div></div><div id="tab-todo" class="atcoder-tab-content" style="display: none;">
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap;">
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-todo', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">
+                ⏳ 待补题 (1)
+            </button>
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-done-todo', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">
+                ✅ 已完成 (0)
+            </button>
+            <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-trash-todo', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">
+                🗑️ 垃圾箱 (0)
+            </button>
+        </div>
+        <div id="sub-todo-todo" class="plan-sub-content" style="display: block;">
+    <div class="list-filter-bar">
+        <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
+        <div style="position: relative; display: inline-block;">
+            <input type="text" id="filter-tag-plan-table-todo-todo" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('plan-table-todo-todo')" style="min-width: 220px; padding-right: 30px;">
+            <span onclick="clearTagFilter('plan-table-todo-todo')" id="clear-btn-plan-table-todo-todo" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
+        </div>
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
+        <input type="number" id="filter-diff-min-plan-table-todo-todo" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-todo')" onchange="filterListTable('plan-table-todo-todo')">
+        <span style="color:var(--border);">-</span>
+        <input type="number" id="filter-diff-max-plan-table-todo-todo" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-todo')" onchange="filterListTable('plan-table-todo-todo')">
+        
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📅 日期:</span>
+        <input type="date" id="filter-date-start-plan-table-todo-todo" onchange="filterListTable('plan-table-todo-todo')">
+        <span style="color:var(--border);">-</span>
+        <input type="date" id="filter-date-end-plan-table-todo-todo" onchange="filterListTable('plan-table-todo-todo')">
+        
+        <label style="color:var(--text-muted); margin-left: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="filter-has-md-plan-table-todo-todo" onchange="filterListTable('plan-table-todo-todo')">
+            仅看有题解 💡
+        </label>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="normal-table" id="plan-table-todo-todo">
+            <thead>
+                <tr>
+                    <th style="text-align:center;">序号</th>
+                    <th>题目与来源</th>
+                    <th>标签</th>
+                    <th onclick="sortListTable('plan-table-todo-todo', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                    <th onclick="sortListTable('plan-table-todo-todo', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
+                    <th class="remark-col">备注</th>
+                    <th>文件</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="qoj7992" data-has-md="0">
+            <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
+            <td style="padding-left: 20px;"><a href="https://qoj.ac/problem/7992" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7992</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td></td>
+            <td>-</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td class="remark-col">-</td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="editor.html?file=data/qoj7992.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="editor.html?file=data/qoj7992.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/qoj7992.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+        </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-todo-todo" class="pagination-controls" style="display: none;"></div></div><div id="sub-done-todo" class="plan-sub-content" style="display: none;"><div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>还没有完成的题目，去挑战第一题吧！</div></div><div id="sub-trash-todo" class="plan-sub-content" style="display: none;"><div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>垃圾箱空空如也~ 没有任何被抛弃的题目！</div></div></div><div id="tab-zati080" class="atcoder-tab-content" style="display: none;">
         <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap;">
             <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-zati080', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">
                 ⏳ 待补题 (10)
@@ -2719,7 +2974,7 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17256.conf" data-editor-href="editor.html?file=data/qoj17256.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="data/qoj17256.cpp" data-editor-href="editor.html?file=data/qoj17256.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="editor.html?file=data/qoj17256.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
         </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-done-zati100" class="pagination-controls" style="display: none;"></div></div><div id="sub-trash-zati100" class="plan-sub-content" style="display: none;"><div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>垃圾箱空空如也~ 没有任何被抛弃的题目！</div></div></div>
-        <div class="footer">最后构建: 2026-09-23 15:11:22 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-09-23 15:25:41 | Algorithm Platform Generator</div>
     </div>
     <script>
         // 💡 全局开关：改为 true 即可一键恢复表格分页功能，改为 false 则展示所有题目
