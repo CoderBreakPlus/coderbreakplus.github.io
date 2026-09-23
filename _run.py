@@ -42,8 +42,9 @@ def contest_sort_key(name):
 
 def get_auto_link(pid):
     """根据题号字符串自动推导在线 OJ 链接"""
-    m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(1|2)?$', pid, re.IGNORECASE)
-    m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+?)(1|2)?$', pid, re.IGNORECASE)
+    # 💡 升级了底层正则：支持任意位数的数字后缀 (\d+)?，以及 AtCoder 的下划线 _?
+    m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(\d+)?$', pid, re.IGNORECASE)
+    m_ac = re.match(r'^(abc|arc|agc)(\d+)_?([a-zA-Z]+?)(\d+)?$', pid, re.IGNORECASE)
     m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', pid, re.IGNORECASE)
     
     if m_cf:
@@ -60,9 +61,10 @@ def get_auto_link(pid):
         if oj_prefix == 'p': return f"https://www.luogu.com.cn/problem/P{oj_num}"
         elif oj_prefix == 'qoj': return f"https://qoj.ac/problem/{oj_num}"
         elif oj_prefix == 'uoj': return f"https://uoj.ac/problem/{oj_num}"
-        elif oj_prefix == 'soj': return f"http://47.114.34.42:8080/problem/{oj_num}"
+        elif oj_prefix == 'soj': return f"http://121.196.149.251:8080/problem/{oj_num}"
     
     return "#"
+
 
 EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -1052,7 +1054,6 @@ class ProblemGroup:
         self.base_name = base_name
         self.has_conf = False
         self.versions = {}
-        self.version_order = ['Normal', 'Easy', 'Hard']
         self.appearances = []
 
     def add_file(self, version, ext, filename, base_filename):
@@ -1074,22 +1075,29 @@ def scan_and_group_files(data_dir):
         for f in os.listdir(data_dir):
             if f.endswith('.conf'): conf_bases.add(f[:-5].lower())
 
+    # 💡 动态版本转换：1=Easy, 2=Hard, 其余=V3, V4...
+    def get_v_name(num_str):
+        if not num_str: return 'Normal'
+        if num_str == '1': return 'Easy'
+        if num_str == '2': return 'Hard'
+        return f'V{num_str}'
+
     for f in os.listdir(data_dir):
         if not os.path.isfile(os.path.join(data_dir, f)): continue
         name, ext = os.path.splitext(f)
         if ext not in ['.cpp', '.md', '.conf']: continue
             
         base_name, version = None, 'Normal'
-        m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
-        m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+?)(1|2)?$', name, re.IGNORECASE)
+        m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(\d+)?$', name, re.IGNORECASE)
+        m_ac = re.match(r'^(abc|arc|agc)(\d+)_?([a-zA-Z]+?)(\d+)?$', name, re.IGNORECASE)
         m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', name, re.IGNORECASE)
 
         if m_cf:
             base_name = f"cf{m_cf.group(1)}{m_cf.group(2).lower()}"
-            version = 'Easy' if m_cf.group(3) == '1' else ('Hard' if m_cf.group(3) == '2' else 'Normal')
+            version = get_v_name(m_cf.group(3))
         elif m_ac:
             base_name = f"{m_ac.group(1).lower()}{m_ac.group(2)}{m_ac.group(3).lower()}"
-            version = 'Easy' if m_ac.group(4) == '1' else ('Hard' if m_ac.group(4) == '2' else 'Normal')
+            version = get_v_name(m_ac.group(4))
         elif m_oj:
             base_name = name.lower()
             version = 'Normal'
@@ -1101,23 +1109,26 @@ def scan_and_group_files(data_dir):
                 version = 'Normal'
             else:
                 for cb in sorted(conf_bases, key=len, reverse=True):
-                    if name_lower == cb + '1' or name_lower == cb + '_e1':
-                        matched_conf_base = name[:-1] if name_lower.endswith('1') else name[:-3]
-                        version = 'Easy'
-                        break
-                    elif name_lower == cb + '2' or name_lower == cb + '_e2':
-                        matched_conf_base = name[:-1] if name_lower.endswith('2') else name[:-3]
-                        version = 'Hard'
-                        break
+                    if name_lower.startswith(cb):
+                        suffix = name_lower[len(cb):]
+                        if suffix == '': version = 'Normal'; matched_conf_base = cb; break
+                        if suffix in ('1', '_e1'): version = 'Easy'; matched_conf_base = cb; break
+                        if suffix in ('2', '_e2'): version = 'Hard'; matched_conf_base = cb; break
+                        if suffix.isdigit(): version = get_v_name(suffix); matched_conf_base = cb; break
                         
             if matched_conf_base:
                 base_name = matched_conf_base
             else:
                 if name_lower.endswith('_e1'): base_name, version = name[:-3], 'Easy'
                 elif name_lower.endswith('_e2'): base_name, version = name[:-3], 'Hard'
-                elif name_lower.endswith('1'): base_name, version = name[:-1], 'Easy'
-                elif name_lower.endswith('2'): base_name, version = name[:-1], 'Hard'
-                else: base_name, version = name, 'Normal'
+                else:
+                    m_tail = re.search(r'(\d+)$', name)
+                    if m_tail:
+                        digits = m_tail.group(1)
+                        base_name = name[:-len(digits)]
+                        version = get_v_name(digits)
+                    else:
+                        base_name, version = name, 'Normal'
 
         key = base_name.lower()
         if key not in groups:
@@ -1145,7 +1156,7 @@ def apply_categories_and_links(groups, data_dir):
                 for line in lines[3:]:
                     if not line: continue
                     parts = line.split()
-                    if len(parts) == 2 and re.match(r'^[A-Za-z0-9]+$', parts[0]):
+                    if len(parts) == 2 and re.match(r'^[A-Za-z0-9_]+$', parts[0]):
                         probs.append((parts[0], parts[1]))
                     else:
                         remark = line
@@ -1158,7 +1169,7 @@ def apply_categories_and_links(groups, data_dir):
 
     for group in groups.values():
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
-        m_ac = re.match(r'^(abc|arc|agc)(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
+        m_ac = re.match(r'^(abc|arc|agc)(\d+)_?([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
         m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', group.base_name, re.IGNORECASE)
         
         is_cf, is_at, is_oj = bool(m_cf), bool(m_ac), bool(m_oj)
@@ -1166,10 +1177,7 @@ def apply_categories_and_links(groups, data_dir):
         group.appearances = []
         group.has_conf = False
         
-        for v_name in group.version_order:
-            if v_name not in group.versions: continue
-            v = group.versions[v_name]
-            
+        for v_name, v in group.versions.items():
             if v.files.get('cpp'):
                 fp = os.path.join(data_dir, v.files['cpp'])
                 if os.path.exists(fp):
@@ -1204,7 +1212,12 @@ def apply_categories_and_links(groups, data_dir):
                     v.remark = lines[2].strip()
                 except Exception: pass
             
-            suffix = "1" if v_name == 'Easy' else ("2" if v_name == 'Hard' else "")
+            # 💡 动态提取各种版本的数字后缀
+            suffix = ""
+            if v_name == 'Easy': suffix = "1"
+            elif v_name == 'Hard': suffix = "2"
+            elif v_name.startswith('V'): suffix = v_name[1:]
+                
             cf_at_link = "#"
             
             if is_cf:
@@ -1235,7 +1248,7 @@ def apply_categories_and_links(groups, data_dir):
                     if oj_prefix == 'p': primary_link = f"https://www.luogu.com.cn/problem/P{oj_num}"
                     elif oj_prefix == 'qoj': primary_link = f"https://qoj.ac/problem/{oj_num}"
                     elif oj_prefix == 'uoj': primary_link = f"https://uoj.ac/problem/{oj_num}"
-                    elif oj_prefix == 'soj': primary_link = f"http://47.114.34.42:8080/problem/{oj_num}"
+                    elif oj_prefix == 'soj': primary_link = f"http://121.196.149.251:8080/problem/{oj_num}"
                     
             v.link = primary_link
 
@@ -1249,8 +1262,11 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
     display_pid = v.base_filename
     if contest_pid:
         display_pid = contest_pid
-        if is_official and v.name in ['Easy', 'Hard'] and not contest_pid[-1].isdigit():
-            display_pid += "1" if v.name == 'Easy' else "2"
+        # 💡 根据实际版本渲染标题，如 D3，D4
+        if is_official and v.name != 'Normal' and not contest_pid[-1].isdigit():
+            if v.name == 'Easy': display_pid += '1'
+            elif v.name == 'Hard': display_pid += '2'
+            elif v.name.startswith('V'): display_pid += v.name[1:]
             
     link_html = f'<a href="{v.link}" target="_blank">{display_pid}</a>' if v.link != '#' else f'<span>{display_pid}</span>'
     diff_html = ""
@@ -1317,6 +1333,14 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         
     html += '</tr></thead><tbody>'
     
+    # 💡 排序密钥：保证 Normal 最前，随后是 1, 2, 3, 4 依次排列
+    def v_sort_key(vn):
+        if vn == 'Normal': return 0
+        if vn == 'Easy': return 1
+        if vn == 'Hard': return 2
+        if vn.startswith('V'): return int(vn[1:])
+        return 99
+    
     sorted_contests = sorted(groups_dict.items(), key=lambda x: contest_sort_key(x[0]), reverse=True)
     for contest, c_groups in sorted_contests:
         pid_map = defaultdict(list)
@@ -1337,20 +1361,26 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
             html += '<td>'
             if pid in pid_map:
                 for g in sorted(pid_map[pid], key=lambda x: x.base_name):
+                    sorted_v_names = sorted(g.versions.keys(), key=v_sort_key)
+                    
                     if not is_official:
-                        rep_v = 'Normal' if 'Normal' in g.versions else ('Hard' if 'Hard' in g.versions else 'Easy')
+                        # 非官方矩阵只取最难或唯一版本展示
+                        rep_v = 'Normal' if 'Normal' in g.versions else sorted_v_names[-1]
                         html += render_single_version(g.versions[rep_v], rel_path, pid, is_official, base_url, data_dir)
-                    elif 'Normal' in g.versions and len(g.versions) == 1:
-                        html += render_single_version(g.versions['Normal'], rel_path, pid, is_official, base_url, data_dir)
                     else:
-                        html += '<div style="display: flex; gap: 4px; justify-content: center; width: 100%;">'
-                        for v_name in ['Easy', 'Hard']:
-                            if v_name in g.versions:
-                                border = 'border-right: 1px dashed #cbd5e1; padding-right: 4px;' if v_name == 'Easy' and 'Hard' in g.versions else ''
+                        if 'Normal' in g.versions and len(g.versions) == 1:
+                            html += render_single_version(g.versions['Normal'], rel_path, pid, is_official, base_url, data_dir)
+                        else:
+                            # 💡 官方矩阵支持任意数量版本并排渲染
+                            html += '<div style="display: flex; gap: 4px; justify-content: center; width: 100%;">'
+                            for idx, v_name in enumerate(sorted_v_names):
+                                if v_name == 'Normal' and len(sorted_v_names) > 1:
+                                    continue # 多版本时忽略Normal壳
+                                border = 'border-right: 1px dashed #cbd5e1; padding-right: 4px;' if idx < len(sorted_v_names) - 1 else ''
                                 html += f'<div style="flex: 1; {border}">'
                                 html += render_single_version(g.versions[v_name], rel_path, pid, is_official, base_url, data_dir)
                                 html += '</div>'
-                        html += '</div>'
+                            html += '</div>'
             html += '</td>'
             
         if not is_official:
@@ -1359,7 +1389,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         html += '</tr>'
     html += '</tbody></table></div>'
     return html
-
+    
 def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_path, base_url="", data_dir="data"):
     all_versions = []
     if title == 'OI':
