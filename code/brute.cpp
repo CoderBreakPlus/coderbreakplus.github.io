@@ -1,4 +1,4 @@
-// created time: 2026-09-22 17:51:02
+// created time: 2026-09-23 11:24:31
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,46 +30,35 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,q,md[1000005],mx[1000005],qx[15],ans[15],dep[1000005],rt;
-vector<int>E[1000005];
-int son[1000005];
+int n,v,a[200005],b[200005];
 
-vector<int>s[1000005];
-void dfs(int x,int fa){
-	if(E[x].size()==1){
-		s[x]={x};
-		return;
-	}
-	md[x]=1e9;
-	for(int y:E[x])if(y!=fa){
-		dep[y]=dep[x]+1;
-		dfs(y,x); 
-		chkmin(md[x],md[y]+1);
-
-		for(int k=1;k<=q;k++){
-			for(int p:s[x])for(int q:s[y])
-				chkmax(ans[k],min(dep[p]+dep[q]-2*dep[x],md[p]+md[q]+qx[k]));
-		}
-		for(int q:s[y])s[x].pb(q);
-	}
-	for(int k=1;k<=q;k++)
-		for(int p:s[x])
-			chkmax(ans[k],min(dep[p]-dep[x],md[p]+md[x]+qx[k]));
-	s[x].pb(x);
-}
 void procedure(){
-	n=read();
-	for(int i=2;i<=n;i++){
-		int x=read();
-		E[x].pb(i),E[i].pb(x);
-		cout<<"add "<<x<<" "<<i<<endl;
+	n=read(),v=read();
+	for(int i=1;i<=n;i++)a[i]=read();
+	for(int i=1;i<=n;i++)b[i]=read();
+
+	int q=read();
+
+	while(q--){
+		int op=read();
+		if(op==1){
+			int i=read(),x=read();
+			b[i]=x;
+		}else{
+			int l=read(),r=read(),ans=2e9;
+			for(int i=l;i<=r;i++){
+				int ret=0,mx=0;
+				for(int j=i;j<=r;j++){
+					ret|=b[j]; chkmax(mx,a[j]);
+					if(ret>=v){
+						chkmin(ans,mx);
+						break;
+					}
+				}
+			}
+			printf("%d ",ans>1e9?-1:ans);
+		}
 	}
-	for(int i=1;i<=n;i++)if(E[i].size()>1){rt=i;break;}
-	q=read();
-	for(int i=1;i<=q;i++)qx[i]=read();
-	dfs(rt,0);
-	
-	for(int i=1;i<=q;i++)printf("%d ",ans[i]);
 	puts("");
 }
 int main(){
@@ -77,7 +66,7 @@ int main(){
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.ans","w",stdout));
 	#endif
-	ll T=1;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;

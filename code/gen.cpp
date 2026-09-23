@@ -1,4 +1,4 @@
-// created time: 2026-09-21 11:32:20
+// created time: 2026-09-23 13:48:43
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -31,20 +31,30 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-int n = 8, q = 10;
+int n=100,q=100,v=rng(1,7);
 
 void procedure(){
-	cout<<n<<endl;
-	for(int i=2;i<=n;i++) cout<<rng(1,i-1)<<" "; cout<<endl;
+	cout<<n<<" "<<v<<endl;
+	for(int i=1;i<=n;i++) cout<<rng(1,n)<<" "; cout<<endl;
+	for(int i=1;i<=n;i++) cout<<rng(1,7)<<" "; cout<<endl;
 
 	cout<<q<<endl;
-	for(int i=1;i<=q;i++) cout<<i<<" "; cout<<endl;
+	for(int i=1;i<=q;i++){
+		int op=rng(1,2);
+		if(op==1){
+			int x=rng(1,n),y=rng(1,7);
+			cout<<op<<" "<<x<<" "<<y<<endl;
+		}else{
+			int l=rng(1,n),r=rng(1,n);if(l>r)swap(l,r);
+			cout<<op<<" "<<l<<" "<<r<<endl;
+		}
+	}
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","w",stdout));
 	#endif
-	ll T=1;
+	ll T=1;cout<<T<<endl;
 	// math_init();
 	while(T--) procedure();
 	return 0;
