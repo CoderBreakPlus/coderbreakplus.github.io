@@ -1,73 +1,44 @@
-// created time: 2026-09-23 11:24:31
 #include<bits/stdc++.h>
 using namespace std;
-typedef long long ll;
-typedef unsigned long long ull;
-#define fi first
-#define se second
-#define mkp make_pair
-#define pb emplace_back
-#define popcnt __builtin_popcountll
-const int mod = 998244353;
-inline ll read(){
-	ll x=0, f=1; int ch=getchar();
-	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
-	while(ch>='0' && ch<='9') x=x*10+ch-'0', ch=getchar();
-	return x*f;
+const int N=5050;
+int n,ans=1e9+10;
+char s[2][N];//s[1]就是题目说的t
+struct node{int v,t;};
+//t=0是s[0]，t=1是s[1]
+//最后剩下的就和n位置匹配
+vector<int> pos[2];
+void work(int l,int r)
+{
+    for(int c=l;c<=r;c+=2)
+    {
+        queue<node> q;
+        int now=0,p0=0,p1=0; node t;
+        for(int i=1;i<=abs(c);i++) q.push(node{0,(c>0)});
+        while(p0<pos[0].size()||p1<pos[1].size())
+        {
+            if(p0<pos[0].size()&&((!(p1<pos[1].size()))||pos[0][p0]<pos[1][p1])) t=node{pos[0][p0],0},p0++;
+            else t=node{pos[1][p1],1},p1++;
+            if(q.size()&&q.front().t!=t.t) now+=(t.v-q.front().v),q.pop();
+            else q.push(t);
+        }
+        while(q.size()) now+=(n-q.front().v),q.pop();
+        ans=min(ans,now);
+    }
 }
-inline int lg2(int x){ return 31^__builtin_clz(x); }
-inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
-template<typename T>inline void addmod(T &x){ if(x >= mod) x -= mod; }
-template<typename T>inline void chkmax(T &a,T b){ a=max(a,b); }
-template<typename T>inline void chkmin(T &a,T b){ a=min(a,b); }
-inline ll qpow(ll a,ll b){
-	ll ans=1, base=a;
-	while(b){
-		if(b&1) ans=ans*base%mod;
-		base=base*base%mod; b>>=1;
-	}
-	return ans;
-}
-inline ll INV(ll x){ return qpow(x, mod-2); }
-
-int n,v,a[200005],b[200005];
-
-void procedure(){
-	n=read(),v=read();
-	for(int i=1;i<=n;i++)a[i]=read();
-	for(int i=1;i<=n;i++)b[i]=read();
-
-	int q=read();
-
-	while(q--){
-		int op=read();
-		if(op==1){
-			int i=read(),x=read();
-			b[i]=x;
-		}else{
-			int l=read(),r=read(),ans=2e9;
-			for(int i=l;i<=r;i++){
-				int ret=0,mx=0;
-				for(int j=i;j<=r;j++){
-					ret|=b[j]; chkmax(mx,a[j]);
-					if(ret>=v){
-						chkmin(ans,mx);
-						break;
-					}
-				}
-			}
-			printf("%d ",ans>1e9?-1:ans);
-		}
-	}
-	puts("");
-}
-int main(){
-	#ifdef LOCAL
-		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.ans","w",stdout));
-	#endif
-	ll T=read();
-	// math_init();
-	while(T--) procedure();
-	return 0;
+int main()
+{
+    #ifdef LOCAL
+        assert(freopen("test.in","r",stdin));
+        assert(freopen("test.ans","w",stdout));
+    #endif
+    scanf("%d",&n);
+    scanf("%s%s",s[0]+1,s[1]+1);
+    for(int t=0;t<2;t++)
+        for(int i=2;s[t][i];i++)
+            if(s[t][i]!=s[t][i-1])
+                pos[t].push_back(i-1);
+    if(s[0][1]==s[1][1]) work(-2*(n/2),2*(n/2));//左边的个数只能枚举偶数
+    else work(-2*(n/2)-1,2*(n/2)+1);//左边的个数只能枚举奇数
+    printf("%d\n",ans);
+    return 0;
 }
