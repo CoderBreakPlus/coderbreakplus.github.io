@@ -5,7 +5,7 @@ int main(){
 	int T = 100;
 	while(T--){
 		system("./gen");
-		system("./agc030e");
+		system("./qoj20737");
 		system("./brute");
 		if(system("diff -Zq test.out test.ans")){
 			cout<<"WA"<<endl;exit(0);

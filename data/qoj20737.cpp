@@ -16,7 +16,6 @@ inline ll read(){
 	return x*f;
 }
 inline int lg2(int x){ return 31^__builtin_clz(x); }
-inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
 template<typename T>inline void addmod(T &x){ if(x >= mod) x -= mod; }
 template<typename T>inline void chkmax(T &a,T b){ a=max(a,b); }
 template<typename T>inline void chkmin(T &a,T b){ a=min(a,b); }
@@ -29,7 +28,7 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-const int N = 2e3;
+const int N = 2e5;
 #define mid ((l+r)>>1)
 int n,q,x[N+5],mx[20][N+5],mn[20][N+5],bl[N+5];
 int l[N+5],r[N+5];
@@ -48,7 +47,7 @@ int qrymn(int l,int r){
 	return getmn(mn[p][l],mn[p][r-(1<<p)+1]);
 }
 
-ll ans[N+5],qz[N+5];
+ll ans[N+5];
 
 vector<tuple<int,int,int,int>>t[N<<2][4];
 vector<int>lf[N<<2],rh[N<<2];
@@ -60,7 +59,7 @@ void build(int l,int r,int p){
 	ss[p].resize(r-l+1);
 	for(int i=l;i<=r;i++)
 		slf[p][i-l]=x[lf[p][i-l]=qrymx(l,i)],
-		srh[p][i-l]=x[rh[p][i-l]=qrymn(i+1,r)],
+		srh[p][i-l]=x[rh[p][i-l]=qrymn(i,r)],
 		ss[p][i-l]=x[i];
 
 	for(int i=1;i<=r-l;i++)
@@ -89,13 +88,7 @@ void ins(int p,int l,int r,int vl,int vr,int id){
 	}
 	// range: 0~sz-1
 	// basically: x - Lmax
-	// cout<<"at "<<l<<"->"<<r<<endl;
-	// cout<<"was: "<<ans[id]<<endl;
-	// cout<<"pL="<<pL<<endl;
-
-	// for(int i=0;i<sz;i++) cout<<lf[p][i]<<" and "<<x[i+l]<<endl;
 	ans[id]+=ss[p][sz-1]-slf[p][sz-1]+(~pL?slf[p][pL]:0)-(ll)(pL+1)*x[vl];
-	// cout<<"basically ans = "<<ans[id]<<endl;
 	if(pL<pR){
 		if(0<=pL) t[p][1].pb(pL,x[vl],id,1);
 		if(pR<sz){
@@ -123,57 +116,74 @@ void modify(int l,int r,int ql,int qr,int id,int p){
 	if(ql<=l&&r<=qr) return ins(p,l,r,qrymx(ql-1,l-1),qrymn(r+1,qr+1),id);
 	modify(l,mid,ql,qr,id,p<<1),modify(mid+1,r,ql,qr,id,p<<1|1);
 }
-int seq[4][N+5];
+ll seq[4][N+5];
+ll line[N+5]; int ord[N+5];
+
+struct BIT{
+	ll c[N+5];
+	void upd(int x,ll w){ while(x<=N) c[x]+=w,x+=(x&-x); }
+	ll qry(int x){ ll ret=0; while(x) ret+=c[x],x-=(x&-x); return ret; }
+}B0,B1;
 
 void solve(int l,int r,int p){
 	int sz=r-l+1;
 	for(int i=0;i<sz;i++){
-		seq[0][i]=x[lf[p][i]]+x[rh[p][i]]-2*x[l+i];
-		seq[1][i]=x[rh[p][i]]-2*x[l+i];
-		seq[2][i]=x[lf[p][i]]-2*x[l+i];
+		seq[0][i]=x[lf[p][i]]+x[rh[p][i]]-2ll*x[l+i];
+		seq[1][i]=x[rh[p][i]]-2ll*x[l+i];
+		seq[2][i]=x[lf[p][i]]-2ll*x[l+i];
 		seq[3][i]=-2*x[l+i];
 	}
-	// cout<<"solve "<<l<<"->"<<r<<" p="<<p<<endl;
 	for(int o=0;o<4;o++){
 		if(t[p][o].empty())continue;
-		// cout<<"o="<<o<<endl;
-		for(auto [i,v,id,cf]: t[p][o]){
-			// cout<<"here "<<i<<","<<v<<","<<id<<","<<cf<<endl;
-			for(int j=0;j<=i;j++){
-				// cout<<seq[o][j]<<" ";
-				ans[id]+=min(0,v+seq[o][j]);
-			}
-			// cout<<endl;
+
+		for(int i=0;i<sz;i++) line[i]=i;
+		sort(line,line+sz,[&](ll x,ll y){ return seq[o][x]<seq[o][y]; });
+		
+		for(int i=0;i<sz;i++){
+			ord[line[i]]=i,line[i]=seq[o][line[i]];
 		}
+
+		sort(t[p][o].begin(),t[p][o].end());
+		int pt=0;
+
+		for(auto [i,v,id,cf]: t[p][o]){
+			while(pt<=i){
+				B0.upd(ord[pt]+1,1);
+				B1.upd(ord[pt]+1,seq[o][pt]);
+				pt++;
+			}
+
+			int pos=lower_bound(line,line+sz,-v)-line;
+			ans[id]+=cf*(v*B0.qry(pos)+B1.qry(pos));
+		}
+		while(pt--) B0.upd(ord[pt]+1,-1),B1.upd(ord[pt]+1,-seq[o][pt]);
 	}
 	if(l==r)return;
 	solve(l,mid,p<<1),solve(mid+1,r,p<<1|1);
 }
 void procedure(){
 	n=read(),q=read();
-	for(int i=1;i<=n;i++){
+	for(int i=1;i<=n;i++)
 		x[i]=read(),mx[0][i]=mn[0][i]=i;
-		qz[i]=qz[i-1]+x[i];
-	}
 	for(int i=1;(1<<i)<=n;i++)
 		for(int j=1;j<=n-(1<<i)+1;j++){
 			mx[i][j]=getmx(mx[i-1][j],mx[i-1][j+(1<<i-1)]);
 			mn[i][j]=getmn(mn[i-1][j],mn[i-1][j+(1<<i-1)]);
 		}
+	build(1,n,1);
 	for(int i=1;i<=q;i++){
 		l[i]=read(),r[i]=read();
 		ans[i]=x[r[i]]-x[l[i]];
-		for(int j=l[i]+1;j<r[i];j++){
-			// cout<<"here "<<x[getmx(l[i]),j]<<" and "<<x[getmn(j+1,r[i])]<<endl;
-			ans[i]+=min(x[j]-x[qrymx(l[i],j)],x[qrymn(j+1,r[i])]-x[j]);
-		}
-		printf("%lld\n",ans[i]);
+		modify(1,n,l[i]+1,r[i]-1,i,1);
 	}
+	solve(1,n,1);
+	for(int i=1;i<=q;i++)
+		printf("%lld\n",ans[i]);
 }
-int main(){
+signed main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.ans","w",stdout));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();

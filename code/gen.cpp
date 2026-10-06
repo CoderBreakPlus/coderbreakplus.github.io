@@ -1,4 +1,4 @@
-// created time: 2026-09-29 08:33:32
+// created time: 2026-10-06 19:25:50
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -31,19 +31,17 @@ inline ll qpow(ll a,ll b){
 inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-int n=3,a[1005],b[1005];
+
+int n=6,q=1;
+
 void procedure(){
-	cout<<n<<endl;
-	for(int i=1;i<=n;i++) {
-		a[i]=rng(0,1);
-		if(i>=3&&a[i]==a[i-1]&&a[i]==a[i-2])a[i]^=1;
+	cout<<n<<" "<<q<<endl;
+	for(int i=1;i<=n;i++)cout<<rng(-10,10)<<" ";cout<<endl;
+
+	while(q--){
+		int l=rng(1,n),r=rng(1,n);if(l>r)swap(l,r);
+		cout<<l<<" "<<r<<endl;
 	}
-	for(int i=1;i<=n;i++) {
-		b[i]=rng(0,1);
-		if(i>=3&&b[i]==b[i-1]&&b[i]==b[i-2])b[i]^=1;
-	}
-	for(int i=1;i<=n;i++) cout<<a[i]; cout<<endl;
-	for(int i=1;i<=n;i++) cout<<b[i]; cout<<endl;
 }
 int main(){
 	#ifdef LOCAL
