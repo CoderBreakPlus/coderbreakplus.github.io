@@ -4,9 +4,9 @@ using namespace std;
 int main(){
 	int T = 100;
 	while(T--){
-		system("./gen");
-		system("./qoj20737");
-		system("./brute");
+		system("./gen2");
+		system("./i");
+		system("ulimit -s unlimited && ./brute3");
 		if(system("diff -Zq test.out test.ans")){
 			cout<<"WA"<<endl;exit(0);
 		}else

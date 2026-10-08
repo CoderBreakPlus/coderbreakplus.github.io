@@ -1,4 +1,4 @@
-// created time: 2026-10-06 19:25:50
+// created time: 2026-10-08 09:30:35
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,25 +29,58 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-int n=6,q=1;
+const int B = 26;
+int n,k;
+char s[1000005];
+int cnt[B];
 
 void procedure(){
-	cout<<n<<" "<<q<<endl;
-	for(int i=1;i<=n;i++)cout<<rng(-10,10)<<" ";cout<<endl;
+	memset(cnt,0,sizeof(cnt));
 
-	while(q--){
-		int l=rng(1,n),r=rng(1,n);if(l>r)swap(l,r);
-		cout<<l<<" "<<r<<endl;
+	n=read(),k=read();
+	scanf("%s",s);
+	for(int i=0;i<n;i++)cnt[s[i]-'a']++;
+
+	if(n==1){
+		puts("Yes");
+		return;
 	}
+	if(n==2){
+		puts(s[0]==s[1]?"Yes":"No");
+		return;
+	}
+
+	if(!k){
+		int buc=0;
+		for(int i=0;i<B;i++)
+			buc+=(cnt[i]&1);
+
+		puts(buc<=1?"Yes":"No");
+		return;
+	}
+
+	int d=__gcd(B,k),len=B/d,buc=0;
+
+	int sum=0, flg=1, col=0;
+	for(int i=0;i<d;i++){
+		int now=0;
+		for(int j=i,k=0;j<B;j+=d,k++){
+			now+=cnt[j];
+			sum+=cnt[j]*k;
+		}
+		buc+=(now&1);
+		if(buc>1){puts("No");return;}
+	}
+	if(n%2 == 0 && len%2 == 0 && (sum&1)) puts("No");
+	else puts("Yes");
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
