@@ -20,7 +20,7 @@ def get_diff_style(diff):
     ratio = 100 if clamped_diff >= 3200 else (clamped_diff % 400) / 400 * 100
     return f'background: linear-gradient(to top, {color} {ratio}%, transparent {ratio}%); border: 1px solid {color}; border-radius: 50%;'
 
-# 💡 彻底修复的自然排序引擎
+# 💡 核心修复：纯正的自然语义+中文数字排序引擎
 def contest_sort_key(name):
     if not name: return ((1, ""),)
     def replace_cn(m):
@@ -36,11 +36,9 @@ def contest_sort_key(name):
                 tmp = 0
         res += tmp
         return str(res)
-    # 把“十一”、“二十”翻译成“11”、“20”
     name_num = re.sub(r'[零一二两三四五六七八九十百千万]+', replace_cn, name)
-    # 按数字切块，比如 "NOIP2026模拟赛27" 会被切成 ["NOIP", "2026", "模拟赛", "27"]
     parts = re.split(r'(\d+)', name_num)
-    # 使用 (类型, 值) 防止 Python 类型比较崩溃，且保证中英文字典序完美抱团
+    # 使用安全的 Tuple，确保数字按大小排，文字按字典序排，互不干扰
     return tuple((0, int(p)) if p.isdigit() else (1, p.lower()) for p in parts if p)
 
 def get_auto_link(pid):
@@ -250,13 +248,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .blog-item-title {{ font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }}
         .blog-item-date {{ color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
         
-        /* 💡 比赛矩阵专用：高亮行与锚点徽章 */
         .highlight-row td {{ background-color: #fef08a !important; border-top: 2px solid #eab308; border-bottom: 2px solid #eab308; transition: background-color 0.5s; }}
         .cid-badge {{ font-size: 0.8em; color: #64748b; background: #f1f5f9; padding: 2px 6px; border-radius: 6px; margin-left: 6px; border: 1px solid #e2e8f0; }}
         .c-anchor {{ color: #cbd5e1; text-decoration: none; font-size: 1.1em; transition: color 0.2s; margin-right: 6px; }}
         .c-anchor:hover {{ color: var(--primary); }}
 
-        /* 💡 封印分页器样式 (若开启则会生效) */
         .pagination-controls {{ display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }}
         .pagination-btn {{ background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }}
         .pagination-btn:hover:not(:disabled) {{ background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
@@ -285,7 +281,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="footer">最后构建: {gen_time} | Algorithm Platform Generator</div>
     </div>
     <script>
-        // 💡 全局开关：改为 true 即可一键恢复表格分页功能，改为 false 则展示所有题目
         const ENABLE_PAGINATION = false; 
 
         let isDiffVisible = true;
@@ -335,7 +330,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
-        // 💡 矩阵页面：比赛搜索功能
         function filterMatrixTable(inputEl, tableId) {{
             const val = inputEl.value.toLowerCase().trim();
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
@@ -350,7 +344,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
-        // 💡 矩阵页面：锚点高亮与平滑滚动
         function highlightContest(cid_id) {{
             document.querySelectorAll('.matrix-table tr').forEach(tr => tr.classList.remove('highlight-row'));
             const target = document.getElementById(cid_id);
@@ -378,7 +371,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             if (input) {{ input.value = ''; filterListTable(tableId); input.focus(); }}
         }}
 
-        // 分页状态和配置
         let currentPages = {{}};
         const itemsPerPage = 20;
 
@@ -594,7 +586,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
-        // 💡 修改：加入 URL 状态更新逻辑
         function switchAtCoderTab(targetId, btn, updateUrl=true) {{
             document.querySelectorAll('.atcoder-tab-content').forEach(el => el.style.display = 'none');
             document.getElementById(targetId).style.display = 'block';
@@ -610,15 +601,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             if (updateUrl) {{
                 const url = new URL(window.location);
                 url.searchParams.set('tab', targetId.replace('tab-', ''));
-                url.searchParams.delete('sub'); // 切换主计划时，清除子状态
+                url.searchParams.delete('sub'); 
                 window.history.replaceState({{}}, '', url);
             }}
             
             const currentTableId = document.querySelector(`#${{targetId}} .plan-sub-content[style*="display: block"] .normal-table`)?.id 
                                 || document.querySelector(`#${{targetId}} .normal-table`)?.id;
-            if (currentTableId) {{
-                filterListTable(currentTableId);
-            }}
+            if (currentTableId) filterListTable(currentTableId);
         }}
         
         function switchPlanSubTable(targetId, btn, updateUrl=true) {{
@@ -642,15 +631,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 const url = new URL(window.location);
                 const parts = targetId.split('-');
                 if (parts.length >= 2) {{
-                    url.searchParams.set('sub', parts[1]); // todo, done, trash
+                    url.searchParams.set('sub', parts[1]); 
                     window.history.replaceState({{}}, '', url);
                 }}
             }}
 
             const currentTableId = document.querySelector(`#${{targetId}} .normal-table`)?.id;
-            if (currentTableId) {{
-                filterListTable(currentTableId);
-            }}
+            if (currentTableId) filterListTable(currentTableId);
         }}
         
         function filterPList() {{
@@ -669,13 +656,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const tabParam = urlParams.get('tab');
             const subParam = urlParams.get('sub');
 
-            // 💡 恢复 URL 中的 Tab 状态
             if (tabParam) {{
                 const btn = document.querySelector(`button[data-target="tab-${{tabParam}}"]`);
                 if (btn) switchAtCoderTab(`tab-${{tabParam}}`, btn, false);
             }}
 
-            // 💡 恢复 URL 中的 Sub-Tab 状态
             if (subParam) {{
                 const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
                 if (activeTab) {{
@@ -703,7 +688,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 filterListTable(tableId); 
             }}
 
-            // 初始化可见表格
             document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {{
                 filterListTable(table.id);
             }});
@@ -711,7 +695,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 filterListTable('summary-table');
             }}
             
-            // 💡 检查 Hash 锚点并滚动高亮比赛
             if(window.location.hash && window.location.hash.startsWith('#c-')) {{
                 setTimeout(() => highlightContest(window.location.hash.substring(1)), 300);
             }}
@@ -1309,7 +1292,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
     html = f"""
     <div class="list-filter-bar" style="padding: 12px 18px; margin-bottom: 15px;">
         <strong style="color: var(--primary); font-size: 1.05em;">🔍 检索比赛</strong>
-        <input type="text" onkeyup="filterMatrixTable(this, '{table_id}')" placeholder="输入名称或编号(如 44) 查找..." style="min-width: 250px;">
+        <input type="text" onkeyup="filterMatrixTable(this, '{table_id}')" placeholder="输入名称或编号查找..." style="min-width: 250px;">
     </div>
     """
 
@@ -1329,16 +1312,8 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         if vn == 'Hard': return 2
         if vn.startswith('V'): return int(vn[1:])
         return 99
-    
-    def get_contest_sort_key(contest_name):
-        info = contest_info_dict.get(contest_name, {})
-        cid_str = info.get('cid', '')
-        if cid_str and cid_str.isdigit():
-            return (1, int(cid_str))
-        else:
-            return (0, contest_sort_key(contest_name))
             
-    sorted_contests = sorted(groups_dict.items(), key=lambda x: get_contest_sort_key(x[0]), reverse=True)
+    sorted_contests = sorted(groups_dict.items(), key=lambda x: contest_sort_key(x[0]), reverse=True)
     
     for contest, c_groups in sorted_contests:
         pid_map = defaultdict(list)
@@ -1416,7 +1391,10 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
     stats_block = f'<div class="stats-bar"><div class="stats-info"><span>共 {total_contests} 场比赛</span></div>{sort_html}</div>'
 
     is_official = (title in ['Codeforces', 'AtCoder'])
-    first_col_width = 30 if title == 'OI' else 20
+    # 💡 增加 XCPC 宽度到 40，保证长名字不换行
+    if title == 'OI': first_col_width = 35
+    elif title == 'XCPC': first_col_width = 40
+    else: first_col_width = 25
     
     nav_extra = ""
     if not is_official:
