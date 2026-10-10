@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>âœï¸ Blog - é¢˜ç›®æ•´ç†</title>
+    <title>✍️ Blog - 题目整理</title>
     <style>
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; scroll-behavior: smooth; }
@@ -111,35 +111,35 @@
 <body>
     <div class="container">
         <div class="nav-bar">
-            <a href="index.html">ðŸ  Dashboard</a>
+            <a href="index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
-            <a href="Summary.html">ðŸ“š Summary</a>
-            <a href="Plan.html">ðŸŽ¯ Plan</a>
-            <a href="plist/index.html">ðŸ“‹ List</a>
-            <a href="Blog.html">âœï¸ Blog</a>
+            <a href="Summary.html">📚 Summary</a>
+            <a href="Plan.html">🎯 Plan</a>
+            <a href="plist/index.html">📋 List</a>
+            <a href="Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
-            <button class="btn toggle-diff-btn" onclick="toggleDiff()">ðŸŒ• éšè—éš¾åº¦</button>
+            <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
             
         </div>
-        <h1>âœï¸ Blog</h1>
-        <div class="stats-bar"><div class="stats-info"><span>å…± 2 ç¯‡åšå®¢æ–‡ç« </span></div></div>
+        <h1>✍️ Blog</h1>
+        <div class="stats-bar"><div class="stats-info"><span>共 2 篇博客文章</span></div></div>
         
         <div style="background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden;">
             
             <a href="blog/好好说话" target="_blank" class="blog-item">
-                <div class="blog-item-title">ðŸ“„ 好好说话</div>
+                <div class="blog-item-title">📄 好好说话</div>
                 <div class="blog-item-date">2026-10-04</div>
             </a>
             
             <a href="blog/template" target="_blank" class="blog-item">
-                <div class="blog-item-title">ðŸ“„ Practical Templates</div>
+                <div class="blog-item-title">📄 Practical Templates</div>
                 <div class="blog-item-date">2026-10-04</div>
             </a>
             
         </div>
         
-        <div class="footer">æœ€åŽæž„å»º: 2026-10-10 16:22:13 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-10 16:22:42 | Algorithm Platform Generator</div>
     </div>
     <script>
         const ENABLE_PAGINATION = false; 
@@ -149,12 +149,12 @@
             isDiffVisible = !isDiffVisible;
             const btn = document.querySelector('.toggle-diff-btn');
             if (isDiffVisible) {
-                btn.innerHTML = 'ðŸŒ• éšè—éš¾åº¦';
+                btn.innerHTML = '🌕 隐藏难度';
                 btn.style.color = 'var(--primary)';
                 btn.style.borderColor = '#bfdbfe';
                 btn.style.background = '#fff';
             } else {
-                btn.innerHTML = 'ðŸŒ‘ æ˜¾ç¤ºéš¾åº¦';
+                btn.innerHTML = '🌑 显示难度';
                 btn.style.color = '#475569';
                 btn.style.borderColor = '#e2e8f0';
                 btn.style.background = '#f8fafc';
@@ -167,7 +167,7 @@
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => { el.style.display = isRemarkVisible ? 'table-cell' : 'none'; });
             document.querySelectorAll('.toggle-remark-btn').forEach(btn => {
-                btn.innerHTML = isRemarkVisible ? 'ðŸš« éšè—å¤‡æ³¨' : 'ðŸ“ æ˜¾ç¤ºå¤‡æ³¨';
+                btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
                 btn.style.color = isRemarkVisible ? '#475569' : '#059669';
                 btn.style.borderColor = isRemarkVisible ? '#e2e8f0' : '#a7f3d0';
                 btn.style.background = isRemarkVisible ? '#f8fafc' : '#fff';
@@ -316,8 +316,8 @@
                     else if (diff < minVal || diff > maxVal) matchDiff = false;
                 }
                 let matchDate = true;
-                if (dateStart && (rDate === 'æœªçŸ¥' || rDate < dateStart)) matchDate = false;
-                if (dateEnd && (rDate === 'æœªçŸ¥' || rDate > dateEnd)) matchDate = false;
+                if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
+                if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
                 let matchMd = !requireMd || hasMd;
 
                 if (matchTag && matchDiff && matchDate && matchMd) {
@@ -356,8 +356,8 @@
                 } else if (col === 'date') {
                     let d1 = a.dataset.date;
                     let d2 = b.dataset.date;
-                    if (d1 === 'æœªçŸ¥') d1 = '';
-                    if (d2 === 'æœªçŸ¥') d2 = '';
+                    if (d1 === '未知') d1 = '';
+                    if (d2 === '未知') d2 = '';
                     res = d1.localeCompare(d2) * dir;
                 } else if (col === 'index') {
                     let i1 = parseInt(a.dataset.index) || 0;
@@ -406,7 +406,7 @@
 
             const prevBtn = document.createElement('button');
             prevBtn.className = 'pagination-btn';
-            prevBtn.innerText = 'Â« ä¸Šä¸€é¡µ';
+            prevBtn.innerText = '« 上一页';
             prevBtn.disabled = currentPage === 1;
             prevBtn.onclick = () => changePage(tableId, currentPage - 1);
             container.appendChild(prevBtn);
@@ -441,14 +441,14 @@
 
             const nextBtn = document.createElement('button');
             nextBtn.className = 'pagination-btn';
-            nextBtn.innerText = 'ä¸‹ä¸€é¡µ Â»';
+            nextBtn.innerText = '下一页 »';
             nextBtn.disabled = currentPage === totalPages;
             nextBtn.onclick = () => changePage(tableId, currentPage + 1);
             container.appendChild(nextBtn);
 
             const pageInfo = document.createElement('span');
             pageInfo.className = 'pagination-info';
-            pageInfo.innerText = 'ç¬¬ ' + currentPage + ' / ' + totalPages + ' é¡µ';
+            pageInfo.innerText = '第 ' + currentPage + ' / ' + totalPages + ' 页';
             container.appendChild(pageInfo);
         }
 
