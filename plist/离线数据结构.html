@@ -6,7 +6,7 @@
     <title>📁 List: 离线数据结构 - 题目整理</title>
     <style>
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; scroll-behavior: smooth; }
         .container { width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
         h1 { color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }
         h2 { color: #0f172a; font-weight: 700; margin-bottom: 12px; }
@@ -31,22 +31,19 @@
         
         thead { background: var(--panel-bg); }
         th { color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
-        td { border-bottom: 1px solid var(--border); }
+        td { border-bottom: 1px solid var(--border); transition: background-color 0.3s; }
         th:not(:last-child), td:not(:last-child) { border-right: 1px solid var(--border); }
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background-color: #f8fafc; }
         .matrix-table th, .matrix-table td { text-align: center; }
-        .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
+        .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; position: relative; }
         
         .remark-col { display: none; }
-        /* 💡 垃圾箱专属：强行默认显示备注列，无视全局隐藏按钮 */
         table[id*="-trash-"] .remark-col { display: table-cell !important; }
         
-        /* CSS 序号计数器 */
         .normal-table tbody { counter-reset: row-num; }
         .normal-table tbody tr:not([style*="display: none"]) .row-index::before { counter-increment: row-num; content: counter(row-num); }
         
-        /* 列宽设置 */
         .normal-table th:nth-child(1) { width: 5%; text-align: center; } 
         .normal-table th:nth-child(2) { width: 34%; } 
         .normal-table th:nth-child(3) { width: 16%; } 
@@ -65,12 +62,6 @@
         .diff-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }
         .diff-circle { width: 12px; height: 12px; display: inline-block; }
         .mini-version-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }
-        .mini-tag { font-size: 0.7em; padding: 2px 5px; border-radius: 4px; font-weight: bold; line-height: 1; }
-        .mini-tag-easy { background: #dcfce7; color: #166534; }
-        .mini-tag-hard { background: #fee2e2; color: #991b1b; }
-        .mini-file-link { text-decoration: none; display: inline-block; transition: transform 0.2s; }
-        .mini-file-link:hover { transform: scale(1.15); }
-        .version-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
         
@@ -95,8 +86,14 @@
         .blog-item:hover { background: #f8fafc; }
         .blog-item-title { font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
         .blog-item-date { color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+        
+        /* 💡 比赛矩阵专用：高亮行与锚点徽章 */
+        .highlight-row td { background-color: #fef08a !important; border-top: 2px solid #eab308; border-bottom: 2px solid #eab308; transition: background-color 0.5s; }
+        .cid-badge { font-size: 0.8em; color: #64748b; background: #f1f5f9; padding: 2px 6px; border-radius: 6px; margin-left: 6px; border: 1px solid #e2e8f0; }
+        .c-anchor { color: #cbd5e1; text-decoration: none; font-size: 1.1em; transition: color 0.2s; margin-right: 6px; }
+        .c-anchor:hover { color: var(--primary); }
 
-        /* 分页器样式 */
+        /* 💡 封印分页器样式 (若开启则会生效) */
         .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
         .pagination-btn { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
         .pagination-btn:hover:not(:disabled) { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -231,7 +228,7 @@
             </td>
         </tr>
         <tr data-index="10" data-base="soj2570" data-tags="MST ds graph 连通性" data-has-md="0">
-            <td style="padding-left:20px;"><a href="http://47.114.34.42:8080/problem/2570" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2570</a></td>
+            <td style="padding-left:20px;"><a href="http://121.196.149.251:8080/problem/2570" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2570</a></td>
             <td><span class="tag-pill">MST</span><span class="tag-pill">ds</span><span class="tag-pill">graph</span><span class="tag-pill">连通性</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
@@ -249,7 +246,7 @@
             </td>
         </tr>
         <tr data-index="12" data-base="soj2623" data-tags="divide dp" data-has-md="0">
-            <td style="padding-left:20px;"><a href="http://47.114.34.42:8080/problem/2623" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2623</a></td>
+            <td style="padding-left:20px;"><a href="http://121.196.149.251:8080/problem/2623" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2623</a></td>
             <td><span class="tag-pill">divide</span><span class="tag-pill">dp</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
@@ -258,7 +255,7 @@
             </td>
         </tr>
         <tr data-index="13" data-base="soj2622" data-tags="ds" data-has-md="0">
-            <td style="padding-left:20px;"><a href="http://47.114.34.42:8080/problem/2622" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2622</a></td>
+            <td style="padding-left:20px;"><a href="http://121.196.149.251:8080/problem/2622" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">soj2622</a></td>
             <td><span class="tag-pill">ds</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
@@ -311,7 +308,7 @@
                 </div>
             </td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-10-10 15:40:23 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-10 15:58:41 | Algorithm Platform Generator</div>
     </div>
     <script>
         // 💡 全局开关：改为 true 即可一键恢复表格分页功能，改为 false 则展示所有题目
@@ -364,6 +361,32 @@
             });
         }
 
+        // 💡 矩阵页面：比赛搜索功能
+        function filterMatrixTable(inputEl, tableId) {
+            const val = inputEl.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+            rows.forEach(row => {
+                const cname = (row.getAttribute('data-name') || '').toLowerCase();
+                const cid = (row.getAttribute('data-cid') || '').toLowerCase();
+                if (cname.includes(val) || cid === val || 'c-' + cid === val || '#' + cid === val) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // 💡 矩阵页面：锚点高亮与平滑滚动
+        function highlightContest(cid_id) {
+            document.querySelectorAll('.matrix-table tr').forEach(tr => tr.classList.remove('highlight-row'));
+            const target = document.getElementById(cid_id);
+            if(target) {
+                target.classList.add('highlight-row');
+                target.scrollIntoView({behavior: 'smooth', block: 'center'});
+                window.history.replaceState(null, null, '#' + cid_id);
+            }
+        }
+
         function addTagToFilter(tag, tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
             if (!input) return;
@@ -399,11 +422,10 @@
             const maxStr = maxInput ? maxInput.value : '';
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
-            
+
             const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
             const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
-            // 💡 获取“仅看题解”复选框状态
             const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
             const requireMd = mdCheckbox ? mdCheckbox.checked : false;
 
@@ -437,7 +459,6 @@
                 let matchDate = true;
                 if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
                 if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
-                
                 let matchMd = !requireMd || hasMd;
 
                 if (matchTag && matchDiff && matchDate && matchMd) {
@@ -674,11 +695,13 @@
             const tabParam = urlParams.get('tab');
             const subParam = urlParams.get('sub');
 
+            // 💡 恢复 URL 中的 Tab 状态
             if (tabParam) {
                 const btn = document.querySelector(`button[data-target="tab-${tabParam}"]`);
                 if (btn) switchAtCoderTab(`tab-${tabParam}`, btn, false);
             }
 
+            // 💡 恢复 URL 中的 Sub-Tab 状态
             if (subParam) {
                 const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
                 if (activeTab) {
@@ -706,6 +729,7 @@
                 filterListTable(tableId); 
             }
 
+            // 初始化可见表格
             document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {
                 filterListTable(table.id);
             });
@@ -713,6 +737,11 @@
                 filterListTable('summary-table');
             }
             
+            // 💡 检查 Hash 锚点并滚动高亮比赛
+            if(window.location.hash && window.location.hash.startsWith('#c-')) {
+                setTimeout(() => highlightContest(window.location.hash.substring(1)), 300);
+            }
+
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
                 document.querySelectorAll('.file-link').forEach(el => {

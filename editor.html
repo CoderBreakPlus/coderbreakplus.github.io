@@ -24,7 +24,6 @@
         <p>请在项目根目录运行命令行：<code style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; color:#0f172a;">python server.py</code></p>
         <p>然后通过浏览器访问 <a href="http://localhost:8000/index.html" style="color: #2563eb;">http://localhost:8000</a> 即可解锁在线编辑！</p>
     </div>
-    
     <div class="toolbar">
         <div style="display: flex; align-items: center;">
             <button onclick="window.close()" style="background: #fff; border: 1px solid #cbd5e1; color: #475569; padding: 4px 10px; border-radius: 4px; margin-right: 15px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">← 关闭窗口</button>
@@ -37,25 +36,18 @@
         </div>
     </div>
     <div id="editor-container"></div>
-
     <script>
         const params = new URLSearchParams(window.location.search);
         const file = params.get('file');
         const action = params.get('action');
         document.getElementById('fname-display').innerText = file || '未指定文件';
-
         let editor;
-
-        if (window.location.protocol === 'file:') {
-            document.getElementById('err-overlay').style.display = 'flex';
-        }
-
+        if (window.location.protocol === 'file:') { document.getElementById('err-overlay').style.display = 'flex'; }
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' }});
         require(['vs/editor/editor.main'], function() {
             let lang = 'plaintext';
             if (file.endsWith('.cpp')) lang = 'cpp';
             if (file.endsWith('.md')) lang = 'markdown';
-            
             fetch(`/api/read?file=${encodeURIComponent(file)}`)
                 .then(res => {
                     if (res.status === 404 && action === 'create') {
@@ -70,43 +62,27 @@
                 })
                 .then(data => {
                     editor = monaco.editor.create(document.getElementById('editor-container'), {
-                        value: data.content || '',
-                        language: lang,
-                        theme: 'vs',
-                        automaticLayout: true,
-                        fontSize: 15,
-                        fontFamily: 'Consolas, "Courier New", monospace',
-                        mouseWheelZoom: true,
-                        wordWrap: 'on'
+                        value: data.content || '', language: lang, theme: 'vs', automaticLayout: true,
+                        fontSize: 15, fontFamily: 'Consolas, "Courier New", monospace', mouseWheelZoom: true, wordWrap: 'on'
                     });
-                    
                     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() { saveFile(); });
-                })
-                .catch(err => {
+                }).catch(err => {
                     document.getElementById('status').innerText = '❌ 加载失败';
-                    if (window.location.protocol !== 'file:') {
-                        document.getElementById('err-overlay').style.display = 'flex';
-                    }
+                    if (window.location.protocol !== 'file:') document.getElementById('err-overlay').style.display = 'flex';
                 });
         });
-
         function saveFile() {
             document.getElementById('status').innerText = '保存中...';
-            fetch('/api/write', {
-                method: 'POST',
-                body: JSON.stringify({ file: file, content: editor.getValue() })
-            }).then(r => r.json()).then(d => {
+            fetch('/api/write', { method: 'POST', body: JSON.stringify({ file: file, content: editor.getValue() }) })
+            .then(r => r.json()).then(d => {
                 document.getElementById('status').innerText = '✅ 已保存';
                 setTimeout(() => document.getElementById('status').innerText = '', 2000);
             });
         }
-
         function saveAndRebuild() {
             document.getElementById('status').innerText = '保存并触发全站重构中...';
-            fetch('/api/write', {
-                method: 'POST',
-                body: JSON.stringify({ file: file, content: editor.getValue() })
-            }).then(r => r.json()).then(d => {
+            fetch('/api/write', { method: 'POST', body: JSON.stringify({ file: file, content: editor.getValue() }) })
+            .then(r => r.json()).then(d => {
                 fetch('/api/rebuild', {method: 'POST'}).then(() => {
                     document.getElementById('status').innerText = '🎉 保存并重构成功！';
                     setTimeout(() => window.close(), 1500); 

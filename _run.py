@@ -2,6 +2,7 @@ import os
 import sys
 import re
 import json
+import urllib.parse
 from collections import defaultdict
 from datetime import datetime, timedelta
 
@@ -19,8 +20,9 @@ def get_diff_style(diff):
     ratio = 100 if clamped_diff >= 3200 else (clamped_diff % 400) / 400 * 100
     return f'background: linear-gradient(to top, {color} {ratio}%, transparent {ratio}%); border: 1px solid {color}; border-radius: 50%;'
 
+# 💡 彻底修复的自然排序引擎
 def contest_sort_key(name):
-    if not name: return ("",)
+    if not name: return ((1, ""),)
     def replace_cn(m):
         s = m.group(0)
         val_map = {'零':0, '一':1, '二':2, '两':2, '三':3, '四':4, '五':5, '六':6, '七':7, '八':8, '九':9}
@@ -34,15 +36,14 @@ def contest_sort_key(name):
                 tmp = 0
         res += tmp
         return str(res)
+    # 把“十一”、“二十”翻译成“11”、“20”
     name_num = re.sub(r'[零一二两三四五六七八九十百千万]+', replace_cn, name)
+    # 按数字切块，比如 "NOIP2026模拟赛27" 会被切成 ["NOIP", "2026", "模拟赛", "27"]
     parts = re.split(r'(\d+)', name_num)
-    non_num = "".join([p for p in parts if not p.isdigit()]).strip().lower()
-    nums = [int(p) for p in parts if p.isdigit()]
-    return (non_num, *nums)
+    # 使用 (类型, 值) 防止 Python 类型比较崩溃，且保证中英文字典序完美抱团
+    return tuple((0, int(p)) if p.isdigit() else (1, p.lower()) for p in parts if p)
 
 def get_auto_link(pid):
-    """根据题号字符串自动推导在线 OJ 链接"""
-    # 💡 升级了底层正则：支持任意位数的数字后缀 (\d+)?，以及 AtCoder 的下划线 _?
     m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(\d+)?$', pid, re.IGNORECASE)
     m_ac = re.match(r'^(abc|arc|agc)(\d+)_?([a-zA-Z]+?)(\d+)?$', pid, re.IGNORECASE)
     m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', pid, re.IGNORECASE)
@@ -61,10 +62,8 @@ def get_auto_link(pid):
         if oj_prefix == 'p': return f"https://www.luogu.com.cn/problem/P{oj_num}"
         elif oj_prefix == 'qoj': return f"https://qoj.ac/problem/{oj_num}"
         elif oj_prefix == 'uoj': return f"https://uoj.ac/problem/{oj_num}"
-        elif oj_prefix == 'soj': return f"http://47.114.34.42:8080/problem/{oj_num}"
-    
+        elif oj_prefix == 'soj': return f"http://121.196.149.251:8080/problem/{oj_num}"
     return "#"
-
 
 EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -92,7 +91,6 @@ EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
         <p>请在项目根目录运行命令行：<code style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; color:#0f172a;">python server.py</code></p>
         <p>然后通过浏览器访问 <a href="http://localhost:8000/index.html" style="color: #2563eb;">http://localhost:8000</a> 即可解锁在线编辑！</p>
     </div>
-    
     <div class="toolbar">
         <div style="display: flex; align-items: center;">
             <button onclick="window.close()" style="background: #fff; border: 1px solid #cbd5e1; color: #475569; padding: 4px 10px; border-radius: 4px; margin-right: 15px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">← 关闭窗口</button>
@@ -105,25 +103,18 @@ EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
         </div>
     </div>
     <div id="editor-container"></div>
-
     <script>
         const params = new URLSearchParams(window.location.search);
         const file = params.get('file');
         const action = params.get('action');
         document.getElementById('fname-display').innerText = file || '未指定文件';
-
         let editor;
-
-        if (window.location.protocol === 'file:') {
-            document.getElementById('err-overlay').style.display = 'flex';
-        }
-
+        if (window.location.protocol === 'file:') { document.getElementById('err-overlay').style.display = 'flex'; }
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' }});
         require(['vs/editor/editor.main'], function() {
             let lang = 'plaintext';
             if (file.endsWith('.cpp')) lang = 'cpp';
             if (file.endsWith('.md')) lang = 'markdown';
-            
             fetch(`/api/read?file=${encodeURIComponent(file)}`)
                 .then(res => {
                     if (res.status === 404 && action === 'create') {
@@ -138,43 +129,27 @@ EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
                 })
                 .then(data => {
                     editor = monaco.editor.create(document.getElementById('editor-container'), {
-                        value: data.content || '',
-                        language: lang,
-                        theme: 'vs',
-                        automaticLayout: true,
-                        fontSize: 15,
-                        fontFamily: 'Consolas, "Courier New", monospace',
-                        mouseWheelZoom: true,
-                        wordWrap: 'on'
+                        value: data.content || '', language: lang, theme: 'vs', automaticLayout: true,
+                        fontSize: 15, fontFamily: 'Consolas, "Courier New", monospace', mouseWheelZoom: true, wordWrap: 'on'
                     });
-                    
                     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() { saveFile(); });
-                })
-                .catch(err => {
+                }).catch(err => {
                     document.getElementById('status').innerText = '❌ 加载失败';
-                    if (window.location.protocol !== 'file:') {
-                        document.getElementById('err-overlay').style.display = 'flex';
-                    }
+                    if (window.location.protocol !== 'file:') document.getElementById('err-overlay').style.display = 'flex';
                 });
         });
-
         function saveFile() {
             document.getElementById('status').innerText = '保存中...';
-            fetch('/api/write', {
-                method: 'POST',
-                body: JSON.stringify({ file: file, content: editor.getValue() })
-            }).then(r => r.json()).then(d => {
+            fetch('/api/write', { method: 'POST', body: JSON.stringify({ file: file, content: editor.getValue() }) })
+            .then(r => r.json()).then(d => {
                 document.getElementById('status').innerText = '✅ 已保存';
                 setTimeout(() => document.getElementById('status').innerText = '', 2000);
             });
         }
-
         function saveAndRebuild() {
             document.getElementById('status').innerText = '保存并触发全站重构中...';
-            fetch('/api/write', {
-                method: 'POST',
-                body: JSON.stringify({ file: file, content: editor.getValue() })
-            }).then(r => r.json()).then(d => {
+            fetch('/api/write', { method: 'POST', body: JSON.stringify({ file: file, content: editor.getValue() }) })
+            .then(r => r.json()).then(d => {
                 fetch('/api/rebuild', {method: 'POST'}).then(() => {
                     document.getElementById('status').innerText = '🎉 保存并重构成功！';
                     setTimeout(() => window.close(), 1500); 
@@ -194,7 +169,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <title>{title} - 题目整理</title>
     <style>
         :root {{ --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }}
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; scroll-behavior: smooth; }}
         .container {{ width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }}
         h1 {{ color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }}
         h2 {{ color: #0f172a; font-weight: 700; margin-bottom: 12px; }}
@@ -219,22 +194,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         
         thead {{ background: var(--panel-bg); }}
         th {{ color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }}
-        td {{ border-bottom: 1px solid var(--border); }}
+        td {{ border-bottom: 1px solid var(--border); transition: background-color 0.3s; }}
         th:not(:last-child), td:not(:last-child) {{ border-right: 1px solid var(--border); }}
         tbody tr:last-child td {{ border-bottom: none; }}
         tbody tr:hover td {{ background-color: #f8fafc; }}
         .matrix-table th, .matrix-table td {{ text-align: center; }}
-        .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }}
+        .contest-name-cell {{ text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; position: relative; }}
         
         .remark-col {{ display: none; }}
-        /* 💡 垃圾箱专属：强行默认显示备注列，无视全局隐藏按钮 */
         table[id*="-trash-"] .remark-col {{ display: table-cell !important; }}
         
-        /* CSS 序号计数器 */
         .normal-table tbody {{ counter-reset: row-num; }}
         .normal-table tbody tr:not([style*="display: none"]) .row-index::before {{ counter-increment: row-num; content: counter(row-num); }}
         
-        /* 列宽设置 */
         .normal-table th:nth-child(1) {{ width: 5%; text-align: center; }} 
         .normal-table th:nth-child(2) {{ width: 34%; }} 
         .normal-table th:nth-child(3) {{ width: 16%; }} 
@@ -253,12 +225,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .diff-indicator {{ display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }}
         .diff-circle {{ width: 12px; height: 12px; display: inline-block; }}
         .mini-version-row {{ display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }}
-        .mini-tag {{ font-size: 0.7em; padding: 2px 5px; border-radius: 4px; font-weight: bold; line-height: 1; }}
-        .mini-tag-easy {{ background: #dcfce7; color: #166534; }}
-        .mini-tag-hard {{ background: #fee2e2; color: #991b1b; }}
-        .mini-file-link {{ text-decoration: none; display: inline-block; transition: transform 0.2s; }}
-        .mini-file-link:hover {{ transform: scale(1.15); }}
-        .version-row {{ margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }}
         .file-link {{ color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }}
         .file-link:hover {{ transform: scale(1.1); }}
         
@@ -283,8 +249,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .blog-item:hover {{ background: #f8fafc; }}
         .blog-item-title {{ font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }}
         .blog-item-date {{ color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }}
+        
+        /* 💡 比赛矩阵专用：高亮行与锚点徽章 */
+        .highlight-row td {{ background-color: #fef08a !important; border-top: 2px solid #eab308; border-bottom: 2px solid #eab308; transition: background-color 0.5s; }}
+        .cid-badge {{ font-size: 0.8em; color: #64748b; background: #f1f5f9; padding: 2px 6px; border-radius: 6px; margin-left: 6px; border: 1px solid #e2e8f0; }}
+        .c-anchor {{ color: #cbd5e1; text-decoration: none; font-size: 1.1em; transition: color 0.2s; margin-right: 6px; }}
+        .c-anchor:hover {{ color: var(--primary); }}
 
-        /* 分页器样式 */
+        /* 💡 封印分页器样式 (若开启则会生效) */
         .pagination-controls {{ display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }}
         .pagination-btn {{ background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }}
         .pagination-btn:hover:not(:disabled) {{ background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
@@ -363,6 +335,32 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
+        // 💡 矩阵页面：比赛搜索功能
+        function filterMatrixTable(inputEl, tableId) {{
+            const val = inputEl.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+            rows.forEach(row => {{
+                const cname = (row.getAttribute('data-name') || '').toLowerCase();
+                const cid = (row.getAttribute('data-cid') || '').toLowerCase();
+                if (cname.includes(val) || cid === val || 'c-' + cid === val || '#' + cid === val) {{
+                    row.style.display = '';
+                }} else {{
+                    row.style.display = 'none';
+                }}
+            }});
+        }}
+
+        // 💡 矩阵页面：锚点高亮与平滑滚动
+        function highlightContest(cid_id) {{
+            document.querySelectorAll('.matrix-table tr').forEach(tr => tr.classList.remove('highlight-row'));
+            const target = document.getElementById(cid_id);
+            if(target) {{
+                target.classList.add('highlight-row');
+                target.scrollIntoView({{behavior: 'smooth', block: 'center'}});
+                window.history.replaceState(null, null, '#' + cid_id);
+            }}
+        }}
+
         function addTagToFilter(tag, tableId) {{
             const input = document.getElementById('filter-tag-' + tableId);
             if (!input) return;
@@ -398,11 +396,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const maxStr = maxInput ? maxInput.value : '';
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
-            
+
             const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
             const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
 
-            // 💡 获取“仅看题解”复选框状态
             const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
             const requireMd = mdCheckbox ? mdCheckbox.checked : false;
 
@@ -436,7 +433,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 let matchDate = true;
                 if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
                 if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
-                
                 let matchMd = !requireMd || hasMd;
 
                 if (matchTag && matchDiff && matchDate && matchMd) {{
@@ -673,11 +669,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const tabParam = urlParams.get('tab');
             const subParam = urlParams.get('sub');
 
+            // 💡 恢复 URL 中的 Tab 状态
             if (tabParam) {{
                 const btn = document.querySelector(`button[data-target="tab-${{tabParam}}"]`);
                 if (btn) switchAtCoderTab(`tab-${{tabParam}}`, btn, false);
             }}
 
+            // 💡 恢复 URL 中的 Sub-Tab 状态
             if (subParam) {{
                 const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
                 if (activeTab) {{
@@ -705,6 +703,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 filterListTable(tableId); 
             }}
 
+            // 初始化可见表格
             document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {{
                 filterListTable(table.id);
             }});
@@ -712,6 +711,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 filterListTable('summary-table');
             }}
             
+            // 💡 检查 Hash 锚点并滚动高亮比赛
+            if(window.location.hash && window.location.hash.startsWith('#c-')) {{
+                setTimeout(() => highlightContest(window.location.hash.substring(1)), 300);
+            }}
+
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
                 document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
                 document.querySelectorAll('.file-link').forEach(el => {{
@@ -771,7 +775,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         .cpp-include {{ color: #98c379; }}
         .footer {{ text-align: center; color: #94a3b8; font-size: 0.85em; margin-top: 50px; }}
         
-        /* 切换按钮样式 */
         .chart-controls {{ display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }}
         .btn-toggle {{ background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }}
         .btn-toggle:hover {{ background: #e2e8f0; }}
@@ -822,7 +825,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             </a>
         </div>
 
-        <!-- === 做题活动可视化三模图表 === -->
         <div class="chart-container" style="background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 40px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                 <h2 style="margin: 0; font-size: 1.4em; display: flex; align-items: center; gap: 8px; color: #0f172a;">📈 趋势分析</h2>
@@ -837,7 +839,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     </div>
                 </div>
             </div>
-            
             <div id="activity-chart" style="width: 100%; height: 400px;"></div>
         </div>
 
@@ -866,22 +867,19 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="footer">最后构建: {gen_time} | Algorithm Platform Generator</div>
     </div>
 
-    <!-- ECharts 三模渲染脚本 -->
     <script>
         let myChart;
-        let currentMode = 'bar'; // 'bar', 'line', 'cum'
+        let currentMode = 'bar'; 
         const chartData = {chart_data_json};
 
-        // 基础颜色映射
         const colors = {{
-            l1: '#94a3b8', // <2000
-            l2: '#2dd4bf', // 2000-2599
-            l3: '#3b82f6', // 2600-2999
-            l4: '#f43f5e', // >=3000
-            u:  '#1e293b'  // 未知 (黑色)
+            l1: '#94a3b8', 
+            l2: '#2dd4bf', 
+            l3: '#3b82f6', 
+            l4: '#f43f5e', 
+            u:  '#1e293b'  
         }};
 
-        // 滑动平均计算逻辑
         function calculateMA(data, windowSize) {{
             let result = [];
             let half = Math.floor(windowSize / 2);
@@ -895,7 +893,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             return result;
         }}
 
-        // 前缀和计算逻辑 (累计做题)
         function calculateCum(data) {{
             let result = [];
             let currentSum = 0;
@@ -906,7 +903,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             return result;
         }}
 
-        // 渐变色生成器
         function getGradient(colorBase) {{
             let r = parseInt(colorBase.slice(1, 3), 16);
             let g = parseInt(colorBase.slice(3, 5), 16);
@@ -921,7 +917,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             const chartDom = document.getElementById('activity-chart');
             myChart = echarts.init(chartDom);
             
-            // 默认显示近120天
             let currentZoomStart = Math.max(0, chartData.dates.length - 120);
             let currentZoomEnd = chartData.dates.length - 1;
             
@@ -931,7 +926,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                 currentZoomEnd = option.dataZoom[0].endValue;
             }});
 
-            // 监听天数输入防抖
             let timeout = null;
             document.getElementById('ma-window').addEventListener('input', function() {{
                 clearTimeout(timeout);
@@ -941,13 +935,11 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             renderChart();
             window.addEventListener('resize', () => myChart.resize());
             
-            // 暴露到全局以供按钮调用
             window.renderChart = renderChart;
             window.currentZoomStart = currentZoomStart;
             window.currentZoomEnd = currentZoomEnd;
         }});
 
-        // 按钮切换逻辑
         function switchMode(mode) {{
             currentMode = mode;
             ['btn-bar', 'btn-line', 'btn-cum'].forEach(id => document.getElementById(id).classList.remove('active'));
@@ -956,21 +948,14 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             window.renderChart();
         }}
 
-        // 核心渲染逻辑
         function renderChart() {{
             let yName = '做题数';
             if (currentMode === 'line') yName = '平均做题数';
             else if (currentMode === 'cum') yName = '累计做题数';
 
             let option = {{
-                tooltip: {{
-                    trigger: 'axis',
-                    axisPointer: {{ type: currentMode === 'bar' ? 'shadow' : 'cross' }}
-                }},
-                legend: {{
-                    data: ['<2000', '2000-2599', '2600-2999', '≥3000', '未知难度'],
-                    top: 0, icon: 'circle'
-                }},
+                tooltip: {{ trigger: 'axis', axisPointer: {{ type: currentMode === 'bar' ? 'shadow' : 'cross' }} }},
+                legend: {{ data: ['<2000', '2000-2599', '2600-2999', '≥3000', '未知难度'], top: 0, icon: 'circle' }},
                 grid: {{ left: '2%', right: '2%', bottom: '15%', top: '12%', containLabel: true }},
                 dataZoom: [
                     {{
@@ -992,8 +977,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     axisLine: {{ lineStyle: {{ color: '#cbd5e1' }} }}
                 }},
                 yAxis: {{
-                    type: 'value',
-                    name: yName,
+                    type: 'value', name: yName,
                     nameTextStyle: {{ color: '#64748b', padding: [0, 0, 0, 20] }},
                     minInterval: (currentMode === 'line') ? 0 : 1,
                     axisLabel: {{ color: '#64748b' }},
@@ -1028,7 +1012,6 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
                     {{ name: '未知难度', type: 'line', stack: 'total', smooth: true, showSymbol: false, lineStyle: {{ width: 2, color: colors.u }}, areaStyle: {{ color: getGradient(colors.u) }}, itemStyle: {{ color: colors.u }}, data: calculateCum(chartData.u) }}
                 ];
             }}
-            
             myChart.setOption(option, true);
         }}
     </script>
@@ -1075,7 +1058,6 @@ def scan_and_group_files(data_dir):
         for f in os.listdir(data_dir):
             if f.endswith('.conf'): conf_bases.add(f[:-5].lower())
 
-    # 💡 动态版本转换：1=Easy, 2=Hard, 其余=V3, V4...
     def get_v_name(num_str):
         if not num_str: return 'Normal'
         if num_str == '1': return 'Easy'
@@ -1144,6 +1126,9 @@ def apply_categories_and_links(groups, data_dir):
     if os.path.exists('contest'):
         for f in os.listdir('contest'):
             if not f.endswith('.conf'): continue
+            cid = f[:-5].lstrip('0')
+            if not cid: cid = '0'
+            
             path = os.path.join('contest', f)
             try:
                 with open(path, 'r', encoding='utf-8') as file:
@@ -1162,7 +1147,7 @@ def apply_categories_and_links(groups, data_dir):
                         remark = line
                 
                 if cat and c_name:
-                    contest_info[cat][c_name] = {'link': c_link, 'remark': remark}
+                    contest_info[cat][c_name] = {'link': c_link, 'remark': remark, 'cid': cid}
                     for pid, base_name in probs:
                         custom_apps[base_name.lower()].append((cat, c_name, pid))
             except Exception: pass
@@ -1212,7 +1197,6 @@ def apply_categories_and_links(groups, data_dir):
                     v.remark = lines[2].strip()
                 except Exception: pass
             
-            # 💡 动态提取各种版本的数字后缀
             suffix = ""
             if v_name == 'Easy': suffix = "1"
             elif v_name == 'Hard': suffix = "2"
@@ -1248,7 +1232,7 @@ def apply_categories_and_links(groups, data_dir):
                     if oj_prefix == 'p': primary_link = f"https://www.luogu.com.cn/problem/P{oj_num}"
                     elif oj_prefix == 'qoj': primary_link = f"https://qoj.ac/problem/{oj_num}"
                     elif oj_prefix == 'uoj': primary_link = f"https://uoj.ac/problem/{oj_num}"
-                    elif oj_prefix == 'soj': primary_link = f"http://47.114.34.42:8080/problem/{oj_num}"
+                    elif oj_prefix == 'soj': primary_link = f"http://121.196.149.251:8080/problem/{oj_num}"
                     
             v.link = primary_link
 
@@ -1262,7 +1246,6 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
     display_pid = v.base_filename
     if contest_pid:
         display_pid = contest_pid
-        # 💡 根据实际版本渲染标题，如 D3，D4
         if is_official and v.name != 'Normal' and not contest_pid[-1].isdigit():
             if v.name == 'Easy': display_pid += '1'
             elif v.name == 'Hard': display_pid += '2'
@@ -1312,7 +1295,7 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>
     </div>"""
 
-def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=False, first_col_width=20, base_url="", data_dir="data"):
+def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=False, first_col_width=20, base_url="", data_dir="data", table_id="matrix-table"):
     if not groups_dict: return ""
     all_pids = set()
     for contest, c_groups in groups_dict.items():
@@ -1323,7 +1306,14 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
     def alnum_key(s): return [int(c) if c.isdigit() else c.lower() for c in re.split('([0-9]+)', s)]
     sorted_pids = sorted(list(all_pids), key=lambda x: ([float('inf')] if x == '未知' else alnum_key(x)))
 
-    html = f'<div style="overflow-x: auto;"><table class="matrix-table"><thead><tr><th style="text-align: left; width: {first_col_width}%; padding-left: 20px;">比赛名称</th>'
+    html = f"""
+    <div class="list-filter-bar" style="padding: 12px 18px; margin-bottom: 15px;">
+        <strong style="color: var(--primary); font-size: 1.05em;">🔍 检索比赛</strong>
+        <input type="text" onkeyup="filterMatrixTable(this, '{table_id}')" placeholder="输入名称或编号(如 44) 查找..." style="min-width: 250px;">
+    </div>
+    """
+
+    html += f'<div style="overflow-x: auto;"><table class="matrix-table" id="{table_id}"><thead><tr><th style="text-align: left; width: {first_col_width}%; padding-left: 20px;">比赛名称</th>'
     
     col_width = (100 - first_col_width) / max(1, len(sorted_pids))
     for pid in sorted_pids: html += f'<th style="width: {col_width}%;">{pid}</th>'
@@ -1333,7 +1323,6 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         
     html += '</tr></thead><tbody>'
     
-    # 💡 排序密钥：保证 Normal 最前，随后是 1, 2, 3, 4 依次排列
     def v_sort_key(vn):
         if vn == 'Normal': return 0
         if vn == 'Easy': return 1
@@ -1341,21 +1330,37 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         if vn.startswith('V'): return int(vn[1:])
         return 99
     
-    sorted_contests = sorted(groups_dict.items(), key=lambda x: contest_sort_key(x[0]), reverse=True)
+    def get_contest_sort_key(contest_name):
+        info = contest_info_dict.get(contest_name, {})
+        cid_str = info.get('cid', '')
+        if cid_str and cid_str.isdigit():
+            return (1, int(cid_str))
+        else:
+            return (0, contest_sort_key(contest_name))
+            
+    sorted_contests = sorted(groups_dict.items(), key=lambda x: get_contest_sort_key(x[0]), reverse=True)
+    
     for contest, c_groups in sorted_contests:
         pid_map = defaultdict(list)
         for g in c_groups:
             pid = g.get_pid_in_contest(contest)
             pid_map[pid if pid else "未知"].append(g)
             
-        c_link = contest_info_dict.get(contest, {}).get('link', '')
-        c_remark = contest_info_dict.get(contest, {}).get('remark', '')
+        c_info = contest_info_dict.get(contest, {})
+        c_link = c_info.get('link', '')
+        c_remark = c_info.get('remark', '')
+        c_id = c_info.get('cid', '')
         
-        display_contest = f'<a href="{c_link}" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">{contest}</a>' if c_link else contest
-        display_contest = display_contest if display_contest else "无名比赛"
+        row_id = f"c-{c_id}" if c_id else f"c-{urllib.parse.quote(contest.replace(' ', '_'))}"
         
-        html += f'<tr data-name="{contest}" data-count="{len(c_groups)}">'
-        html += f'<td class="contest-name-cell" style="padding-left: 20px;">{display_contest} <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal;">({len(c_groups)} 题)</span></td>'
+        display_contest = f'<a href="{c_link}" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">{contest}</a>' if c_link else f'<span style="font-weight:700;">{contest}</span>'
+        
+        html += f'<tr id="{row_id}" data-name="{contest}" data-cid="{c_id}" data-count="{len(c_groups)}">'
+        html += f'<td class="contest-name-cell" style="padding-left: 15px;">'
+        html += f'<a href="#{row_id}" class="c-anchor" onclick="highlightContest(\'{row_id}\')" title="点击复制锚点链接并高亮本行">🔗</a>'
+        if c_id:
+            html += f'<span class="cid-badge">#{c_id}</span> '
+        html += f'{display_contest} <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal; margin-left: 30px;">({len(c_groups)} 题)</span></td>'
         
         for pid in sorted_pids:
             html += '<td>'
@@ -1364,18 +1369,16 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
                     sorted_v_names = sorted(g.versions.keys(), key=v_sort_key)
                     
                     if not is_official:
-                        # 非官方矩阵只取最难或唯一版本展示
                         rep_v = 'Normal' if 'Normal' in g.versions else sorted_v_names[-1]
                         html += render_single_version(g.versions[rep_v], rel_path, pid, is_official, base_url, data_dir)
                     else:
                         if 'Normal' in g.versions and len(g.versions) == 1:
                             html += render_single_version(g.versions['Normal'], rel_path, pid, is_official, base_url, data_dir)
                         else:
-                            # 💡 官方矩阵支持任意数量版本并排渲染
                             html += '<div style="display: flex; gap: 4px; justify-content: center; width: 100%;">'
                             for idx, v_name in enumerate(sorted_v_names):
                                 if v_name == 'Normal' and len(sorted_v_names) > 1:
-                                    continue # 多版本时忽略Normal壳
+                                    continue
                                 border = 'border-right: 1px dashed #cbd5e1; padding-right: 4px;' if idx < len(sorted_v_names) - 1 else ''
                                 html += f'<div style="flex: 1; {border}">'
                                 html += render_single_version(g.versions[v_name], rel_path, pid, is_official, base_url, data_dir)
@@ -1389,7 +1392,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         html += '</tr>'
     html += '</tbody></table></div>'
     return html
-    
+
 def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_path, base_url="", data_dir="data"):
     all_versions = []
     if title == 'OI':
@@ -1409,7 +1412,7 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
     else:
         total_contests = len(groups_dict)
 
-    sort_html = """<div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button><button class="btn" onclick="sortContests('name')">按比赛名字典序</button></div>"""
+    sort_html = """<div class="sort-btns"><button class="btn" onclick="sortContests('count')">按题目数降序</button></div>"""
     stats_block = f'<div class="stats-bar"><div class="stats-info"><span>共 {total_contests} 场比赛</span></div>{sort_html}</div>'
 
     is_official = (title in ['Codeforces', 'AtCoder'])
@@ -1438,7 +1441,7 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
             tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {sc_name}</h2>"
-            tables_html += build_matrix_table(sub_cats[sc_name], contest_info_dict.get('AtCoder', {}), rel_path, is_official, first_col_width, base_url, data_dir)
+            tables_html += build_matrix_table(sub_cats[sc_name], contest_info_dict.get('AtCoder', {}), rel_path, is_official, first_col_width, base_url, data_dir, table_id=f"matrix-{sc_name}")
             tables_html += '</div>'
             first = False
         tabs_html += '</div>'
@@ -1455,13 +1458,13 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
             display = "block" if first else "none"
             tables_html += f'<div id="tab-{sc_name}" class="atcoder-tab-content" style="display: {display};">'
             tables_html += f"<h2 style='margin-top: 10px; color: var(--primary);'>📌 {display_name}</h2>"
-            tables_html += build_matrix_table(groups_dict[sc_name], contest_info_dict.get(sc_name, {}), rel_path, is_official, first_col_width, base_url, data_dir)
+            tables_html += build_matrix_table(groups_dict[sc_name], contest_info_dict.get(sc_name, {}), rel_path, is_official, first_col_width, base_url, data_dir, table_id=f"matrix-{sc_name}")
             tables_html += '</div>'
             first = False
         tabs_html += '</div>'
         content_html = tabs_html + tables_html
     else:
-        content_html = build_matrix_table(groups_dict, contest_info_dict.get(title, {}), rel_path, is_official, first_col_width, base_url, data_dir)
+        content_html = build_matrix_table(groups_dict, contest_info_dict.get(title, {}), rel_path, is_official, first_col_width, base_url, data_dir, table_id="matrix-main")
 
     html = HTML_TEMPLATE.format(
         title=title, stats_block=stats_block, nav_extra=nav_extra,
