@@ -1,4 +1,5 @@
 import os
+import html
 import sys
 import re
 import json
@@ -62,102 +63,6 @@ def get_auto_link(pid):
         elif oj_prefix == 'uoj': return f"https://uoj.ac/problem/{oj_num}"
         elif oj_prefix == 'soj': return f"http://121.196.149.251:8080/problem/{oj_num}"
     return "#"
-
-EDITOR_HTML_TEMPLATE = """<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>代码/配置 本地编辑器</title>
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #ffffff; }
-        .toolbar { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: #f1f5f9; color: #334155; height: 50px; border-bottom: 1px solid #cbd5e1; box-sizing: border-box; }
-        .filename { font-weight: 600; font-family: monospace; font-size: 1.1em; color: #2563eb; }
-        .btn { background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background 0.2s; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .btn:hover { background: #1d4ed8; }
-        .btn-green { background: #16a34a; }
-        .btn-green:hover { background: #15803d; }
-        #editor-container { height: calc(100vh - 50px); width: 100%; }
-        #status { margin-left: 15px; color: #059669; font-size: 0.95em; font-weight: 600; }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); color: #0f172a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; display: none; text-align: center; }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
-</head>
-<body>
-    <div class="overlay" id="err-overlay">
-        <h2 style="color: #ef4444;">⚠️ 无法连接到本地服务器</h2>
-        <p>你似乎直接双击打开了 HTML 文件 (file://)，由于浏览器安全限制，无法编辑文件。</p>
-        <p>请在项目根目录运行命令行：<code style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; color:#0f172a;">python server.py</code></p>
-        <p>然后通过浏览器访问 <a href="http://localhost:8000/index.html" style="color: #2563eb;">http://localhost:8000</a> 即可解锁在线编辑！</p>
-    </div>
-    <div class="toolbar">
-        <div style="display: flex; align-items: center;">
-            <button onclick="window.close()" style="background: #fff; border: 1px solid #cbd5e1; color: #475569; padding: 4px 10px; border-radius: 4px; margin-right: 15px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">← 关闭窗口</button>
-            <span class="filename" id="fname-display">loading...</span>
-            <span id="status"></span>
-        </div>
-        <div>
-            <button class="btn" onclick="saveFile()">💾 保存 (Ctrl+S)</button>
-            <button class="btn btn-green" style="margin-left: 10px;" onclick="saveAndRebuild()">🚀 保存并重构网页</button>
-        </div>
-    </div>
-    <div id="editor-container"></div>
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const file = params.get('file');
-        const action = params.get('action');
-        document.getElementById('fname-display').innerText = file || '未指定文件';
-        let editor;
-        if (window.location.protocol === 'file:') { document.getElementById('err-overlay').style.display = 'flex'; }
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' }});
-        require(['vs/editor/editor.main'], function() {
-            let lang = 'plaintext';
-            if (file.endsWith('.cpp')) lang = 'cpp';
-            if (file.endsWith('.md')) lang = 'markdown';
-            fetch(`/api/read?file=${encodeURIComponent(file)}`)
-                .then(res => {
-                    if (res.status === 404 && action === 'create') {
-                        let def = '';
-                        if (lang === 'cpp') def = '#include <bits/stdc++.h>\\nusing namespace std;\\n\\nint main() {\\n    \\n    return 0;\\n}\\n';
-                        if (lang === 'markdown') def = '# 题解\\n\\n';
-                        if (file.endsWith('.conf')) def = '\\n\\n\\n';
-                        return {content: def};
-                    }
-                    if (!res.ok) throw new Error('File read failed');
-                    return res.json();
-                })
-                .then(data => {
-                    editor = monaco.editor.create(document.getElementById('editor-container'), {
-                        value: data.content || '', language: lang, theme: 'vs', automaticLayout: true,
-                        fontSize: 15, fontFamily: 'Consolas, "Courier New", monospace', mouseWheelZoom: true, wordWrap: 'on'
-                    });
-                    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() { saveFile(); });
-                }).catch(err => {
-                    document.getElementById('status').innerText = '❌ 加载失败';
-                    if (window.location.protocol !== 'file:') document.getElementById('err-overlay').style.display = 'flex';
-                });
-        });
-        function saveFile() {
-            document.getElementById('status').innerText = '保存中...';
-            fetch('/api/write', { method: 'POST', body: JSON.stringify({ file: file, content: editor.getValue() }) })
-            .then(r => r.json()).then(d => {
-                document.getElementById('status').innerText = '✅ 已保存';
-                setTimeout(() => document.getElementById('status').innerText = '', 2000);
-            });
-        }
-        function saveAndRebuild() {
-            document.getElementById('status').innerText = '保存并触发全站重构中...';
-            fetch('/api/write', { method: 'POST', body: JSON.stringify({ file: file, content: editor.getValue() }) })
-            .then(r => r.json()).then(d => {
-                fetch('/api/rebuild', {method: 'POST'}).then(() => {
-                    document.getElementById('status').innerText = '🎉 保存并重构成功！';
-                    setTimeout(() => window.close(), 1500); 
-                });
-            });
-        }
-    </script>
-</body>
-</html>
-"""
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -226,8 +131,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .file-link {{ color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }}
         .file-link:hover {{ transform: scale(1.1); }}
         
-        .add-file-btn {{ display: none; opacity: 0.4; transition: opacity 0.2s; }}
-        .add-file-btn:hover {{ opacity: 1; }}
         
         .tag-pill {{ background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }}
         .tag-pill:hover {{ background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }}
@@ -253,6 +156,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .c-anchor {{ color: #cbd5e1; text-decoration: none; font-size: 1.1em; transition: color 0.2s; margin-right: 6px; }}
         .c-anchor:hover {{ color: var(--primary); }}
 
+        a:focus-visible, button:focus-visible, input:focus-visible {{ outline: 3px solid #93c5fd; outline-offset: 3px; }}
+        @media (max-width: 640px) {{
+            body {{ padding: 12px; }}
+            .container {{ padding: 18px; }}
+            .plist-grid {{ grid-template-columns: 1fr; }}
+            .list-filter-bar input {{ min-width: 0 !important; max-width: 100%; box-sizing: border-box; }}
+        }}
+        @media (prefers-reduced-motion: reduce) {{
+            *, *::before, *::after {{ scroll-behavior: auto !important; transition: none !important; animation: none !important; }}
+        }}
         .pagination-controls {{ display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }}
         .pagination-btn {{ background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }}
         .pagination-btn:hover:not(:disabled) {{ background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
@@ -344,15 +257,40 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
-        function highlightContest(cid_id) {{
-            document.querySelectorAll('.matrix-table tr').forEach(tr => tr.classList.remove('highlight-row'));
+        let selectedContest = null;
+        function centerContest(target, smooth=true) {{
+            if (!target || !target.getClientRects().length) return;
+            // Supply only the extra space required at the document boundaries.
+            document.body.style.paddingTop = '';
+            document.body.style.paddingBottom = '';
+            const style = getComputedStyle(document.body);
+            const topPadding = parseFloat(style.paddingTop) || 0;
+            const bottomPadding = parseFloat(style.paddingBottom) || 0;
+            const rect = target.getBoundingClientRect();
+            const center = rect.top + window.scrollY + rect.height / 2;
+            const half = window.innerHeight / 2;
+            const extraTop = Math.max(0, half - center);
+            const extraBottom = Math.max(0, center + half - document.documentElement.scrollHeight);
+            document.body.style.paddingTop = (topPadding + extraTop) + 'px';
+            document.body.style.paddingBottom = (bottomPadding + extraBottom) + 'px';
+            const behavior = smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant';
+            window.scrollTo({{top: center + extraTop - half, behavior}});
+        }}
+        function highlightContest(cid_id, updateUrl=true) {{
             const target = document.getElementById(cid_id);
-            if(target) {{
-                target.classList.add('highlight-row');
-                target.scrollIntoView({{behavior: 'smooth', block: 'center'}});
-                window.history.replaceState(null, null, '#' + cid_id);
+            if (!target || !target.matches('.matrix-table tbody tr')) return;
+            document.querySelectorAll('.highlight-row').forEach(tr => tr.classList.remove('highlight-row'));
+            target.classList.add('highlight-row');
+            selectedContest = target;
+            centerContest(target);
+            if (updateUrl) {{
+                const url = new URL(window.location.href);
+                url.hash = cid_id;
+                window.history.replaceState(null, '', url);
             }}
         }}
+        window.addEventListener('hashchange', () => highlightContest(window.location.hash.slice(1), false));
+        window.addEventListener('resize', () => centerContest(selectedContest, false));
 
         function addTagToFilter(tag, tableId) {{
             const input = document.getElementById('filter-tag-' + tableId);
@@ -481,8 +419,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             rows.forEach(r => tbody.appendChild(r));
             
             if (ENABLE_PAGINATION) {{
-                const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
-                updatePagination(tableId, visibleRows);
+                filterListTable(tableId);
             }}
         }}
 
@@ -696,17 +633,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }}
             
             if(window.location.hash && window.location.hash.startsWith('#c-')) {{
-                setTimeout(() => highlightContest(window.location.hash.substring(1)), 300);
+                requestAnimationFrame(() => highlightContest(window.location.hash.substring(1), false));
             }}
 
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
-                document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
-                document.querySelectorAll('.file-link').forEach(el => {{
-                    if (el.hasAttribute('data-editor-href')) {{
-                        el.href = el.getAttribute('data-editor-href');
-                    }}
-                }});
-            }}
         }});
     </script>
 </body>
@@ -1225,6 +1154,17 @@ def apply_categories_and_links(groups, data_dir):
 
     return contest_info
 
+def render_file_links(v, rel_path):
+    links = []
+    for ext, label, icon in [('conf', '配置', '⚙️'), ('cpp', '代码', '📝'), ('md', '题解', '💡')]:
+        filename = v.files.get(ext)
+        if not filename: continue
+        # Preserve the site's extensionless Markdown route.
+        if ext == 'md' and filename.endswith('.md'): filename = filename[:-3]
+        href = html.escape(f"{rel_path}/{urllib.parse.quote(filename, safe='/')}", quote=True)
+        links.append(f'<a href="{href}" target="_blank" rel="noopener noreferrer" class="file-link" title="{label}">{icon}</a>')
+    return links
+
 def render_single_version(v, rel_path, contest_pid="", is_official=False, base_url="", data_dir="data"):
     display_pid = v.base_filename
     if contest_pid:
@@ -1240,38 +1180,8 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
         style = get_diff_style(v.difficulty)
         diff_html = f'<span class="diff-indicator" title="难度: {v.difficulty}"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
     
-    conf_fname = v.files.get("conf") or f"{v.base_filename}.conf"
-    cpp_fname = v.files.get("cpp") or f"{v.base_filename}.cpp"
-    md_fname = v.files.get("md") or f"{v.base_filename}.md"
-    
-    links = []
-    
-    if v.files.get('conf'):
-        raw_href = f"{rel_path}/{v.files['conf']}"
-        editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['conf']}"
-        links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
-    else:
-        editor_href = f"{base_url}editor.html?file={data_dir}/{conf_fname}&action=create"
-        links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a>')
-        
-    if v.files.get('cpp'):
-        raw_href = f"{rel_path}/{v.files['cpp']}"
-        editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['cpp']}"
-        links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
-    else:
-        editor_href = f"{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create"
-        links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a>')
-        
-    if v.files.get('md'): 
-        actual_md = v.files["md"]
-        md_raw_fname = actual_md[:-3] if actual_md.endswith('.md') else actual_md
-        raw_href = f"{rel_path}/{md_raw_fname}"
-        editor_href = f"{base_url}editor.html?file={data_dir}/{actual_md}"
-        links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
-    else:
-        editor_href = f"{base_url}editor.html?file={data_dir}/{md_fname}&action=create"
-        links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a>')
-    
+    links = render_file_links(v, rel_path)
+
     return f"""
     <div class="prob-cell" style="margin-bottom:8px;">
         <div class="prob-link-wrap">{link_html}{diff_html}</div>
@@ -1292,7 +1202,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
     html = f"""
     <div class="list-filter-bar" style="padding: 12px 18px; margin-bottom: 15px;">
         <strong style="color: var(--primary); font-size: 1.05em;">🔍 检索比赛</strong>
-        <input type="text" onkeyup="filterMatrixTable(this, '{table_id}')" placeholder="输入名称或编号查找..." style="min-width: 250px;">
+        <input type="text" oninput="filterMatrixTable(this, '{table_id}')" placeholder="输入名称或编号查找..." style="min-width: 250px;">
     </div>
     """
 
@@ -1332,7 +1242,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         
         html += f'<tr id="{row_id}" data-name="{contest}" data-cid="{c_id}" data-count="{len(c_groups)}">'
         html += f'<td class="contest-name-cell" style="padding-left: 15px;">'
-        html += f'<a href="#{row_id}" class="c-anchor" onclick="highlightContest(\'{row_id}\')" title="点击复制锚点链接并高亮本行">🔗</a>'
+        html += f'<a href="#{row_id}" class="c-anchor" onclick="event.preventDefault(); highlightContest(\'{row_id}\')" title="定位比赛并更新地址栏链接">🔗</a>'
         if c_id:
             html += f'<span class="cid-badge">#{c_id}</span> '
         html += f'{display_contest} <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal; margin-left: 30px;">({len(c_groups)} 题)</span></td>'
@@ -1518,37 +1428,8 @@ def generate_list_html(versions, table_id, rel_path, base_url, data_dir):
             style = get_diff_style(v.difficulty)
             diff_html = f'<span class="diff-indicator" title="难度: {v.difficulty}"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
         
-        conf_fname = v.files.get("conf") or f"{v.base_filename}.conf"
-        cpp_fname = v.files.get("cpp") or f"{v.base_filename}.cpp"
-        md_fname = v.files.get("md") or f"{v.base_filename}.md"
-        
-        links = []
-        if v.files.get('conf'):
-            raw_href = f"{rel_path}/{v.files['conf']}"
-            editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['conf']}"
-            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
-        else:
-            editor_href = f"{base_url}editor.html?file={data_dir}/{conf_fname}&action=create"
-            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a>')
-            
-        if v.files.get('cpp'):
-            raw_href = f"{rel_path}/{v.files['cpp']}"
-            editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['cpp']}"
-            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
-        else:
-            editor_href = f"{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create"
-            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a>')
-            
-        if v.files.get('md'): 
-            actual_md = v.files["md"]
-            md_raw_fname = actual_md[:-3] if actual_md.endswith('.md') else actual_md
-            raw_href = f"{rel_path}/{md_raw_fname}"
-            editor_href = f"{base_url}editor.html?file={data_dir}/{actual_md}"
-            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
-        else:
-            editor_href = f"{base_url}editor.html?file={data_dir}/{md_fname}&action=create"
-            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a>')
-            
+        links = render_file_links(v, rel_path)
+
         v_html = f'<div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>'
         
         has_m_flag = '1' if v.files.get('md') else '0'
@@ -1844,36 +1725,7 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url="", dat
         tags_str = " ".join(v.tags) if v.tags else ""
         tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in v.tags])
         
-        conf_fname = v.files.get("conf") or f"{v.base_filename}.conf"
-        cpp_fname = v.files.get("cpp") or f"{v.base_filename}.cpp"
-        md_fname = v.files.get("md") or f"{v.base_filename}.md"
-        
-        links = []
-        if v.files.get('conf'):
-            raw_href = f"{rel_path}/{v.files['conf']}"
-            editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['conf']}"
-            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a>')
-        else:
-            editor_href = f"{base_url}editor.html?file={data_dir}/{conf_fname}&action=create"
-            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a>')
-            
-        if v.files.get('cpp'):
-            raw_href = f"{rel_path}/{v.files['cpp']}"
-            editor_href = f"{base_url}editor.html?file={data_dir}/{v.files['cpp']}"
-            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a>')
-        else:
-            editor_href = f"{base_url}editor.html?file={data_dir}/{cpp_fname}&action=create"
-            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a>')
-            
-        if v.files.get('md'): 
-            actual_md = v.files["md"]
-            md_raw_fname = actual_md[:-3] if actual_md.endswith('.md') else actual_md
-            raw_href = f"{rel_path}/{md_raw_fname}"
-            editor_href = f"{base_url}editor.html?file={data_dir}/{actual_md}"
-            links.append(f'<a href="{raw_href}" data-editor-href="{editor_href}" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a>')
-        else:
-            editor_href = f"{base_url}editor.html?file={data_dir}/{md_fname}&action=create"
-            links.append(f'<a href="{editor_href}" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a>')
+        links = render_file_links(v, rel_path)
 
         display_name = v.base_filename 
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">{display_name}</a>' if v.link != '#' else f'<b>{display_name}</b>'
@@ -2045,9 +1897,6 @@ def main():
         print(f"❌ 错误: 数据目录 '{data_dir}' 不存在！")
         sys.exit(1)
     if out_dir != '.' and not os.path.exists(out_dir): os.makedirs(out_dir)
-
-    with open(os.path.join(out_dir, "editor.html"), 'w', encoding='utf-8') as f:
-        f.write(EDITOR_HTML_TEMPLATE)
 
     rel_data_path = os.path.relpath(data_dir, out_dir).replace('\\', '/')
     rel_blog_path = os.path.relpath(blog_dir, out_dir).replace('\\', '/')

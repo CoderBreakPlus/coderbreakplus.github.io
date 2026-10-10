@@ -65,8 +65,6 @@
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
         
-        .add-file-btn { display: none; opacity: 0.4; transition: opacity 0.2s; }
-        .add-file-btn:hover { opacity: 1; }
         
         .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
         .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
@@ -92,6 +90,16 @@
         .c-anchor { color: #cbd5e1; text-decoration: none; font-size: 1.1em; transition: color 0.2s; margin-right: 6px; }
         .c-anchor:hover { color: var(--primary); }
 
+        a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            .container { padding: 18px; }
+            .plist-grid { grid-template-columns: 1fr; }
+            .list-filter-bar input { min-width: 0 !important; max-width: 100%; box-sizing: border-box; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+        }
         .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
         .pagination-btn { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
         .pagination-btn:hover:not(:disabled) { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -140,7 +148,7 @@
             <td><span class="tag-pill">ds</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj1877.conf" data-editor-href="../editor.html?file=data/qoj1877.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/qoj1877.cpp" data-editor-href="../editor.html?file=data/qoj1877.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/qoj1877.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj1877.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/qoj1877.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -149,7 +157,7 @@
             <td><span class="tag-pill">SAM</span><span class="tag-pill">ds</span><span class="tag-pill">string</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/uoj608.conf" data-editor-href="../editor.html?file=data/uoj608.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/uoj608.cpp" data-editor-href="../editor.html?file=data/uoj608.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/uoj608.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/uoj608.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/uoj608.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -158,7 +166,7 @@
             <td><span class="tag-pill">ds</span><span class="tag-pill">string</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/cf2164h.conf" data-editor-href="../editor.html?file=data/cf2164h.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/cf2164h.cpp" data-editor-href="../editor.html?file=data/cf2164h.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/cf2164h" data-editor-href="../editor.html?file=data/cf2164h.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/cf2164h.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/cf2164h.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/cf2164h" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -167,7 +175,7 @@
             <td><span class="tag-pill">ds</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/p15810.conf" data-editor-href="../editor.html?file=data/p15810.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/p15810.cpp" data-editor-href="../editor.html?file=data/p15810.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/p15810.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/p15810.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/p15810.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -176,7 +184,7 @@
             <td><span class="tag-pill">graph</span><span class="tag-pill">线段树分治</span><span class="tag-pill">连通性</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj1878.conf" data-editor-href="../editor.html?file=data/qoj1878.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/qoj1878.cpp" data-editor-href="../editor.html?file=data/qoj1878.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/qoj1878" data-editor-href="../editor.html?file=data/qoj1878.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj1878.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/qoj1878.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/qoj1878" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -185,7 +193,7 @@
             <td><span class="tag-pill">MST</span><span class="tag-pill">ds</span><span class="tag-pill">线段树分治</span><span class="tag-pill">连通性</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/cf2222f.conf" data-editor-href="../editor.html?file=data/cf2222f.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/cf2222f.cpp" data-editor-href="../editor.html?file=data/cf2222f.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/cf2222f.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/cf2222f.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/cf2222f.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -194,7 +202,7 @@
             <td><span class="tag-pill">SAM</span><span class="tag-pill">divide</span><span class="tag-pill">ds</span><span class="tag-pill">tree</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/cf1098f.conf" data-editor-href="../editor.html?file=data/cf1098f.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/cf1098f.cpp" data-editor-href="../editor.html?file=data/cf1098f.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/cf1098f" data-editor-href="../editor.html?file=data/cf1098f.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/cf1098f.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/cf1098f.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/cf1098f" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -203,7 +211,7 @@
             <td><span class="tag-pill">ds</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/p16607.conf" data-editor-href="../editor.html?file=data/p16607.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/p16607.cpp" data-editor-href="../editor.html?file=data/p16607.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/p16607" data-editor-href="../editor.html?file=data/p16607.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/p16607.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/p16607.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/p16607" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -212,7 +220,7 @@
             <td><span class="tag-pill">binary-search</span><span class="tag-pill">ds</span><span class="tag-pill">tree</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj18413.conf" data-editor-href="../editor.html?file=data/qoj18413.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/qoj18413.cpp" data-editor-href="../editor.html?file=data/qoj18413.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/qoj18413" data-editor-href="../editor.html?file=data/qoj18413.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj18413.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/qoj18413.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/qoj18413" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -221,7 +229,7 @@
             <td></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../editor.html?file=data/p11947.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="../editor.html?file=data/p11947.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="../editor.html?file=data/p11947.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span>
                 </div>
             </td>
         </tr>
@@ -230,7 +238,7 @@
             <td><span class="tag-pill">MST</span><span class="tag-pill">ds</span><span class="tag-pill">graph</span><span class="tag-pill">连通性</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2570.conf" data-editor-href="../editor.html?file=data/soj2570.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2570.cpp" data-editor-href="../editor.html?file=data/soj2570.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/soj2570.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2570.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2570.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -239,7 +247,7 @@
             <td><span class="tag-pill">binary-search</span><span class="tag-pill">dp</span><span class="tag-pill">ds</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj14422.conf" data-editor-href="../editor.html?file=data/qoj14422.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/qoj14422.cpp" data-editor-href="../editor.html?file=data/qoj14422.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/qoj14422.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj14422.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/qoj14422.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -248,7 +256,7 @@
             <td><span class="tag-pill">divide</span><span class="tag-pill">dp</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2623.conf" data-editor-href="../editor.html?file=data/soj2623.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2623.cpp" data-editor-href="../editor.html?file=data/soj2623.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/soj2623.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2623.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2623.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -257,7 +265,7 @@
             <td><span class="tag-pill">ds</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2622.conf" data-editor-href="../editor.html?file=data/soj2622.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2622.cpp" data-editor-href="../editor.html?file=data/soj2622.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/soj2622.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2622.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2622.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -266,7 +274,7 @@
             <td></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../editor.html?file=data/p10174.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="../editor.html?file=data/p10174.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="../editor.html?file=data/p10174.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span>
                 </div>
             </td>
         </tr>
@@ -275,7 +283,7 @@
             <td></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../editor.html?file=data/zr3445.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="../editor.html?file=data/zr3445.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="../editor.html?file=data/zr3445.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span>
                 </div>
             </td>
         </tr>
@@ -284,7 +292,7 @@
             <td><span class="tag-pill">convexity</span><span class="tag-pill">divide</span><span class="tag-pill">ds</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/zr3508.conf" data-editor-href="../editor.html?file=data/zr3508.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/zr3508.cpp" data-editor-href="../editor.html?file=data/zr3508.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/zr3508.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/zr3508.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/zr3508.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -293,7 +301,7 @@
             <td><span class="tag-pill">divide</span><span class="tag-pill">ds</span><span class="tag-pill">tree</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/p7124.conf" data-editor-href="../editor.html?file=data/p7124.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/p7124.cpp" data-editor-href="../editor.html?file=data/p7124.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/p7124.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/p7124.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/p7124.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -302,11 +310,11 @@
             <td><span class="tag-pill">divide</span><span class="tag-pill">ds</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj7872.conf" data-editor-href="../editor.html?file=data/qoj7872.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/qoj7872.cpp" data-editor-href="../editor.html?file=data/qoj7872.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/qoj7872" data-editor-href="../editor.html?file=data/qoj7872.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/qoj7872.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/qoj7872.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/qoj7872" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-10-10 16:07:42 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-10 16:18:51 | Algorithm Platform Generator</div>
     </div>
     <script>
         const ENABLE_PAGINATION = false; 
@@ -372,15 +380,40 @@
             });
         }
 
-        function highlightContest(cid_id) {
-            document.querySelectorAll('.matrix-table tr').forEach(tr => tr.classList.remove('highlight-row'));
+        let selectedContest = null;
+        function centerContest(target, smooth=true) {
+            if (!target || !target.getClientRects().length) return;
+            // Supply only the extra space required at the document boundaries.
+            document.body.style.paddingTop = '';
+            document.body.style.paddingBottom = '';
+            const style = getComputedStyle(document.body);
+            const topPadding = parseFloat(style.paddingTop) || 0;
+            const bottomPadding = parseFloat(style.paddingBottom) || 0;
+            const rect = target.getBoundingClientRect();
+            const center = rect.top + window.scrollY + rect.height / 2;
+            const half = window.innerHeight / 2;
+            const extraTop = Math.max(0, half - center);
+            const extraBottom = Math.max(0, center + half - document.documentElement.scrollHeight);
+            document.body.style.paddingTop = (topPadding + extraTop) + 'px';
+            document.body.style.paddingBottom = (bottomPadding + extraBottom) + 'px';
+            const behavior = smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant';
+            window.scrollTo({top: center + extraTop - half, behavior});
+        }
+        function highlightContest(cid_id, updateUrl=true) {
             const target = document.getElementById(cid_id);
-            if(target) {
-                target.classList.add('highlight-row');
-                target.scrollIntoView({behavior: 'smooth', block: 'center'});
-                window.history.replaceState(null, null, '#' + cid_id);
+            if (!target || !target.matches('.matrix-table tbody tr')) return;
+            document.querySelectorAll('.highlight-row').forEach(tr => tr.classList.remove('highlight-row'));
+            target.classList.add('highlight-row');
+            selectedContest = target;
+            centerContest(target);
+            if (updateUrl) {
+                const url = new URL(window.location.href);
+                url.hash = cid_id;
+                window.history.replaceState(null, '', url);
             }
         }
+        window.addEventListener('hashchange', () => highlightContest(window.location.hash.slice(1), false));
+        window.addEventListener('resize', () => centerContest(selectedContest, false));
 
         function addTagToFilter(tag, tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
@@ -509,8 +542,7 @@
             rows.forEach(r => tbody.appendChild(r));
             
             if (ENABLE_PAGINATION) {
-                const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
-                updatePagination(tableId, visibleRows);
+                filterListTable(tableId);
             }
         }
 
@@ -724,17 +756,9 @@
             }
             
             if(window.location.hash && window.location.hash.startsWith('#c-')) {
-                setTimeout(() => highlightContest(window.location.hash.substring(1)), 300);
+                requestAnimationFrame(() => highlightContest(window.location.hash.substring(1), false));
             }
 
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
-                document.querySelectorAll('.file-link').forEach(el => {
-                    if (el.hasAttribute('data-editor-href')) {
-                        el.href = el.getAttribute('data-editor-href');
-                    }
-                });
-            }
         });
     </script>
 </body>

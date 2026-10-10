@@ -65,8 +65,6 @@
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
         
-        .add-file-btn { display: none; opacity: 0.4; transition: opacity 0.2s; }
-        .add-file-btn:hover { opacity: 1; }
         
         .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
         .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
@@ -92,6 +90,16 @@
         .c-anchor { color: #cbd5e1; text-decoration: none; font-size: 1.1em; transition: color 0.2s; margin-right: 6px; }
         .c-anchor:hover { color: var(--primary); }
 
+        a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            .container { padding: 18px; }
+            .plist-grid { grid-template-columns: 1fr; }
+            .list-filter-bar input { min-width: 0 !important; max-width: 100%; box-sizing: border-box; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+        }
         .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
         .pagination-btn { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
         .pagination-btn:hover:not(:disabled) { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -140,7 +148,7 @@
             <td></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../editor.html?file=data/soj2320.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="../editor.html?file=data/soj2320.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="../editor.html?file=data/soj2320.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span>
                 </div>
             </td>
         </tr>
@@ -149,7 +157,7 @@
             <td></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../editor.html?file=data/soj2398.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="../editor.html?file=data/soj2398.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="../editor.html?file=data/soj2398.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span>
                 </div>
             </td>
         </tr>
@@ -158,7 +166,7 @@
             <td><span class="tag-pill">combinatorics</span><span class="tag-pill">gf</span><span class="tag-pill">poly</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2538.conf" data-editor-href="../editor.html?file=data/soj2538.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2538.cpp" data-editor-href="../editor.html?file=data/soj2538.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/soj2538" data-editor-href="../editor.html?file=data/soj2538.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2538.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2538.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/soj2538" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -167,7 +175,7 @@
             <td></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../editor.html?file=data/soj2539.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="../editor.html?file=data/soj2539.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="../editor.html?file=data/soj2539.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span>
                 </div>
             </td>
         </tr>
@@ -176,7 +184,7 @@
             <td><span class="tag-pill">divide</span><span class="tag-pill">fwt</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2545.conf" data-editor-href="../editor.html?file=data/soj2545.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2545.cpp" data-editor-href="../editor.html?file=data/soj2545.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/soj2545.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2545.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2545.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -185,7 +193,7 @@
             <td></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../editor.html?file=data/soj2555.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="../editor.html?file=data/soj2555.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="../editor.html?file=data/soj2555.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span>
                 </div>
             </td>
         </tr>
@@ -194,7 +202,7 @@
             <td><span class="tag-pill">combinatorics</span><span class="tag-pill">gf</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2556.conf" data-editor-href="../editor.html?file=data/soj2556.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2556.cpp" data-editor-href="../editor.html?file=data/soj2556.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/soj2556" data-editor-href="../editor.html?file=data/soj2556.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2556.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2556.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/soj2556" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -203,7 +211,7 @@
             <td><span class="tag-pill">ds</span><span class="tag-pill">template</span><span class="tag-pill">笛卡尔树</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2560.conf" data-editor-href="../editor.html?file=data/soj2560.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2560.cpp" data-editor-href="../editor.html?file=data/soj2560.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/soj2560" data-editor-href="../editor.html?file=data/soj2560.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2560.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2560.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/soj2560" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -212,7 +220,7 @@
             <td><span class="tag-pill">counting</span><span class="tag-pill">fwt</span><span class="tag-pill">matrix</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2561.conf" data-editor-href="../editor.html?file=data/soj2561.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2561.cpp" data-editor-href="../editor.html?file=data/soj2561.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/soj2561" data-editor-href="../editor.html?file=data/soj2561.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2561.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2561.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/soj2561" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -221,7 +229,7 @@
             <td><span class="tag-pill">ds</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2565.conf" data-editor-href="../editor.html?file=data/soj2565.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2565.cpp" data-editor-href="../editor.html?file=data/soj2565.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/soj2565.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2565.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2565.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -230,7 +238,7 @@
             <td><span class="tag-pill">ds</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2609.conf" data-editor-href="../editor.html?file=data/soj2609.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2609.cpp" data-editor-href="../editor.html?file=data/soj2609.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/soj2609.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2609.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2609.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -239,7 +247,7 @@
             <td><span class="tag-pill">combinatorics</span><span class="tag-pill">fwt</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2634.conf" data-editor-href="../editor.html?file=data/soj2634.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2634.cpp" data-editor-href="../editor.html?file=data/soj2634.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/soj2634" data-editor-href="../editor.html?file=data/soj2634.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2634.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2634.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/soj2634" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr>
@@ -248,7 +256,7 @@
             <td><span class="tag-pill">dp</span><span class="tag-pill">template</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2635.conf" data-editor-href="../editor.html?file=data/soj2635.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2635.cpp" data-editor-href="../editor.html?file=data/soj2635.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/soj2635.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2635.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2635.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -257,7 +265,7 @@
             <td><span class="tag-pill">binary-search</span><span class="tag-pill">ds</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2636.conf" data-editor-href="../editor.html?file=data/soj2636.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2636.cpp" data-editor-href="../editor.html?file=data/soj2636.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/soj2636.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2636.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2636.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -266,7 +274,7 @@
             <td></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../editor.html?file=data/soj2637.conf&action=create" target="_blank" class="file-link add-file-btn" title="新建配置" style="text-decoration:none;">➕⚙️</a><a href="../editor.html?file=data/soj2637.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="../editor.html?file=data/soj2637.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span>
                 </div>
             </td>
         </tr>
@@ -275,7 +283,7 @@
             <td><span class="tag-pill">combinatorics</span><span class="tag-pill">counting</span><span class="tag-pill">dp</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2659.conf" data-editor-href="../editor.html?file=data/soj2659.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/soj2659.cpp" data-editor-href="../editor.html?file=data/soj2659.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../editor.html?file=data/soj2659.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/soj2659.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/soj2659.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span>
                 </div>
             </td>
         </tr>
@@ -284,11 +292,11 @@
             <td><span class="tag-pill">counting</span><span class="tag-pill">graph</span><span class="tag-pill">集合幂级数</span></td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
-                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/p16418.conf" data-editor-href="../editor.html?file=data/p16418.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="../data/p16418.cpp" data-editor-href="../editor.html?file=data/p16418.cpp" target="_blank" class="file-link" title="代码" style="text-decoration:none;">📝</a><a href="../data/p16418" data-editor-href="../editor.html?file=data/p16418.md" target="_blank" class="file-link" title="题解" style="text-decoration:none;">💡</a></span>
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="../data/p16418.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="../data/p16418.cpp" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a><a href="../data/p16418" target="_blank" rel="noopener noreferrer" class="file-link" title="题解">💡</a></span>
                 </div>
             </td>
         </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-10-10 16:07:42 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-10 16:18:51 | Algorithm Platform Generator</div>
     </div>
     <script>
         const ENABLE_PAGINATION = false; 
@@ -354,15 +362,40 @@
             });
         }
 
-        function highlightContest(cid_id) {
-            document.querySelectorAll('.matrix-table tr').forEach(tr => tr.classList.remove('highlight-row'));
+        let selectedContest = null;
+        function centerContest(target, smooth=true) {
+            if (!target || !target.getClientRects().length) return;
+            // Supply only the extra space required at the document boundaries.
+            document.body.style.paddingTop = '';
+            document.body.style.paddingBottom = '';
+            const style = getComputedStyle(document.body);
+            const topPadding = parseFloat(style.paddingTop) || 0;
+            const bottomPadding = parseFloat(style.paddingBottom) || 0;
+            const rect = target.getBoundingClientRect();
+            const center = rect.top + window.scrollY + rect.height / 2;
+            const half = window.innerHeight / 2;
+            const extraTop = Math.max(0, half - center);
+            const extraBottom = Math.max(0, center + half - document.documentElement.scrollHeight);
+            document.body.style.paddingTop = (topPadding + extraTop) + 'px';
+            document.body.style.paddingBottom = (bottomPadding + extraBottom) + 'px';
+            const behavior = smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant';
+            window.scrollTo({top: center + extraTop - half, behavior});
+        }
+        function highlightContest(cid_id, updateUrl=true) {
             const target = document.getElementById(cid_id);
-            if(target) {
-                target.classList.add('highlight-row');
-                target.scrollIntoView({behavior: 'smooth', block: 'center'});
-                window.history.replaceState(null, null, '#' + cid_id);
+            if (!target || !target.matches('.matrix-table tbody tr')) return;
+            document.querySelectorAll('.highlight-row').forEach(tr => tr.classList.remove('highlight-row'));
+            target.classList.add('highlight-row');
+            selectedContest = target;
+            centerContest(target);
+            if (updateUrl) {
+                const url = new URL(window.location.href);
+                url.hash = cid_id;
+                window.history.replaceState(null, '', url);
             }
         }
+        window.addEventListener('hashchange', () => highlightContest(window.location.hash.slice(1), false));
+        window.addEventListener('resize', () => centerContest(selectedContest, false));
 
         function addTagToFilter(tag, tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
@@ -491,8 +524,7 @@
             rows.forEach(r => tbody.appendChild(r));
             
             if (ENABLE_PAGINATION) {
-                const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
-                updatePagination(tableId, visibleRows);
+                filterListTable(tableId);
             }
         }
 
@@ -706,17 +738,9 @@
             }
             
             if(window.location.hash && window.location.hash.startsWith('#c-')) {
-                setTimeout(() => highlightContest(window.location.hash.substring(1)), 300);
+                requestAnimationFrame(() => highlightContest(window.location.hash.substring(1), false));
             }
 
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
-                document.querySelectorAll('.file-link').forEach(el => {
-                    if (el.hasAttribute('data-editor-href')) {
-                        el.href = el.getAttribute('data-editor-href');
-                    }
-                });
-            }
         });
     </script>
 </body>
