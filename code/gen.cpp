@@ -32,8 +32,8 @@ inline ll INV(ll x){ return qpow(x, mod-2); }
 mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
 
-int n = 3e5, q = 1e5, p[300005];
-vector<int> vec[300005];
+int n = 5e5;
+int p[500005];
 
 void procedure(){
 	cout<<n<<endl;
@@ -41,15 +41,6 @@ void procedure(){
 	shuffle(p+1,p+n+1,rnd);	
 	
 	for(int i=1;i<=n;i++) cout<<p[i]<<" "; cout<<endl;
-	for(int i=1;i<=q;i++){
-		int x = rng(1,n), y = rng(1,n);
-		vec[x].pb(y);
-	}
-
-	for(int i=1;i<=n;i++){
-		cout<<vec[i].size()<<" ";
-		for(int x: vec[i]) cout<<x<<" "; cout<<endl;
-	}
 }
 int main(){
 	#ifdef LOCAL
