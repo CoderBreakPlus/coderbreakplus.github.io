@@ -179,8 +179,6 @@ void procedure(){
 		int u=read(),v=read(),w=read();
 		E[u].pb(v),E[v].pb(u);
 	}
-
-	wkosjow
 }
 int main(){
 	#ifdef LOCAL
