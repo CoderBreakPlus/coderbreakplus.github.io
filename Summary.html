@@ -7,7 +7,7 @@
     <style>
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; scroll-behavior: smooth; }
-        .container { width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
+        .container { width: 100%; max-width: none; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
         h1 { color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }
         h2 { color: #0f172a; font-weight: 700; margin-bottom: 12px; }
         .nav-bar { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
@@ -20,6 +20,13 @@
         .toggle-remark-btn { color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }
         .toggle-remark-btn:hover { background: #f1f5f9; }
         .stats-bar { display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
+        .page-heading { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 18px; }
+        .page-heading h1 { margin: 0; font-size: 1.8em; }
+        .page-heading .stats-bar { flex: 1; margin: 0; padding: 0; background: none; border: 0; gap: 12px; }
+        .page-heading .stats-info span { margin-right: 0; }
+        .sort-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .page-heading .sort-btns button { margin-left: 0; }
+        .nav-bar { margin-bottom: 18px; padding-bottom: 12px; gap: 12px; }
         .stats-info span { margin-right: 18px; font-size: 0.95em; color: #334155; font-weight: 600; display: inline-block; }
         .sort-btns button { margin-left: 8px; color: var(--primary); }
         table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
@@ -122,8 +129,8 @@
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
             <button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">📝 显示备注</button>
         </div>
-        <h1>📚 Summary</h1>
-        
+        <header class="page-heading"><h1>📚 Summary</h1>
+        </header>
         
     <div class="list-filter-bar">
         <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
@@ -172,12 +179,12 @@
             <td class="remark-col">好题，没想出来</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/p17725.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="data/code/p17725.cpp.html" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span></div></td>
         </tr>
-        <tr data-tags="" data-diff="1600.0" data-date="2026-10-17" data-base="soj2705" data-has-md="0">
+        <tr data-tags="" data-diff="1600.0" data-date="2026-10-18" data-base="soj2705" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
             <td style="padding-left: 20px;"><a href="http://47.114.34.42:8080/problem/2705" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2705</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - NOIP2026模拟测试赛（三十）</span></td>
             <td></td>
             <td><span class="diff-indicator" title="难度: 1600.0"><span class="diff-circle" style="background: linear-gradient(to top, #0000FF 0.0%, transparent 0.0%); border: 1px solid #0000FF; border-radius: 50%;"></span> 1600</span></td>
-            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-10-17</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-10-18</td>
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/soj2705.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="data/code/soj2705.cpp.html" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span></div></td>
         </tr>
@@ -5653,7 +5660,7 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj20726.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="data/code/qoj20726.cpp.html" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span></div></td>
         </tr></tbody></table></div><div id="pagination-controls-bottom-summary-table" class="pagination-controls" style="display: none;"></div>
-        <div class="footer">最后构建: 2026-10-18 22:29:53 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-18 22:45:25 | Algorithm Platform Generator</div>
     </div>
     <script>
         const ENABLE_PAGINATION = false; 

@@ -7,7 +7,7 @@
     <style>
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; scroll-behavior: smooth; }
-        .container { width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
+        .container { width: 100%; max-width: none; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
         h1 { color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }
         h2 { color: #0f172a; font-weight: 700; margin-bottom: 12px; }
         .nav-bar { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
@@ -20,6 +20,13 @@
         .toggle-remark-btn { color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }
         .toggle-remark-btn:hover { background: #f1f5f9; }
         .stats-bar { display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
+        .page-heading { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 18px; }
+        .page-heading h1 { margin: 0; font-size: 1.8em; }
+        .page-heading .stats-bar { flex: 1; margin: 0; padding: 0; background: none; border: 0; gap: 12px; }
+        .page-heading .stats-info span { margin-right: 0; }
+        .sort-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .page-heading .sort-btns button { margin-left: 0; }
+        .nav-bar { margin-bottom: 18px; padding-bottom: 12px; gap: 12px; }
         .stats-info span { margin-right: 18px; font-size: 0.95em; color: #334155; font-weight: 600; display: inline-block; }
         .sort-btns button { margin-left: 8px; color: var(--primary); }
         table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
@@ -122,8 +129,8 @@
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
             <button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">📝 显示备注</button>
         </div>
-        <h1>🎯 Plan</h1>
-        
+        <header class="page-heading"><h1>🎯 Plan</h1>
+        </header>
         <div class="atcoder-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap;"><button class="atcoder-tab-btn" data-target="tab-cf3200" onclick="switchAtCoderTab('tab-cf3200', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">cf3200</button><button class="atcoder-tab-btn" data-target="tab-cf3100" onclick="switchAtCoderTab('tab-cf3100', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">cf3100</button><button class="atcoder-tab-btn" data-target="tab-agc" onclick="switchAtCoderTab('tab-agc', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">agc</button><button class="atcoder-tab-btn" data-target="tab-todo" onclick="switchAtCoderTab('tab-todo', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">todo</button><button class="atcoder-tab-btn" data-target="tab-cf3000" onclick="switchAtCoderTab('tab-cf3000', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">cf3000</button><button class="atcoder-tab-btn" data-target="tab-zati080" onclick="switchAtCoderTab('tab-zati080', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati080</button><button class="atcoder-tab-btn" data-target="tab-zati090" onclick="switchAtCoderTab('tab-zati090', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati090</button><button class="atcoder-tab-btn" data-target="tab-zati100" onclick="switchAtCoderTab('tab-zati100', this)" style="padding: 8px 20px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; background: #fff; color: #334155; border-color: #e2e8f0;">zati100</button></div><div id="tab-cf3200" class="atcoder-tab-content" style="display: block;">
         <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; flex-wrap: wrap;">
             <button class="plan-sub-btn" onclick="switchPlanSubTable('sub-todo-cf3200', this)" style="padding: 7px 18px; border: 1px solid; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; background: var(--primary); color: #fff; border-color: var(--primary);">
@@ -3024,7 +3031,7 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj17256.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="data/code/qoj17256.cpp.html" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span></div></td>
         </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-done-zati100" class="pagination-controls" style="display: none;"></div></div><div id="sub-trash-zati100" class="plan-sub-content" style="display: none;"><div style='padding: 30px; background: #f8fafc; border-radius: 12px; color: #64748b; font-weight: 500; text-align: center; border: 1px dashed #e2e8f0; margin-bottom: 20px;'>垃圾箱空空如也~ 没有任何被抛弃的题目！</div></div></div>
-        <div class="footer">最后构建: 2026-10-18 22:29:53 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-18 22:45:25 | Algorithm Platform Generator</div>
     </div>
     <script>
         const ENABLE_PAGINATION = false; 

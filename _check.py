@@ -72,8 +72,15 @@ class RegressionChecks(unittest.TestCase):
             self.assertEqual(groups['qoj2'].versions['Normal'].link, 'https://qoj.ac/problem/2')
             self.assertTrue(all(v is None for v in groups['qoj2'].versions['Normal'].files.values()))
             matrix = _run.build_matrix_table({'test': list(groups.values())}, info['XCPC'], 'data')
-            self.assertIn('https://qoj.ac/problem/2', matrix)
-            self.assertIn('已归档 1 / 共 2 题', matrix)
+            self.assertNotIn('https://qoj.ac/problem/2', matrix)
+            self.assertNotIn('>B</', matrix)
+            self.assertIn('(1 题)', matrix)
+            self.assertNotIn('已归档', matrix)
+            self.assertNotIn('共 2 题', matrix)
+            soj = _run.build_matrix_table({'SOJ Test Round 74': list(groups.values())}, {}, 'data')
+            self.assertNotIn('https://qoj.ac/problem/2', soj)
+            self.assertNotIn('<th style="width: 38.5%;">B</th>', soj)
+            self.assertNotIn('>B</', soj)
 
     def test_completed_contest_configs(self):
         root = Path(__file__).parent

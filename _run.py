@@ -60,7 +60,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <style>
         :root {{ --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; scroll-behavior: smooth; }}
-        .container {{ width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }}
+        .container {{ width: 100%; max-width: none; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }}
         h1 {{ color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }}
         h2 {{ color: #0f172a; font-weight: 700; margin-bottom: 12px; }}
         .nav-bar {{ margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }}
@@ -73,6 +73,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .toggle-remark-btn {{ color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }}
         .toggle-remark-btn:hover {{ background: #f1f5f9; }}
         .stats-bar {{ display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }}
+        .page-heading {{ display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 18px; }}
+        .page-heading h1 {{ margin: 0; font-size: 1.8em; }}
+        .page-heading .stats-bar {{ flex: 1; margin: 0; padding: 0; background: none; border: 0; gap: 12px; }}
+        .page-heading .stats-info span {{ margin-right: 0; }}
+        .sort-btns {{ display: flex; gap: 8px; flex-wrap: wrap; }}
+        .page-heading .sort-btns button {{ margin-left: 0; }}
+        .nav-bar {{ margin-bottom: 18px; padding-bottom: 12px; gap: 12px; }}
         .stats-info span {{ margin-right: 18px; font-size: 0.95em; color: #334155; font-weight: 600; display: inline-block; }}
         .sort-btns button {{ margin-left: 8px; color: var(--primary); }}
         table {{ width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }}
@@ -175,8 +182,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
             {nav_extra}
         </div>
-        <h1>{title}</h1>
-        {stats_block}
+        <header class="page-heading"><h1>{title}</h1>
+        {stats_block}</header>
         {content_html}
         <div class="footer">最后构建: {gen_time} | Algorithm Platform Generator</div>
     </div>
@@ -1201,6 +1208,11 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
 
 def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=False, first_col_width=16, base_url="", data_dir="data", table_id="matrix-table"):
     if not groups_dict: return ""
+    # Contest matrices show only tasks with local archive files.
+    groups_dict = {
+        contest: [g for g in c_groups if any(any(v.files.values()) for v in g.versions.values())]
+        for contest, c_groups in groups_dict.items()
+    }
     all_pids = set()
     for contest, c_groups in groups_dict.items():
         for g in c_groups:
@@ -1251,11 +1263,11 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         
         display_contest = f'<a href="{c_link}" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">{contest}</a>' if c_link else f'<span style="font-weight:700;">{contest}</span>'
         
-        html += f'<tr id="{row_id}" data-name="{contest}" data-cid="{c_id}" data-count="{len(c_groups)}">'
+        archived = sum(any(v.files.get('cpp') for v in g.versions.values()) for g in c_groups)
+        html += f'<tr id="{row_id}" data-name="{contest}" data-cid="{c_id}" data-count="{archived}">'
         html += f'<td class="contest-name-cell" style="padding-left: 15px;">'
         html += f'<a href="#{row_id}" class="c-anchor" onclick="event.preventDefault(); highlightContest(\'{row_id}\')" title="定位比赛并更新地址栏链接">🔗</a>'
-        archived = sum(any(v.files.get('cpp') for v in g.versions.values()) for g in c_groups)
-        count_text = f'{len(c_groups)} 题' if archived == len(c_groups) else f'已归档 {archived} / 共 {len(c_groups)} 题'
+        count_text = f'{archived} 题'
         html += f'{display_contest} <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal; margin-left: 30px;">({count_text})</span></td>'
         
         for pid in sorted_pids:
@@ -1370,6 +1382,9 @@ def build_category_page(title, groups_dict, contest_info_dict, out_path, rel_pat
         content_html=content_html, gen_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         base_url=base_url
     )
+    if title == 'XCPC':
+        html = html.replace('<body>', '<body class="xcpc-page">', 1)
+        html = html.replace('</style>', '\n        /* Keep the full viewport available as browser zoom changes. */\n        .xcpc-page .matrix-table { min-width: 1500px; }\n        .xcpc-page .matrix-table th, .xcpc-page .matrix-table td { padding: 12px 8px; }\n        </style>', 1)
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
 def generate_list_html(versions, table_id, rel_path, base_url, data_dir):
