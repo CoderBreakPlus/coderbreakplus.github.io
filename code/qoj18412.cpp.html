@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qoj18412.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>qoj18412.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/qoj18412.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-09-22 08:59:34
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+int n,m,M,T,F;
+char s[1005][1005];
+
+int code(int x,int y){ return (x-1)*m+y; }
+int fa[4000005];
+
+int find(int x){ if(x!=fa[x]) fa[x]=find(fa[x]); return fa[x]; }
+void merge(int x,int y){
+	x=find(x),y=find(y);if(x==y)return;
+	fa[x]=y;
+}
+
+void make1(int i){
+	if(~i){
+		// cout&lt;&lt;&quot;make1 &quot;&lt;&lt;i&lt;&lt;endl;
+		merge(i+M,T);
+		merge(i,F);
+		// assert(find(T)!=find(F));
+	}
+}
+void make0(int i){
+	if(~i){
+		// cout&lt;&lt;&quot;make0 &quot;&lt;&lt;i&lt;&lt;endl;
+		merge(i+M,F);
+		merge(i,T);
+		// assert(find(T)!=find(F));
+	}
+}
+
+void choose(int i,int j){
+	if(i==-1) {make1(j);return;}
+	if(j==-1) {make1(i);return;}
+	// cout&lt;&lt;&quot;choose &quot;&lt;&lt;i&lt;&lt;&quot;,&quot;&lt;&lt;j&lt;&lt;endl;
+	merge(i,j+M),merge(i+M,j);
+	// assert(find(T)!=find(F));
+}
+void same(int i,int j){
+	if(i==-1) {make0(j);return;}
+	if(j==-1) {make0(i);return;}
+	// cout&lt;&lt;&quot;same &quot;&lt;&lt;i&lt;&lt;&quot;,&quot;&lt;&lt;j&lt;&lt;endl;
+	merge(i,j),merge(i+M,j+M);
+	// assert(find(T)!=find(F));
+}
+
+int up(int i,int j){ return i&gt;1?(code(i-1,j)&lt;&lt;1|1):-1; }
+int down(int i,int j){ return i&lt;n?(code(i,j)&lt;&lt;1|1):-1; }
+
+int left(int i,int j){ return j&gt;1?(code(i,j-1)&lt;&lt;1):-1; }
+int right(int i,int j){ return j&lt;m?(code(i,j)&lt;&lt;1):-1; }
+
+void procedure(){
+	n=read(),m=read();
+	M=2*n*m,T=2*M+1,F=2*M+2;
+	for(int i=1;i&lt;=2*M+2;i++)fa[i]=i;
+
+	for(int i=1;i&lt;=n;i++)
+		scanf(&quot;%s&quot;,s[i]+1);
+
+	// for(int i=1;i&lt;=n;i++){
+	// 	for(int j=1;j&lt;m;j++){
+	// 		cout&lt;&lt;right(i,j)&lt;&lt;&quot; &quot;;
+	// 	}
+	// 	cout&lt;&lt;endl;
+	// }
+	// for(int i=1;i&lt;n;i++){
+	// 	for(int j=1;j&lt;=m;j++){
+	// 		cout&lt;&lt;down(i,j)&lt;&lt;&quot; &quot;;
+	// 	}
+	// 	cout&lt;&lt;endl;
+	// }
+	for(int i=1;i&lt;=n;i++)
+		for(int j=1;j&lt;=m;j++){
+			int L=left(i,j);
+			int R=right(i,j);
+			int U=up(i,j);
+			int D=down(i,j);
+			// cout&lt;&lt;&quot;at &quot;&lt;&lt;i&lt;&lt;&quot;,&quot;&lt;&lt;j&lt;&lt;endl;
+			if(s[i][j]==&#x27;0&#x27;){
+				make0(U),make0(D);
+				make0(L),make0(R);
+			}
+			if(s[i][j]==&#x27;1&#x27;){
+				same(U,D);
+				same(L,R);
+				choose(U,L);
+			}
+			if(s[i][j]==&#x27;2&#x27;){
+				choose(U,D);
+				choose(L,R);
+			}
+			if(s[i][j]==&#x27;3&#x27;){
+				choose(U,R);
+				make0(L),make0(D);
+			}
+			if(s[i][j]==&#x27;4&#x27;){
+				choose(U,D);
+				make0(L),make0(R);
+			}
+			if(s[i][j]==&#x27;5&#x27;){
+				choose(U,L);
+				make0(D),make0(R);
+			}
+			if(s[i][j]==&#x27;6&#x27;){
+				choose(R,D);
+				make0(U),make0(L);
+			}
+			if(s[i][j]==&#x27;7&#x27;){
+				choose(R,L);
+				make0(U),make0(D);
+			}
+			if(s[i][j]==&#x27;8&#x27;){
+				choose(D,L);
+				make0(R),make0(U);
+			}
+			if(s[i][j]==&#x27;9&#x27;){
+				make1(L),make1(R),make1(U),make1(D);
+			}
+			if(s[i][j]==&#x27;A&#x27;){
+				make1(L),make1(R);
+				choose(U,D);
+			}
+			if(s[i][j]==&#x27;B&#x27;){
+				make1(U),make1(D);
+				choose(L,R);
+			}
+		}
+	assert(find(T)!=find(F));
+	for(int i=1;i&lt;=M;i++){
+		if(find(i)!=find(T)&amp;&amp;find(i)!=find(F))
+			merge(i,T),merge(i+M,F);
+	}
+
+	for(int i=1;i&lt;=n;i++){
+		for(int j=1;j&lt;=m;j++){
+			if(s[i][j]!=&#x27;0&#x27;) putchar(&#x27;o&#x27;);
+			else putchar(&#x27;.&#x27;);
+			if(j&lt;m) putchar(find(right(i,j)+M)==find(T)?&#x27;-&#x27;:&#x27;.&#x27;);
+		}
+		puts(&quot;&quot;);
+		if(i==n)break;
+		for(int j=1;j&lt;=m;j++){
+			putchar(find(down(i,j)+M)==find(T)?&#x27;|&#x27;:&#x27;.&#x27;);
+			if(j&lt;m) putchar(&#x27;.&#x27;);
+		}
+		puts(&quot;&quot;);
+	}
+
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=read();
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>arc224f.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>arc224f.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/arc224f.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-07-13 10:08:39
+#include&lt;bits/stdc++.h&gt;
+#include&lt;atcoder/all&gt;
+
+using namespace std;
+using namespace atcoder;
+using ll=long long;
+
+const ll MXM=200005;
+
+using mint = modint998244353;
+vector&lt;mint&gt; fac(MXM),invfac(MXM);
+
+void calc_fac(){
+  fac[0]=mint(1);
+  for(ll i=1;i&lt;MXM;i++){
+    fac[i]=fac[i-1]*mint(i);
+  }
+  invfac[MXM-1]=mint(1)/fac[MXM-1];
+  for(ll i=MXM-2;i&gt;=0;i--){
+    invfac[i]=invfac[i+1]*mint(i+1);
+  }
+}
+
+mint nCr(ll n,ll r){
+  if(n&lt;r){return 0;}
+  return fac[n]*invfac[r]*invfac[n-r];
+}
+
+using tup=tuple&lt;ll,ll,mint&gt;;
+
+int main(){
+  ll al=(1ll&lt;&lt;60)-1;
+  calc_fac();
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+  int t;
+  cin &gt;&gt; t;
+  while(t--){
+    ll n,k;
+    cin &gt;&gt; n &gt;&gt; k;
+    ll o=0;
+    vector&lt;ll&gt; a(n);
+    for(auto &amp;nx : a){
+      cin &gt;&gt; nx;
+      o|=nx;
+    }
+    ll d1=0;
+    for(ll i=n-k;i&lt;n;i++){d1|=a[i];}
+    ll d0=(al^d1);
+    mint ini(0);
+    for(ll i=0;i&lt;=k;i++){ ini+=nCr(n,i); }
+    vector&lt;tup&gt; sta={{0,k,ini}};
+    mint res=0;
+    for(ll i=n-1;i&gt;=0;i--){
+      {
+        vector&lt;tup&gt; nsta;
+        for(auto [f,rk,pat] : sta){
+          ll e0=((al^f)&amp;d0);
+          ll e1=((al^f)&amp;d1);
+          int ban=0;
+          if((e0&amp;a[i])&gt;0){ban|=2;}
+          if((e1&amp;(al^a[i]))&gt;0){ban|=1;}
+          if((ban&amp;1)==0){
+            // and
+            mint npat=(pat+nCr(i,rk))/mint(2);
+            nsta.push_back(tup{(f|(e0&amp;(al^a[i]))),rk,npat});
+          }
+          if((ban&amp;2)==0 &amp;&amp; rk&gt;0){
+            // or
+            mint npat=(pat-nCr(i,rk))/mint(2);
+            nsta.push_back(tup{(f|(e1&amp;a[i])),rk-1,npat});
+          }
+        }
+        sta=nsta;
+      }
+      {
+        vector&lt;tup&gt; nsta;
+        for(auto [f,rk,pat] : sta){
+          if((f&amp;o)==o){
+            res+=pat;
+          }
+          else{
+            nsta.push_back(tup{f,rk,pat});
+          }
+        }
+        sta=nsta;
+      }
+    }
+    for(auto [f,rk,pat] : sta){
+      if((f&amp;d1)==d1){res+=pat;}
+    }
+    cout &lt;&lt; res.val() &lt;&lt; &quot;\n&quot;;
+  }
+  return 0;
+}
+</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

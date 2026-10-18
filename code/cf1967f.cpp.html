@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf1967f.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf1967f.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/cf1967f.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-09
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int N=300000;
+inline int read(){
+	int x=0,f=1,ch=getchar();
+	while(ch&lt;&#x27;0&#x27;||ch&gt;&#x27;9&#x27;){if(ch==&#x27;-&#x27;)f=-1;ch=getchar();}
+	while(ch&gt;=&#x27;0&#x27;&amp;&amp;ch&lt;=&#x27;9&#x27;)x=x*10+ch-&#x27;0&#x27;,ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){return 31^__builtin_clz(x);}
+int n,p[N+5],ip[N+5],itmp[N+5];
+vector&lt;pair&lt;int,int&gt;&gt;q[N+5];
+int stk[N+5],tp;
+int tmp[N+5],pos[N+5],qz[N+5],m,idx;
+int _prv[N+5],_nxt[N+5];
+ll ans[N+5];int len[N+5],ans2[N+5],siz[N+5];
+
+// 修改 1：同一套 O(1) 静态 RMQ 分别用于旧点最大值、新点最早时间。
+struct RMQ{
+	const int *a;
+	ull mask[N+5];
+	int pre[N+5],suf[N+5];
+	int st[15][(N+63)/64+5],nb;
+	void init(const int *v,int n){
+		a=v;
+		nb=(n+63)&gt;&gt;6;
+		for(int b=0;b&lt;nb;b++){
+			int l=b*64+1,r=min(n,l+63),mx=0;
+			ull s=0;
+			for(int i=l;i&lt;=r;i++){
+				int j=i-l;
+				while(s){
+					int t=63-__builtin_clzll(s);
+					if(a[l+t]&gt;a[i])break;
+					s^=1ull&lt;&lt;t;
+				}
+				s|=1ull&lt;&lt;j;
+				mask[i]=s;
+				pre[i]=mx=max(mx,a[i]);
+			}
+			mx=0;
+			for(int i=r;i&gt;=l;i--)suf[i]=mx=max(mx,a[i]);
+			st[0][b]=pre[r];
+		}
+		for(int k=1;(1&lt;&lt;k)&lt;=nb;k++)
+			for(int b=0;b+(1&lt;&lt;k)&lt;=nb;b++)
+				st[k][b]=max(st[k-1][b],st[k-1][b+(1&lt;&lt;(k-1))]);
+	}
+	inline int qry(int l,int r)const{
+		if(l&gt;r)return 0;
+		int x=(l-1)&gt;&gt;6,y=(r-1)&gt;&gt;6;
+		if(x==y){
+			ull s=mask[r]&amp;(ULLONG_MAX&lt;&lt;((l-1)&amp;63));
+			return a[(x&lt;&lt;6)+1+__builtin_ctzll(s)];
+		}
+		int res=max(suf[l],pre[r]);
+		if(y&gt;x+1){
+			int L=x+1,R=y-1,k=lg2(R-L+1);
+			res=max(res,max(st[k][L],st[k][R-(1&lt;&lt;k)+1]));
+		}
+		return res;
+	}
+}T,TD;
+
+// 修改 2：HNOI2016 序列的单调栈 DP：左右第一更大点链的计数/坐标和。
+int cntL[N+5],cntR[N+5];
+ll sumL[N+5],sumR[N+5];
+
+// 修改 3：每个旧点候选只初始化一次，按死亡时间分桶。
+int tval[N+5],deadhead[N+5],deadlink[N+5],weight[N+5];
+
+// 修改 4：按长度分块的二维数点，修改 O(1)，查询 O(sqrt(n))。
+struct SqrtCounter{
+	int sh,D;
+	int cnt[N+5],bcnt[1024];
+	ll bsum[1024];
+	void init(int M){
+		sh=(lg2(max(1,M))+1)&gt;&gt;1;
+		D=1&lt;&lt;sh;
+		fill(cnt,cnt+M+1,0);
+		fill(bcnt,bcnt+(M&gt;&gt;sh)+2,0);
+		fill(bsum,bsum+(M&gt;&gt;sh)+2,0);
+	}
+	inline void upd(int x,int d){
+		cnt[x]+=d;
+		int b=x&gt;&gt;sh;
+		bcnt[b]+=d;
+		bsum[b]+=(ll)x*d;
+	}
+	inline pair&lt;ll,ll&gt; qry(int x)const{
+		if(x&lt;=0)return {0,0};
+		ll c=0,s=0;
+		int b=x&gt;&gt;sh;
+		for(int i=0;i&lt;b;i++)c+=bcnt[i],s+=bsum[i];
+		for(int i=(b&lt;&lt;sh);i&lt;=x;i++)c+=cnt[i],s+=(ll)i*cnt[i];
+		return {c,s};
+	}
+}SC;
+
+// 修改 5：只有时间分块，不再需要事件数和询问数限制。
+int beg[N+5],ed[N+5],bsz;
+void procedure(){
+	n=read();
+	for(int i=1;i&lt;=n;i++)p[i]=read(),ip[p[i]]=i;
+	idx=0;
+	for(int i=1;i&lt;=n;i++){
+		int k=read();
+		q[i].clear();
+		while(k--)siz[++idx]=i,q[i].pb(len[idx]=read(),idx),ans[idx]=ans2[idx]=0;
+	}
+	int B=max(1,(int)(1.5*n/sqrt((double)(n+idx))));
+	bsz=0;
+	for(int x=1;x&lt;=n;x++)if(!q[x].empty()){
+		if(!bsz||x-beg[bsz]+1&gt;B)beg[++bsz]=x;
+		ed[bsz]=x;
+	}
+	for(int ww=1;ww&lt;=bsz;ww++){
+		int L=beg[ww],R=ed[ww];
+		m=0;
+		for(int j=1;j&lt;=n;j++){
+			qz[j]=qz[j-1];
+			if(p[j]&lt;L)tmp[++m]=p[j],pos[m]=j,qz[j]++;
+			// 将当前块内的时间映射为正值，0 表示不在当前块内。
+			tval[j]=(L&lt;=p[j]&amp;&amp;p[j]&lt;=R)?R+1-p[j]:0;
+		}
+		T.init(tmp,m);
+		TD.init(tval,n);
+		for(int i=1;i&lt;=m;i++)_prv[i]=0,_nxt[i]=m+1,itmp[tmp[i]]=i;
+		tp=0;
+		for(int i=1;i&lt;=m;i++){
+			while(tp&amp;&amp;tmp[stk[tp]]&lt;tmp[i])_nxt[stk[tp--]]=i;
+			if(tp)_prv[i]=stk[tp];
+			stk[++tp]=i;
+		}
+		cntL[0]=0;sumL[0]=0;
+		for(int i=1;i&lt;=m;i++){
+			int j=_prv[i];
+			cntL[i]=cntL[j]+1;
+			sumL[i]=sumL[j]+i;
+		}
+		cntR[m+1]=0;sumR[m+1]=0;
+		for(int i=m;i&gt;=1;i--){
+			int j=_nxt[i];
+			cntR[i]=cntR[j]+1;
+			sumR[i]=sumR[j]+i;
+		}
+		SC.init(m);
+		fill(deadhead+L,deadhead+R+1,0);
+		for(int i=1;i&lt;=m;i++)if(_prv[i]&amp;&amp;_nxt[i]&lt;=m){
+			int a=_prv[i],b=_nxt[i];
+			int w=b-a;
+			weight[i]=w;
+			SC.upd(w,1);
+			int v=TD.qry(pos[a]+1,pos[b]-1);
+			if(v){
+				int death=R+1-v;
+				deadlink[i]=deadhead[death];
+				deadhead[death]=i;
+			}
+		}
+		int s[B+5],tl=0;
+		for(int x=L;x&lt;=R;x++){
+			// 从当前时刻起，包含新加入点的候选已失效。
+			for(int j=deadhead[x];j;j=deadlink[j])SC.upd(weight[j],-1);
+			s[++tl]=ip[x];
+			int v=s[tl],*it=lower_bound(s+1,s+tl,v);
+			memmove(it+1,it,(s+tl-it)*sizeof(int));
+			*it=v;
+			if(q[x].empty())continue;
+			int prv[B+5],nxt[B+5];tp=0;
+			for(int j=1;j&lt;=tl;j++)prv[j]=0,nxt[j]=tl+1;
+			for(int j=1;j&lt;=tl;j++){
+				while(tp&amp;&amp;p[s[stk[tp]]]&lt;p[s[j]])nxt[stk[tp--]]=j;
+				if(tp)prv[j]=stk[tp];
+				stk[++tp]=j;
+			}
+			for(auto [k,id]:q[x]){
+				// 原 q2/q3 的整组二维数点，合并成当前原始询问的一次查询。
+				auto [v0,v1]=SC.qry(min(k-1,m));
+				ans[id]+=v1;
+				ans2[id]+=v0;
+				for(int j=1;j&lt;=tl;j++){
+					if(!prv[j]||nxt[j]&gt;tl)continue;
+					int sz=qz[s[nxt[j]]]-qz[s[prv[j]]]+nxt[j]-prv[j];
+					if(sz&lt;=k)ans[id]+=sz,ans2[id]++;
+				}
+				auto solve=[&amp;](int l,int r,bool vl,bool vr){
+					if(l&gt;r)return;
+					int mx=itmp[T.qry(l,r)];
+					if(!vl&amp;&amp;!vr&amp;&amp;r-l+2&lt;=k)ans[id]+=r-l+2,ans2[id]++;
+					// 原 q0：右侧更大点链的前缀，RMQ 定位最后一个点。
+					if(!vl){
+						int rr=min(l+k-1,mx);
+						if(rr&gt;l){
+							int t=rr==mx?mx:itmp[T.qry(l,rr)];
+							ll c=cntR[l]-cntR[t];
+							ll v=sumR[l]-sumR[t]+t-l;
+							ans[id]+=v-(ll)(l-1)*c;
+							ans2[id]+=c;
+						}
+					}
+					// 原 q1：左侧更大点链的前缀，RMQ 定位最左端点。
+					if(!vr){
+						int left=max(r-k+1,mx);
+						if(left&lt;r){
+							int t=left==mx?mx:itmp[T.qry(left,r)];
+							ll c=cntL[r]-cntL[t];
+							ll v=sumL[r]-sumL[t]+t-r;
+							ans[id]+=(ll)(r+1)*c-v;
+							ans2[id]+=c;
+						}
+					}
+				};
+				solve(1,qz[s[1]],1,0);
+				for(int j=1;j&lt;tl;j++)solve(qz[s[j]]+1,qz[s[j+1]],0,0);
+				solve(qz[s[tl]]+1,m,0,1);
+			}
+		}
+	}
+	for(int i=1;i&lt;=idx;i++)printf(&quot;%lld\n&quot;,ans[i]+(ll)(siz[i]-ans2[i])*len[i]);
+}
+int main(){
+#ifdef LOCAL
+	assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+	assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+#endif
+	int T=read();
+	while(T--)procedure();
+	return 0;
+}
+</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

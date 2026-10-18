@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>aalc001_r.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>aalc001_r.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/aalc001_r.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-12 15:34:00
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+#define mid ((l+r)&gt;&gt;1)
+int n,w,q;
+char init[100005][11];
+
+struct dsu{
+	char L[11],R[11];
+	int fa[40],v0,v1,equal;
+	dsu(){ for(int i=0;i&lt;4*w;i++) fa[i]=i; v0=v1=equal=-1; }
+	int find(int x){ if(x!=fa[x])fa[x]=find(fa[x]);return fa[x];}
+	void merge(int x,int y){ fa[find(x)]=find(y); }
+}t[400005];
+
+int buc[40];
+dsu operator+ (const dsu &amp;A,const dsu &amp;B){
+	dsu C,D;
+	for(int i=0;i&lt;2*w;i++) C.fa[i]=A.fa[i];
+	for(int i=0;i&lt;2*w;i++) C.fa[i+2*w]=B.fa[i]+2*w;
+	for(int i=0;i&lt;w;i++)if(A.R[i]==B.L[i])
+		C.merge(A.fa[w+i],B.fa[i]+2*w);
+
+	memcpy(D.L,A.L,sizeof(D.L));
+	memcpy(D.R,B.R,sizeof(D.R));
+
+	memset(buc,-1,sizeof(buc));
+	for(int i=0;i&lt;w;i++){
+		int now=C.find(i);
+		if(!~buc[now])buc[now]=i;
+		D.fa[i]=buc[now];
+	}
+	for(int i=w;i&lt;2*w;i++){
+		int now=C.find(i+2*w);
+		if(!~buc[now])buc[now]=i;
+		D.fa[i]=buc[now];
+	}
+
+	if(~A.equal) D.equal = A.equal;
+	else if(~B.equal) D.equal = B.equal;
+	// cout&lt;&lt;&quot;was &quot;&lt;&lt;D.equal&lt;&lt;endl;
+
+	if(~A.v0) D.v0=C.find(A.v0);
+	if(~A.v1) D.v1=C.find(A.v1);
+	if(~B.v0) D.v0=C.find(B.v0+2*w);
+	if(~B.v1) D.v1=C.find(B.v1+2*w);
+
+	if(~D.v0&amp;&amp;~D.v1&amp;&amp;D.v0==D.v1)D.equal=1;
+
+	if(~D.v0) D.v0=buc[D.v0];
+	if(~D.v1) D.v1=buc[D.v1];
+	return D;
+}
+void pushup(int p){ t[p]=t[p&lt;&lt;1]+t[p&lt;&lt;1|1]; }
+void locate(int p,char* s){
+	t[p]=dsu();
+	memcpy(t[p].L,s,sizeof(t[p].L));
+	memcpy(t[p].R,s,sizeof(t[p].R));
+	for(int i=0;i&lt;w;i++)t[p].merge(i,i+w);
+	for(int i=1;i&lt;w;i++)
+		if(t[p].L[i]==t[p].L[i-1]) t[p].merge(i-1,i);
+}
+void build(int l,int r,int p){
+	if(l==r) return locate(p,init[l]);
+	build(l,mid,p&lt;&lt;1),build(mid+1,r,p&lt;&lt;1|1);
+	pushup(p);
+}
+void upd(int l,int r,int x,int p){
+	if(l==r) return locate(p,init[l]);
+	if(x&lt;=mid) upd(l,mid,x,p&lt;&lt;1);
+	else upd(mid+1,r,x,p&lt;&lt;1|1);
+	pushup(p);
+}
+void del(int l,int r,int x,int p){
+	if(l==r){ t[p].v0=t[p].v1=-1; return; }
+	if(x&lt;=mid) del(l,mid,x,p&lt;&lt;1);
+	else del(mid+1,r,x,p&lt;&lt;1|1);
+	pushup(p);
+}
+void fuck0(int l,int r,int x,int c,int p){
+	if(l==r){ t[p].v0=t[p].find(c); return; }
+	if(x&lt;=mid) fuck0(l,mid,x,c,p&lt;&lt;1);
+	else fuck0(mid+1,r,x,c,p&lt;&lt;1|1);
+	pushup(p);
+}
+void fuck1(int l,int r,int x,int c,int p){
+	if(l==r){ t[p].v1=t[p].find(c); return; }
+	if(x&lt;=mid) fuck1(l,mid,x,c,p&lt;&lt;1);
+	else fuck1(mid+1,r,x,c,p&lt;&lt;1|1);
+	pushup(p);
+}
+void print(int l,int r,int p){
+	if(l==r) return;
+	cout&lt;&lt;&quot;here &quot;&lt;&lt;l&lt;&lt;&quot;-&gt;&quot;&lt;&lt;r&lt;&lt;&quot; &quot;&lt;&lt;t[p].L&lt;&lt;&quot; &quot;&lt;&lt;t[p].R&lt;&lt;endl;
+	cout&lt;&lt;&quot;two node &quot;&lt;&lt;t[p].v0&lt;&lt;&quot; &quot;&lt;&lt;t[p].v1&lt;&lt;&quot; equal=&quot;&lt;&lt;t[p].equal&lt;&lt;endl;
+	for(int i=0;i&lt;w;i++) cout&lt;&lt;t[p].find(i)&lt;&lt;&quot; &quot;; cout&lt;&lt;endl;
+	for(int i=0;i&lt;w;i++) cout&lt;&lt;t[p].find(i+w)&lt;&lt;&quot; &quot;; cout&lt;&lt;endl;
+	
+	print(l,mid,p&lt;&lt;1),print(mid+1,r,p&lt;&lt;1|1);
+}
+
+
+void procedure(){
+	n=read(),w=read(),q=read();
+	for(int i=1;i&lt;=n;i++) scanf(&quot;%s&quot;,init[i]);
+	build(1,n,1);
+	while(q--){
+		int o=read();
+		if(o==1){
+			int i=read();
+			scanf(&quot;%s&quot;,init[i]);
+			upd(1,n,i,1);
+		}else{
+			int a=read(),b=read()-1,c=read(),d=read()-1;
+			if(a&gt;c)swap(a,c),swap(b,d);
+
+			int base=0;
+			if(a==c){
+				if(b&gt;d)swap(b,d);
+				base=1;
+				for(int i=b+1;i&lt;=d;i++)base&amp;=(init[a][i]==init[a][i-1]);
+			}
+			fuck0(1,n,a,b,1),fuck1(1,n,c,d,1);
+			// print(1,n,1);
+			puts((base||t[1].equal==1)?&quot;Yes&quot;:&quot;No&quot;);
+			del(1,n,a,1),del(1,n,c,1);
+		}
+	}	
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

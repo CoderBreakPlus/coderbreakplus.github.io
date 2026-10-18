@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf1179e.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf1179e.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/cf1179e.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-09-21 07:47:51
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
+ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+
+ll n,L,B,al[1005],ar[1005],pt[1005],bas[1005];
+vector&lt;ll&gt;vc[1005];
+
+ll query(int i,ll x){
+	cout&lt;&lt;&quot;? &quot;&lt;&lt;i&lt;&lt;&quot; &quot;&lt;&lt;x&lt;&lt;endl;
+	#ifdef LOCAL
+		return upper_bound(vc[i].begin(),vc[i].end(),x)-vc[i].begin();
+		// return min(5ll,x);
+	#endif
+	ll ret; cin&gt;&gt;ret; return ret;
+}
+ll cnt1=0,cnt2=0;
+void solve(ll l,ll r,ll L,ll R,vector&lt;ll&gt; vec){
+	assert(vec.size()==r-l);
+	if(r-l==1){
+		al[vec[0]]=L,ar[vec[0]]=R;
+		return;
+	}
+	ll m=(l+r)&gt;&gt;1;
+
+	vector&lt;ll&gt;sl,sr; ll sz=m-l,lst=-1;
+	
+	auto getval=[&amp;](ll x){
+		ll lft=L,rht=R; pt[x]=-1;
+		while(lft&lt;=rht){
+			ll mid=(lft+rht)&gt;&gt;1;
+			if(query(x,mid)&gt;=m*B){
+				pt[x]=mid;
+				rht=mid-1;
+			}else lft=mid+1;
+		}
+		assert(~pt[x]);
+	};
+
+	while(!vec.empty() &amp;&amp; sz!=vec.size() &amp;&amp; sz!=0){
+		shuffle(vec.begin(),vec.end(),rnd);
+		vector&lt;ll&gt;lft,rht,middle;
+		getval(vec[0]); lst=pt[vec[0]];
+		cnt1++;
+		for(int i=1;i&lt;vec.size();i++){
+			cnt2++;
+			ll val=query(vec[i],lst);
+
+			if(val&lt;m*B) rht.pb(vec[i]);
+			else if(query(vec[i],lst-1)&gt;=m*B) lft.pb(vec[i]);
+			else middle.pb(vec[i]);
+		}
+		for(ll x:middle) (lft.size()&lt;rht.size())?(lft.pb(x)):(rht.pb(x));
+		
+		if(lft.size()&lt;sz){
+			sz-=lft.size()+1,sl.pb(vec[0]);
+			for(ll x:lft) sl.pb(x); vec=rht;
+		}else{
+			sr.pb(vec[0]);
+			for(ll x:rht) sr.pb(x); vec=lft;
+		}
+	}
+	while(sz--) sl.pb(vec.back()),vec.pop_back();
+	while(!vec.empty()) sr.pb(vec.back()),vec.pop_back();
+
+	solve(l,m,L,lst,sl);
+	solve(m,r,lst,R,sr);
+}
+void procedure(){
+	cin&gt;&gt;n&gt;&gt;L; B=L/n;
+	#ifdef LOCAL
+	for(int i=1;i&lt;=n;i++){
+		for(int j=1;j&lt;=L;j++)vc[i].pb(rng(0,1e18));
+		sort(vc[i].begin(),vc[i].end());
+	}
+	#endif
+	vector&lt;ll&gt;vec;
+	for(ll i=1;i&lt;=n;i++)vec.pb(i);
+	solve(0,n,0,1e18,vec);
+	cout&lt;&lt;&quot;!&quot;&lt;&lt;endl;
+	for(ll i=1;i&lt;=n;i++) cout&lt;&lt;al[i]&lt;&lt;&quot; &quot;&lt;&lt;ar[i]&lt;&lt;endl;
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

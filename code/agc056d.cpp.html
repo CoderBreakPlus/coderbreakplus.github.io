@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>agc056d.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>agc056d.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/agc056d.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-08-24
+#include &lt;bits/stdc++.h&gt;
+#define rep(i, a, b) for (int i = (a), i##ABRACADABRA = (b); i &lt;= i##ABRACADABRA; i++)
+#define drep(i, a, b) for (int i = (a), i##ABRACADABRA = (b); i &gt;= i##ABRACADABRA; i--)
+using namespace std;
+using ll = long long;
+
+int n;
+ll L,R,a[5010],b[5010],sum[5010];
+
+ll gs(int L,int R,int o){
+  o&amp;=1;
+  if ((L^o)&amp;1)++L;
+  if ((R^o)&amp;1)--R;
+  if (L&gt;R)return 0;
+  if (L&lt;=1)return sum[R];
+  return sum[R]-sum[L-2];
+}
+
+bool chk(){
+  sum[1]=b[1];
+  rep(i,2,n-1)sum[i]=sum[i-2]+b[i];
+  rep(i,1,n-1){
+    ll A=gs(1,i-1,1)+gs(i+1,n-1,0);
+    ll B=gs(1,i-1,0)+gs(i+1,n-1,1);
+    // cout&lt;&lt;i&lt;&lt;&#x27; &#x27;&lt;&lt;A&lt;&lt;&#x27; &#x27;&lt;&lt;B&lt;&lt;&#x27;\n&#x27;;
+    if (L&lt;=A&amp;&amp;B&lt;=R)return 1;
+  }
+  return 0;
+}
+
+int main() {
+  scanf(&quot;%d%lld%lld&quot;,&amp;n,&amp;L,&amp;R);
+  rep(i,1,n)scanf(&quot;%lld&quot;,&amp;a[i]);
+  sort(a+1,a+n+1);
+  rep(p,1,n){
+    // A chose p
+    L-=a[p],R-=a[p];
+    int tot=0;
+    rep(i,1,n)if (i^p)b[++tot]=a[i];
+    if (chk()){
+      // cout&lt;&lt;p&lt;&lt;&#x27;\n&#x27;;
+      puts(&quot;Alice&quot;);
+      return 0;
+    }
+    // return 0;
+    L+=a[p],R+=a[p];
+  }
+  puts(&quot;Bob&quot;);
+  return 0;
+}
+</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

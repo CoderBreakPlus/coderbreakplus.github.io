@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qoj20250.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>qoj20250.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/qoj20250.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-09-20 14:27:17
+#include&lt;vector&gt;
+#pragma GCC optimize(3,&quot;inline&quot;)
+#pragma GCC optimize(&quot;Ofast,unroll-loops&quot;)
+#pragma GCC target(&quot;avx,avx2&quot;)
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+#define fi first
+#define se second
+#define pb emplace_back
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+#define mid ((l+r)&gt;&gt;1)
+typedef pair&lt;double,int&gt; P;
+
+int n,q,a[100005],rt[100005];
+double la[100005];
+vector&lt;tuple&lt;int,int,double&gt;&gt;v[100005];
+
+const int M=3e7+5;
+int lc[M],rc[M],idx; P t[M];
+double tag[M];
+
+void pushup(int p){
+	t[p]=min(t[lc[p]],t[rc[p]]);
+	t[p].fi+=tag[p];
+}
+void build(int l,int r,int &amp;p){
+	p=++idx;
+	if(l==r){
+		t[p]={la[l],l};
+		return;
+	}
+	build(l,mid,lc[p]),build(mid+1,r,rc[p]);
+	pushup(p);
+}
+void update(int l,int r,int ql,int qr,double v,int b,int &amp;p){
+	if(r&lt;ql||qr&lt;l) return;
+	p=++idx;
+	lc[p]=lc[b],rc[p]=rc[b],tag[p]=tag[b],t[p]=t[b];
+	if(ql&lt;=l&amp;&amp;r&lt;=qr){
+		t[p].fi+=v,tag[p]+=v;
+		return;
+	}
+	update(l,mid,ql,qr,v,lc[b],lc[p]);
+	update(mid+1,r,ql,qr,v,rc[b],rc[p]);
+	pushup(p);
+}
+P query(int l,int r,int ql,int qr,int p){
+	if(r&lt;ql||qr&lt;l) return {1e18,-1};
+	if(ql&lt;=l&amp;&amp;r&lt;=qr) return t[p];
+	P ret=min(query(l,mid,ql,qr,lc[p]),query(mid+1,r,ql,qr,rc[p])); ret.fi+=tag[p];
+	return ret;
+}
+
+int fa[100005];
+vector&lt;int&gt;node[100005];
+int find(int x){ if(x!=fa[x]) fa[x]=find(fa[x]); return fa[x]; }
+
+void procedure(){
+	n=read(),q=read();
+	for(int i=1;i&lt;=n;i++)a[i]=read(),la[i]=log(a[i]);
+
+	for(int i=1;i&lt;=q;i++){
+		int l1=read(),r1=read(),l2=read(),r2=read(),val=read(); double lv=log(val);
+		v[l1].pb(l2,r2,lv),v[r1+1].pb(l2,r2,-lv);
+		v[l2].pb(l1,r1,lv),v[r2+1].pb(l1,r1,-lv);
+
+		int lx=max(l1,l2),rx=min(r1,r2);
+		if(lx&lt;=rx) v[lx].pb(lx,rx,-lv),v[rx+1].pb(lx,rx,lv);
+	}
+	for(int i=1;i&lt;=n;i++) v[i].pb(i,i,-2*la[i]);
+	build(1,n,rt[0]);
+	for(int i=1;i&lt;=n;i++){
+		rt[i]=rt[i-1];
+		for(auto [l,r,v]: v[i]) update(1,n,l,r,v,rt[i],rt[i]);
+	}
+
+	for(int i=1;i&lt;=n;i++)fa[i]=i;
+	int cnt=n-1;
+	
+	double sum=0;
+	while(cnt){
+		for(int i=1;i&lt;=n;i++)node[i].clear();
+		for(int i=1;i&lt;=n;i++)node[find(i)].pb(i);
+
+		vector&lt;tuple&lt;int,int,double&gt;&gt;add;
+
+		for(int i=1;i&lt;=n;i++)if(!node[i].empty()){
+			int lst=0;
+			vector&lt;pair&lt;int,int&gt;&gt;vc;
+			for(int x:node[i]){
+				if(lst+1&lt;x) vc.pb(lst+1,x-1);
+				lst=x;
+			}
+			if(lst&lt;n)vc.pb(lst+1,n);
+
+			P ret={1e18,-1};
+			for(int x:node[i]){
+				for(auto [l,r]: vc){
+					P tmp=query(1,n,l,r,rt[x]);
+					tmp.fi+=(r&lt;x?la[x]:-la[x]);
+					chkmin(ret,tmp);
+				}
+			}
+			add.pb(i,find(ret.se),ret.fi);
+		}
+
+		for(auto [x,y,v]: add){
+			if(find(x)==find(y))continue;
+			fa[find(x)]=find(y),cnt--;
+			if(v&gt;22 || (sum+=exp(v))&gt;1e9+1) sum=1e9+1;
+		}
+	}
+	printf(&quot;%.10lf\n&quot;,min(1e9,sum));
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

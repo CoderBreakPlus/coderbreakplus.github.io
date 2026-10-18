@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qoj17639.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>qoj17639.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/qoj17639.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-05-09 11:29:51   
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+typedef unsigned long long ull;
+
+int mod,f[505][505][505],g[505][505][505],C[505][505],fac[505];
+inline void upd(int &amp;a,ull b){ a=(a+b)%mod; }
+inline void addmod(int &amp;a){ a=min&lt;unsigned&gt;(a,a-mod); }
+
+int ascend(int c, int n, int m, vector&lt;int&gt; p, vector&lt;int&gt; w){
+    mod = m;
+
+    memset(f, 0, sizeof(f));
+    memset(g, 0, sizeof(g));
+    memset(C, 0, sizeof(C));
+    memset(fac, 0, sizeof(fac));
+    fac[0] = 1;
+    for (int i = 1; i &lt;= n; i++) fac[i] = (ull)fac[i - 1] * i % mod;
+    for (int i = 0; i &lt;= n; i++) {
+        C[i][0] = 1;
+        for (int j = 1; j &lt;= i; j++) addmod(C[i][j] = C[i - 1][j] + C[i - 1][j - 1]);
+    }
+
+    reverse(p.begin(), p.end()); p.push_back(0); reverse(p.begin(), p.end());
+    reverse(w.begin(), w.end()); w.push_back(0); w.push_back(0); reverse(w.begin(), w.end());
+
+    // f
+    if (!p[1]) f[1][1][1] = 1;
+    else f[1][0][0] = 1;
+
+    int sb = !!p[1]; 
+    int lst = p[1];
+
+    for (int i = 2; i &lt;= n; i++) {
+        if (!p[i]) {
+            for (int j = 0; j &lt;= i - 1 - sb; j++) {
+                int fr = lst - i + 1 + j;
+                if (fr &lt; 0) continue;
+
+                for (int k = 1; k &lt;= j; k++) addmod(f[i - 1][j][k] += f[i - 1][j][k - 1]);
+                for (int l = 1; l &lt;= j + 1; l++) {
+                    upd(f[i][j + 1][l], (ull)f[i - 1][j][l-1] * w[i] + f[i - 1][j][j] + mod - f[i - 1][j][l-1]);
+                }
+                for (int l = 1; l &lt;= fr; l++)
+                    addmod(g[i][j][l] += f[i-1][j][j]);
+                for (int k = 2; k &lt;= fr + 1; k++) addmod(g[i-1][j][k] += g[i-1][j][k-1]);
+                for (int l = 1; l &lt;= fr; l++) {
+                    upd(g[i][j][l], (ull)g[i - 1][j][l] * w[i] + g[i - 1][j][fr+1] + mod - g[i - 1][j][l]);
+                }
+                for (int l = 1; l &lt;= j+1; l++){
+                    upd(f[i][j+1][l], (ull)g[i-1][j][fr+1]*w[i]);
+                }
+            }
+        } else {
+            int d = p[i] - lst - 1;
+            for (int j = 0; j &lt;= i - 1 - sb; j++) {
+                int fr = lst - i + 1 + j;
+                if (fr &lt; 0) continue;
+
+                for (int k = 1; k &lt;= j; k++) addmod(f[i - 1][j][k] += f[i - 1][j][k - 1]);
+
+                for (int l = 0; l &lt;= j &amp;&amp; l &lt;= d; l++) {
+                    upd(f[i][j - l][0], (ull)f[i - 1][j][l] * C[d][l] % mod * w[i] + (ull)(f[i - 1][j][j] + mod - f[i - 1][j][l]) * C[d][l]);
+                }
+
+                int sum = 0;
+                for (int k = 1; k &lt;= fr + 1; k++) addmod(sum += g[i - 1][j][k]);
+
+                for (int l = 0; l &lt;= j &amp;&amp; l &lt;= d; l++) {
+                    upd(f[i][j - l][0], (ull)sum * C[d][l] % mod * w[i]);
+                }
+            }
+            lst = p[i];
+        }
+        sb += !!p[i];
+    }
+
+    int ret = 0;
+    for (int i = 0; i &lt;= n; i++)
+        addmod(ret += f[n][n - lst][i]), addmod(ret += g[n][n - lst][i]);
+    return ret;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

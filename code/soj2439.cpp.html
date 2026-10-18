@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2439.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2439.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/soj2439.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-06-10 09:11:07
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+int n,k,lf[400005],sz[400005],lvis[400005],mk[400005],p[400005],eid,tid;
+int q,uu[500005],vv[500005];
+ll val[400005],ans[500005],c[400005];
+vector&lt;int&gt;G[400005];
+vector&lt;pair&lt;int,int&gt;&gt;E[400005];
+
+int ABS(int x){ return x&lt;0?-x:x; }
+void add(int x,int y,int i,ll w){
+	E[x].pb(y,i),E[y].pb(x,i),val[i]=w;
+}
+void build(int x){
+	if(G[x].empty())return;
+	add(x,G[x][0],++eid,c[G[x][0]]);
+	int cur=x;
+	for(int i=1;i&lt;G[x].size();i++){
+		if(i+1&lt;G[x].size()){
+			add(cur,++n,++eid,0);
+			add(cur=n,G[x][i],++eid,c[G[x][i]]);
+		}else{
+			add(cur,G[x][i],++eid,c[G[x][i]]);
+		}
+	}
+	for(int y:G[x]) build(y);
+}
+
+int s[400005],ff[400005],col[400005],tl; 
+vector&lt;int&gt;qry[400005];
+bool dvis[400005];
+ll dis[400005];
+
+int mn,mx;
+void findcent(int x,int fa,int cc){
+	s[++tl]=x,sz[x]=1,col[x]=cc,ff[x]=fa;
+	if(lvis[x])chkmin(mn,x),chkmax(mx,x);
+	for(auto [y,i]:E[x])if(!mk[i] &amp;&amp; i&lt;=tid &amp;&amp; i!=fa){
+		findcent(y,i,cc);
+		sz[x]+=sz[y];
+	}
+}
+void solve(int x){
+	if(qry[x].empty()) return;
+	tl=0,findcent(x,0,x);
+	if(sz[x]==1) return;
+	int rt=0,wh=sz[x];
+	for(int i=2;i&lt;=tl;i++)
+		if(!rt || ABS(2*sz[s[i]]-wh)&lt;ABS(2*sz[rt]-wh)) rt=s[i];
+	// cout&lt;&lt;&quot;solving &quot;&lt;&lt;x&lt;&lt;endl;
+	// for(int i=1;i&lt;=tl;i++) cout&lt;&lt;s[i]&lt;&lt;&quot; &quot;; cout&lt;&lt;endl;
+
+	// cout&lt;&lt;&quot;rt = &quot;&lt;&lt;rt&lt;&lt;endl;
+
+	mn=n+1,mx=0;
+	findcent(rt,ff[rt],rt);
+
+	// for(int i=1;i&lt;=tl;i++) cout&lt;&lt;col[s[i]]&lt;&lt;&quot; &quot;; cout&lt;&lt;endl;
+
+	auto dij = [&amp;](int bg){
+		// cout&lt;&lt;&quot;bg = &quot;&lt;&lt;bg&lt;&lt;endl;
+		priority_queue&lt;pair&lt;ll,int&gt;,vector&lt;pair&lt;ll,int&gt;&gt;,greater&lt;pair&lt;ll,int&gt;&gt;&gt;Q;
+		for(int i=1;i&lt;=tl;i++) dis[s[i]]=1e18,dvis[s[i]]=0; Q.push({dis[bg]=0,bg});
+		while(!Q.empty()){
+			int u=Q.top().se;Q.pop();
+			if(dvis[u])continue;
+			dvis[u]=1;
+			for(auto [v,i]: E[u])
+				if((col[v]==x||col[v]==rt) &amp;&amp; dis[v]&gt;dis[u]+val[i]){
+					dis[v]=dis[u]+val[i];
+					// cout&lt;&lt;&quot;upd &quot;&lt;&lt;dis[u]&lt;&lt;&quot; + &quot;&lt;&lt;val[i]&lt;&lt;&quot; = &quot;&lt;&lt;dis[v]&lt;&lt;endl;
+					Q.push({dis[v],v});
+				}
+		}
+		for(int i: qry[x]){
+			// cout&lt;&lt;&quot;upd &quot;&lt;&lt;dis[uu[i]]&lt;&lt;&quot; + &quot;&lt;&lt;dis[vv[i]]&lt;&lt;endl;
+			chkmin(ans[i], dis[uu[i]]+dis[vv[i]]);
+		}
+		for(int i=1;i&lt;=tl;i++) dis[s[i]]=1e18;
+	};
+	// three edges cut
+
+	dij(rt);
+	if(mn&lt;=mx &amp;&amp; mn!=rt) dij(mn);
+	if(mn&lt;mx &amp;&amp; mn!=rt) dij(mx);
+
+	mk[ff[rt]]=1;
+	vector&lt;int&gt;ls;
+	qry[rt].clear();
+	for(int i: qry[x])if(col[uu[i]]==col[vv[i]]){
+		if(col[uu[i]]==x) ls.pb(i);
+		else qry[rt].pb(i);
+	}
+	swap(ls,qry[x]);
+	solve(x),solve(rt);
+}
+void procedure(){
+	n=read();
+	for(int i=2;i&lt;=n;i++){
+		p[i]=read(),c[i]=read();
+		G[p[i]].pb(i);
+	}
+	for(int i=1;i&lt;=n;i++)
+		if(G[i].empty()) lvis[i]=1,lf[++k]=i;
+	build(1);
+
+	// cout&lt;&lt;&quot;built&quot;&lt;&lt;endl;
+
+	tid=eid; // tree edges
+	for(int i=1;i&lt;=k;i++)
+		add(lf[i],lf[i%k+1],++eid,read());
+
+	q=read();
+	for(int i=1;i&lt;=q;i++)
+		uu[i]=read(),vv[i]=read(),qry[1].pb(i),ans[i]=1e18;
+	
+	for(int i=1;i&lt;=n;i++)dis[i]=1e18;
+	solve(1);
+
+	for(int i=1;i&lt;=q;i++)printf(&quot;%lld\n&quot;,ans[i]);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

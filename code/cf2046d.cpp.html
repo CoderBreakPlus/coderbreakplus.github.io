@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf2046d.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf2046d.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/cf2046d.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-09-28 08:59:02
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+template &lt;typename T_flow = long long, typename T_cost = long long&gt;
+struct BoundMCMF {
+    static constexpr T_flow INF_FLOW = numeric_limits&lt;T_flow&gt;::max() / 2;
+    static constexpr T_cost INF_COST = numeric_limits&lt;T_cost&gt;::max() / 2;
+
+    struct Edge {
+        int to;
+        T_flow cap, flow;
+        T_cost cost;
+        int nxt;
+    };
+
+    int n;
+    vector&lt;Edge&gt; e;
+    vector&lt;int&gt; head;
+    
+    vector&lt;T_flow&gt; deg;
+    T_cost base_cost;
+
+    vector&lt;T_cost&gt; dis;
+    vector&lt;int&gt; pre_v, pre_e;
+    vector&lt;bool&gt; inq;
+
+    BoundMCMF(int N) {
+        n = N;
+        int max_nodes = n + 3;
+        head.assign(max_nodes, -1);
+        deg.assign(max_nodes, 0);
+        base_cost = 0;
+        
+        dis.resize(max_nodes);
+        pre_v.resize(max_nodes);
+        pre_e.resize(max_nodes);
+        inq.resize(max_nodes);
+    }
+    void add_edge(int u, int v, T_flow cap, T_cost cost) {
+        e.push_back({v, cap, 0, cost, head[u]});
+        head[u] = (int)e.size() - 1;
+        e.push_back({u, 0, 0, -cost, head[v]});
+        head[v] = (int)e.size() - 1;
+    }
+    void add_bound_edge(int u, int v, T_flow L, T_flow R, T_cost cost) {
+        base_cost += L * cost;
+        deg[u] -= L;
+        deg[v] += L;
+        add_edge(u, v, R - L, cost);
+    }
+    bool spfa(int s, int t) {
+        fill(dis.begin(), dis.end(), INF_COST);
+        fill(inq.begin(), inq.end(), false);
+        queue&lt;int&gt; q;
+        dis[s] = 0;
+        q.push(s);
+        inq[s] = true;
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            inq[u] = false;
+            for (int i = head[u]; i != -1; i = e[i].nxt) {
+                int v = e[i].to;
+                if (e[i].cap &gt; e[i].flow &amp;&amp; dis[v] &gt; dis[u] + e[i].cost) {
+                    dis[v] = dis[u] + e[i].cost;
+                    pre_v[v] = u;
+                    pre_e[v] = i;
+                    if (!inq[v]) {
+                        q.push(v);
+                        inq[v] = true;
+                    }
+                }
+            }
+        }
+        return dis[t] != INF_COST;
+    }
+    pair&lt;bool, T_cost&gt; solve(int S, int T) {
+        add_edge(T, S, INF_FLOW, 0);
+        int SS = n + 1;
+        int TT = n + 2;
+        T_flow sum_req = 0;
+        for (int i = 1; i &lt;= n; i++) {
+            if (deg[i] &gt; 0) {
+                add_edge(SS, i, deg[i], 0);
+                sum_req += deg[i];
+            } else if (deg[i] &lt; 0) {
+                add_edge(i, TT, -deg[i], 0);
+            }
+        }
+        T_flow total_flow = 0;
+        T_cost total_cost = 0;
+        while (spfa(SS, TT)) {
+            T_flow push = INF_FLOW;
+            for (int u = TT; u != SS; u = pre_v[u]) {
+                int p = pre_e[u];
+                push = min(push, e[p].cap - e[p].flow);
+            }
+            for (int u = TT; u != SS; u = pre_v[u]) {
+                int p = pre_e[u];
+                e[p].flow += push;
+                e[p ^ 1].flow -= push;
+                total_cost += push * e[p].cost;
+            }
+            total_flow += push;
+        }
+        if (total_flow != sum_req) {
+            return {false, -1};
+        }
+        return {true, base_cost + total_cost};
+    }
+};
+
+int n,m,a[205],u[805],v[805],bel[205];
+bool vis[205][205];
+vector&lt;int&gt;E[205];
+
+void dfs(int x,int s){
+	if(vis[s][x])return;
+	vis[s][x]=1;
+	for(int y:E[x])
+		dfs(y,s);
+}
+int S,T,now,u_in[205],u_out[205],u_0[205];
+void procedure(){
+	n=read(),m=read();
+	for(int i=1;i&lt;=n;i++) a[i]=read(),E[i].clear(),bel[i]=i,memset(vis[i],0,sizeof(vis[i]));
+	for(int i=1;i&lt;=m;i++){
+		u[i]=read(),v[i]=read();
+		E[u[i]].pb(v[i]);
+	}
+	for(int i=1;i&lt;=n;i++)
+		dfs(i,i);
+
+	for(int i=1;i&lt;=n;i++)if(bel[i]==i){
+		u_in[i]=++now,u_out[i]=++now,u_0[i]=++now;
+		for(int j=i+1;j&lt;=n;j++)if(vis[i][j]&amp;&amp;vis[j][i])
+			bel[j]=i,a[i]+=a[j];
+	}
+	BoundMCMF&lt;int,int&gt;flow(now);
+	for(int i=1;i&lt;=n;i++)if(bel[i]==i){
+		flow.add_edge(S,u_0[i],a[i],0);
+		flow.add_edge(u_out[i],T,flow.INF_FLOW,0);
+		flow.add_bound_edge(u_in[i],u_out[i],1,flow.INF_FLOW,0);
+		flow.add_edge(u_0[i],u_in[i],1,1);
+		flow.add_edge(u_0[i],u_out[i],flow.INF_FLOW,0);
+	}
+
+	for(int i=1,x,y;i&lt;=m;i++){
+		if((x=bel[u[i]])==(y=bel[v[i]]))continue;
+		flow.add_edge(u_out[x],u_in[y],flow.INF_FLOW,0);
+	}
+	auto [x,y]=flow.solve(S,T);
+	printf(&quot;%d\n&quot;,x?y:-1);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=read();
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

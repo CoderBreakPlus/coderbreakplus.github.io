@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p11497.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p11497.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/p11497.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-07-31 18:18:46
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair&lt;ll,ll&gt; P;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+
+int n,q,a[250005],b[250005];
+struct Seq{
+	ll f[21][250005],g[21][250005];
+
+	ll qmax(int l,int r){
+		if(l&gt;r) return -1e18;
+		int p=lg2(r-l+1); return max(f[p][l],f[p][r-(1&lt;&lt;p)+1]);
+	}
+	ll qmin(int l,int r){
+		if(l&gt;r) return 1e18;
+		int p=lg2(r-l+1); return min(g[p][l],g[p][r-(1&lt;&lt;p)+1]);
+	}
+
+	void init(){
+		for(int i=1;i&lt;=lg2(n+1);i++)
+		for(int j=0;j&lt;=n;j++)
+			f[i][j]=max(f[i-1][j],f[i-1][j+(1&lt;&lt;i-1)]),
+			g[i][j]=min(g[i-1][j],g[i-1][j+(1&lt;&lt;i-1)]);
+	}
+}sA, sB;
+bool fL[250005], fR[250005];
+int gL[250005], gR[250005];
+
+int oL[250005], tL, oR[250005], tR;
+
+int X[250005], Y[250005], W[250005], Z[2500005];
+
+int tag[1000005], cnt[1000005];
+ll ans[1000005], out[1000005];
+void pushup(int pos){
+	ans[pos]=ans[pos&lt;&lt;1]+ans[pos&lt;&lt;1|1];
+	cnt[pos]=cnt[pos&lt;&lt;1]+cnt[pos&lt;&lt;1|1];
+}
+void upd(int pos,int v){
+	ans[pos]+=1ll*cnt[pos]*v;
+	tag[pos]+=v;
+}
+void pushdown(int pos){
+	if(tag[pos]){
+		upd(pos&lt;&lt;1,tag[pos]);
+		upd(pos&lt;&lt;1|1,tag[pos]); 
+		tag[pos]=0;
+	}
+}
+void cover(int l,int r,int ql,int qr,int pos){
+	if(ql&gt;qr) return;
+	if(ql&lt;=l &amp;&amp; r&lt;=qr){
+		upd(pos,1);
+		return;
+	}
+	int mid=(l+r)&gt;&gt;1; pushdown(pos);
+	if(ql&lt;=mid) cover(l,mid,ql,qr,pos&lt;&lt;1);
+	if(mid&lt;qr) cover(mid+1,r,ql,qr,pos&lt;&lt;1|1);
+	pushup(pos);
+}
+void modify(int l,int r,int x,int v,int pos){
+	if(l==r){
+		cnt[pos]+=v;
+		return;
+	}
+	int mid=(l+r)&gt;&gt;1; pushdown(pos);
+	if(x&lt;=mid) modify(l,mid,x,v,pos&lt;&lt;1);
+	else modify(mid+1,r,x,v,pos&lt;&lt;1|1);
+	pushup(pos);
+}
+ll query(int l,int r,int ql,int qr,int pos){
+	if(ql&gt;qr) return 0;
+	if(ql&lt;=l &amp;&amp; r&lt;=qr){
+		return ans[pos];
+	}
+	int mid=(l+r)&gt;&gt;1; ll ret=0; pushdown(pos);
+	if(ql&lt;=mid) ret+=query(l,mid,ql,qr,pos&lt;&lt;1);
+	if(mid&lt;qr) ret+=query(mid+1,r,ql,qr,pos&lt;&lt;1|1);
+	return ret;
+}
+vector&lt;pair&lt;int,int&gt;&gt;sb[250005],sc[250005];
+
+
+vector&lt;ll&gt; maxsum(vector&lt;int&gt;A,vector&lt;int&gt;B,vector&lt;int&gt;L1,vector&lt;int&gt; R1,vector&lt;int&gt; L2,vector&lt;int&gt;R2)
+{
+	n=A.size();
+	for(int i=0;i&lt;n;i++) a[i+1]=A[i],b[i+1]=B[i];
+
+	for(int i=1;i&lt;=n;i++) sA.f[0][i]=sA.g[0][i]=a[i]+sA.f[0][i-1];
+	for(int i=1;i&lt;=n;i++) sB.f[0][i]=sB.g[0][i]=b[i]+sB.f[0][i-1];
+
+	sA.init(); sB.init();
+
+	ll glo = -1e18;
+	for(int i=1;i&lt;=n;i++){
+		fL[i]=(sA.qmin(0,i-1)&gt;=sA.g[0][i-1]);
+		fR[i]=(sA.qmax(i+1,n)&lt;=sA.f[0][i]);
+		glo=max(glo, sA.g[0][i]-sA.qmin(0,i-1));
+
+		if(fL[i]) oL[++tL]=i;
+		if(fR[i]) oR[++tR]=i;
+	}
+
+	for(int l=1;l&lt;=n;l++){
+		int lft=l,rht=n; gL[l]=l;
+		while(lft&lt;=rht){
+			int mid=(lft+rht)&gt;&gt;1;
+			if(sB.qmin(l,mid) &lt; sB.g[0][l-1]) rht=mid-1;
+			else gL[l]=mid,lft=mid+1;
+		}
+	}
+
+	for(int r=1;r&lt;=n;r++){
+		int lft=0,rht=r; gR[r]=r;
+		while(lft&lt;=rht){
+			int mid=(lft+rht)&gt;&gt;1;
+			if(sB.qmax(mid,r) &gt; sB.f[0][r]) lft=mid+1;
+			else gR[r]=mid,rht=mid-1;
+		}
+	}
+
+	for(int i=1;i&lt;=tL;i++){
+		int l=oL[i];
+
+		int lft=l, rht=n; X[i]=n+1;
+		while(lft&lt;=rht){
+			int mid=(lft+rht)&gt;&gt;1;
+			if(sB.qmax(l,mid)-sB.g[0][l-1]&gt;=glo){
+				X[i]=mid;
+				rht=mid-1;
+			}else lft=mid+1;
+		}
+		Y[i]=gL[l];
+
+		X[i]=lower_bound(oR+1, oR+tR+1, X[i])-oR;
+		Y[i]=upper_bound(oR+1, oR+tR+1, Y[i])-(oR+1);
+	}
+
+	for(int i=1;i&lt;=tR;i++){
+		int r=oR[i];
+		W[i]=gR[r], Z[i]=r;
+		W[i]=lower_bound(oL+1, oL+tL+1, W[i])-oL;
+		Z[i]=upper_bound(oL+1, oL+tL+1, Z[i])-(oL+1);
+		
+		if(W[i]&lt;=Z[i]) sb[W[i]].pb(i,1), sb[Z[i]+1].pb(i,1);
+	}
+	
+	q=L1.size();
+
+	for(int i=0;i&lt;q;i++){
+		L1[i]++, R1[i]++, L2[i]++, R2[i]++;
+	}
+	for(int i=0;i&lt;q;i++){
+		L1[i]=lower_bound(oL+1,oL+tL+1,L1[i])-oL;
+		R1[i]=upper_bound(oL+1,oL+tL+1,R1[i])-(oL+1);
+
+		L2[i]=lower_bound(oR+1,oR+tR+1,L2[i])-oR;
+		R2[i]=upper_bound(oR+1,oR+tR+1,R2[i])-(oR+1);
+		
+		sc[R1[i]].pb(i+1,R2[i]);
+		sc[R1[i]].pb(-(i+1),L2[i]-1);
+		sc[L1[i]-1].pb(-(i+1),R2[i]);
+		sc[L1[i]-1].pb(i+1,L2[i]-1);
+	}
+
+	for(int i=1;i&lt;=tL;i++){
+		for(auto [x,y]: sb[i]){
+			modify(1,tR,x,y,1);
+		}
+		cover(1,tR,X[i],Y[i],1);
+		for(auto [x,y]: sc[i]){
+			ll z;
+			if(x&gt;0){
+				out[x-1]+=(z=query(1,tR,1,y,1));
+			}else{
+				out[-x-1]-=(z=query(1,tR,1,y,1));
+			}
+		}
+	}
+
+	return vector&lt;ll&gt;(out,out+q);
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qoj7742.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>qoj7742.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/qoj7742.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-05-18 09:29:31
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+inline ll read(){
+    ll x=0, f=1; int ch=getchar();
+    while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+    while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+    return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+ 
+mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
+ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+const ull mod = (ll)1e18 + 3, base = rnd() % 998244353 + 1233;
+ 
+const int N=2e5+5;
+const int M=1e7+5;
+int n,m,p[N],s[N],t[N];
+vector&lt;pair&lt;int,int&gt;&gt;E[N];
+ 
+int lc[M],rc[M],val[M],idt;
+int rt[N],fl[N],len[N],bfn[N],ibfn[N];
+ull hsh[N],pw[N];
+ 
+void init(){
+    for(int i=1;i&lt;=idt;i++)lc[i]=rc[i]=val[i]=0;
+    idt=0;
+}
+void update(int bef,int &amp;now,int l,int r,int x,int w){
+    now=++idt;
+    if(l==r){
+        val[now]=w;
+        return;
+    }
+    int mid=(l+r)&gt;&gt;1;
+    if(x&lt;=mid) rc[now]=rc[bef],update(lc[bef],lc[now],l,mid,x,w);
+    else lc[now]=lc[bef],update(rc[bef],rc[now],mid+1,r,x,w);
+}
+int query(int p,int l,int r,int x){
+    if(!p) return 0;
+    if(l==r) return val[p];
+    int mid=(l+r)&gt;&gt;1;
+    if(x&lt;=mid)return query(lc[p],l,mid,x);
+    else return query(rc[p],mid+1,r,x);
+}
+ 
+ull seq[N],qzt[N]; int low[N];
+ 
+void build(){
+    queue&lt;int&gt;q; q.push(0);
+    int tmp=0;
+    while(!q.empty()){
+        int x=q.front();q.pop();
+        rt[x]=rt[fl[x]];
+        if(x)bfn[x]=++tmp, ibfn[tmp]=x;
+        for(auto [y,ch]:E[x]){
+            len[y]=len[x]+1;
+            seq[y]=hsh[y]=((__int128)hsh[x]*base+ch)%mod;
+            fl[y]=query(rt[fl[x]],1,n,ch);
+            update(rt[x],rt[x],1,n,ch,y);
+            q.push(y);
+        }
+    }
+    sort(seq+1,seq+n+1);
+    auto find = [&amp;](ull x){
+        bool ret=(*lower_bound(seq,seq+n+1,x))==x;
+        return ret;
+    };
+    for(int i=0;i&lt;=n;i++){
+        int L=1,R=m;low[i]=0;
+        while(L&lt;=R){
+            int mid=(L+R)&gt;&gt;1;
+            ull qry=((__int128)hsh[i]*pw[mid]+qzt[mid])%mod;
+            if(find(qry))low[i]=mid,L=mid+1;
+            else R=mid-1;
+        }
+    }
+}
+ 
+ll ans[N];
+ 
+namespace brute{
+    int pos[N];
+    void main(){
+        for(int i=1;i&lt;=n;i++)pos[i]=i;
+        for(int s=1;s&lt;=m;s++){
+            for(int i=1;i&lt;=n;i++){
+                pos[i]=query(rt[pos[i]],1,n,t[s]);
+                ans[s]+=len[pos[i]];
+            }
+        }
+    }
+}
+namespace brute2{
+    int st[N], val[N];
+    int jp[20][N], mx[20][N];
+    ll tmp1[N], tmp2[N];
+    void main(){
+        for(int i=1;i&lt;=n;i++)val[i]=1;
+ 
+        for(int i=0;i&lt;=n;i++) jp[0][i]=fl[i], mx[0][i]=low[i];
+        for(int i=1;i&lt;20;i++)
+         for(int j=0;j&lt;=n;j++){
+             jp[i][j]=jp[i-1][jp[i-1][j]];
+             mx[i][j]=max(mx[i-1][j],mx[i-1][jp[i-1][j]]);
+         }
+ 
+        for(int i=n;i&gt;=1;i--){
+            int x=ibfn[i], fx=x;
+            // while(fx &amp;&amp; low[fx]&lt;=low[x]) fx=fl[fx];
+            for(int j=19;j&gt;=0;j--)
+                if(fx &amp;&amp; mx[j][fx]&lt;=low[x]) fx=jp[j][fx];
+ 
+            tmp1[1]+=len[x], tmp1[low[x]+1]-=len[x];
+            tmp2[1]++, tmp2[low[x]+1]--;
+ 
+            if(fx){
+                tmp1[low[x]+1]+=(ll)len[fx]*val[x], tmp1[low[fx]+1]-=(ll)len[fx]*val[x];
+                tmp2[low[x]+1]+=val[x], tmp2[low[fx]+1]-=val[x];
+                 
+                val[fx]+=val[x];
+            }else{
+                st[low[x]+1]+=val[x];
+            }
+        }
+ 
+        for(int i=1;i&lt;=m;i++)
+            tmp1[i]+=tmp1[i-1],tmp2[i]+=tmp2[i-1],ans[i]+=tmp1[i]+tmp2[i]*i;
+ 
+        int cur=0,ok=0;
+        for(int i=1;i&lt;=m;i++){
+            ok+=st[i];
+            cur=query(rt[cur],1,n,t[i]);
+            ans[i]+=(ll)ok*len[cur];
+        }
+ 
+        for(int i=0;i&lt;=m+1;i++)st[i]=tmp1[i]=tmp2[i]=0;
+    }
+}
+void procedure(){
+    n=read(),m=read();
+    for(int i=1;i&lt;=n;i++)p[i]=read();
+    for(int i=1;i&lt;=n;i++)s[i]=read(),E[p[i]].pb(i,s[i]);
+    pw[0]=1;
+    for(int i=1;i&lt;=m;i++)
+        t[i]=read(),pw[i]=(__int128)pw[i-1]*base%mod,
+        qzt[i]=((__int128)qzt[i-1]*base+t[i])%mod;
+    build();
+ 
+    brute2::main();
+    for(int i=1;i&lt;=m;i++)printf(&quot;%lld &quot;,ans[i]);
+    puts(&quot;&quot;);
+}
+void clear(){
+    init();
+    for(int i=0;i&lt;=n+1;i++)E[i].clear();
+    for(int i=0;i&lt;=n+1;i++)rt[i]=fl[i]=len[i]=low[i]=seq[i]=hsh[i]=bfn[i]=ibfn[i]=0;
+    for(int i=0;i&lt;=m+1;i++)qzt[i]=pw[i]=ans[i]=0;
+}
+int main(){
+    #ifdef LOCAL
+        assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+        assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+    #endif
+    ll c=read(),T=read();
+    // math_init();
+    while(T--) procedure(),clear();
+    return 0;
+}
+</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

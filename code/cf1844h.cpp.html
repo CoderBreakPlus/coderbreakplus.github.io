@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf1844h.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf1844h.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/cf1844h.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-08-29 14:42:00
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+#define ll long long
+#define MP make_pair
+mt19937 rnd(time(0));
+const int MOD=998244353;
+const int MAXN=3e5+5; 
+int c[MAXN][3];bool is[MAXN];
+int n,fa[MAXN],len[MAXN];ll fac[MAXN],inf[MAXN],ans[MAXN];
+ll ksm(ll a,int b){ll res=1;while(b){if(b&amp;1)res=res*a%MOD;a=a*a%MOD,b&gt;&gt;=1;}return res;} 
+inline int find(int x){
+	while(x^fa[x]) x=fa[x]=fa[fa[x]];
+	return x;
+}
+int main(){
+	ios::sync_with_stdio(false);
+	fac[0]=inf[0]=1;
+	for(int i=1;i&lt;MAXN;i++) inf[i]=ksm(fac[i]=fac[i-1]*i%MOD,MOD-2); 
+	cin&gt;&gt;n;
+	for(int i=1;i&lt;=n;i++) fa[i]=i,len[i]=1;
+	c[0][1]=n;
+	for(int i=1;i&lt;=n;i++){
+		for(int j:{0,1,2}) c[i][j]=c[i-1][j];is[i]=is[i-1];
+		int x,y;cin&gt;&gt;x&gt;&gt;y;x=find(x),y=find(y);
+		if(x==y){
+			c[i][len[x]%3]--;
+			is[i]|=(len[x]%3!=0);
+		}else{
+			c[i][len[x]%3]--;
+			c[i][len[y]%3]--;
+			fa[x]=y;len[y]+=len[x];
+			c[i][len[y]%3]++;
+		}
+	}
+	ll f=1,g=1,x=0,y=0;// (x,y),(x+1,y+1)
+	auto plus_x=[&amp;](){// (x,y) -&gt; (x+2,y-1)
+		ll _f=(g-(x+1)*(x+y+1)%MOD*f%MOD+MOD)*ksm(y,MOD-2)%MOD;
+		ll _g=(y*(x+y+2)%MOD*_f%MOD+(x+2)*g)%MOD;
+		swap(f,_f);swap(g,_g);
+		x+=2,y-=1;
+	};
+	auto plus_y=[&amp;](){// (x,y) -&gt; (x-1,y+2)
+		ll _f=(g-(y+1)*(x+y+1)%MOD*f%MOD+MOD)*ksm(x,MOD-2)%MOD;
+		ll _g=(x*(x+y+2)%MOD*_f%MOD+(y+2)*g)%MOD;
+		swap(f,_f);swap(g,_g);
+		x-=1,y+=2;
+	};
+	for(int i=n;i&gt;=1;i--)if(!is[i]){
+		while(x&lt;c[i][1]||y&lt;c[i][2]){
+			if(x&lt;c[i][1]&amp;&amp;y&lt;c[i][2]) plus_x(),plus_y();
+			if(x&lt;c[i][1]-1) plus_x();
+			if(y&lt;c[i][2]-1) plus_y();
+		}
+		ans[i]=f*fac[x+y+c[i][0]]%MOD*inf[x+y]%MOD;
+	}
+	for(int i=1;i&lt;=n;i++) cout&lt;&lt;(is[i]?0:ans[i])&lt;&lt;endl;
+	return 0;
+}
+// f(x,y)=x*(x+y-1)*f(x-1,y-1)+(y-1)*f(x+1,y-2)
+// f(x,y)=y*(x+y-1)*f(x-1,y-1)+(x-1)*f(x-2,y+1)
+</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

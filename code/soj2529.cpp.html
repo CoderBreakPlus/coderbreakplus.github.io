@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2529.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2529.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/soj2529.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-03-31 09:15:19
+// http://xsy.gdgzez.com.cn/JudgeOnline/problem.php?cid=2403&amp;pid=0
+// related problem: CF1682E
+
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+    ll x=0, f=1; int ch=getchar();
+    while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+    while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+    return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+inline void addmod(int &amp;x){ if(x &gt;= mod) x -= mod; }
+inline void addmod(ll &amp;x){ if(x &gt;= mod) x -= mod; }
+inline ll qpow(ll a,ll b){
+    ll ans=1, base=a;
+    while(b){
+        if(b&amp;1) ans=ans*base%mod;
+        base=base*base%mod; b&gt;&gt;=1;
+    }
+    return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+ 
+int n,C,a[300005],b[300005],c[300005],ia[300005],ib[300005];
+bool vis[300005],ok[300005];
+int seq[300005],m;
+ 
+vector&lt;pair&lt;int,int&gt;&gt;out;
+int ord[300005], ordc;
+namespace solver{
+    int *to = a;
+    int rk[300005],in[300005],len[300005],cnt,deg[300005];
+    int q[300005];
+    vector&lt;int&gt;E[300005];
+    vector&lt;pair&lt;int,int&gt;&gt;G[300005];
+    void addedge(int x,int y,int i){
+        G[x].pb(y,i+1),G[y].pb(x,i+1);
+    }
+ 
+    int L, ri;
+    bool cmp(pair&lt;int,int&gt; x, pair&lt;int,int&gt; y){
+        int rx=(rk[x.fi]&lt;=ri)?(rk[x.fi]+L):rk[x.fi];
+        int ry=(rk[y.fi]&lt;=ri)?(rk[y.fi]+L):rk[y.fi];
+        return rx&lt;ry;
+    }
+    void init(){
+        memset(rk,-1,sizeof(rk)); 
+        for(int i=1;i&lt;=n;i++) E[i].clear(),G[i].clear(),deg[i]=len[i]=in[i]=q[i]=0;
+        cnt=0; ordc=0;
+    }
+    void main(){
+        m=out.size();
+        for(int i=1;i&lt;=n;i++)
+            if(rk[i]==-1){
+                rk[i]=0,in[i]=++cnt;
+                int j,k;
+                for(j=to[i],k=1;j!=i;j=to[j],++k) rk[j]=k,in[j]=cnt;
+                len[cnt]=k;
+            }
+        for(int i=1;i&lt;=n;i++){
+            L=len[in[i]],ri=rk[i];
+            sort(G[i].begin(),G[i].end(),cmp);
+            for(int j=1;j&lt;G[i].size();j++)
+                E[G[i][j-1].se].emplace_back(G[i][j].se),++deg[G[i][j].se];
+        }
+        int hd=1,tl=0;
+        for(int i=1;i&lt;=m;i++)
+            if(deg[i]==0) q[++tl]=i;
+ 
+        while(hd&lt;=tl){
+            int x=q[hd++];
+            ord[ordc++]=x-1;
+            for(auto v:E[x])
+                if(!--deg[v])q[++tl]=v;
+        }
+    }
+}
+int fa[300005],ls[300005],rs[300005],prv[300005],nxt[300005],sz[300005];
+inline int find(int x){if(x!=fa[x])fa[x]=find(fa[x]);return fa[x];}
+ 
+inline void merge(int x,int y){
+    x=find(x),y=find(y);
+    if(sz[x]&lt;sz[y]){
+        fa[x]=y; ls[y]=ls[x];
+        sz[y]+=sz[x];
+    }else{
+        fa[y]=x; rs[x]=rs[y];
+        sz[x]+=sz[y];
+    }
+}
+pair&lt;int,int&gt;vec[300005]; int vect;
+void procedure(){
+    n=read(),C=read();
+    for(int i=1;i&lt;=n;i++) vis[i]=0;
+    for(int i=1;i&lt;=n;i++)c[i]=read();
+    for(int i=1;i&lt;=n;i++)b[i]=read(),ib[b[i]]=i;
+ 
+    for(int i=1;i&lt;=n;i++)a[b[i]]=c[i];
+    for(int i=1;i&lt;=n;i++)ia[a[i]]=i;
+ 
+    swap(a,ia);
+    ll ans=1ll*n*C;
+    out.clear();
+    solver::init();
+ 
+    int tot=0,sum=0;
+    for(int o=1;o&lt;=n;o++){
+        if(!vis[o]){
+            ans-=C;
+            int w=o; m=0;
+            while(!vis[w]){
+                seq[m++]=w;
+                vis[w]=1;
+                w=a[w];
+            }
+            vect=0;
+            for(int i=0;i&lt;m;i++)vec[vect++]={seq[i],i},nxt[i]=i+1,prv[i]=i-1;
+            prv[0]=m-1, nxt[m-1]=0;
+ 
+            sort(vec,vec+vect);vect--;
+            for(int i=0;i&lt;m;i++) ok[i]=0,sz[i]=1,fa[i]=ls[i]=rs[i]=i;
+ 
+            auto link = [&amp;](int x,int y){
+                x=seq[x],y=seq[y];
+                ans+=max(y-x,x-y);
+                out.pb(x,y);
+                solver::addedge(x,y,tot++); 
+            };
+            for(int i=0;i&lt;vect;i++){
+                int p=vec[i].se;
+                ok[p]=1;
+                if(ok[prv[p]]) merge(prv[p],p);
+                if(ok[nxt[p]]) merge(p,nxt[p]);
+                 
+                int lf=prv[ls[find(p)]];
+                int rh=nxt[rs[find(p)]];
+ 
+                if(seq[lf]&lt;seq[rh]) link(lf,p);
+                else link(p,rh);
+            }
+        }
+    }
+    solver::main();
+    printf(&quot;%lld %d\n&quot;,ans,(int)out.size());
+    swap(a,ia);
+ 
+    for(int i=0;i&lt;ordc;i++){
+        auto [x,y] = out[ord[i]];
+        int p1=ia[x];
+        int p2=ia[y];
+        swap(a[p1],a[p2]);
+        swap(ia[x],ia[y]);
+        printf(&quot;%d %d\n&quot;,ib[p1],ib[p2]);
+    }
+}
+int main(){
+    #ifdef LOCAL
+        assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+        assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+    #endif
+    ll T=read();
+    // math_init();
+    while(T--) procedure();
+    return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

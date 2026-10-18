@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>arc228a.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>arc228a.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/arc228a.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-09-01
+#include&lt;bits/stdc++.h&gt;
+#define int long long 
+using namespace std;
+const int mod=998244353;
+inline void Add(int &amp;x,int y){((x+=y)&gt;=mod)?(x-=mod):0;}
+int tf[505][505][2],tg[505][505][2],tmp[505][505];
+int f[505][505],g[505][505];
+int p[505],q[505],n,m,a[505];
+bool flag[505];
+signed main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cin&gt;&gt;n&gt;&gt;m;
+	for(int i=1;i&lt;=n;i++)
+	{
+		int x;
+		cin&gt;&gt;x;
+		p[x]=i;
+	}
+	for(int i=1;i&lt;=n;i++)
+	{
+		int x;
+		cin&gt;&gt;x;
+		q[x]=i;
+	}
+	for(int i=1;i&lt;=n;i++)
+		a[p[i]]=q[i];
+	f[0][0]=1;
+	for(int i=1;i&lt;=n;i++)
+	{
+		if(flag[i])
+			continue;
+		int c=1,x=a[i];
+		flag[i]=1;
+		while(x!=i)
+			c++,flag[x]=1,x=a[x];
+		for(int j=0;j&lt;=n;j++)
+			for(int k=0;j+k&lt;=n;k++)
+				tmp[j][k]=tg[j][k][0]=tg[j][k][1]=0;
+		for(int j=0;j&lt;=n;j++)
+			for(int k=0;j+k&lt;=n;k++)
+				tf[j][k][0]=0,tf[j][k][1]=f[j][k];
+		for(int j=2;j&lt;=c;j++)
+		{
+			for(int x=0;x&lt;=n;x++)
+				for(int y=0;x+y&lt;=n;y++)
+					if(tf[x][y][0]||tf[x][y][1])
+						Add(tg[x+1][y][1],tf[x][y][0]),Add(tg[x][y+1][1],tf[x][y][1]),
+						Add(tg[x][y][0],tf[x][y][0]),Add(tg[x][y][0],tf[x][y][1]);
+			for(int x=0;x&lt;=n;x++)
+				for(int y=0;x+y&lt;=n;y++)
+					tf[x][y][0]=tg[x][y][0],tf[x][y][1]=tg[x][y][1],tg[x][y][0]=tg[x][y][1]=0;
+		}
+		for(int x=0;x&lt;=n;x++)
+			for(int y=0;x+y&lt;=n;y++)
+				Add(tmp[x+1][y],tf[x][y][0]),Add(tmp[x][y+1],tf[x][y][1]);
+		for(int j=0;j&lt;=n;j++)
+			for(int k=0;j+k&lt;=n;k++)
+				tf[j][k][0]=f[j][k],tf[j][k][1]=0;
+		for(int j=2;j&lt;=c;j++)
+		{
+			for(int x=0;x&lt;=n;x++)
+				for(int y=0;x+y&lt;=n;y++)
+					if(tf[x][y][0]||tf[x][y][1])
+						Add(tg[x+1][y][1],tf[x][y][0]),Add(tg[x][y+1][1],tf[x][y][1]),
+						Add(tg[x][y][0],tf[x][y][0]),Add(tg[x][y][0],tf[x][y][1]);
+			for(int x=0;x&lt;=n;x++)
+				for(int y=0;x+y&lt;=n;y++)
+					tf[x][y][0]=tg[x][y][0],tf[x][y][1]=tg[x][y][1],tg[x][y][0]=tg[x][y][1]=0;
+		}
+		for(int x=0;x&lt;=n;x++)
+			for(int y=0;x+y&lt;=n;y++)
+				Add(tmp[x][y],tf[x][y][0]),Add(tmp[x][y],tf[x][y][1]);
+		for(int x=0;x&lt;=n;x++)
+			for(int y=0;x+y&lt;=n;y++)
+				f[x][y]=tmp[x][y];
+	}
+	for(int i=1;i&lt;=m;i++)
+	{
+		for(int j=0;j&lt;=n;j++)
+			for(int k=0;j+k&lt;=n;k++)
+			{
+				if(!f[j][k])
+					continue;
+				int x=n-2*j-k,y=n-j-k-x;
+				Add(g[j][k],(((j-1)*j/2+(k-1)*k/2+(x-1)*x/2+(y-1)*y/2+j*k+j*x+k*y+x*y)*2+j+y)*f[j][k]%mod);
+				if(k&amp;&amp;x)
+					Add(g[j+1][k-1],k*x*2*f[j][k]%mod);
+				if(j&amp;&amp;y)
+					Add(g[j-1][k+1],j*y*2*f[j][k]%mod);
+				if(k)
+					Add(g[j][k-1],k*f[j][k]%mod);
+				if(x)
+					Add(g[j][k+1],x*f[j][k]%mod);
+			}
+		for(int j=0;j&lt;=n;j++)
+			for(int k=0;j+k&lt;=n;k++)
+				f[j][k]=g[j][k],g[j][k]=0;
+	}
+	int ans=0;
+	for(int i=0;i&lt;=n;i++)
+		Add(ans,f[i][n-i]);
+	cout&lt;&lt;ans&lt;&lt;&quot;\n&quot;;
+}
+</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

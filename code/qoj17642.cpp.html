@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qoj17642.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>qoj17642.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/qoj17642.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-05-14 14:57:04
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+struct Edge{
+	int to,nxt;
+}e[1200005];
+int hd[600005],tot;
+void add(int u,int v){
+	e[++tot].to=v;
+	e[tot].nxt=hd[u];
+	hd[u]=tot;
+}
+int n,m,dfn[600005],tim,dep[600005],f[20][600005],jp[20][600005];
+int get(int x,int y){ return dfn[x]&lt;dfn[y]?x:y; }
+int LCA(int x,int y){
+	if(x==y)return x;
+	if((x=dfn[x])&gt;(y=dfn[y]))swap(x,y);
+	int p=lg2(y-x++);
+	return get(f[p][x],f[p][y-(1&lt;&lt;p)+1]);
+}
+void dfs(int x,int fa){
+	dfn[x]=++tim, f[0][dfn[x]]=fa, jp[0][x]=fa;
+	for(int i=1;i&lt;20;i++)jp[i][x]=jp[i-1][jp[i-1][x]];
+	for(int i=hd[x];i;i=e[i].nxt){
+		int y=e[i].to;
+		if(y==fa)continue;
+		dep[y]=dep[x]+1,dfs(y,x);
+	}
+}
+int kth_fa(int x,int k){
+	while(k){
+		int t=__builtin_ctz(k);
+		x=jp[t][x], k^=(1&lt;&lt;t);
+	}
+	return x;
+}
+int dis(int x,int y,int z){ return dep[x]+dep[y]-2*dep[z]; }
+int jump(int x,int y,int z,int d){
+	if(dep[x]-dep[z]&gt;=d) return kth_fa(x,d);
+	else return kth_fa(y,dis(x,y,z)-d);
+}
+struct Node{
+	int u,v,r; ll sum;
+}F[20][300005];
+inline Node operator+ (const Node &amp;A,const Node &amp;B){
+	Node C=(Node){0,0,0,0};
+	int z=LCA(A.v,B.u),d=dis(A.v,B.u,z);
+
+	if(d&gt;=A.r+B.r){
+		C.sum=A.sum+B.sum+d-A.r-B.r;
+		if(!A.sum) C.u=jump(A.v,B.u,z,A.r);
+		else C.u=A.u;
+		if(!B.sum) C.v=jump(B.u,A.v,z,B.r);
+		else C.v=B.v;
+	}else if(A.r+d&lt;=B.r) C=A, C.sum+=B.sum;
+	else if(B.r+d&lt;=A.r) C=B, C.sum+=A.sum;
+	else C.r=(A.r+B.r-d)/2, C.u=C.v=jump(A.u,B.u,z,A.r-C.r);
+
+	return C;
+}
+void gems(int c,int n,int m,vector&lt;int&gt; u,vector&lt;int&gt; v,vector&lt;int&gt; a,vector&lt;int&gt; d){
+	::n=n,::m=m;
+	for(int i=0;i&lt;n-1;i++){
+		int t=n+i+1;
+		add(u[i],t),add(t,u[i]);
+		add(v[i],t),add(t,v[i]);
+	}
+	dfs(1,0);
+	for(int i=1;(1&lt;&lt;i)&lt;=2*n-1;i++)
+		for(int j=1;j&lt;=2*n-(1&lt;&lt;i);j++)
+			f[i][j]=get(f[i-1][j],f[i-1][j+(1&lt;&lt;i-1)]);
+
+	for(int i=1;i&lt;=m;i++)F[0][i]=(Node){a[i-1],a[i-1],2*d[i-1],0};
+	for(int i=1;(1&lt;&lt;i)&lt;=m;i++)
+		for(int j=1;j&lt;=m-(1&lt;&lt;i)+1;j++)
+			F[i][j]=F[i-1][j]+F[i-1][j+(1&lt;&lt;i-1)];
+}
+ll query(int x,int l,int r){
+	Node ret=(Node){x,x,0,0};
+	for(int i=19;i&gt;=0;i--)
+		if(l+(1&lt;&lt;i)&lt;=r+1) ret=ret+F[i][l],l+=(1&lt;&lt;i);
+	return ret.sum/2;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

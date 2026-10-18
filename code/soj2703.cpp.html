@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2703.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2703.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/soj2703.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-05 08:23:36
+#include&quot;cards.h&quot;
+#include&lt;bits/stdc++.h&gt;
+// #ifdef LOCAL
+// #include&quot;_cards.cpp&quot;
+// #endif
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+const int N = 10000000;
+int fac[N+5],inv[N+5];
+int lst[2*N+5];
+int *pw2=lst+N;
+
+void math_init(){
+	fac[0]=inv[0]=1;
+	for(int i=1;i&lt;=N;i++) fac[i]=(ull)fac[i-1]*i%mod;
+	inv[N]=qpow(fac[N],mod-2);
+	for(int i=N-1;i&gt;=1;i--) inv[i]=(ull)inv[i+1]*(i+1)%mod;
+}
+inline int binom(int x,int y){
+	if(x&lt;0 || y&lt;0 || x&lt;y) return 0;
+	return (ull)fac[x]*inv[y]%mod*inv[x-y]%mod;
+}
+inline int perm(int x,int y){
+	if(x&lt;0 || y&lt;0 || x&lt;y) return 0;
+	return (ull)fac[x]*inv[x-y]%mod;
+}
+void init(int c,int t){
+	pw2[0]=1;
+	for(int i=-1;i&gt;=-N;i--)
+		pw2[i]=(pw2[i+1]+(pw2[i+1]&amp;1)*mod)&gt;&gt;1;
+	for(int i=1;i&lt;=N;i++)
+		addmod(pw2[i]=pw2[i-1]*2);
+}
+
+int cards(int n,int m,int a,int b){
+	if(!n)return 0;
+	int d=(ull)(a+(ull)2*mod-b)%mod*pw2[-1]%mod;
+
+	fac[0]=1;
+	if(n&gt;=1)inv[1]=1;
+	for(int i=2;i&lt;=n;i++)
+		inv[i]=mod-(ull)(mod/i)*inv[mod%i]%mod;
+	for(int i=1;i&lt;=n;i++)
+		fac[i]=(ull)fac[i-1]*(2*n-i+1)%mod*inv[i]%mod;
+
+	inv[0]=1;
+	for(int i=1;i&lt;n;i++)
+		inv[i]=(ull)inv[i-1]*(pw2[i]+mod-1)%mod;
+
+	int cur=INV(inv[n-1]);
+	for(int i=n-1;i&gt;=1;i--){
+		int pre=inv[i-1];
+		inv[i]=(ull)cur*pre%mod;
+		cur=(ull)cur*(pw2[i]+mod-1)%mod;
+	}
+
+	int bm=qpow(2,m);
+	int rm=qpow(INV(bm),n-1);
+
+	int q[2]={0,0};
+	int ans=0;
+
+	for(int j=0;j&lt;=2*n-2;j++){
+		int C=fac[min(j,2*n-j)];
+
+		int p=(ull)C*(mod+1LL-pw2[j-n])%mod;
+
+		int &amp;las=q[j&amp;1];
+		int now=(p+2ull*las)%mod;
+		las=now;
+
+		int e=j+1-n;
+		int g;
+
+		if(e==0){
+			g=m%mod;
+		}else if(e&gt;0){
+			g=(ull)(rm+mod-1)%mod*inv[e]%mod;
+		}else{
+			int k=-e;
+			g=(ull)(mod+1LL-rm)%mod*pw2[k]%mod*inv[k]%mod;
+		}
+
+		ans=(ans+2ull*now*g)%mod;
+		rm=(ull)rm*bm%mod;
+	}
+
+	return (ull)ans*d%mod*pw2[-2*n+1]%mod;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf1007d.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf1007d.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/cf1007d.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-09-17 14:15:25
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+#define mid ((l+r)&gt;&gt;1)
+int n,m,id;
+const int M = 3e6+5;
+namespace sat{
+	struct Edge{
+		int to,nxt;
+	}e[M&lt;&lt;2];
+	int hd[M],tot,tim;
+	void add(int u,int v){
+		if(!u||!v)return;
+		e[++tot].to=v;
+		e[tot].nxt=hd[u];
+		hd[u]=tot;
+	}
+
+	int low[M],dfn[M],vis[M],col[M],stk[M],tp,colt;
+	void tarjan(int x){
+		low[x]=dfn[x]=++tim; stk[++tp]=x,vis[x]=1;
+		for(int i=hd[x];i;i=e[i].nxt){
+			int y=e[i].to;
+			if(!dfn[y]){
+				tarjan(y);
+				chkmin(low[x],low[y]);
+			}else if(vis[y])
+				chkmin(low[x],dfn[y]);
+		}
+		if(low[x]==dfn[x]){
+			++colt;
+			do{
+				int y=stk[tp];
+				vis[y]=0,col[y]=colt;
+			}while(stk[tp--]!=x);
+		}
+	}
+	void main(){
+		for(int i=1;i&lt;=id;i++)
+			if(!dfn[i])tarjan(i);
+
+		bool fiasco=1;
+		for(int i=1;i&lt;=m;i++)
+			fiasco&amp;=(col[i]!=col[i+m]);
+		if(!fiasco){ puts(&quot;NO&quot;); return; }
+		puts(&quot;YES&quot;);
+		for(int i=1;i&lt;=m;i++)
+			puts(col[i]&lt;col[i+m]?&quot;1&quot;:&quot;2&quot;); 
+	}
+}
+vector&lt;int&gt;E[100005];
+int dfn[100005],out[100005],ff[100005],f[20][100005],jp[20][100005],tim;
+int lc[M],rc[M];
+
+int get(int x,int y){ return dfn[x]&lt;dfn[y]?x:y; }
+void dfs(int x,int fa){
+	f[0][dfn[x]=++tim]=ff[x]=jp[0][x]=fa;
+	for(int i=1;i&lt;20;i++)
+		jp[i][x]=jp[i-1][jp[i-1][x]];
+
+	for(int y:E[x])if(y!=fa)
+		dfs(y,x);
+	out[x]=tim;
+}
+int LCA(int x,int y){
+	if(x==y) return x;
+	if((x=dfn[x])&gt;(y=dfn[y]))swap(x,y);
+	int p=lg2(y-(++x)+1);
+	return get(f[p][x],f[p][y-(1&lt;&lt;p)+1]);
+}
+
+struct Tree{
+	int op;
+	void add(int u,int v){
+		if(!u||!v)return;
+		if(!op) sat::add(u,v);
+		else sat::add(v,u);
+	}
+	int rt[100005];
+	int update(int l,int r,int x,int w,int b){
+		int p=++id;
+		if(l==r) return add(p,w),p;
+		if(x&lt;=mid)
+			add(p,lc[p]=update(l,mid,x,w,lc[b])),add(p,rc[p]=rc[b]);
+		else
+			add(p,lc[p]=lc[b]),add(p,rc[p]=update(mid+1,r,x,w,rc[b]));
+		return p;
+	}
+	void link(int l,int r,int ql,int qr,int w,int p){
+		if(!p||r&lt;ql||qr&lt;l)return;
+		if(ql&lt;=l&amp;&amp;r&lt;=qr) {add(w,p);return;}
+		link(l,mid,ql,qr,w,lc[p]),link(mid+1,r,ql,qr,w,rc[p]);
+	}
+	void montagem(int i,int x,int y){
+		rt[i]=update(1,2*m,x,y,rt[i]);
+	}
+}q0,q1,h0,h1;
+
+int u[20005],v[20005],id0[20005],id1[20005],rv[20005],ru[20005],vv[20005],vu[20005],p[20005];
+vector&lt;int&gt;insq[100005],insh[100005];
+
+void procedure(){
+	n=read();
+	q0.op=h0.op=0;
+	q1.op=h1.op=1;
+	for(int i=1;i&lt;n;i++){
+		int u=read(),v=read();
+		E[u].pb(v),E[v].pb(u);
+	}
+	dfs(1,0);
+	for(int i=1;(1&lt;&lt;i)&lt;=n;i++)
+		for(int j=1;j&lt;=n-(1&lt;&lt;i)+1;j++)
+			f[i][j]=get(f[i-1][j],f[i-1][j+(1&lt;&lt;i-1)]);
+	m=read(); id=2*m;
+
+	for(int i=1;i&lt;=m;i++){
+		int a=read(),b=read(),c=read(),d=read();
+		if(dfn[a]&gt;dfn[b])swap(a,b);
+		if(dfn[c]&gt;dfn[d])swap(c,d);
+		u[2*i-1]=a,v[2*i-1]=b,id1[2*i-1]=i,id0[2*i-1]=i+m;
+		u[2*i]=c,v[2*i]=d,id1[2*i]=i+m,id0[2*i]=i;
+	}
+	for(int i=1;i&lt;=2*m;i++)p[i]=i;
+	sort(p+1,p+2*m+1,[](int x,int y){return dfn[v[x]]&lt;dfn[v[y]];});
+	for(int i=1;i&lt;=2*m;i++)rv[p[i]]=i,vv[i]=dfn[v[p[i]]];
+	sort(p+1,p+2*m+1,[](int x,int y){return dfn[u[x]]&lt;dfn[u[y]];});
+	for(int i=1;i&lt;=2*m;i++)ru[p[i]]=i,vu[i]=dfn[u[p[i]]];
+
+	for(int k=1;k&lt;=2*m;k++){
+		insq[dfn[u[k]]].pb(k);
+		insh[dfn[v[k]]].pb(k);
+	}
+	for(int i=1;i&lt;=n;i++){
+		q0.rt[i]=q0.rt[i-1],q1.rt[i]=q1.rt[i-1];
+		for(int k:insq[i]){
+			q0.montagem(i,rv[k],id0[k]);
+			q1.montagem(i,rv[k],id1[k]);
+		}
+	}
+	for(int i=n;i&gt;=1;i--){
+		h0.rt[i]=h0.rt[i+1],h1.rt[i]=h1.rt[i+1];
+		for(int k:insh[i]){
+			h0.montagem(i,ru[k],id0[k]);
+			h1.montagem(i,ru[k],id1[k]);
+		}
+	}
+	auto qry=[&amp;](int k,int x){
+		int ql=dfn[x],qr=out[x];
+		int l=lower_bound(vv+1,vv+2*m+1,ql)-vv;
+		int r=upper_bound(vv+1,vv+2*m+1,qr)-vv-1;
+		if(l&lt;=r){
+			int t=rv[k];
+			auto lk=[&amp;](int L,int R){
+				if(L&lt;=R){
+					q0.link(1,2*m,L,R,id1[k],q0.rt[dfn[x]-1]);
+					q1.link(1,2*m,L,R,id0[k],q1.rt[dfn[x]-1]);
+				}
+			};
+			lk(l,min(r,t-1)),lk(max(l,t+1),r);
+		}
+		l=lower_bound(vu+1,vu+2*m+1,ql)-vu;
+		r=upper_bound(vu+1,vu+2*m+1,qr)-vu-1;
+		if(l&lt;=r){
+			int t=ru[k];
+			auto lk=[&amp;](int L,int R){
+				if(L&lt;=R){
+					h0.link(1,2*m,L,R,id1[k],h0.rt[out[x]+1]);
+					h1.link(1,2*m,L,R,id0[k],h1.rt[out[x]+1]);
+				}
+			};
+			lk(l,min(r,t-1)),lk(max(l,t+1),r);
+		}
+	};
+	for(int k=1;k&lt;=2*m;k++){
+		int ab=LCA(u[k],v[k]);
+		if(u[k]!=ab){
+			int x=u[k];
+			for(int o=19;o&gt;=0;o--)
+				if(dfn[jp[o][x]]&gt;dfn[ab])x=jp[o][x];
+			qry(k,x);
+		}
+		if(v[k]!=ab){
+			int x=v[k];
+			for(int o=19;o&gt;=0;o--)
+				if(dfn[jp[o][x]]&gt;dfn[ab])x=jp[o][x];
+			qry(k,x);
+		}
+	}
+	sat::main();
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf1037h.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf1037h.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/cf1037h.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-05-27 16:03:11
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+char s[200005];
+int n,m,q,fa[200005];
+vector&lt;int&gt;E[200005];
+namespace SAM{
+	int len[200005],fa[200005],son[200005][26],lst;
+	inline void ins(int p,int v){
+		len[p]=len[lst]+1;
+		while(lst&amp;&amp;!son[lst][v]){
+			son[lst][v]=p;
+			lst=fa[lst];
+		}
+		if(!son[lst][v]) son[lst][v]=p;
+		else{
+			int q=son[lst][v];
+			if(len[q]==len[lst]+1) fa[p]=q;
+			else{
+				int u=++m;
+				len[u]=len[lst]+1,fa[u]=fa[q];
+				memcpy(son[u],son[q],sizeof(son[u]));
+				fa[p]=fa[q]=u;
+				while(son[lst][v]==q) son[lst][v]=u,lst=fa[lst];
+			}
+		}
+		lst=p;
+	}
+}
+int lc[10000005],rc[10000005],cnt[10000005],id;
+int merge(int x,int y){
+	if(!x||!y)return x^y;
+	int z=++id;
+	lc[z]=merge(lc[x],lc[y]);
+	rc[z]=merge(rc[x],rc[y]);
+	cnt[z]=cnt[lc[z]]+cnt[rc[z]];
+	return z;
+}
+void upd(int &amp;x,int l,int r,int pos){
+	x=++id,cnt[x]=1;
+	if(l==r)return;
+	int mid=(l+r)&gt;&gt;1;
+	if(pos&lt;=mid) upd(lc[x],l,mid,pos);
+	else upd(rc[x],mid+1,r,pos);
+}
+int rt[200005];
+void dfs(int x){
+	for(int y:E[x]){
+		dfs(y);
+		rt[x]=merge(rt[x],rt[y]);
+	}
+}
+int query(int l,int r,int ql,int qr,int x){
+	if(!x||r&lt;ql||qr&lt;l)return 0;
+	if(ql&lt;=l&amp;&amp;r&lt;=qr)return cnt[x];
+	int mid=(l+r)&gt;&gt;1;
+	return query(l,mid,ql,qr,lc[x])+query(mid+1,r,ql,qr,rc[x]);
+}
+void procedure(){
+	scanf(&quot;%s&quot;,s+1); n=m=strlen(s+1);
+	for(int i=1;i&lt;=n;i++)SAM::ins(i,s[i]-&#x27;a&#x27;);
+	for(int i=1;i&lt;=m;i++)fa[i]=SAM::fa[i],E[fa[i]].pb(i);//cout&lt;&lt;fa[i]&lt;&lt;&quot;-&gt;&quot;&lt;&lt;i&lt;&lt;endl;
+
+	for(int i=1;i&lt;=n;i++)
+		upd(rt[i],1,n,i);
+	dfs(0);
+
+	// cout&lt;&lt;query(1,n,1,n,rt[1])&lt;&lt;endl;
+	q=read();
+
+	while(q--){
+		int l=read(),r=read();
+		scanf(&quot;%s&quot;,s);
+		int len=strlen(s),cur=0;
+		int ok=-1,nw=0;
+		for(int i=0;i&lt;len;i++){
+			for(int z=25;z&gt;s[i]-&#x27;a&#x27;;z--)
+				if(SAM::son[cur][z] &amp;&amp; query(1,n,l+i,r,rt[SAM::son[cur][z]])){
+					ok=i,nw=z;
+				}
+			if(SAM::son[cur][s[i]-&#x27;a&#x27;] &amp;&amp; query(1,n,l+i,r,rt[SAM::son[cur][s[i]-&#x27;a&#x27;]])) cur=SAM::son[cur][s[i]-&#x27;a&#x27;];
+			else{
+				cur=-1;
+				break;
+			}
+		}
+		bool flg=0;
+		if(~cur){
+			for(int z=0;z&lt;=25;z++)
+				if(SAM::son[cur][z] &amp;&amp; query(1,n,l+len,r,rt[SAM::son[cur][z]])){
+					flg=1;
+					printf(&quot;%s&quot;,s); putchar(&#x27;a&#x27;+z); puts(&quot;&quot;);
+					break;
+				}
+		}
+		if(flg)continue;
+		
+		if(~ok){
+			for(int i=0;i&lt;ok;i++)
+				putchar(s[i]);
+			putchar(&#x27;a&#x27;+nw);
+			puts(&quot;&quot;);
+		}else puts(&quot;-1&quot;);
+	}
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

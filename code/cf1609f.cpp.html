@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf1609f.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf1609f.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/cf1609f.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-04-30 07:19:42
+#pragma GCC optimize(3,&quot;inline&quot;)
+#pragma GCC optimize(&quot;Ofast,no-stack-protector,unroll-loops,fast-math&quot;)
+#include&lt;bits/stdc++.h&gt;
+// #pragma GCC target(&quot;sse,sse2,sse3,sse4,popcnt,abm,mmx,avx,avx2&quot;)
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+inline void addmod(int &amp;x){ if(x &gt;= mod) x -= mod; }
+inline void addmod(ll &amp;x){ if(x &gt;= mod) x -= mod; }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+const int N = 1e6+5;
+ll a[N];
+int n,stk[N],tp;
+int lf1[N],rh1[N],lf2[N],rh2[N];
+int pos[64];
+namespace DS{
+	int val[N&lt;&lt;2],tag[N&lt;&lt;2],len[N&lt;&lt;2];
+	bitset&lt;N&lt;&lt;2&gt;lf;
+	int sx[N&lt;&lt;2],sy[N&lt;&lt;2],t,tx,ty;
+	struct Node{
+		int x1,x2,y1,y2;
+	}a[N&lt;&lt;1];
+
+	inline void ins(int p,int q,int r,int s){
+		q++,s++;
+		a[++t]={p,q,r,s};
+		sx[++tx]=p,sx[++tx]=q;
+		sy[++ty]=r,sy[++ty]=s;
+	}
+	inline void getx(int &amp;x){ x=lower_bound(sx+1,sx+tx+1,x)-sx; }
+	inline void gety(int &amp;y){ y=lower_bound(sy+1,sy+ty+1,y)-sy; }
+
+	vector&lt;int&gt;v[N]; int cnt[N];
+	inline void build(int l,int r,int p){
+		val[p]=tag[p]=lf[p]=0;
+		if(l==r){ len[p]=sy[l+1]-sy[l],lf[p]=1; return; }
+		int mid=(l+r)&gt;&gt;1;
+		build(l,mid,p&lt;&lt;1),build(mid+1,r,p&lt;&lt;1|1);
+		len[p]=len[p&lt;&lt;1]+len[p&lt;&lt;1|1];
+	}
+	inline void pushup(int p){
+		val[p]=0;
+		if(!lf[p])val[p]=val[p&lt;&lt;1]+val[p&lt;&lt;1|1];
+		if(tag[p])val[p]=len[p];
+	}
+	inline void update(int l,int r,int ql,int qr,int v,int p){
+		if(r&lt;ql||qr&lt;l)return;
+		if(ql&lt;=l&amp;&amp;r&lt;=qr){
+			tag[p]+=v, pushup(p);
+			return;
+		}
+		int mid=(l+r)&gt;&gt;1;
+		update(l,mid,ql,qr,v,p&lt;&lt;1),update(mid+1,r,ql,qr,v,p&lt;&lt;1|1);
+		pushup(p);
+	}
+	inline ll solve(){
+		sort(sx+1,sx+tx+1);tx=unique(sx+1,sx+tx+1)-(sx+2);
+		sort(sy+1,sy+ty+1);ty=unique(sy+1,sy+ty+1)-(sy+2);
+		build(1,ty,1);
+
+		for(int i=1;i&lt;=t;i++){
+			getx(a[i].x1),getx(a[i].x2);
+			gety(a[i].y1),gety(a[i].y2);
+			cnt[a[i].x1]++,cnt[a[i].x2]++;
+		}
+		for(int i=1;i&lt;=tx+1;i++) v[i].reserve(cnt[i]);
+		for(int i=1;i&lt;=t;i++){
+			v[a[i].x1].pb(i);
+			v[a[i].x2].pb(-i);
+		}
+		ll ret=0;
+		for(int i=1;i&lt;=tx;i++){
+			for(auto id: v[i]){
+				if(id&gt;0)
+					update(1,ty,a[id].y1,a[id].y2-1,1,1);
+				else
+					update(1,ty,a[-id].y1,a[-id].y2-1,-1,1);
+			}
+			ret+=(ll)(sx[i+1]-sx[i])*val[1];
+		}
+		for(int i=1;i&lt;=tx+1;i++)vector&lt;int&gt;().swap(v[i]),cnt[i]=0;
+		t=tx=ty=0;
+		return ret;
+	}
+}
+void procedure(){
+	n=read();
+	for(int i=1;i&lt;=n;i++)
+		rh1[i]=rh2[i]=n+1,a[i]=read();
+	tp=0;
+	for(int i=1;i&lt;=n;i++){
+		while(tp &amp;&amp; a[stk[tp]]&lt;a[i]) rh1[stk[tp--]]=i;
+		lf1[i]=stk[tp]; stk[++tp]=i;
+	}
+	tp=0;
+	for(int i=1;i&lt;=n;i++){
+		while(tp &amp;&amp; a[stk[tp]]&gt;a[i]) rh2[stk[tp--]]=i;
+		lf2[i]=stk[tp]; stk[++tp]=i;
+	}
+
+	for(int i=1;i&lt;=n;i++)pos[__builtin_popcountll(a[i])]++;
+
+	ll ans=(ll)n*(n+1);
+	for(int o=0;o&lt;64;o++){
+		if(!pos[o].size())continue;
+		for(auto i: pos[o]){
+			DS::ins(lf1[i]+1,i,i,rh1[i]-1),DS::ins(lf2[i]+1,i,i,rh2[i]-1);
+		}
+		ll tmp=DS::solve();
+		ans-=tmp;
+	}
+	printf(&quot;%lld\n&quot;,ans);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}
+//shabi233</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

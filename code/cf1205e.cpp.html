@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf1205e.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf1205e.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/cf1205e.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-05-28
+// border length: i, j
+// let x=n-i, y=n-j
+// number of connected components: max(gcd(x,y), x+y-n)
+
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+
+const int mod = 1e9 + 7;
+
+inline ll qpow(ll a, ll b) {
+    ll ans = 1, base = a;
+    while (b) {
+        if (b &amp; 1) ans = ans * base % mod;
+        base = base * base % mod; b &gt;&gt;= 1;
+    }
+    return ans;
+}
+inline ll INV(ll x) { return qpow(x, mod - 2); }
+
+int n, k;
+vector&lt;int&gt; pr[200005];
+
+void pre_primes(int limit) {
+    for (int i = 2; i &lt;= limit; i++) {
+        if (pr[i].empty()) {
+            for (int j = i; j &lt;= limit; j += i) {
+                pr[j].push_back(i);
+            }
+        }
+    }
+}
+
+int count_coprime(int s, int R) {
+    if (R &lt;= 0) return 0;
+    int res = 0;
+    int k_sz = pr[s].size();
+    for (int mask = 0; mask &lt; (1 &lt;&lt; k_sz); mask++) {
+        int p = 1, sign = 1;
+        for (int i = 0; i &lt; k_sz; i++) {
+            if ((mask &gt;&gt; i) &amp; 1) {
+                p *= pr[s][i];
+                sign = -sign;
+            }
+        }
+        res += sign * (R / p);
+    }
+    return res;
+}
+
+void procedure() {
+    cin &gt;&gt; n &gt;&gt; k;
+    pre_primes(2 * n);
+    ll ans = 0;
+    for (int d = 1; d &lt; n; d++) {
+        int M = (n - 1) / d;
+        for (int s = 2; s &lt;= 2 * M; s++) {
+            int L = max(1, s - M);
+            int R = min(s - 1, M);
+            if (L &gt; R) continue;
+            int cnt = count_coprime(s, R) - count_coprime(s, L - 1);
+            if (!cnt) continue;
+            int c = max(d, s * d - n);
+            ans = (ans + 1LL * cnt * qpow(k, c)) % mod;
+        }
+    }
+    ans = ans * qpow(INV(k), n) % mod;
+    cout &lt;&lt; ans &lt;&lt; &quot;\n&quot;;
+}
+
+int main() {
+    #ifdef LOCAL
+        assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+        assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+    #endif
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    procedure();
+    return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

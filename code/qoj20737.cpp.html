@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qoj20737.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>qoj20737.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/qoj20737.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-04 20:18:01
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+const int N = 2e5;
+#define mid ((l+r)&gt;&gt;1)
+int n,q,x[N+5],mx[20][N+5],mn[20][N+5],bl[N+5];
+int l[N+5],r[N+5];
+
+int getmx(int i,int j){ if(!i||!j)return i+j; return x[i]&gt;x[j]?i:j; }
+int getmn(int i,int j){ if(!i||!j)return i+j; return x[i]&lt;x[j]?i:j; }
+
+int qrymx(int l,int r){
+	if(l&gt;r)return 0;
+	int p=lg2(r-l+1);
+	return getmx(mx[p][l],mx[p][r-(1&lt;&lt;p)+1]);
+}
+int qrymn(int l,int r){
+	if(l&gt;r)return 0;
+	int p=lg2(r-l+1);
+	return getmn(mn[p][l],mn[p][r-(1&lt;&lt;p)+1]);
+}
+
+ll ans[N+5];
+
+vector&lt;tuple&lt;int,int,int,int&gt;&gt;t[N&lt;&lt;2][4];
+vector&lt;int&gt;lf[N&lt;&lt;2],rh[N&lt;&lt;2];
+vector&lt;ll&gt;slf[N&lt;&lt;2],srh[N&lt;&lt;2],ss[N&lt;&lt;2];
+
+void build(int l,int r,int p){
+	lf[p].resize(r-l+1),rh[p].resize(r-l+1);
+	slf[p].resize(r-l+1),srh[p].resize(r-l+1);
+	ss[p].resize(r-l+1);
+	for(int i=l;i&lt;=r;i++)
+		slf[p][i-l]=x[lf[p][i-l]=qrymx(l,i)],
+		srh[p][i-l]=x[rh[p][i-l]=qrymn(i,r)],
+		ss[p][i-l]=x[i];
+
+	for(int i=1;i&lt;=r-l;i++)
+		slf[p][i]+=slf[p][i-1],srh[p][i]+=srh[p][i-1],ss[p][i]+=ss[p][i-1];
+
+	if(l==r) return;
+	build(l,mid,p&lt;&lt;1),build(mid+1,r,p&lt;&lt;1|1);
+}
+void ins(int p,int l,int r,int vl,int vr,int id){
+	int sz=r-l+1, pL=-1, pR=sz;
+	{
+		int L=0,R=sz-1;
+		while(L&lt;=R){
+			int M=(L+R)&gt;&gt;1;
+			if(getmx(vl,lf[p][M])!=lf[p][M]) pL=M,L=M+1;
+			else R=M-1; 
+		}
+	}
+	{
+		int L=0,R=sz-1;
+		while(L&lt;=R){
+			int M=(L+R)&gt;&gt;1;
+			if(getmn(rh[p][M],vr)!=rh[p][M]) pR=M,R=M-1;
+			else L=M+1;
+		}
+	}
+	// range: 0~sz-1
+	// basically: x - Lmax
+	ans[id]+=ss[p][sz-1]-slf[p][sz-1]+(~pL?slf[p][pL]:0)-(ll)(pL+1)*x[vl];
+	if(pL&lt;pR){
+		if(0&lt;=pL) t[p][1].pb(pL,x[vl],id,1);
+		if(pR&lt;sz){
+			if(0&lt;pR) t[p][2].pb(pR-1,x[vr],id,-1);
+			t[p][2].pb(sz-1,x[vr],id,1);
+		}
+		if(pL+1&lt;pR){
+			if(pL&gt;=0) t[p][0].pb(pL,0,id,-1);
+			t[p][0].pb(pR-1,0,id,1);
+		}
+	}else{
+		if(0&lt;pR) t[p][1].pb(pR-1,x[vl],id,1);
+		if(pL+1&lt;sz){
+			if(0&lt;=pL) t[p][2].pb(pL,x[vr],id,-1);
+			t[p][2].pb(sz-1,x[vr],id,1);
+		}
+		if(pR&lt;=pL){
+			if(pR&gt;0) t[p][3].pb(pR-1,x[vl]+x[vr],id,-1);
+			t[p][3].pb(pL,x[vl]+x[vr],id,1);
+		}
+	}
+}
+void modify(int l,int r,int ql,int qr,int id,int p){
+	if(r&lt;ql||qr&lt;l) return;
+	if(ql&lt;=l&amp;&amp;r&lt;=qr) return ins(p,l,r,qrymx(ql-1,l-1),qrymn(r+1,qr+1),id);
+	modify(l,mid,ql,qr,id,p&lt;&lt;1),modify(mid+1,r,ql,qr,id,p&lt;&lt;1|1);
+}
+ll seq[4][N+5];
+ll line[N+5]; int ord[N+5];
+
+struct BIT{
+	ll c[N+5];
+	void upd(int x,ll w){ while(x&lt;=N) c[x]+=w,x+=(x&amp;-x); }
+	ll qry(int x){ ll ret=0; while(x) ret+=c[x],x-=(x&amp;-x); return ret; }
+}B0,B1;
+
+void solve(int l,int r,int p){
+	int sz=r-l+1;
+	for(int i=0;i&lt;sz;i++){
+		seq[0][i]=x[lf[p][i]]+x[rh[p][i]]-2ll*x[l+i];
+		seq[1][i]=x[rh[p][i]]-2ll*x[l+i];
+		seq[2][i]=x[lf[p][i]]-2ll*x[l+i];
+		seq[3][i]=-2*x[l+i];
+	}
+	for(int o=0;o&lt;4;o++){
+		if(t[p][o].empty())continue;
+
+		for(int i=0;i&lt;sz;i++) line[i]=i;
+		sort(line,line+sz,[&amp;](ll x,ll y){ return seq[o][x]&lt;seq[o][y]; });
+		
+		for(int i=0;i&lt;sz;i++){
+			ord[line[i]]=i,line[i]=seq[o][line[i]];
+		}
+
+		sort(t[p][o].begin(),t[p][o].end());
+		int pt=0;
+
+		for(auto [i,v,id,cf]: t[p][o]){
+			while(pt&lt;=i){
+				B0.upd(ord[pt]+1,1);
+				B1.upd(ord[pt]+1,seq[o][pt]);
+				pt++;
+			}
+
+			int pos=lower_bound(line,line+sz,-v)-line;
+			ans[id]+=cf*(v*B0.qry(pos)+B1.qry(pos));
+		}
+		while(pt--) B0.upd(ord[pt]+1,-1),B1.upd(ord[pt]+1,-seq[o][pt]);
+	}
+	if(l==r)return;
+	solve(l,mid,p&lt;&lt;1),solve(mid+1,r,p&lt;&lt;1|1);
+}
+void procedure(){
+	n=read(),q=read();
+	for(int i=1;i&lt;=n;i++)
+		x[i]=read(),mx[0][i]=mn[0][i]=i;
+	for(int i=1;(1&lt;&lt;i)&lt;=n;i++)
+		for(int j=1;j&lt;=n-(1&lt;&lt;i)+1;j++){
+			mx[i][j]=getmx(mx[i-1][j],mx[i-1][j+(1&lt;&lt;i-1)]);
+			mn[i][j]=getmn(mn[i-1][j],mn[i-1][j+(1&lt;&lt;i-1)]);
+		}
+	build(1,n,1);
+	for(int i=1;i&lt;=q;i++){
+		l[i]=read(),r[i]=read();
+		ans[i]=x[r[i]]-x[l[i]];
+		modify(1,n,l[i]+1,r[i]-1,i,1);
+	}
+	solve(1,n,1);
+	for(int i=1;i&lt;=q;i++)
+		printf(&quot;%lld\n&quot;,ans[i]);
+}
+signed main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

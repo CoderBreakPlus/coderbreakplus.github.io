@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2565.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2565.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/soj2565.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-06-11 13:48:18
+#pragma GCC optimize(3,&quot;inline&quot;)
+#pragma GCC optimize(&quot;Ofast,unroll-loops&quot;)
+#pragma GCC target(&quot;avx,avx2&quot;)
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline uint read(){
+	uint x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline uint lg2(uint x){ return 31^__builtin_clz(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+
+const int N = 1.5e6+100;
+const int B = 32;
+const int D = 24;
+const int G = 17;
+
+uint n,q,o,x[N],y[N],c[N],s[N],md;
+uint a[D][N],pl[D][N],pr[D][N],st[D][G][N/B],pre[D][N],suf[D][N],msk[D][N];
+
+bool vl[N],vr[N];
+uint xp[N],yp[N];
+void solve(uint l,uint r,uint d){
+	chkmax(md,d);
+	if(l==r){
+		a[d][l]=c[s[l]];
+		return;
+	}
+	uint mid=(l+r)&gt;&gt;1;
+	solve(l,mid,d+1),solve(mid+1,r,d+1);
+	for(uint i=l;i&lt;=mid;i++)vl[s[i]]=1,vr[s[i]]=0;
+	for(uint i=mid+1;i&lt;=r;i++)vl[s[i]]=0,vr[s[i]]=1;
+	inplace_merge(s+l,s+mid+1,s+r+1,[](uint a,uint b){ return x[a]&lt;x[b]; });
+	for(uint i=l;i&lt;=r;i++){
+		a[d][i]=c[s[i]];
+		pl[d][i]=vl[s[i]],pr[d][i]=vr[s[i]];
+		if(i&gt;l)pl[d][i]+=pl[d][i-1],pr[d][i]+=pr[d][i-1];
+		else pl[d][i]+=l-1,pr[d][i]+=mid;
+	}
+}
+
+inline uint get_st(uint l,uint r,uint d){
+	if(l&gt;r)return 0;
+	int p=lg2(r-l+1);
+	return max(st[d][p][l],st[d][p][r-(1&lt;&lt;p)+1]);
+}
+uint get(uint l,uint r,uint d){
+	if(l/B==r/B){
+		uint fl=l/B*B;
+		return a[d][l+__builtin_ctz(msk[d][r]&gt;&gt;(l-fl))];
+	}
+	return max({suf[d][l],pre[d][r],get_st(l/B+1,r/B-1,d)});
+}
+inline void query(uint l,uint r,uint ql,uint qr,uint sl,uint sr,uint d,uint &amp;ans){
+	if(sr&lt;sl) return;	
+	if(ql&lt;=l &amp;&amp; r&lt;=qr){
+		chkmax(ans,get(sl,sr,d));
+		return;
+	}
+	if(get(sl,sr,d)&lt;=ans) return;
+	uint mid=(l+r)&gt;&gt;1;
+	auto gl = [&amp;](uint x){ if(__builtin_expect(x==l-1,0)) return l-1; return pl[d][x]; };
+	auto gr = [&amp;](uint x){ if(__builtin_expect(x==l-1,0)) return mid; return pr[d][x]; };
+	if(ql&lt;=mid)query(l,mid,ql,qr,gl(sl-1)+1,gl(sr),d+1,ans);
+	if(mid&lt;qr)query(mid+1,r,ql,qr,gr(sl-1)+1,gr(sr),d+1,ans);
+}
+void procedure(){
+	n=read(),q=read(),o=read();
+	for(uint i=1;i&lt;=n;i++) x[i]=read(),y[i]=read(),c[i]=read(),s[i]=i;
+	sort(s+1,s+n+1,[](uint a,uint b){ return y[a]&lt;y[b]; });
+	yp[0]=0;
+	for(uint i=1;i&lt;=n;i++){
+		yp[i]=yp[i-1];
+		while(yp[i]&lt;n&amp;&amp;y[s[yp[i]+1]]&lt;=i) ++yp[i];
+	}
+	solve(1,n,0);
+	xp[0]=0;
+	for(uint i=1;i&lt;=n;i++){
+		xp[i]=xp[i-1];
+		while(xp[i]&lt;n&amp;&amp;x[s[xp[i]+1]]&lt;=i) ++xp[i];
+	}
+	for(int d=0;d&lt;=md;d++){
+		for(int l=0,r=B-1;l&lt;=n;l+=B,r+=B){
+			uint stk[B+5],tp=0,cur=0;
+			for(int j=l;j&lt;=r;j++){
+				pre[d][j]=a[d][j];
+				if(j&gt;l)chkmax(pre[d][j],pre[d][j-1]);
+				while(tp &amp;&amp; a[d][stk[tp]]&lt;=a[d][j])
+					cur^=(1u&lt;&lt;(stk[tp--]-l));
+				cur^=(1u&lt;&lt;((stk[++tp]=j)-l));
+				msk[d][j]=cur;
+			}
+			for(int j=r;j&gt;=l;j--){
+				suf[d][j]=a[d][j];
+				if(j&lt;r)chkmax(suf[d][j],suf[d][j+1]);
+			}
+			st[d][0][l/B]=pre[d][r];
+		}
+		for(int i=1;(1&lt;&lt;i)&lt;=n/B;i++)
+			for(int j=0;j&lt;=n/B-(1&lt;&lt;i)+1;j++)
+				st[d][i][j]=max(st[d][i-1][j],st[d][i-1][j+(1&lt;&lt;i-1)]);
+	}
+	uint lst=0;
+	while(q--){
+		uint l=read(),r=read(),s=read(),t=read();
+		if(o)l^=lst,r^=lst,s^=lst,t^=lst;
+		lst=0;
+		query(1,n,yp[s-1]+1,yp[t],xp[l-1]+1,xp[r],0,lst);
+		printf(&quot;%u\n&quot;,lst);
+	}
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

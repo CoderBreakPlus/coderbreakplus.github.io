@@ -4,6 +4,7 @@ import sys
 import re
 import json
 import urllib.parse
+import urllib.request
 from collections import defaultdict
 from datetime import datetime, timedelta
 
@@ -61,7 +62,7 @@ def get_auto_link(pid):
         if oj_prefix == 'p': return f"https://www.luogu.com.cn/problem/P{oj_num}"
         elif oj_prefix == 'qoj': return f"https://qoj.ac/problem/{oj_num}"
         elif oj_prefix == 'uoj': return f"https://uoj.ac/problem/{oj_num}"
-        elif oj_prefix == 'soj': return f"http://47.114.34.42:8080/problem/{oj_num}"
+        elif oj_prefix == 'soj': return f"http://121.196.149.251:8080/problem/{oj_num}"
     return "#"
 
 HTML_TEMPLATE = """<!DOCTYPE html>
@@ -1151,7 +1152,7 @@ def apply_categories_and_links(groups, data_dir):
                     if oj_prefix == 'p': primary_link = f"https://www.luogu.com.cn/problem/P{oj_num}"
                     elif oj_prefix == 'qoj': primary_link = f"https://qoj.ac/problem/{oj_num}"
                     elif oj_prefix == 'uoj': primary_link = f"https://uoj.ac/problem/{oj_num}"
-                    elif oj_prefix == 'soj': primary_link = f"http://47.114.34.42:8080/problem/{oj_num}"
+                    elif oj_prefix == 'soj': primary_link = f"http://121.196.149.251:8080/problem/{oj_num}"
                     
             v.link = primary_link
 
@@ -1161,14 +1162,15 @@ def apply_categories_and_links(groups, data_dir):
 
     return contest_info
 
-def render_file_links(v, rel_path):
+def render_file_links(v, rel_path, base_url=""):
     links = []
     for ext, label, icon in [('conf', '配置', '⚙️'), ('cpp', '代码', '📝'), ('md', '题解', '💡')]:
         filename = v.files.get(ext)
         if not filename: continue
         # Preserve the site's extensionless Markdown route.
         if ext == 'md' and filename.endswith('.md'): filename = filename[:-3]
-        href = html.escape(f"{rel_path}/{urllib.parse.quote(filename, safe='/')}", quote=True)
+        path = f"{base_url}code/{urllib.parse.quote(filename, safe='/')}.html" if ext == 'cpp' else f"{rel_path}/{urllib.parse.quote(filename, safe='/')}"
+        href = html.escape(path, quote=True)
         links.append(f'<a href="{href}" target="_blank" rel="noopener noreferrer" class="file-link" title="{label}">{icon}</a>')
     return links
 
@@ -1187,7 +1189,7 @@ def render_single_version(v, rel_path, contest_pid="", is_official=False, base_u
         style = get_diff_style(v.difficulty)
         diff_html = f'<span class="diff-indicator" title="难度: {v.difficulty}"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
     
-    links = render_file_links(v, rel_path)
+    links = render_file_links(v, rel_path, base_url)
 
     return f"""
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -1433,7 +1435,7 @@ def generate_list_html(versions, table_id, rel_path, base_url, data_dir):
             style = get_diff_style(v.difficulty)
             diff_html = f'<span class="diff-indicator" title="难度: {v.difficulty}"><span class="diff-circle" style="{style}"></span> {int(v.difficulty) if v.difficulty.is_integer() else v.difficulty}</span>'
         
-        links = render_file_links(v, rel_path)
+        links = render_file_links(v, rel_path, base_url)
 
         v_html = f'<div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span></div>'
         
@@ -1730,7 +1732,7 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url="", dat
         tags_str = " ".join(v.tags) if v.tags else ""
         tags_html = "".join([f'<span class="tag-pill">{t}</span>' for t in v.tags])
         
-        links = render_file_links(v, rel_path)
+        links = render_file_links(v, rel_path, base_url)
 
         display_name = v.base_filename 
         name_html = f'<a href="{v.link}" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none;">{display_name}</a>' if v.link != '#' else f'<b>{display_name}</b>'
@@ -1891,6 +1893,78 @@ def build_index_page(categories, summary_versions, plans_dict, plists, blog_coun
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
+def build_code_pages(groups, data_dir, out_dir):
+    # Pin the prebuilt library; cache it in the generated assets directory.
+    assets_dir = os.path.join(out_dir, 'assets')
+    os.makedirs(assets_dir, exist_ok=True)
+    cdn = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/'
+    resources = [('highlight.min.js', 'highlight.min.js'), ('styles/github.min.css', 'highlight-github.min.css')]
+    asset_urls = {}
+    for remote, local in resources:
+        dest = os.path.join(assets_dir, local)
+        if not os.path.isfile(dest):
+            try:
+                with urllib.request.urlopen(cdn + remote, timeout=10) as response:
+                    content = response.read()
+                with open(dest, 'wb') as file: file.write(content)
+            except Exception as error:
+                print(f"⚠️ 高亮资源下载失败，将使用 CDN：{local}（{error}）")
+        asset_urls[local] = dest if os.path.isfile(dest) else cdn + remote
+    filenames = sorted({v.files['cpp'] for g in groups.values() for v in g.versions.values() if v.files.get('cpp')})
+    for filename in filenames:
+        source = os.path.join(data_dir, filename)
+        raw = open(source, 'rb').read()
+        try:
+            code = raw.decode('utf-8-sig')
+        except UnicodeDecodeError:
+            try:
+                code = raw.decode('gb18030')
+                print(f"ℹ️ 按 GB18030 读取代码：{filename}（原文件保持不变）")
+            except UnicodeDecodeError as error:
+                raise ValueError(f"无法识别 {filename} 的编码，请将它转换为 UTF-8") from error
+        dest = os.path.join(out_dir, 'code', filename + '.html')
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        def relative_url(path):
+            if path.startswith('https://'): return path
+            return urllib.parse.quote(os.path.relpath(path, os.path.dirname(dest)).replace('\\', '/'), safe='/')
+        title = html.escape(filename)
+        download = html.escape(relative_url(source), quote=True)
+        css_url = html.escape(relative_url(asset_urls['highlight-github.min.css']), quote=True)
+        js_url = html.escape(relative_url(asset_urls['highlight.min.js']), quote=True)
+        page = f'''<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title} · 代码</title><link rel="stylesheet" href="{css_url}">
+<style>
+body{{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}}
+main{{max-width:1400px;margin:24px auto;padding:0 20px}}
+header{{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}}
+h1{{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}}
+button,a{{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}}
+pre{{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}}
+pre code.hljs{{padding:0}}code{{font-family:Consolas,monospace;font-size:14px;tab-size:4}}
+:focus-visible{{outline:3px solid #93c5fd;outline-offset:3px}}#status{{font-size:14px;color:#64748b}}
+</style></head><body><main><header><h1>{title}</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="{download}" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">{html.escape(code)}</code></pre></main>
+<script src="{js_url}"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{{
+ const status=document.getElementById('status');
+ try{{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }}
+  status.textContent='已复制';
+ }}catch(error){{status.textContent='复制失败，请选中代码手动复制';}}
+}});
+</script></body></html>'''
+        with open(dest, 'w', encoding='utf-8') as file: file.write(page)
+    print(f"✅ 已生成 {len(filenames)} 个只读代码页")
+
 def main():
     data_dir = sys.argv[1] if len(sys.argv) > 1 else 'data'
     out_dir = sys.argv[2] if len(sys.argv) > 2 else '.'
@@ -1910,6 +1984,7 @@ def main():
     groups = scan_and_group_files(data_dir)
     print(f"✅ 找到 {len(groups)} 个基础题组，正在分析配置...")
     
+    build_code_pages(groups, data_dir, out_dir)
     contest_info = apply_categories_and_links(groups, data_dir)
     
     print(f"📋 正在扫描 List 目录 '{plist_dir}'...")

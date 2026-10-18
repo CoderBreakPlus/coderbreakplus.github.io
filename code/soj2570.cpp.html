@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2570.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2570.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/soj2570.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-05-25 08:09:21
+// wqs 二分+整体二分
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+int n,m,fa[100005];
+vector&lt;tuple&lt;int,int,int&gt;&gt;g[2];
+
+int find(int x){ if(x!=fa[x])fa[x]=find(fa[x]);return fa[x]; }
+
+const int M=1e6;
+ll V1[2000005],V2[2000005];
+ll *v1=V1+M;
+ll *v2=V2+M;
+
+int findx(int x){ if(x!=fa[x])fa[x]=find(fa[x]);return fa[x]; }
+int mergex(int x,int y){
+	if((x=findx(x))==(y=findx(y))) return 0;
+	return fa[findx(x)]=findx(y),1;
+}
+void init(){
+	for(int i=1;i&lt;=n;i++)fa[i]=i;
+}
+
+tuple&lt;int,int,int&gt; seq[2][200005]; int pt[2];
+int ok[2][200005];
+
+namespace dsu{
+	int fa[200005], sz[200005];
+	int u[200005], v[200005], tp;
+	int find(int x){ while(x!=fa[x]) x=fa[x]; return x; }
+	bool merge(int x,int y){
+		x=find(x),y=find(y);
+		if(x==y)return 0;
+		if(sz[x]&gt;sz[y])swap(x,y);
+		u[++tp]=x, v[tp]=y; sz[y]+=sz[x],fa[x]=y;
+		return 1;
+	}
+	void undo(int x){
+		while(tp &gt; x){
+			fa[u[tp]] = u[tp];
+			sz[v[tp]] -= sz[u[tp]];
+			tp --;
+		}
+	}
+	void init(){
+		for(int i=1;i&lt;=n;i++) sz[i]=1,fa[i]=i;
+	}
+}
+vector&lt;int&gt;tr[800005];
+void solve(int l,int r,int p,int o){
+	if(l&gt;r)return;
+	int mid=(l+r)&gt;&gt;1, cur=dsu::tp, v=get&lt;0&gt;(seq[o^1][mid]);
+	for(int i=l;i&lt;=mid;i++) dsu::merge(get&lt;1&gt;(seq[o^1][i]),get&lt;2&gt;(seq[o^1][i]));
+
+	int cur2=dsu::tp;
+	// cout&lt;&lt;&quot;here &quot;&lt;&lt;l&lt;&lt;&quot;-&gt;&quot;&lt;&lt;r&lt;&lt;&quot; p=&quot;&lt;&lt;p&lt;&lt;&quot; o=&quot;&lt;&lt;o&lt;&lt;endl;
+	for(auto x: tr[p]){
+		if(dsu::merge(get&lt;1&gt;(seq[o][x]), get&lt;2&gt;(seq[o][x]))) tr[p&lt;&lt;1|1].pb(x);
+		else{
+			tr[p&lt;&lt;1].pb(x), ok[o][x]=v;
+			// cout&lt;&lt;&quot;at &quot;&lt;&lt;x&lt;&lt;&quot; v=&quot;&lt;&lt;v&lt;&lt;endl;
+		}
+	}
+	dsu::undo(cur2);
+	solve(mid+1,r,p&lt;&lt;1|1,o);
+	dsu::undo(cur);
+	for(auto x: tr[p&lt;&lt;1|1]) dsu::merge(get&lt;1&gt;(seq[o][x]), get&lt;2&gt;(seq[o][x]));
+	solve(l,mid-1,p&lt;&lt;1,o);
+	dsu::undo(cur);
+}
+void procedure(){
+	n=read(),m=read();
+	g[0].clear(),g[1].clear();
+	for(int i=1;i&lt;=m;i++){
+		int u=read(),v=read(),w=read(),o;
+		char s[5];scanf(&quot;%s&quot;,s);
+		if(s[0]==&#x27;R&#x27;)o=0;else o=1;
+		g[o].pb(w,u,v);
+	}
+	pt[0]=pt[1]=0;
+	for(int o:{0,1}){
+		init();
+		sort(g[o].begin(), g[o].end());
+		for(auto [w,u,v]: g[o]){
+			if(findx(u)==findx(v))continue;
+			seq[o][++pt[o]]={w,u,v};
+			fa[findx(u)]=findx(v);
+		}
+	}
+	for(int o:{0,1})for(int i=1;i&lt;=pt[o];i++)ok[o][i]=2*M;
+	for(int i=-M;i&lt;=M;i++) v1[i]=v2[i]=0;
+
+
+	for(int o:{0,1}){
+		dsu::init();
+		// for(int i=1;i&lt;=pt[o^1];i++) {
+		// 	auto [w,u,v]=seq[o^1][i];
+		// 	cout&lt;&lt;w&lt;&lt;&quot;,&quot;&lt;&lt;u&lt;&lt;&quot;,&quot;&lt;&lt;v&lt;&lt;&quot; | &quot;;
+		// }
+		// cout&lt;&lt;endl;
+		// for(int i=1;i&lt;=pt[o];i++) {
+		// 	auto [w,u,v]=seq[o][i];
+		// 	cout&lt;&lt;w&lt;&lt;&quot;,&quot;&lt;&lt;u&lt;&lt;&quot;,&quot;&lt;&lt;v&lt;&lt;&quot; | &quot;;
+		// }
+		// cout&lt;&lt;endl;
+
+		for(int i=1;i&lt;=(n&lt;&lt;2);i++)tr[i].clear();
+		for(int i=1;i&lt;=pt[o];i++)tr[1].pb(i);
+		solve(1,pt[o^1],1,o);
+
+		// for(int i=1;i&lt;=pt[o];i++) cout&lt;&lt;ok[o][i]&lt;&lt;&quot; &quot;;cout&lt;&lt;endl;
+
+		// for(int i=1;i&lt;=pt[o^1];i++){
+		// 	init();
+		// 	for(int j=1;j&lt;=i;j++) mergex(get&lt;1&gt;(seq[o^1][j]),get&lt;2&gt;(seq[o^1][j]));
+		// 	for(int j=1;j&lt;=pt[o];j++)
+		// 		if(!mergex(get&lt;1&gt;(seq[o][j]),get&lt;2&gt;(seq[o][j])))
+		// 			chkmin(ok[o][j], get&lt;0&gt;(seq[o^1][i]));
+		// }
+	}
+
+	for(int i=1;i&lt;=pt[0];i++){
+		auto [w,u,v] = seq[0][i];
+		ok[0][i]-=w;
+		if(ok[0][i]&gt;=-M)
+			v1[-M]+=w,v1[min(M+1,ok[0][i])]-=w,
+			v2[-M]++,v2[min(M+1,ok[0][i])]--;
+	}
+
+	for(int i=1;i&lt;=pt[1];i++){
+		auto [w,u,v] = seq[1][i];
+		ok[1][i]=max(-M,w-ok[1][i]);
+		if(ok[1][i]&lt;=M)v1[ok[1][i]]+=w;
+	}
+	for(int i=-M+1;i&lt;=M;i++){
+		v1[i]+=v1[i-1];
+		v2[i]+=v2[i-1];
+	}
+	for(int i=-M;i&lt;=M;i++){
+		v1[i]+=(ll)v2[i]*i;
+	}
+
+	int L=v2[M], R=v2[-M];
+	for(int k=0;k&lt;n;k++){
+		if(k&gt;R||k&lt;L){
+			printf(&quot;-1 &quot;);
+			continue;
+		}
+		int l=-M,r=M;
+		while(l+1&lt;r){
+			int mid=(l+r)&gt;&gt;1;
+			if(v2[mid]&gt;k) l=mid;
+			else r=mid;  
+		}
+		ll a1=v1[l],a2=v1[r];
+		printf(&quot;%lld &quot;, max(a1-(ll)l*k, a2-(ll)r*k));
+	}
+	puts(&quot;&quot;);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=read();
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

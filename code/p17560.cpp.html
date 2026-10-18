@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p17560.cpp · 代码</title><link rel="stylesheet" href="../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p17560.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../data/p17560.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-08 19:18:49
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 1e9+3579;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+const int v0=383200759, v1=616802823, is5=153280303;
+int n,m,inv[105],ifac[105],fac[105];
+vector&lt;int&gt;E[105];
+inline void add(int &amp;a,ull b){ a=(a+b)%mod; }
+
+struct poly{
+	vector&lt;int&gt; vec;
+	poly(){ }
+	poly(vector&lt;int&gt; v){ vec=v; }
+	inline int&amp; operator[](int x){ return vec[x]; }
+	inline const int&amp; operator[](int x)const{ return vec[x]; }
+	uint size()const{ return vec.size(); }
+	void resize(uint x){ vec.resize(max((uint)vec.size(),x),0); }
+	void clr(){ vector&lt;int&gt;().swap(vec); }
+};
+inline poly&amp; operator+= (poly &amp;A, const poly &amp;B){
+	A.resize(B.size());
+	for(int i=0;i&lt;B.size();i++) addmod(A[i]+=B[i]);
+	return A;
+}
+inline poly operator+ (poly A,const poly &amp;B){ return A+=B; }
+inline poly operator* (const poly &amp;A,const poly &amp;B){
+	poly C; C.resize(max(0,(int)(A.size()+B.size()-1)));
+	for(int i=0;i&lt;A.size();i++)
+		for(int j=0;j&lt;B.size();j++)
+			add(C[i+j], (ull)A[i]*B[j]);
+	return C;
+}
+inline poly&amp; operator*= (poly &amp;A,const poly &amp;B){ return A=A*B; }
+inline poly&amp; operator*= (poly &amp;A,int B){ for(int &amp;x: A.vec) x=(ull)x*B%mod; return A; }
+
+poly dp[105][105][105], tmp[105][105];
+int sz[105];
+
+void dfs(int x,int fa){
+	sz[x]=0;
+	for(int y:E[x])if(y!=fa)dfs(y,x);
+
+	dp[x][0][0]=poly({1});
+	for(int y:E[x])if(y!=fa){
+		for(int i=0;i&lt;=sz[y];i++) for(int j=0;i+j&lt;=sz[y];j++)
+			for(int k=0;k&lt;=sz[x];k++) for(int l=0;k+l&lt;=sz[x];l++)
+				tmp[i+k][j+l]+=dp[y][i][j]*dp[x][k][l];
+		sz[x]+=sz[y];
+		for(int i=0;i&lt;=sz[x];i++) for(int j=0;i+j&lt;=sz[x];j++){
+			swap(dp[x][i][j],tmp[i][j]);
+			tmp[i][j].clr();
+		}
+	}
+
+	for(int i=0;i&lt;=sz[x];i++)
+		for(int j=0;i+j&lt;=sz[x];j++){
+			// gamma = (1,0)
+			// P = dp[x][i][j]
+			// H = P * e^((i,j)x)
+
+			// G&#x27; = gamma * G + gamma * P * e^((i,j)x)
+			// G = Q * e^((i,j)x) + C * e^((1,0)x)
+
+			// Q&#x27; + dec * Q = gamma * P
+			{
+				poly P=dp[x][i][j]; P*=v0;
+				int dec=((ull)(i+mod-1)*v0+(ull)j*v1)%mod;
+				int idec=INV(dec); poly Q;
+				if(!dec){
+					Q.resize(P.size()+1);
+					for(int i=0;i&lt;P.size();i++)
+						Q[i+1]=(ull)P[i]*inv[i+1]%mod;
+				}else{
+					int lst=0;
+					Q.resize(P.size());
+					for(int i=P.size()-1;i&gt;=0;i--)
+						lst=Q[i]=(P[i]+(ull)(i+1)*(mod-lst))%mod*idec%mod;
+				}
+				tmp[i][j]+=Q, tmp[1][0]+=poly({mod-(Q.size()?Q[0]:0)});
+			}
+			{
+				poly P=dp[x][i][j]; P*=v1;
+				int dec=((ull)i*v0+(ull)(j+mod-1)*v1)%mod;
+				int idec=INV(dec);
+				poly Q;
+				if(!dec){
+					Q.resize(P.size()+1);
+					for(int i=0;i&lt;P.size();i++)
+						Q[i+1]=(ull)P[i]*inv[i+1]%mod;
+				}else{
+					int lst=0;
+					Q.resize(P.size());
+					for(int i=P.size()-1;i&gt;=0;i--)
+						lst=Q[i]=(P[i]+(ull)(i+1)*(mod-lst))%mod*idec%mod;
+				}
+				Q*=(mod-1);
+				tmp[i][j]+=Q, tmp[0][1]+=poly({mod-(Q.size()?Q[0]:0)});
+			}
+		}
+	sz[x]++;
+	for(int i=0;i&lt;=sz[x];i++)
+		for(int j=0;i+j&lt;=sz[x];j++){
+			swap(dp[x][i][j],tmp[i][j]), tmp[i][j].clr();
+			dp[x][i][j]*=is5;
+		}
+}
+void procedure(){
+	n=read(),m=read();
+	for(int i=1;i&lt;n;i++){
+		int u=read(),v=read();
+		E[u].pb(v),E[v].pb(u);
+	}
+
+	dfs(1,0);
+	int ans=0;
+	for(int i=0;i&lt;=n;i++) for(int j=0;i+j&lt;=n;j++){
+		int now=((ull)v0*i+(ull)v1*j)%mod;
+		int fall=1;
+		for(int k=0;k&lt;=m&amp;&amp;k&lt;dp[1][i][j].size();k++){
+			add(ans,(ull)dp[1][i][j][k]*fall%mod*qpow(now,m-k));
+			fall=(ull)fall*(m-k)%mod;
+		}
+	}
+	printf(&quot;%d\n&quot;,ans);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	for(int i=1;i&lt;=100;i++)inv[i]=INV(i);
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
