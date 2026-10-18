@@ -33,12 +33,12 @@ template <class T>
 struct MCMF {
 public:
 	MCMF() : n(), dirty() {}
-	MCMF(int n) : n((ASSERT(n >= 0), n)), dirty(), ed(n + 1), par(n + 1), dis(n + 1), pi(n + 1) {}
+	MCMF(int n) : n((assert(n >= 0), n)), dirty(), ed(n + 1), par(n + 1), dis(n + 1), pi(n + 1) {}
 
 	std::pair<int, int> add(int from, int to, T cap, T cost) {
-		ASSERT(1 <= from && from <= n);
-		ASSERT(1 <= to && to <= n);
-		ASSERT(cap >= 0);
+		assert(1 <= from && from <= n);
+		assert(1 <= to && to <= n);
+		assert(cap >= 0);
 		dirty |= (cap && pi[from] != inf && pi[from] + cost < pi[to]);
 		int id = (int)ed[from].size(), rev = (int)ed[to].size() + (from == to);
 		ed[from].push_back(edge(to, rev, cap, cost));
@@ -48,7 +48,7 @@ public:
 
 	template <class F>
 	std::pair<int, int> add_convex(int from, int to, T cap, F cost) {
-		ASSERT(cap >= 0);
+		assert(cap >= 0);
 		auto id = add(from, to, cap, cap ? cost(T(1)) - cost(T(0)) : T(0));
 		fun.emplace_back(std::move(cost));
 		auto [u, i] = id;
@@ -58,9 +58,9 @@ public:
 	}
 
 	std::pair<T, T> max_flow(int s, int t, T lim = inf) {
-		ASSERT(1 <= s && s <= n);
-		ASSERT(1 <= t && t <= n);
-		ASSERT(s != t && lim >= 0);
+		assert(1 <= s && s <= n);
+		assert(1 <= t && t <= n);
+		assert(s != t && lim >= 0);
 		setpi(s);
 		std::pair<T, T> res = {0, 0};
 		while (res.first < lim && path(s, t)) {
@@ -83,14 +83,14 @@ public:
 
 	std::pair<T, T> get_flow(std::pair<int, int> id) {
 		auto [u, i] = id;
-		ASSERT(1 <= u && u <= n);
-		ASSERT(0 <= i && i < (int)ed[u].size());
+		assert(1 <= u && u <= n);
+		assert(0 <= i && i < (int)ed[u].size());
 		edge &e = ed[u][i], &r = ed[e.to][e.rev];
 		return {r.cap, e.cap + r.cap};
 	}
 
 	void reserve(int u, int m) {
-		ASSERT(1 <= u && u <= n && m >= 0);
+		assert(1 <= u && u <= n && m >= 0);
 		ed[u].reserve(m);
 	}
 
@@ -166,19 +166,39 @@ private:
 				}
 			}
 		}
-		ASSERT(t >= 0);
+		assert(t >= 0);
 	}
 };
 
 int n,m;
 vector<pair<int,int>>E[2005];
 
+MCMF<ll>F;
+void dfs(int x,int fa){
+	for(auto [y,w]:E[x])if(y!=fa){
+		dfs(y,x);
+		F.add_convex(y,x,0x3f3f3f3f,[w=w](ll x){ return w*x*(x-m); });
+	}
+}
 void procedure(){
 	n=read(),m=read();
 	for(int i=1;i<n;i++){
 		int u=read(),v=read(),w=read();
-		E[u].pb(v),E[v].pb(u);
+		E[u].pb(v,w),E[v].pb(u,w);
 	}
+	F=MCMF<ll>(2*n+m+1);
+	int S=2*n+m+1,T=1;
+	for(int i=1;i<=n;i++) F.add(i+n,i,1,0);
+	for(int i=1;i<=m;i++){
+		int k=read(),id=i+2*n;
+		F.add(S,id,1,0);
+		while(k--) F.add(id,read()+n,1,0);
+	}
+	dfs(1,0);
+	auto [A,B]=F.max_flow(S,T);
+	if(A==m){
+		printf("%lld\n",-B);
+	}else puts("-1");
 }
 int main(){
 	#ifdef LOCAL
