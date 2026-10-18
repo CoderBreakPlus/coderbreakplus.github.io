@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qoj22887.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>qoj22887.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../qoj22887.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-19 07:14:08
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+template &lt;class T&gt;
+struct MCMF {
+public:
+	MCMF() : n(), dirty() {}
+	MCMF(int n) : n((assert(n &gt;= 0), n)), dirty(), ed(n + 1), par(n + 1), dis(n + 1), pi(n + 1) {}
+
+	std::pair&lt;int, int&gt; add(int from, int to, T cap, T cost) {
+		assert(1 &lt;= from &amp;&amp; from &lt;= n);
+		assert(1 &lt;= to &amp;&amp; to &lt;= n);
+		assert(cap &gt;= 0);
+		dirty |= (cap &amp;&amp; pi[from] != inf &amp;&amp; pi[from] + cost &lt; pi[to]);
+		int id = (int)ed[from].size(), rev = (int)ed[to].size() + (from == to);
+		ed[from].push_back(edge(to, rev, cap, cost));
+		ed[to].push_back(edge(from, id, 0, -cost));
+		return {from, id};
+	}
+
+	template &lt;class F&gt;
+	std::pair&lt;int, int&gt; add_convex(int from, int to, T cap, F cost) {
+		assert(cap &gt;= 0);
+		auto id = add(from, to, cap, cap ? cost(T(1)) - cost(T(0)) : T(0));
+		fun.emplace_back(std::move(cost));
+		auto [u, i] = id;
+		ed[u][i].fn = (int)fun.size();
+		ed[ed[u][i].to][ed[u][i].rev].fn = -(int)fun.size();
+		return id;
+	}
+
+	std::pair&lt;T, T&gt; max_flow(int s, int t, T lim = inf) {
+		assert(1 &lt;= s &amp;&amp; s &lt;= n);
+		assert(1 &lt;= t &amp;&amp; t &lt;= n);
+		assert(s != t &amp;&amp; lim &gt;= 0);
+		setpi(s);
+		std::pair&lt;T, T&gt; res = {0, 0};
+		while (res.first &lt; lim &amp;&amp; path(s, t)) {
+			T flw = lim - res.first;
+			for (int i = t, j, r; i != s; i = j) {
+				r = ed[i][par[i]].rev, j = ed[i][par[i]].to;
+				flw = std::min(flw, ed[j][r].cap);
+				if (ed[j][r].fn) { flw = std::min(flw, T(1)); }
+			}
+			res.first += flw, res.second += flw * (pi[t] - pi[s]);
+			for (int i = t, j, r; i != s; i = j) {
+				r = ed[i][par[i]].rev, j = ed[i][par[i]].to;
+				ed[i][par[i]].cap += flw;
+				ed[j][r].cap -= flw;
+				if (ed[j][r].fn) { update(j, r); }
+			}
+		}
+		return res;
+	}
+
+	std::pair&lt;T, T&gt; get_flow(std::pair&lt;int, int&gt; id) {
+		auto [u, i] = id;
+		assert(1 &lt;= u &amp;&amp; u &lt;= n);
+		assert(0 &lt;= i &amp;&amp; i &lt; (int)ed[u].size());
+		edge &amp;e = ed[u][i], &amp;r = ed[e.to][e.rev];
+		return {r.cap, e.cap + r.cap};
+	}
+
+	void reserve(int u, int m) {
+		assert(1 &lt;= u &amp;&amp; u &lt;= n &amp;&amp; m &gt;= 0);
+		ed[u].reserve(m);
+	}
+
+private:
+	static constexpr T inf = std::numeric_limits&lt;T&gt;::max() / 2;
+
+	struct edge {
+		int to, rev, fn;
+		T cap, cost;
+		edge() {}
+		edge(int to, int rev, T cap, T cost) : to(to), rev(rev), fn(), cap(cap), cost(cost) {}
+	};
+
+	int n;
+	bool dirty;
+
+	std::vector&lt;std::vector&lt;edge&gt;&gt; ed;
+	std::vector&lt;int&gt; par;
+	std::vector&lt;T&gt; dis, pi;
+	std::vector&lt;std::function&lt;T(T)&gt;&gt; fun;
+
+	void update(int u, int i) {
+		if (ed[u][i].fn &lt; 0) {
+			int v = ed[u][i].to, j = ed[u][i].rev;
+			u = v, i = j;
+		}
+		edge &amp;e = ed[u][i], &amp;r = ed[e.to][e.rev];
+		auto&amp; cost = fun[e.fn - 1];
+		T f = r.cap, val = cost(f);
+		if (e.cap) { e.cost = cost(f + 1) - val; }
+		if (r.cap) { r.cost = cost(f - 1) - val; }
+	}
+
+	bool path(int s, int t) {
+		std::fill(dis.begin(), dis.end(), inf);
+		dis[s] = 0;
+		std::priority_queue&lt;std::pair&lt;T, int&gt;, std::vector&lt;std::pair&lt;T, int&gt;&gt;, std::greater&lt;std::pair&lt;T, int&gt;&gt;&gt; qu;
+		qu.push({dis[s], s});
+		while (!qu.empty()) {
+			auto [di, u] = qu.top(); qu.pop();
+			if (di != dis[u]) { continue; }
+			for (edge&amp; e : ed[u]) {
+				if (!e.cap) { continue; }
+				T val = di + e.cost + pi[u] - pi[e.to];
+				if (dis[e.to] &gt; val) {
+					dis[e.to] = val;
+					par[e.to] = e.rev;
+					qu.push({dis[e.to], e.to});
+				}
+			}
+		}
+		for (int i = 1; i &lt;= n; ++i) {
+			pi[i] = (dis[i] == inf ? inf : pi[i] + dis[i]);
+		}
+		return dis[t] != inf;
+	}
+
+	void setpi(int s) {
+		if (!dirty &amp;&amp; pi[s] != inf) { return ; }
+		dirty = 0;
+
+		std::fill(pi.begin(), pi.end(), inf);
+		pi[s] = 0;
+		int t = n, flg = 1;
+		while (flg-- &amp;&amp; t--) {
+			for (int i = 1; i &lt;= n; ++i) {
+				if (pi[i] != inf) {
+					for (auto&amp; e : ed[i]) {
+						if (e.cap &amp;&amp; pi[e.to] &gt; pi[i] + e.cost) {
+							pi[e.to] = pi[i] + e.cost, flg = 1;
+						}
+					}
+				}
+			}
+		}
+		assert(t &gt;= 0);
+	}
+};
+
+int n,k,a[200005],b[200005];
+int mn[2005],mx[2005],val[4005],m;
+
+MCMF&lt;ll&gt;F;
+void procedure(){
+	n=read(),k=read();
+	for(int i=1;i&lt;=k;i++)mx[i]=-2e9,mn[i]=2e9;
+	for(int i=1;i&lt;=n;i++)a[i]=read();
+	for(int i=1;i&lt;=n;i++){
+		b[i]=read();
+		chkmax(mx[a[i]],b[i]);
+		chkmin(mn[a[i]],b[i]);
+	}
+	for(int i=1;i&lt;=k;i++)val[++m]=mn[i],val[++m]=mx[i];
+	sort(val+1,val+m+1);m=unique(val+1,val+m+1)-(val+1);
+
+	MCMF&lt;ll&gt;F(m+k+1);
+	int S=m+k+1,T=1;
+	for(int i=2;i&lt;=m;i++){
+		int w=val[i]-val[i-1];
+		F.add_convex(i,i-1,1e9,[w=w](ll x){ return w*x*(x-k); });
+	}
+	for(int i=1;i&lt;=k;i++){
+		F.add(S,m+i,1,0);
+		mx[i]=lower_bound(val+1,val+m+1,mx[i])-val;
+		mn[i]=lower_bound(val+1,val+m+1,mn[i])-val;
+		F.add(m+i,mx[i],1,0);
+		F.add(m+i,mn[i],1,0);
+	}
+	printf(&quot;%lld\n&quot;,-F.max_flow(S,T).se);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
