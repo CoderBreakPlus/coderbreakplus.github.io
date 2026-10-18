@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf2084g2.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf2084g2.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../cf2084g2.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-04-23 09:46:24
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+inline void addmod(int &amp;x){ if(x &gt;= mod) x -= mod; }
+inline void addmod(ll &amp;x){ if(x &gt;= mod) x -= mod; }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
+int n,a[500005];
+
+int lc[500005],rc[500005],k[500005],sz[500005],rt;
+ll t1[500005],t2[500005],val[500005],v0,v1;
+
+int cnt;
+
+int newnode(){
+	int x=++cnt;
+	lc[x]=rc[x]=t1[x]=t2[x]=val[x]=0,k[x]=rnd(),sz[x]=1;
+	return x;
+}
+void upd(int x,ll s1,ll s2){
+	if(x){
+		t1[x]+=s1, t2[x]+=s2;
+		val[x]+=s1+sz[lc[x]]*s2;
+	}
+}
+void pushdown(int x){
+	upd(lc[x],t1[x],t2[x]);
+	upd(rc[x],t1[x]+t2[x]*(sz[lc[x]]+1),t2[x]);
+	t1[x]=t2[x]=0;
+}
+void pushup(int x){
+	sz[x]=sz[lc[x]]+sz[rc[x]]+1;
+}
+int merge(int x,int y){
+	if(!x || !y) return x^y;
+	pushdown(x),pushdown(y);
+	if(k[x]&lt;k[y]){
+		rc[x]=merge(rc[x],y);
+		return pushup(x),x;
+	}else{
+		lc[y]=merge(x,lc[y]);
+		return pushup(y),y;
+	}
+}
+void split(int x,int &amp;a,int &amp;b){
+	if(!x){ a=b=0; return; }
+	pushdown(x);
+	if(val[x]&gt;=0) {
+		a=x;
+		split(rc[x],rc[x],b);
+	}else{
+		b=x;
+		split(lc[x],a,lc[x]);
+	}
+	pushup(x);
+}
+vector&lt;ll&gt;vec;
+void divide(int x){
+	if(!x)return;
+	pushdown(x);
+	divide(rc[x]);
+	vec.pb(val[x]);
+	divide(lc[x]);
+}
+void procedure(){	
+	n=read(); cnt=0;
+	for(int i=1;i&lt;=n;i++)a[i]=0;
+	for(int i=1;i&lt;=n;i++){
+		a[read()]=i;
+	}	
+	v0=v1=rt=0;
+
+	ll s=(n+1)/2,t=n/2;
+	for(ll i=1;i&lt;=n;i++){
+		if(!a[i]){
+			int l,r;
+			split(rt,l,r);
+			rt=merge(merge(l,newnode()),r);
+		}else if(a[i]&amp;1) v0++;
+
+		ll cf0=i*t-i*i;
+		ll cf1=s+2*i-t;
+		ll cf2=-2;
+
+		v1+=cf2*v0*v0+cf1*v0+cf0;
+		upd(rt, cf2*(2*v0+1)+cf1, 2*cf2);
+	}
+	ll ans=v1;
+	for(ll i=1;i&lt;=n;i++) ans+=i*(n-i+1);
+	divide(rt);
+	
+	s-=v0;
+	while(s--) ans+=vec.back(),vec.pop_back();
+	printf(&quot;%lld\n&quot;,ans);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=read();
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

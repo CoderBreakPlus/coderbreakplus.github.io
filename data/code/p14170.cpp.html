@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p14170.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p14170.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p14170.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-05-27 07:40:34
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+int n,m,f[1&lt;&lt;8][1&lt;&lt;8],g[1&lt;&lt;8][1&lt;&lt;8],e0[1&lt;&lt;8][1&lt;&lt;8],e1[1&lt;&lt;8][1&lt;&lt;8],e[8][8];
+
+void procedure(){
+	n=read(),m=read();
+	for(int i=0;i&lt;n;i++)for(int j=0;j&lt;m;j++)
+		e[i][j]=read()*INV(100)%mod;
+	
+	for(int i=0;i&lt;(1&lt;&lt;n);i++)
+		for(int j=0;j&lt;(1&lt;&lt;m);j++){
+			e0[i][j]=1,e1[i][j]=1;
+			for(int k=0;k&lt;n;k++)if((i&gt;&gt;k)&amp;1){
+				for(int l=0;l&lt;m;l++)if((j&gt;&gt;l)&amp;1)
+					e0[i][j]=(ull)e0[i][j]*(mod+1-e[k][l])%mod;
+			}
+			for(int l=0;l&lt;m;l++)if((j&gt;&gt;l)&amp;1){
+				int f=1;
+				for(int k=0;k&lt;n;k++)if((i&gt;&gt;k)&amp;1)
+					f=(ull)f*(mod+1-e[k][l])%mod;
+				e1[i][j]=(ull)e1[i][j]*(mod+1-f)%mod;
+			}
+		}
+	memset(f,0,sizeof(f));memset(g,0,sizeof(g));
+	for(int i=0;i&lt;(1&lt;&lt;n);i++)
+		for(int j=0;j&lt;(1&lt;&lt;m);j++){
+			int tot=e1[i][j];
+			for(int s=i;;s=(s-1)&amp;i){
+				for(int t=j;;t=(t-1)&amp;j){
+					tot=(tot+(ull)(mod-g[s][t])*f[i^s][j^t]%mod*e0[s][j^t])%mod;
+					if(!t)break;
+				}
+				if(!s)break;
+			}
+			if(!tot)continue;
+			if(__builtin_popcount(i)&lt;=__builtin_popcount(j)){
+				f[i][j]=tot;
+			}else{
+				g[i][j]=tot;
+			}
+		}
+	g[0][0]=1;
+	int tot=0,N=(1&lt;&lt;n)-1,M=(1&lt;&lt;m)-1;
+	for(int i=0;i&lt;=N;i++)
+		for(int j=0;j&lt;=M;j++){
+			for(int t=(M^j);;t=(t-1)&amp;(M^j)){
+				int cur=(ull)g[i][j]*f[N^i][M^j^t]%mod*e0[N^i][t]%mod*e0[i][M^j]%mod*(n+__builtin_popcount(j)-__builtin_popcount(i))%mod;
+				addmod(tot+=cur);
+				if(!t)break;
+			}
+		}
+	printf(&quot;%d\n&quot;,tot);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=read();
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

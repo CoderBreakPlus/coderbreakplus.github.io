@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qoj7872.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>qoj7872.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../qoj7872.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-06-13 08:45:05
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+inline int div2(int x){ return (x&amp;1) ? ((x+mod)&gt;&gt;1) : (x&gt;&gt;1); }
+const int N = 2e5 + 5;
+int n,q,op[N],ql[N],qr[N],x[N],iv[N];
+struct Seg{
+	int l,r,w;
+	Seg(){ }
+	Seg(int L,int R,int W){ l=L,r=R,w=W; }
+};
+inline bool operator&lt;(const Seg&amp; A,const Seg &amp;B){
+	return A.l!=B.l?A.l&lt;B.l:(A.r!=B.r?A.r&lt;B.r:A.w&lt;B.w);
+}
+vector&lt;Seg&gt;seg[N&lt;&lt;2];
+
+int mp[N],pos[N],c,cc,f[25][N];
+int lc[N],rc[N],ld[N],rd[N],prv[N];
+int le[N],re[N],tag[N],tl[N],tr[N],nxt[N],stk[N],tp;
+int get(int x,int y){ return mp[pos[x]]&lt;mp[pos[y]]?x:y; }
+int query(int l,int r){
+	int p=lg2(r-l+1);
+	return get(f[p][l],f[p][r-(1&lt;&lt;p)+1]);
+}
+void dfs(int x){
+	if(x&gt;c)return;
+	// cout&lt;&lt;&quot;dfs &quot;&lt;&lt;x&lt;&lt;endl;
+	if(!lc[x]) lc[x]=++cc;
+	le[lc[x]]=le[x],re[lc[x]]=pos[x];
+	dfs(lc[x]);
+
+	if(!rc[x]) rc[x]=++cc;
+	le[rc[x]]=pos[x],re[rc[x]]=re[x];
+	dfs(rc[x]);
+}
+void dfs2(int x,vector&lt;Seg&gt; &amp;V){
+	if(x&gt;c){
+		if(tag[x]) V.pb(le[x],re[x],tag[x]);
+		return;
+	}
+	int w=div2(tag[x]);
+	addmod(tag[lc[x]]+=w); dfs2(lc[x],V);
+	addmod(tag[rc[x]]+=w); dfs2(rc[x],V);
+}
+void cdq(int l,int r,int p){
+	if(l==r){
+		if(op[l]==1) seg[p].pb(ql[l],qr[l],1);
+		return;
+	}
+	int mid=(l+r)&gt;&gt;1;
+	cdq(l,mid,p&lt;&lt;1),cdq(mid+1,r,p&lt;&lt;1|1);
+	// cout&lt;&lt;&quot;cdq &quot;&lt;&lt;l&lt;&lt;&quot; &quot;&lt;&lt;r&lt;&lt;&quot; &quot;&lt;&lt;p&lt;&lt;endl;
+	c=0;
+	for(int i=mid+1;i&lt;=r;i++)
+		if(op[i]==2&amp;&amp;!mp[x[i]]) mp[x[i]]=i,pos[++c]=x[i];
+
+	seg[p]=seg[p&lt;&lt;1|1];
+	if(!c){
+		for(auto x: seg[p&lt;&lt;1]) seg[p].pb(x);
+	}else{
+		sort(pos+1,pos+c+1);
+		for(int i=1;i&lt;=c;i++) f[0][i]=i;
+		for(int i=1;(1&lt;&lt;i)&lt;=c;i++)
+			for(int j=1;j&lt;=c-(1&lt;&lt;i)+1;j++)
+				f[i][j]=get(f[i-1][j],f[i-1][j+(1&lt;&lt;i-1)]);
+		tp=0;
+		for(int i=1;i&lt;=c;i++){
+			while(tp &amp;&amp; mp[pos[stk[tp]]]&gt;mp[pos[i]])
+				nxt[stk[tp]]=i,lc[i]=stk[tp--];
+			if(tp) rc[stk[tp]]=i,prv[i]=stk[tp];
+			stk[++tp]=i;
+		}
+		for(int i=1;i&lt;=c;i++) ld[i]=ld[prv[i]]+1;
+		for(int i=c;i&gt;=1;i--) rd[i]=rd[nxt[i]]+1;
+
+		// cout&lt;&lt;&quot;pressing&quot;&lt;&lt;endl;
+
+		int rt=stk[1];
+		le[rt]=0,re[rt]=n+1;
+		cc=c;
+		dfs(rt);
+
+		// cout&lt;&lt;&quot;dfsed&quot;&lt;&lt;endl;
+
+		for(auto [l,r,w]: seg[p&lt;&lt;1]){
+			int vl=upper_bound(pos+1,pos+c+1,l)-pos;
+			int vr=lower_bound(pos+1,pos+c+1,r)-(pos+1);
+			if(vl&gt;vr){
+				seg[p].pb(l,r,w);
+				continue;
+			}
+			int vc=query(vl,vr);
+			int prob_l=(ull)w*iv[rd[vl]-rd[vc]+1]%mod;
+			int prob_r=(ull)w*iv[ld[vr]-ld[vc]+1]%mod;
+			addmod(tr[vl]+=prob_l);
+			addmod(tl[vr]+=prob_r);
+			w=mod-div2(w);
+			addmod(tr[vc]+=w),addmod(tl[vc]+=w);
+			seg[p].pb(l,pos[vl],prob_l), seg[p].pb(pos[vr],r,prob_r);
+		}
+		for(int i=1;i&lt;=c;i++)
+			tr[nxt[i]]=(tr[nxt[i]]+2ull*tr[i])%mod, addmod(tag[rc[i]]+=tr[i]);
+		for(int i=c;i&gt;=1;i--)
+			tl[prv[i]]=(tl[prv[i]]+2ull*tl[i])%mod, addmod(tag[lc[i]]+=tl[i]);
+		dfs2(rt,seg[p]);
+	}
+	sort(seg[p].begin(),seg[p].end());
+	vector&lt;Seg&gt;vec;
+	for(auto [l,r,w]: seg[p]){
+		if(vec.empty() || vec.back().l!=l || vec.back().r!=r)
+			vec.pb(l,r,w);
+		else
+			addmod(vec[vec.size()-1].w+=w);
+	}
+	swap(seg[p],vec);
+
+	// for(auto [l,r,w]:vec){
+	// 	cout&lt;&lt;&quot;[&quot;&lt;&lt;l&lt;&lt;&quot;,&quot;&lt;&lt;r&lt;&lt;&quot;] = &quot;&lt;&lt;w&lt;&lt;endl;
+	// }
+	for(int i=1;i&lt;=max(c,cc);i++)
+	prv[i]=nxt[i]=lc[i]=rc[i]=ld[i]=rd[i]=le[i]=re[i]=mp[pos[i]]=tag[i]=tl[i]=tr[i]=0;
+}
+void procedure(){
+	n=read(),q=read();
+	for(int i=1;i&lt;=q;i++){
+		op[i]=read();
+		if(op[i]==1) ql[i]=read(),qr[i]=read();
+		else x[i]=read();
+	}
+	cdq(1,q,1);
+	int ans=0;
+	for(auto [l,r,w]: seg[1])
+		ans=(ans+(ull)(r-l)*w)%mod;
+	printf(&quot;%d\n&quot;,ans);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	iv[0]=1;
+	for(int i=1;i&lt;=100000;i++) iv[i]=div2(iv[i-1]);
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

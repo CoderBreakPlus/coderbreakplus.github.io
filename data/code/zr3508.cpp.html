@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>zr3508.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>zr3508.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../zr3508.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-07-15 09:08:06
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+const ll LOW = 1e18;
+int c,o,n,m,lst;
+void solve(int m,basic_string&lt;array&lt;int,2&gt;&gt; &amp;a,basic_string&lt;ll&gt; b){
+	basic_string&lt;int&gt;seq(a.size(),0);
+	for(int i=0;i&lt;a.size();i++)seq[i]=a[i][1];
+
+	nth_element(seq.begin(), seq.begin()+m-1, seq.end());
+	int cut=seq[m-1];
+	stable_partition(a.begin(),a.end(),[&amp;](auto w){ return w[1]&lt;=cut; });
+
+	auto L=a.substr(0,m), R=a.substr(m);
+
+	int tp=0,it=1,sz=b.size();
+	for(auto [x,y]: R){
+		while(it&lt;sz&amp;&amp;b[tp]&lt;-x) b[++tp]=b[it++];
+		if(b[tp]&gt;=-x) b[tp-1]+=b[tp]+x;
+		tp--;
+	}	
+	while(it&lt;sz) b[++tp]=b[it++];
+	b.erase(tp+1);
+
+	a=L;
+	if(m==1){
+		int x=read()^(o*lst),y=read()^(o*lst);
+		if(a[0][1]&lt;y) a[0]={x,y};
+		if(b[1]&gt;=-a[0][0]) b[0]+=b[1]+a[0][0];
+		ll ans;
+		printf(&quot;%lld\n&quot;, ans=b[0]+LOW);
+		lst=ans%(1&lt;&lt;30);
+	}else{
+		solve((m+1)/2,a,b),solve(m/2,a,b);
+	}
+	a=a+R;
+	inplace_merge(a.begin(),a.begin()+m,a.end(),greater&lt;&gt;());
+}
+void procedure(){
+	c=read(),o=read();
+	n=read(),m=read();
+	basic_string&lt;array&lt;int,2&gt;&gt;a(n,{0,0});
+	basic_string&lt;ll&gt;b(n,0);
+
+	for(int i=0;i&lt;n;i++) a[i][0]=read();
+	for(int i=0;i&lt;n;i++) a[i][1]=read();
+	for(int i=0;i&lt;n;i++) b[i]=-read();
+	sort(b.begin(),b.end());
+	sort(a.begin(),a.end(),greater&lt;&gt;());
+
+	ll ans=0,cur=0;
+	for(int i=0;i&lt;n;i++){
+		cur+=a[i][0]+b[i];
+		chkmax(ans,cur);
+	}
+	printf(&quot;%lld\n&quot;, ans); lst=ans%(1&lt;&lt;30);
+	b=-LOW+b;
+	solve(m,a,b);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

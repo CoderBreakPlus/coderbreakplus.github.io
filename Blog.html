@@ -139,7 +139,7 @@
             
         </div>
         
-        <div class="footer">最后构建: 2026-10-18 19:01:27 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-18 20:44:36 | Algorithm Platform Generator</div>
     </div>
     <script>
         const ENABLE_PAGINATION = false; 
@@ -204,7 +204,7 @@
             rows.forEach(row => {
                 const cname = (row.getAttribute('data-name') || '').toLowerCase();
                 const cid = (row.getAttribute('data-cid') || '').toLowerCase();
-                if (cname.includes(val) || cid === val || 'c-' + cid === val || '#' + cid === val) {
+                if (cname.includes(val) || cid === val || 'c-' + cid === val || '#c-' + cid === val || '#' + cid === val) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
@@ -235,6 +235,12 @@
             const target = document.getElementById(cid_id);
             if (!target || !target.matches('.matrix-table tbody tr')) return;
             document.querySelectorAll('.highlight-row').forEach(tr => tr.classList.remove('highlight-row'));
+            const tab = target.closest('.atcoder-tab-content');
+            if (tab && getComputedStyle(tab).display === 'none') {
+                const btn = Array.from(document.querySelectorAll('.atcoder-tab-btn')).find(b => b.dataset.target === tab.id);
+                if (btn) switchAtCoderTab(tab.id, btn, updateUrl);
+            }
+            target.style.display = '';
             target.classList.add('highlight-row');
             selectedContest = target;
             centerContest(target);
@@ -244,7 +250,7 @@
                 window.history.replaceState(null, '', url);
             }
         }
-        window.addEventListener('hashchange', () => highlightContest(window.location.hash.slice(1), false));
+        window.addEventListener('hashchange', () => highlightContest(decodeURIComponent(window.location.hash.slice(1)), false));
         window.addEventListener('resize', () => centerContest(selectedContest, false));
 
         function addTagToFilter(tag, tableId) {
@@ -588,7 +594,7 @@
             }
             
             if(window.location.hash && window.location.hash.startsWith('#c-')) {
-                requestAnimationFrame(() => highlightContest(window.location.hash.substring(1), false));
+                requestAnimationFrame(() => highlightContest(decodeURIComponent(window.location.hash.substring(1)), false));
             }
 
         });

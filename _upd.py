@@ -16,7 +16,7 @@ from typing import List, Tuple, Set, Optional
 class FileOrganizer:
     def __init__(self):
         """初始化整理器"""
-        self.current_dir = Path.cwd()
+        self.current_dir = Path(__file__).resolve().parent
         self.code_dir = self.current_dir / "code"
         self.data_dir = self.current_dir / "data"
         
@@ -448,7 +448,7 @@ class FileOrganizer:
             print(f"\n❌ 执行 _run.py 时出错: {e}")
             return False
     
-    def _run(self, auto__run: bool = False, dry__run: bool = False, skip_clean: bool = False):
+    def _run(self, auto__run: bool = False, dry__run: bool = False, skip_clean: bool = False, no_run: bool = False):
         """
         主运行函数
         
@@ -489,7 +489,9 @@ class FileOrganizer:
                 print(f"\n✅ 已删除 {self.stats['executables_deleted']} 个可执行文件")
         
         # 询问是否运行 _run.py
-        if not auto__run and not dry__run:
+        if no_run and not dry__run:
+            print('⏭️  跳过执行 _run.py')
+        elif not auto__run and not dry__run:
             print("\n" + "="*50)
             response = input("是否继续运行 _run.py? (y/n, 默认 y): ").strip().lower()
             
@@ -571,10 +573,10 @@ def main():
 
 示例:
   %(prog)s                    # 移动文件，清理可执行文件，并交互式询问是否运行 _run.py
-  %(prog)s --auto-_run         # 移动文件后自动运行 _run.py
-  %(prog)s --no-_run           # 只移动文件，不运行 _run.py
+  %(prog)s --auto-run         # 移动文件后自动运行 _run.py
+  %(prog)s --no-run           # 只移动文件，不运行 _run.py
   %(prog)s --skip-clean       # 跳过清理可执行文件
-  %(prog)s --dry-_run          # 模拟运行，只显示会移动和删除哪些文件
+  %(prog)s --dry-run          # 模拟运行，只显示会移动和删除哪些文件
   
 重名处理说明:
   当目标文件已存在时，会询问:
@@ -587,13 +589,13 @@ def main():
         """
     )
     
-    parser.add_argument('--auto-_run', action='store_true', 
+    parser.add_argument('--auto-run', '--auto-_run', dest='auto__run', action='store_true', 
                         help='移动文件后自动运行 _run.py（不询问）')
-    parser.add_argument('--no-_run', action='store_true', 
+    parser.add_argument('--no-run', '--no-_run', dest='no__run', action='store_true', 
                         help='移动文件后不运行 _run.py')
     parser.add_argument('--skip-clean', action='store_true', 
                         help='跳过清理可执行文件')
-    parser.add_argument('--dry-_run', action='store_true', 
+    parser.add_argument('--dry-run', '--dry-_run', dest='dry__run', action='store_true', 
                         help='模拟运行，不实际移动或删除文件')
     
     args = parser.parse_args()
@@ -610,7 +612,7 @@ def main():
     if args.no__run:
         auto__run = False
     
-    organizer._run(auto__run=auto__run, dry__run=args.dry__run, skip_clean=args.skip_clean)
+    organizer._run(auto__run=auto__run, dry__run=args.dry__run, skip_clean=args.skip_clean, no_run=args.no__run)
 
 
 if __name__ == "__main__":

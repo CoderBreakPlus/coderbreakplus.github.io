@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf2152h2.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf2152h2.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../cf2152h2.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-04-14 09:23:18
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+inline void addmod(int &amp;x){ if(x &gt;= mod) x -= mod; }
+inline void addmod(ll &amp;x){ if(x &gt;= mod) x -= mod; }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+ 
+int n,q;
+ll ans[250005],l;
+pair&lt;int,int&gt; que[250005];
+ 
+vector&lt;pair&lt;int,int&gt;&gt;E[250005];
+ 
+struct Num{
+	ll k,b;
+	Num(){ k=b=0;} 
+	Num(ll x,ll y){ k=x,b=y; }
+	ll val(){ return k*l+b; }
+};
+inline Num operator+ (const Num &amp;A, const Num &amp;B){
+	return Num(A.k+B.k,A.b+B.b);
+}
+ll tmp;
+inline ll CEIL(ll x,ll y){ return (x+y-1)/y; }
+inline void upd(Num A,Num B, Num &amp;C){
+	bool ret = A.val()&lt;B.val();
+	if(!ret) swap(A, B); C = B;
+	// A.k * l + A.b &gt;= B.k * l + B.b
+	if(A.k&lt;=B.k) return;
+	// (A.k - B.k) * l &gt;= B.b - A.b
+	tmp = min(tmp, CEIL(B.b-A.b, A.k-B.k));
+}
+ 
+ 
+struct Node{
+	Num a[2][2];
+	Num *operator [](int x){ return a[x]; }
+	const Num *operator [](int x)const{ return a[x]; }
+}t[500005];
+ 
+int lc[500005],rc[500005],fa[500005],op[500005],tim[500005],szt[500005],id;
+int ff[250005],fw[250005],sz[250005],son[250005];
+ 
+void pushup(int x){
+	if(x &lt;= n){
+		t[x][1][1]=Num(1,-2*fw[x]);
+		tim[x] = 2e9;
+		return;
+	}
+	szt[x] = szt[lc[x]] + szt[rc[x]];
+	tmp = 2e9;
+	if(op[x]){
+		for(int p:{0,1})for(int q:{0,1})
+			upd(t[lc[x]][p][0]+t[rc[x]][0][q], t[lc[x]][p][1]+t[rc[x]][1][q], t[x][p][q]);
+		tim[x] = min({tim[lc[x]], tim[rc[x]], (int)tmp});
+	}else{
+		for(int p:{0,1})for(int q:{0,1})
+			upd(t[lc[x]][p][q]+t[rc[x]][p][0], t[lc[x]][p][q]+t[rc[x]][p][1], t[x][p][q]);
+		tim[x] = min({tim[lc[x]], tim[rc[x]], (int)tmp});
+	}
+}
+int newnode(int x,int y,int o){
+	++id;
+	lc[id]=x,rc[id]=y,op[id]=o;
+	fa[x]=fa[y]=id, pushup(id);
+	return id;
+}
+vector&lt;int&gt;seq;
+int build(int l,int r,int o){
+	if(l==r) return seq[l];
+	int sum=0, cur=0, cut=r-1;
+	for(int i=l;i&lt;=r;i++) sum+=szt[seq[i]];
+	for(int i=l;i&lt;r;i++){
+		cur+=szt[seq[i]];
+		if(2*cur&gt;=sum){
+			cut=i; break;
+		}
+	}
+	return newnode(build(l,cut,o),build(cut+1,r,o),o);
+}
+int build(int x){
+	vector&lt;int&gt;now = {x};
+	for(;son[x];x=son[x]){
+		vector&lt;int&gt;cur;
+		for(auto [y,w]:E[x])
+			if(y!=ff[x]&amp;&amp;y!=son[x]) cur.pb(build(y));
+		if(cur.empty()) now.pb(son[x]);
+		else{
+			swap(seq,cur);
+			now.pb(newnode(son[x],build(0,(int)seq.size()-1,0),0));
+		}
+	}
+	swap(seq,now);
+	return build(0,(int)seq.size()-1,1);
+}
+void dfs(int x,int f){
+	ff[x]=f,sz[x]=szt[x]=1;
+	t[x][0][0] = Num(0,0);
+	t[x][0][1] = Num(1,-fw[x]);
+	t[x][1][0] = Num(0,-fw[x]);
+	t[x][1][1] = Num(0,0);
+	tim[x]=2*fw[x]; 
+	son[x]=0;
+	for(auto [y,w]:E[x]){
+		if(y==f)continue;
+		fw[y]=w;
+		dfs(y,x),sz[x]+=sz[y];
+		if(!son[x] || sz[y]&gt;sz[son[x]]) son[x]=y;
+	}
+}
+ 
+void update(int x){
+	if(tim[x]&gt;l) return;
+	if(lc[x]) update(lc[x]);
+	if(rc[x]) update(rc[x]);
+	pushup(x);
+}
+void procedure(){
+	n=id=read();
+	for(int i=1;i&lt;n;i++){
+		int u=read(),v=read(),w=read();
+		E[u].pb(v,w),E[v].pb(u,w);
+	}
+	dfs(1,0);
+	int rt = build(1);
+	q=read();
+	for(int i=1;i&lt;=q;i++){
+		que[i].fi=read(),que[i].se=i;
+	}
+	sort(que+1,que+q+1);
+	for(int i=1;i&lt;=q;i++){
+		l=que[i].fi;
+		update(rt);
+		ans[que[i].se]=max(t[rt][0][0].val(), t[rt][0][1].val());
+	}
+	for(int i=1;i&lt;=q;i++)
+		printf(&quot;%lld\n&quot;,ans[i]);
+
+	for(int i=1;i&lt;=n;i++) E[i].clear(),ff[i]=fw[i]=sz[i]=son[i]=0;
+	l=0;
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=read();
+	tim[0]=2e9;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}
+</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

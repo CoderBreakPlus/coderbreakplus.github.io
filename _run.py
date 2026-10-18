@@ -7,6 +7,11 @@ import urllib.parse
 import urllib.request
 from collections import defaultdict
 from datetime import datetime, timedelta
+from pathlib import Path
+from _links import LinkResolver, strip_comment, normalize_category
+
+ROOT = Path(__file__).resolve().parent
+LINKS = LinkResolver(ROOT / "oj.json")
 
 def get_diff_style(diff):
     if diff >= 3300: return 'background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;'
@@ -44,26 +49,7 @@ def contest_sort_key(name):
     return tuple((0, int(p)) if p.isdigit() else (1, p.lower()) for p in parts if p)
 
 def get_auto_link(pid):
-    m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(\d+)?$', pid, re.IGNORECASE)
-    m_ac = re.match(r'^(abc|arc|agc)(\d+)_?([a-zA-Z]+?)(\d+)?$', pid, re.IGNORECASE)
-    m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', pid, re.IGNORECASE)
-    
-    if m_cf:
-        suffix = m_cf.group(3) if m_cf.group(3) else ""
-        return f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{(m_cf.group(2) + suffix).upper()}"
-    elif m_ac:
-        suffix = m_ac.group(4) if m_ac.group(4) else ""
-        contest = m_ac.group(1).lower() + m_ac.group(2)
-        task = f"{contest}_{(m_ac.group(3) + suffix).lower()}"
-        return f"https://atcoder.jp/contests/{contest}/tasks/{task}"
-    elif m_oj:
-        oj_prefix = m_oj.group(1).lower()
-        oj_num = m_oj.group(2)
-        if oj_prefix == 'p': return f"https://www.luogu.com.cn/problem/P{oj_num}"
-        elif oj_prefix == 'qoj': return f"https://qoj.ac/problem/{oj_num}"
-        elif oj_prefix == 'uoj': return f"https://uoj.ac/problem/{oj_num}"
-        elif oj_prefix == 'soj': return f"http://121.196.149.251:8080/problem/{oj_num}"
-    return "#"
+    return LINKS.problem(pid)
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
@@ -257,7 +243,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             rows.forEach(row => {{
                 const cname = (row.getAttribute('data-name') || '').toLowerCase();
                 const cid = (row.getAttribute('data-cid') || '').toLowerCase();
-                if (cname.includes(val) || cid === val || 'c-' + cid === val || '#' + cid === val) {{
+                if (cname.includes(val) || cid === val || 'c-' + cid === val || '#c-' + cid === val || '#' + cid === val) {{
                     row.style.display = '';
                 }} else {{
                     row.style.display = 'none';
@@ -288,6 +274,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const target = document.getElementById(cid_id);
             if (!target || !target.matches('.matrix-table tbody tr')) return;
             document.querySelectorAll('.highlight-row').forEach(tr => tr.classList.remove('highlight-row'));
+            const tab = target.closest('.atcoder-tab-content');
+            if (tab && getComputedStyle(tab).display === 'none') {{
+                const btn = Array.from(document.querySelectorAll('.atcoder-tab-btn')).find(b => b.dataset.target === tab.id);
+                if (btn) switchAtCoderTab(tab.id, btn, updateUrl);
+            }}
+            target.style.display = '';
             target.classList.add('highlight-row');
             selectedContest = target;
             centerContest(target);
@@ -297,7 +289,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 window.history.replaceState(null, '', url);
             }}
         }}
-        window.addEventListener('hashchange', () => highlightContest(window.location.hash.slice(1), false));
+        window.addEventListener('hashchange', () => highlightContest(decodeURIComponent(window.location.hash.slice(1)), false));
         window.addEventListener('resize', () => centerContest(selectedContest, false));
 
         function addTagToFilter(tag, tableId) {{
@@ -641,7 +633,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }}
             
             if(window.location.hash && window.location.hash.startsWith('#c-')) {{
-                requestAnimationFrame(() => highlightContest(window.location.hash.substring(1), false));
+                requestAnimationFrame(() => highlightContest(decodeURIComponent(window.location.hash.substring(1)), false));
             }}
 
         }});
@@ -975,7 +967,7 @@ def scan_and_group_files(data_dir):
     groups = {}
     conf_bases = set()
     if os.path.exists(data_dir):
-        for f in os.listdir(data_dir):
+        for f in sorted(os.listdir(data_dir)):
             if f.endswith('.conf'): conf_bases.add(f[:-5].lower())
 
     def get_v_name(num_str):
@@ -984,7 +976,7 @@ def scan_and_group_files(data_dir):
         if num_str == '2': return 'Hard'
         return f'V{num_str}'
 
-    for f in os.listdir(data_dir):
+    for f in sorted(os.listdir(data_dir)):
         if not os.path.isfile(os.path.join(data_dir, f)): continue
         name, ext = os.path.splitext(f)
         if ext not in ['.cpp', '.md', '.conf']: continue
@@ -992,7 +984,8 @@ def scan_and_group_files(data_dir):
         base_name, version = None, 'Normal'
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+?)(\d+)?$', name, re.IGNORECASE)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)_?([a-zA-Z]+?)(\d+)?$', name, re.IGNORECASE)
-        m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', name, re.IGNORECASE)
+        m_oj = re.fullmatch(r'([a-z]+)([0-9]+)', name, re.IGNORECASE)
+        if m_oj and m_oj[1].lower() not in LINKS.numeric_prefixes: m_oj = None
 
         if m_cf:
             base_name = f"cf{m_cf.group(1)}{m_cf.group(2).lower()}"
@@ -1039,23 +1032,24 @@ def scan_and_group_files(data_dir):
         
     return groups
 
-def apply_categories_and_links(groups, data_dir):
+def apply_categories_and_links(groups, data_dir, contest_dir=None):
+    contest_dir = Path(contest_dir) if contest_dir else ROOT / "contest"
     contest_info = defaultdict(lambda: defaultdict(dict))
     custom_apps = defaultdict(list)
     
-    if os.path.exists('contest'):
-        for f in os.listdir('contest'):
+    if contest_dir.exists():
+        for f in sorted(os.listdir(contest_dir)):
             if not f.endswith('.conf'): continue
             cid = f[:-5].lstrip('0')
             if not cid: cid = '0'
             
-            path = os.path.join('contest', f)
+            path = os.path.join(contest_dir, f)
             try:
                 with open(path, 'r', encoding='utf-8') as file:
-                    lines = [l.split('#')[0].strip() for l in file.readlines()]
+                    lines = [strip_comment(l) for l in file.readlines()]
                 while len(lines) < 3: lines.append('')
                 
-                c_name, cat, c_link = lines[0], lines[1], lines[2]
+                c_name, cat, c_link = lines[0], normalize_category(lines[1]), LINKS.resolve(lines[2])
                 remark = ""
                 probs = []
                 for line in lines[3:]:
@@ -1070,19 +1064,29 @@ def apply_categories_and_links(groups, data_dir):
                     contest_info[cat][c_name] = {'link': c_link, 'remark': remark, 'cid': cid}
                     for pid, base_name in probs:
                         custom_apps[base_name.lower()].append((cat, c_name, pid))
-            except Exception: pass
+            except (OSError, ValueError) as error:
+                raise ValueError(f"比赛配置读取失败：{path}: {error}") from error
+
+    # Declared tasks without local files still belong in the contest matrix.
+    # They remain link-only records and never enter the source/summary counts.
+    for base_name in custom_apps:
+        if base_name not in groups:
+            group = ProblemGroup(base_name)
+            group.versions['Normal'] = ProblemVersion('Normal', base_name)
+            groups[base_name] = group
 
     for group in groups.values():
         m_cf = re.match(r'^cf(\d+)([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
         m_ac = re.match(r'^(abc|arc|agc)(\d+)_?([a-zA-Z]+)$', group.base_name, re.IGNORECASE)
-        m_oj = re.match(r'^(qoj|uoj|soj|p)(\d+)$', group.base_name, re.IGNORECASE)
         
-        is_cf, is_at, is_oj = bool(m_cf), bool(m_ac), bool(m_oj)
+        is_cf, is_at = bool(m_cf), bool(m_ac)
 
         group.appearances = []
         group.has_conf = False
         
         for v_name, v in group.versions.items():
+            v.appearances = []
+            has_local_files = any(v.files.values())
             if v.files.get('cpp'):
                 fp = os.path.join(data_dir, v.files['cpp'])
                 if os.path.exists(fp):
@@ -1101,7 +1105,7 @@ def apply_categories_and_links(groups, data_dir):
                 fp = os.path.join(data_dir, v.files['conf'])
                 try:
                     with open(fp, 'r', encoding='utf-8') as f:
-                        lines = [line.split('#')[0].strip() for line in f.readlines()]
+                        lines = [strip_comment(line) for line in f.readlines()]
                     while len(lines) < 3: lines.append('')
                     
                     parts = lines[0].split()
@@ -1113,29 +1117,30 @@ def apply_categories_and_links(groups, data_dir):
                             v.tags = sorted(parts)
                             v.difficulty = None
                             
-                    primary_link = lines[1].strip()
+                    primary_link = LINKS.resolve(lines[1])
                     v.remark = lines[2].strip()
                 except Exception: pass
             
-            suffix = ""
-            if v_name == 'Easy': suffix = "1"
-            elif v_name == 'Hard': suffix = "2"
-            elif v_name.startswith('V'): suffix = v_name[1:]
                 
-            cf_at_link = "#"
             
-            if is_cf:
+            if is_cf and has_local_files:
                 c = f"Codeforces Round {m_cf.group(1)}"
                 base_p = m_cf.group(2).upper()
                 v.appearances.append(('Codeforces', c, base_p))
-                cf_at_link = f"https://codeforces.com/problemset/problem/{m_cf.group(1)}/{m_cf.group(2).upper() + suffix}"
                 
-            if is_at:
+            if is_at and has_local_files:
                 c = f"{m_ac.group(1).upper()}{m_ac.group(2)}"
                 base_p = m_ac.group(3).upper()
                 v.appearances.append(('AtCoder', c, base_p))
-                cf_at_link = f"https://atcoder.jp/contests/{m_ac.group(1).lower()}{m_ac.group(2)}/tasks/{m_ac.group(1).lower()}{m_ac.group(2)}_{(m_ac.group(3).upper() + suffix).lower()}"
                 
+            if not is_at and has_local_files:
+                at_parts = LINKS.atcoder_parts(v.base_filename)
+                if at_parts:
+                    at_contest, at_task = at_parts
+                    c_other = at_contest.upper()
+                    v.appearances.append(('AtCoder', c_other, at_task.rsplit('_', 1)[-1].upper()))
+                    contest_info['AtCoder'][c_other]['link'] = LINKS.contest_for_problem(v.base_filename)
+
             for app in custom_apps.get(group.base_name.lower(), []):
                 if app not in v.appearances:
                     v.appearances.append(app)
@@ -1144,16 +1149,13 @@ def apply_categories_and_links(groups, data_dir):
                 v.appearances.append(('Summary', '', ''))
                 
             if not primary_link or primary_link == "#":
-                if is_cf or is_at:
-                    primary_link = cf_at_link
-                elif is_oj:
-                    oj_prefix = m_oj.group(1).lower()
-                    oj_num = m_oj.group(2)
-                    if oj_prefix == 'p': primary_link = f"https://www.luogu.com.cn/problem/P{oj_num}"
-                    elif oj_prefix == 'qoj': primary_link = f"https://qoj.ac/problem/{oj_num}"
-                    elif oj_prefix == 'uoj': primary_link = f"https://uoj.ac/problem/{oj_num}"
-                    elif oj_prefix == 'soj': primary_link = f"http://121.196.149.251:8080/problem/{oj_num}"
-                    
+                primary_link = get_auto_link(v.base_filename)
+
+            if is_cf and has_local_files:
+                contest_info['Codeforces'][c]['link'] = LINKS.contest_for_problem(v.base_filename)
+            elif is_at and has_local_files:
+                contest_info['AtCoder'][c]['link'] = LINKS.contest_for_problem(v.base_filename)
+
             v.link = primary_link
 
             for app in v.appearances:
@@ -1169,7 +1171,7 @@ def render_file_links(v, rel_path, base_url=""):
         if not filename: continue
         # Preserve the site's extensionless Markdown route.
         if ext == 'md' and filename.endswith('.md'): filename = filename[:-3]
-        path = f"{base_url}code/{urllib.parse.quote(filename, safe='/')}.html" if ext == 'cpp' else f"{rel_path}/{urllib.parse.quote(filename, safe='/')}"
+        path = f"{base_url}data/code/{urllib.parse.quote(filename, safe='/')}.html" if ext == 'cpp' else f"{rel_path}/{urllib.parse.quote(filename, safe='/')}"
         href = html.escape(path, quote=True)
         links.append(f'<a href="{href}" target="_blank" rel="noopener noreferrer" class="file-link" title="{label}">{icon}</a>')
     return links
@@ -1245,14 +1247,16 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         c_remark = c_info.get('remark', '')
         c_id = c_info.get('cid', '')
         
-        row_id = f"c-{c_id}" if c_id else f"c-{urllib.parse.quote(contest.replace(' ', '_'))}"
+        row_id = f"c-{c_id}" if c_id else f"c-{contest.replace(' ', '_')}"
         
         display_contest = f'<a href="{c_link}" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">{contest}</a>' if c_link else f'<span style="font-weight:700;">{contest}</span>'
         
         html += f'<tr id="{row_id}" data-name="{contest}" data-cid="{c_id}" data-count="{len(c_groups)}">'
         html += f'<td class="contest-name-cell" style="padding-left: 15px;">'
         html += f'<a href="#{row_id}" class="c-anchor" onclick="event.preventDefault(); highlightContest(\'{row_id}\')" title="定位比赛并更新地址栏链接">🔗</a>'
-        html += f'{display_contest} <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal; margin-left: 30px;">({len(c_groups)} 题)</span></td>'
+        archived = sum(any(v.files.get('cpp') for v in g.versions.values()) for g in c_groups)
+        count_text = f'{len(c_groups)} 题' if archived == len(c_groups) else f'已归档 {archived} / 共 {len(c_groups)} 题'
+        html += f'{display_contest} <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal; margin-left: 30px;">({count_text})</span></td>'
         
         for pid in sorted_pids:
             html += '<td>'
@@ -1540,143 +1544,41 @@ def build_plan_page(title, plans_dict, out_path, rel_path, base_url="", data_dir
     )
     with open(out_path, 'w', encoding='utf-8') as f: f.write(html)
 
-def scan_problem_lists(plist_dir, groups):
-    plists = {}
-    if not os.path.exists(plist_dir):
-        return plists
-        
-    version_map = {}
-    for g in groups.values():
-        for v in g.versions.values():
-            version_map[v.base_filename.lower()] = v
-            
-    for f in os.listdir(plist_dir):
-        if f.endswith('.conf'):
-            name = f[:-5]
-            path = os.path.join(plist_dir, f)
-            changed = False
-            new_lines, ids = [], []
-            
-            with open(path, 'r', encoding='utf-8') as file:
-                lines = file.readlines()
-                
-            priority = 0
-            start_idx = 0
-            if lines:
-                first_line_clean = lines[0].split('#')[0].strip()
-                try:
-                    priority = int(first_line_clean)
-                    start_idx = 1
-                except ValueError:
-                    pass
-            
-            if start_idx == 1:
-                new_lines.append(lines[0])
-                
-            for i in range(start_idx, len(lines)):
-                line = lines[i]
-                content = line.split('#')[0]
-                pid = content.strip()
-                if pid:
-                    if '_' not in pid and pid != pid.lower():
-                        lower_pid = pid.lower()
-                        line = line.replace(pid, lower_pid, 1)
-                        pid = lower_pid
-                        changed = True
-                    ids.append(pid)
-                new_lines.append(line)
-                
-            if changed:
-                with open(path, 'w', encoding='utf-8') as file:
-                    file.writelines(new_lines)
-            
-            matched_versions = []
-            for pid in ids:
-                pid_lower = pid.lower()
-                if pid_lower in version_map:
-                    matched_versions.append(version_map[pid_lower])
+def scan_named_lists(directory, groups):
+    result = {}
+    if not os.path.isdir(directory): return result
+    versions = {v.base_filename.casefold(): v for g in groups.values() for v in g.versions.values()}
+    for path in sorted(Path(directory).glob('*.conf')):
+        lines = path.read_text(encoding='utf-8-sig').splitlines()
+        priority, start = 0, 0
+        if lines:
+            try:
+                priority, start = int(strip_comment(lines[0])), 1
+            except ValueError:
+                pass
+        matched = []
+        for line in lines[start:]:
+            pid = strip_comment(line)
+            if not pid: continue
+            version = versions.get(pid.casefold())
+            if version is None:
+                group = groups.get(pid.casefold())
+                if group:
+                    version = group.versions.get('Normal') or next(iter(group.versions.values()))
                 else:
-                    target_group = groups.get(pid_lower)
-                    if target_group:
-                        if 'Normal' in target_group.versions:
-                            matched_versions.append(target_group.versions['Normal'])
-                        else:
-                            matched_versions.append(list(target_group.versions.values())[0])
-                    else:
-                        dummy = ProblemVersion("Normal", pid)
-                        dummy.link = get_auto_link(pid)
-                        matched_versions.append(dummy)
-            plists[name] = {'priority': priority, 'versions': matched_versions}
-    return plists
+                    version = ProblemVersion('Normal', pid)
+                    version.link = get_auto_link(pid)
+            matched.append(version)
+        result[path.stem] = {'priority': priority, 'versions': matched}
+    return result
+
+
+def scan_problem_lists(plist_dir, groups):
+    return scan_named_lists(plist_dir, groups)
+
 
 def scan_plans(plan_dir, groups):
-    plans = {}
-    if not os.path.exists(plan_dir):
-        return plans
-        
-    version_map = {}
-    for g in groups.values():
-        for v in g.versions.values():
-            version_map[v.base_filename.lower()] = v
-            
-    for f in os.listdir(plan_dir):
-        if f.endswith('.conf'):
-            name = f[:-5]
-            path = os.path.join(plan_dir, f)
-            changed = False
-            new_lines, ids = [], []
-            
-            with open(path, 'r', encoding='utf-8') as file:
-                lines = file.readlines()
-                
-            priority = 0
-            start_idx = 0
-            if lines:
-                first_line_clean = lines[0].split('#')[0].strip()
-                try:
-                    priority = int(first_line_clean)
-                    start_idx = 1
-                except ValueError:
-                    pass
-            
-            if start_idx == 1:
-                new_lines.append(lines[0])
-                
-            for i in range(start_idx, len(lines)):
-                line = lines[i]
-                content = line.split('#')[0]
-                pid = content.strip()
-                if pid:
-                    if '_' not in pid and pid != pid.lower():
-                        lower_pid = pid.lower()
-                        line = line.replace(pid, lower_pid, 1)
-                        pid = lower_pid
-                        changed = True
-                    ids.append(pid)
-                new_lines.append(line)
-                
-            if changed:
-                with open(path, 'w', encoding='utf-8') as file:
-                    file.writelines(new_lines)
-            
-            matched_versions = []
-            for pid in ids:
-                pid_lower = pid.lower()
-                if pid_lower in version_map:
-                    matched_versions.append(version_map[pid_lower])
-                else:
-                    target_group = groups.get(pid_lower)
-                    if target_group:
-                        if 'Normal' in target_group.versions:
-                            matched_versions.append(target_group.versions['Normal'])
-                        else:
-                            matched_versions.append(list(target_group.versions.values())[0])
-                    else:
-                        dummy = ProblemVersion("Normal", pid)
-                        dummy.link = get_auto_link(pid)
-                        matched_versions.append(dummy)
-            plans[name] = {'priority': priority, 'versions': matched_versions}
-    return plans
+    return scan_named_lists(plan_dir, groups)
 
 def build_problem_lists_index(plists, out_path, base_url=""):
     cards_html = ""
@@ -1830,16 +1732,19 @@ def build_index_page(categories, summary_versions, plans_dict, plists, blog_coun
     plan_count = len(plans_dict)
     plist_count = len(plists)
     
-    oi_p = sum(len(g.versions) for gs in categories.get('OI', {}).values() for g in gs) + sum(len(g.versions) for gs in categories.get('OIs', {}).values() for g in gs)
+    def archived_count(contests):
+        return sum(bool(v.files.get('cpp')) for gs in contests.values() for g in gs for v in g.versions.values())
+
+    oi_p = archived_count(categories.get('OI', {})) + archived_count(categories.get('OIs', {}))
     oi_c = len(categories.get('OI', {})) + len(categories.get('OIs', {}))
     
-    xcpc_p = sum(len(g.versions) for gs in categories.get('XCPC', {}).values() for g in gs)
+    xcpc_p = archived_count(categories.get('XCPC', {}))
     xcpc_c = len(categories.get('XCPC', {}))
     
-    cf_p = sum(len(g.versions) for gs in categories.get('Codeforces', {}).values() for g in gs)
+    cf_p = archived_count(categories.get('Codeforces', {}))
     cf_c = len(categories.get('Codeforces', {}))
     
-    at_p = sum(len(g.versions) for gs in categories.get('AtCoder', {}).values() for g in gs)
+    at_p = archived_count(categories.get('AtCoder', {}))
     at_c = len(categories.get('AtCoder', {}))
 
     today = datetime.now()
@@ -1922,7 +1827,7 @@ def build_code_pages(groups, data_dir, out_dir):
                 print(f"ℹ️ 按 GB18030 读取代码：{filename}（原文件保持不变）")
             except UnicodeDecodeError as error:
                 raise ValueError(f"无法识别 {filename} 的编码，请将它转换为 UTF-8") from error
-        dest = os.path.join(out_dir, 'code', filename + '.html')
+        dest = os.path.join(out_dir, 'data', 'code', filename + '.html')
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         def relative_url(path):
             if path.startswith('https://'): return path
@@ -1962,15 +1867,21 @@ document.getElementById('copy').addEventListener('click',async()=>{{
  }}catch(error){{status.textContent='复制失败，请选中代码手动复制';}}
 }});
 </script></body></html>'''
-        with open(dest, 'w', encoding='utf-8') as file: file.write(page)
-    print(f"✅ 已生成 {len(filenames)} 个只读代码页")
+        if not os.path.isfile(dest) or Path(dest).read_text(encoding='utf-8') != page:
+            Path(dest).write_text(page, encoding='utf-8')
+    if Path(out_dir).resolve() == ROOT:
+        legacy = ROOT / 'code'
+        for old in legacy.glob('*.cpp.html'):
+            if old.is_file() and '<code id="source" class="language-cpp">' in old.read_text(encoding='utf-8', errors='replace'):
+                old.unlink()
+    print(f"✅ 已生成 {len(filenames)} 个只读代码页到 data/code/")
 
 def main():
-    data_dir = sys.argv[1] if len(sys.argv) > 1 else 'data'
-    out_dir = sys.argv[2] if len(sys.argv) > 2 else '.'
-    plist_dir = 'plist'
-    plan_dir = 'plan'
-    blog_dir = 'blog'
+    data_dir = str(Path(sys.argv[1]).resolve()) if len(sys.argv) > 1 else str(ROOT / 'data')
+    out_dir = str(Path(sys.argv[2]).resolve()) if len(sys.argv) > 2 else str(ROOT)
+    plist_dir = str(ROOT / 'plist')
+    plan_dir = str(ROOT / 'plan')
+    blog_dir = str(ROOT / 'blog')
 
     if not os.path.exists(data_dir):
         print(f"❌ 错误: 数据目录 '{data_dir}' 不存在！")
@@ -2049,6 +1960,16 @@ def main():
             versions = data['versions']
             out_file = os.path.join(out_plist_dir, f"{name}.html")
             build_single_plist_page(name, versions, out_file, rel_plist_path, base_url="../", data_dir=data_dir)
+
+    # Retain old bookmarked routes without retaining obsolete editor-enabled pages.
+    if 'todo' in plans:
+        build_list_page('Todo', plans['todo']['versions'], os.path.join(out_dir, 'todo.html'), rel_data_path,
+                        'plan-table-todo-legacy', base_url='', data_dir=data_dir)
+    legacy_list = """<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>题单</title></head>
+<body><a href="plist/index.html">打开题单首页</a>
+<script>location.replace('plist/index.html'+location.search+location.hash);</script></body></html>"""
+    Path(out_dir, 'ProblemList.html').write_text(legacy_list, encoding='utf-8')
 
     build_index_page(categories, summary_versions, plans, plists, len(blogs), os.path.join(out_dir, "index.html"))
     print(f"🎉 处理完成！请在浏览器中打开: {os.path.abspath(os.path.join(out_dir, 'index.html'))}")

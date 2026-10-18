@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p3781.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p3781.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p3781.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-08-17 13:37:18
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+const int mod=1e4+7,m=7;
+#define pb emplace_back
+
+inline void addmod(int &amp;x){ (x&gt;=mod)&amp;&amp;(x-=mod); }
+inline int qpow(int x,int y){
+	int ans=1,base=x;
+	while(y){
+		if(y&amp;1)ans=ans*base%mod;
+		base=base*base%mod;
+		y&gt;&gt;=1;
+	}
+	return ans;
+}
+const int inv = qpow(1&lt;&lt;m, mod-2);
+int n,idx,v[30005];
+vector&lt;int&gt;E[30005];
+
+struct Info{
+	int f[1&lt;&lt;m];
+	Info(){ memset(f,0,sizeof(f)); }
+	Info(int x){
+		for(int i=0;i&lt;(1&lt;&lt;m);i++)
+			f[i] = __builtin_parity(i&amp;x) ? mod-1 : 1;
+	}
+	int getv(int x){
+		int ret = 0;
+		for(int i=0;i&lt;(1&lt;&lt;m);i++)
+			addmod(ret += (__builtin_parity(i&amp;x) ? mod-f[i] : f[i]));
+		return ret * inv % mod;
+	}
+};
+inline Info&amp; operator*= (Info &amp;A, const Info &amp;B){
+	for(int i=0;i&lt;(1&lt;&lt;m);i++)(A.f[i]*=B.f[i])%=mod; return A;	
+}
+inline Info operator* (Info A, const Info &amp;B){ return A*=B; }
+inline Info&amp; operator+= (Info &amp;A, const Info &amp;B){
+	for(int i=0;i&lt;(1&lt;&lt;m);i++)addmod(A.f[i]+=B.f[i]);return A;
+}
+inline Info operator+ (Info A, const Info &amp;B){ return A+=B; }
+
+struct Node{
+	Info f[2][2]; int sz;
+	Node(){ f[0][0]=f[0][1]=f[1][0]=f[1][1]=Info(), sz=0; }
+	Info *operator [](int x){ return f[x]; } 
+	const Info *operator [](int x)const { return f[x]; }
+}t[60005];
+int lc[60005],rc[60005],fa[60005],op[60005];
+
+inline Node operator* (const Node &amp;A, const Node &amp;B){
+	Node C; C.sz=A.sz+B.sz;
+	C.f[0][0]=A.f[0][0]+B.f[0][0];
+	C.f[1][0]=A.f[1][0],C.f[0][1]=B.f[0][1];
+	for(int i:{0,1})for(int j:{0,1})
+		C.f[i][j]+=A.f[i][1]*B.f[1][j];
+    return C;
+}
+inline Node operator+ (const Node &amp;A, const Node &amp;B){
+	Node C=A; C.sz+=B.sz;
+	Info tmp=B.f[1][0]+B.f[1][1];
+	C.f[1][0]*=tmp;
+	C.f[1][1]*=tmp;
+	C.f[0][0]+=B.f[0][0]+B.f[0][1];
+	return C;
+}
+int sz[60005],son[60005],ff[60005];
+void dfs(int x,int fa){
+	ff[x]=fa,sz[x]=1;
+	t[x].sz=1;
+	t[x][1][0]=Info(0),t[x][0][1]=t[x][1][1]=Info(v[x]);
+	for(int y:E[x]){
+		if(y==fa)continue;
+		dfs(y,x);
+		sz[x]+=sz[y];
+		if(sz[y]&gt;sz[son[x]])son[x]=y;
+	}
+}
+void pushup(int x){
+	if(op[x]==0) t[x]=t[lc[x]]*t[rc[x]];
+	else t[x]=t[lc[x]]+t[rc[x]];
+}
+int newnode(int x,int y,int o){
+	++idx;
+	lc[idx]=x, rc[idx]=y, op[idx]=o;
+	fa[x]=fa[y]=idx,pushup(idx);
+    return idx;
+}
+vector&lt;int&gt;seq;
+int build(int l,int r,int o){
+	if(l==r){
+        return seq[l];
+    }
+	int sum=0, cur=0, cut=r-1;
+	for(int i=l;i&lt;=r;i++)sum+=t[seq[i]].sz;
+	for(int i=l;i&lt;r;i++){
+		cur+=t[seq[i]].sz;
+		if(2*cur&gt;=sum) {cut=i; break;}
+	}
+	int ret= newnode(build(l,cut,o),build(cut+1,r,o),o);
+    return ret;
+}
+int build(int x){
+	vector&lt;int&gt;now; now.pb(x);
+	for(;son[x];x=son[x]){
+		vector&lt;int&gt;cur;
+		for(auto y:E[x]) if(y!=ff[x]&amp;&amp;y!=son[x]) cur.pb(build(y));
+		if(cur.empty()) now.pb(son[x]);
+		else{
+			seq=cur;
+			now.pb(newnode(son[x],build(0,(int)seq.size()-1,1),1));
+		}
+	}
+	seq=now;
+	return build(0,(int)seq.size()-1,0);
+}
+int main(){
+    int shit;
+	scanf(&quot;%d%d&quot;,&amp;n,&amp;shit); idx=n;
+	
+	for(int i=1;i&lt;=n;i++) scanf(&quot;%d&quot;,&amp;v[i]);
+	
+	for(int i=1;i&lt;n;i++){
+		int u,v; scanf(&quot;%d%d&quot;,&amp;u,&amp;v);
+		E[u].pb(v),E[v].pb(u);
+	}
+	dfs(1,0);
+	int rt=build(1);
+
+	int q;scanf(&quot;%d&quot;,&amp;q);
+	while(q--){
+		char s[10];
+		scanf(&quot;%s&quot;,s);
+		if(s[0]==&#x27;C&#x27;){
+			int x,y; scanf(&quot;%d%d&quot;,&amp;x,&amp;y);v[x]=y;
+			t[x][1][0]=Info(0),t[x][0][1]=t[x][1][1]=Info(v[x]);
+			while(fa[x])pushup(x=fa[x]);
+		}else{
+			int k; scanf(&quot;%d&quot;,&amp;k);
+			printf(&quot;%d\n&quot;,(t[rt][0][0]+t[rt][0][1]).getv(k));
+		}
+	}
+    return 0;
+} </code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

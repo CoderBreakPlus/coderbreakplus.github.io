@@ -13,6 +13,7 @@ def get_offset(label):
     return res - 1
 
 def main():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     code_dir = 'code'
     if not os.path.exists(code_dir):
         print(f"❌ 错误：当前目录下不存在 '{code_dir}' 文件夹！")
@@ -30,6 +31,10 @@ def main():
             
         # 如果文件名没有 '.'，认为是编译产生的无后缀名可执行文件并删除
         if '.' not in fname:
+            with open(filepath, 'rb') as stream:
+                magic = stream.read(4)
+            if not (magic == b'\x7fELF' or magic[:2] == b'MZ' or magic in (b'\xcf\xfa\xed\xfe', b'\xfe\xed\xfa\xcf', b'\xce\xfa\xed\xfe', b'\xfe\xed\xfa\xce')):
+                continue
             try:
                 os.remove(filepath)
                 print(f"🗑️ 已删除无后缀文件: {fname}")
@@ -80,6 +85,10 @@ def main():
         new_cpp_path = os.path.join(code_dir, f"{new_base}.cpp")
         conf_path = os.path.join(code_dir, f"{new_base}.conf")
         
+        if os.path.exists(new_cpp_path):
+            print(f'⚠️ 目标已存在，跳过以避免覆盖：{new_base}.cpp')
+            continue
+
         # 重命名 cpp 文件
         try:
             os.rename(old_cpp_path, new_cpp_path)
@@ -90,6 +99,10 @@ def main():
             
         # 生成对应的精简 3 行 .conf 文件
         try:
+            if os.path.exists(conf_path):
+                print(f'✅ 保留已有配置: {new_base}.conf')
+                success_count += 1
+                continue
             with open(conf_path, 'w', encoding='utf-8') as f:
                 f.write("\n")  # 第一行：标签/难度 (初始留空)
                 f.write("\n")  # 第二行：题目链接 (留空，系统自动推导)

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p15587.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p15587.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p15587.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-09-14 08:49:16
+#include&lt;bits/stdc++.h&gt;
+#include &lt;vector&gt;
+#include &lt;array&gt;
+std::vector&lt;int&gt; sorting(int);
+std::vector&lt;int&gt; ask_question(std::vector&lt;std::array&lt;int, 2&gt;&gt;);
+
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb push_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+#define arr array&lt;int,2&gt;
+#define ask ask_question
+
+vector&lt;int&gt; sorting(int n){
+	vector&lt;arr&gt;tree = {{n-2,n-1},{0,n-2}};
+	for(int i=1;i&lt;n-2;i++) tree.pb({0,i});
+
+	vector&lt;int&gt;res=ask(tree);
+	if(res[0]){
+		tree = {{n-2,n-1},{1,n-2}};
+		for(int i=0;i&lt;n-2;i++)if(i!=1)
+			tree.pb({1,i});
+		res=ask(tree);
+	}
+
+	int a=n-2, b=n-1;
+	if(res[n-2]) swap(a,b);
+
+	int p=lg2(2*(n-2)-1);
+	vector&lt;int&gt; seq(1&lt;&lt;p, -1);
+	for(int i=0;i&lt;n-2;i++) seq[i]=i;
+
+	auto calc = [&amp;](vector&lt;pair&lt;int,int&gt;&gt; pairs, bool resolve=0){
+		vector&lt;bool&gt;vis(n,0), res(pairs.size(),0); 
+		for(int i=0;i&lt;pairs.size();i++){
+			auto [x,y] = pairs[i];
+			if(!~x) {res[i]=0; continue;}
+			if(!~y) {res[i]=1; continue;}
+			vis[x]=1,vis[y]=1;
+		}
+		if(resolve){
+			a=b=-1;
+			for(int i=0;i&lt;n-2;i++)
+				if(!vis[seq[i]]){ a=seq[i]; break; }
+			for(int i=n-3;i&gt;=0;i--)
+				if(!vis[seq[i]]){ b=seq[i]; break; }
+		}
+		vector&lt;arr&gt;tree = {{a,b}};
+		for(int i=0;i&lt;pairs.size();i++){
+			auto [x,y] = pairs[i];
+			if(~x &amp;&amp; ~y)
+				tree.pb({a,x}), tree.pb({x,y}), vis[x]=vis[y]=1;
+		}
+		vis[a]=vis[b]=1;
+		for(int i=0;i&lt;n;i++)if(!vis[i]&amp;&amp;i!=a&amp;&amp;i!=b) tree.pb({a,i});
+		
+		vector&lt;int&gt;tmp=ask(tree);
+		for(int i=0;i&lt;pairs.size();i++)
+			if(~pairs[i].fi&amp;&amp;~pairs[i].se)
+			res[i]=tmp[pairs[i].se];
+		return res;
+	};
+
+
+	for(int i=0;i&lt;p;i++){
+		for(int j=i;j&gt;=0;j--){
+			vector&lt;pair&lt;int,int&gt;&gt;pairs; int m=0;
+			for(int x=0;x&lt;(1&lt;&lt;j);x++)
+				for(int y=0;y&lt;(1&lt;&lt;p);y+=(1&lt;&lt;j+1))
+					pairs.emplace_back(seq[x+y],seq[x+y+(1&lt;&lt;j)]);
+
+			vector&lt;bool&gt;ret=calc(pairs);
+			for(int x=0;x&lt;(1&lt;&lt;j);x++)
+				for(int y=0;y&lt;(1&lt;&lt;p);y+=(1&lt;&lt;j+1))
+					if(ret[m++]==((y&gt;&gt;(i+1))&amp;1)) swap(seq[x+y],seq[x+y+(1&lt;&lt;j)]);
+		}
+	}
+
+	while(seq.size()&gt;n-2)seq.pop_back(); seq.pb(-1);
+	int A=a,B=b;
+	
+	int l1=0,r1=n-2,l2=0,r2=n-2;
+	if(n&gt;=6){
+		while(l1&lt;r1 || l2&lt;r2){
+			int m1=(l1+r1)&gt;&gt;1, m2=(l2+r2)&gt;&gt;1,m=0;
+			vector&lt;pair&lt;int,int&gt;&gt;pairs;
+			if(l1&lt;r1) pairs.pb({A,seq[m1]});
+			if(l2&lt;r2) pairs.pb({B,seq[(pairs.size()&amp;&amp;m1==m2)?(++m2):m2]});
+
+			vector&lt;bool&gt;res=calc(pairs,1);
+			if(l1&lt;r1){
+				if(res[m++]) r1=m1;
+				else l1=m1+1;
+			}
+			if(l2&lt;r2){
+				if(res[m++]) r2=m2;
+				else l2=m2+1;
+			}
+		}
+	}else{
+		while(l1&lt;r1){
+			int m1=(l1+r1)&gt;&gt;1;
+			if(calc({{A,seq[m1]}},1)[0]) r1=m1;
+			else l1=m1+1;
+		}
+		while(l2&lt;r2){
+			int m2=(l2+r2)&gt;&gt;1;
+			if(calc({{B,seq[m2]}},1)[0]) r2=m2;
+			else l2=m2+1;
+		}
+	}
+
+	vector&lt;vector&lt;int&gt;&gt;ext(n-1);
+	ext[l1].pb(A),ext[l2].pb(B);
+
+	vector&lt;int&gt;love;
+	for(int i=0;i&lt;n-2;i++){
+		for(int x: ext[i]) love.pb(x);
+		love.pb(seq[i]);
+	}
+	for(int x: ext[n-2]) love.pb(x);
+	return love;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

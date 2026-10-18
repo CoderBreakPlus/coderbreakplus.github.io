@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2702.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2702.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../soj2702.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-10 14:17:26
+#include&quot;cycle.h&quot;
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+
+#ifdef LOCAL
+#include&quot;grader.cpp&quot;
+#endif
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+void init(int op,int t){
+
+}
+
+int n,d[1005][2005];
+tuple&lt;int,int,int&gt; prv[1005][2005];
+char s[3005];
+int nxt[3005][26];
+
+bool vis[26];
+
+pair&lt;int,string&gt; construct(string S){
+	n=S.size(); int cnt=0;
+	memset(vis,0,sizeof(vis));
+	for(int i=0;i&lt;n;i++)vis[S[i]-&#x27;a&#x27;]=1;
+	for(int d=1;d&lt;=n;d++)if(n%d==0){
+		bool flg=1;
+		for(int j=d;j&lt;n;j++)flg&amp;=(S[j]==S[j-d]);
+		if(flg){
+			cnt=n/d;
+			n=d; break;
+		}
+	}
+	for(int i=0;i&lt;n;i++) s[i]=s[n+i]=s[2*n+i]=S[i];
+	memset(nxt[3*n-1],-1,sizeof(nxt[3*n-1]));
+	for(int i=3*n-1;i&gt;0;i--){
+		memcpy(nxt[i-1],nxt[i],sizeof(nxt[i]));
+		nxt[i-1][s[i]-&#x27;a&#x27;]=i;
+	}
+
+	queue&lt;pair&lt;int,int&gt;&gt;q;
+	for(int i=0;i&lt;n;i++)
+		for(int j=0;j&lt;2*n;j++)d[i][j]=-1;
+	for(int i=0;i&lt;n;i++) d[i][i+1]=0,q.emplace(i,i+1);
+	while(!q.empty()){
+		auto [a,b]=q.front(); q.pop();
+		if(a+n==b) {
+			string S;
+			while(a+1!=b){
+				auto [c,aa,bb]=prv[a][b];
+				S+=(&#x27;a&#x27;+c);
+				a=aa,b=bb;
+			}
+			reverse(S.begin(),S.end());
+			return {cnt,S};
+		}
+		for(int x=0;x&lt;26;x++)if(vis[x]){
+			int aa=nxt[a][x],bb=nxt[b][x];
+			if(aa&gt;=n)aa-=n,bb-=n;
+			if(~d[aa][bb])continue;
+
+			d[aa][bb]=d[a][b]+1;
+			prv[aa][bb]={x,a,b};
+			q.emplace(aa,bb);
+		}
+	}
+	// assert(0);
+}
+
+bool check(string S, string C){
+	n=S.size(); int cnt=0;
+	memset(vis,0,sizeof(vis));
+	for(int i=0;i&lt;n;i++)vis[S[i]-&#x27;a&#x27;]=1;
+	for(int d=1;d&lt;=n;d++)if(n%d==0){
+		bool flg=1;
+		for(int j=d;j&lt;n;j++)flg&amp;=(S[j]==S[j-d]);
+		if(flg){
+			cnt=n/d;
+			n=d; break;
+		}
+	}
+	for(int i=0;i&lt;n;i++) s[i]=s[i+n]=S[i];
+
+	memset(nxt[2*n-1],-1,sizeof(nxt[2*n-1]));
+	for(int i=2*n-1;i&gt;0;i--){
+		memcpy(nxt[i-1],nxt[i],sizeof(nxt[i]));
+		nxt[i-1][s[i]-&#x27;a&#x27;]=i;
+	}
+	for(int i=0;i&lt;n;i++)
+		for(int j=0;j&lt;26;j++)if(vis[j])
+			nxt[i][j]-=i;
+	int L=0,R=n;
+
+	auto calc=[&amp;](int x){
+		for(char c: C){
+			c-=&#x27;a&#x27;;
+			if(!vis[c])continue;
+			x+=nxt[x%n][c];
+		}
+		return x;
+	};
+	int v0=calc(0);
+	while(L+1&lt;R){
+		int M=(L+R)&gt;&gt;1,vM=calc(M);
+		if(vM!=v0 &amp;&amp; vM!=v0+n) return 0;
+		if(vM==v0) L=M; else R=M;
+	}
+	return 1;
+}
+</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

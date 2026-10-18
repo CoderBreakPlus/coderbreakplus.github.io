@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf2159d1.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf2159d1.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../cf2159d1.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-04-22
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+
+#define int long long
+#define MAXN 400005
+#define INF (int)2e18
+
+int n,a[MAXN],pnt[129];
+
+inline void solve(){
+	scanf(&quot;%lld&quot;,&amp;n);
+	for( int i = 1 ; i &lt;= n ; i ++ ) scanf(&quot;%lld&quot;,&amp;a[i]);
+	int N = INF;
+	vector&lt;int&gt; A; A.emplace_back( -1 );
+	for( int i = n ; i &gt;= 1 ; i -- ) if( a[i] &lt; N ) A.emplace_back( a[i] ),N = a[i];
+	int siz = (int)A.size();
+	pnt[0] = 0; for( int i = 1 ; i &lt;= 128 ; i ++ ) pnt[i] = -INF;
+	for( int i = 1 ; i &lt; siz ; i ++ ){
+		for( int v = 128 ; v &gt;= 0 ; v -- ){
+			if( pnt[v] &gt; -INF ){
+				int newc = v + ( A[pnt[v] + 1] - 1 ) / A[i] + 1;
+				if( newc &lt;= 128 ) pnt[newc] = max( pnt[newc] , i );
+			}
+		}
+	}
+	int res = INF;
+	for( int i = 128 ; i &gt; 0 ; i -- ) if( pnt[i] == siz - 1 ) res = i;
+	printf(&quot;%lld\n&quot;,res);
+}
+
+signed main(){
+	int testcase; scanf(&quot;%lld&quot;,&amp;testcase);
+	while( testcase -- ) solve();
+	return 0;
+}
+</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p11585.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p11585.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p11585.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-07-10 07:35:32
+#include &lt;vector&gt;
+std::vector&lt;long long&gt; max_area(std::vector&lt;int&gt; H);
+
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+
+const int M = 500005;
+int n,h[500005],f[20][500005],lc[500005],rc[500005],fa[500005];
+int get(int x,int y){ return h[x]&lt;h[y]?x:y; }
+int query(int l,int r){
+    int p = lg2(r-l+1);
+    return get(f[p][l], f[p][r-(1&lt;&lt;p)+1]);
+}
+struct Line{
+    ll k,b;
+    ll val(ll x){ return (ll)k*x+b; }
+}s[1500005]; int id;
+vector&lt;pair&lt;ll,ll&gt;&gt;sl[500005],sr[500005];
+
+int rt1[500005],rt2[500005];
+ll a0[500005],a1[500005],a2[500005],a3[500005],ans3;
+int t[10000005],ls[10000005],rs[10000005],cid;
+int new_line(ll k,ll b){
+    s[++id] = (Line){k,b};
+    return id;
+}
+void update(int l,int r,int x,int &amp;p){
+    if(l&gt;r) return;
+    if(!p){
+        t[p=++cid]=x;
+        return;
+    }
+    int mid=(l+r)&gt;&gt;1;
+    if(s[t[p]].val(mid)&lt;s[x].val(mid)) swap(t[p],x);
+
+    if(s[x].k&gt;s[t[p]].k) update(mid+1,r,x,rs[p]);
+    if(s[x].k&lt;s[t[p]].k) update(l,mid-1,x,ls[p]);
+}
+int merge(int x,int y,int l,int r){
+    if(!x||!y) return x|y;
+    int mid=(l+r)&gt;&gt;1;
+    if(s[t[y]].val(mid)&gt;s[t[x]].val(mid))swap(t[x],t[y]);
+    ls[x]=merge(ls[x],ls[y],l,mid-1);
+    rs[x]=merge(rs[x],rs[y],mid+1,r);
+
+    if(s[t[y]].k&gt;s[t[x]].k) update(mid+1,r,t[y],rs[x]);
+    if(s[t[y]].k&lt;s[t[x]].k) update(l,mid-1,t[y],ls[x]);
+    return x;
+}
+ll query(int l,int r,int x,int p){
+    if(!p) return -1e18;
+    int mid=(l+r)&gt;&gt;1;
+
+    ll ret=s[t[p]].val(x);
+    if(x&lt;mid) chkmax(ret,query(l,mid-1,x,ls[p]));
+    if(x&gt;mid) chkmax(ret,query(mid+1,r,x,rs[p]));
+    return ret;
+}
+
+vector&lt;pair&lt;ll,ll&gt;&gt;glo;
+
+int build(int l,int r){
+    if(l&gt;r) return 0;
+    int p=query(l,r);
+    lc[p]=build(l,p-1),rc[p]=build(p+1,r);
+    if(lc[p])fa[lc[p]]=p;
+    if(rc[p])fa[rc[p]]=p;
+
+    ll area=(ll)h[p]*(r-l+1);
+    sr[l].pb(r-l+1,area),sl[r].pb(r-l+1,area);
+    glo.pb(h[p],area);
+
+    a0[p]=area;
+    a1[p]=max({a1[lc[p]],a1[rc[p]],area});
+    a2[p]=max({a2[lc[p]],a2[rc[p]],a1[lc[p]]+a1[rc[p]]});
+    a3[p]=max({a3[lc[p]],a3[rc[p]],a1[lc[p]]+a2[rc[p]],a2[lc[p]]+a1[rc[p]]});
+
+    rt1[p]=merge(rt1[lc[p]],rt1[rc[p]],-M,0);
+    rt2[p]=merge(rt2[lc[p]],rt2[rc[p]],-M,0);
+
+    ll tmp;
+    chkmax(a2[p], tmp=area+query(-M,0,-h[p],rt1[p]));
+    chkmax(a3[p], area+query(-M,0,-h[p],rt2[p]));
+
+    update(-M,0,new_line(r-l+1,area),rt1[p]);
+    update(-M,0,new_line(r-l+1,tmp),rt2[p]);
+
+    return p;
+}
+struct Convex{
+    vector&lt;pair&lt;ll,ll&gt;&gt;v;
+    Convex(){ v={{0,0}}; }
+    void abandon(){ vector&lt;pair&lt;ll,ll&gt;&gt;().swap(v); }
+    bool check(pair&lt;ll,ll&gt; A,pair&lt;ll,ll&gt; B,pair&lt;ll,ll&gt; C){
+        B.fi-=A.fi,B.se-=A.se,C.fi-=A.fi,C.se-=A.se;
+        return (__int128)B.se*C.fi&gt;(__int128)C.se*B.fi;
+    }
+    void simplify(){
+        vector&lt;pair&lt;ll,ll&gt;&gt;stk={{0,0}};
+        for(auto p: v){
+            if(p.fi==stk.back().fi){
+                chkmax(stk[stk.size()-1].se,p.se);
+                continue;
+            }
+            while(stk.size()&gt;=2 &amp;&amp; !check(stk[stk.size()-2],stk.back(),p)){
+                stk.pop_back();
+            }
+            stk.push_back(p);
+        }
+        swap(stk,v);
+    }
+    void pre_dif(){
+        for(int i=v.size()-1;i&gt;=1;i--) v[i].fi-=v[i-1].fi,v[i].se-=v[i-1].se;
+    }
+    void pre_sum(){
+        for(int i=1;i&lt;v.size();i++) v[i].fi+=v[i-1].fi,v[i].se+=v[i-1].se;
+    }
+}tot,tl[1200005],tr[1200005];
+
+void Montagem_Pitty(Convex &amp;Me,Convex &amp;Beauty,Convex &amp;Pity){
+    Me.v.resize(Beauty.v.size()+Pity.v.size());
+    merge(Beauty.v.begin(),Beauty.v.end(),Pity.v.begin(),Pity.v.end(),Me.v.begin());
+    Me.simplify();
+}
+void Anti_Utopia(Convex &amp;Success, Convex &amp;Failure){
+    Success.pre_dif(), Failure.pre_dif();
+    Convex Life; Life.v.resize(Success.v.size()+Failure.v.size()-1);
+    merge(Success.v.begin()+1,Success.v.end(),Failure.v.begin()+1,Failure.v.end(),Life.v.begin()+1,
+        [](const pair&lt;ll,ll&gt; &amp;A, const pair&lt;ll,ll&gt; &amp;B){
+            return (__int128)A.se*B.fi&gt;(__int128)B.se*A.fi;
+        });
+    Life.pre_sum();
+    for(auto p: Life.v){
+        tot.v.push_back(p);
+    }
+}
+void solve(int l,int r,int p){
+    if(l==r){
+        tl[p].v=sl[l],tr[p].v=sr[l];
+        vector&lt;pair&lt;ll,ll&gt;&gt;().swap(sl[l]),vector&lt;pair&lt;ll,ll&gt;&gt;().swap(sr[l]);
+        return;
+    }
+    int mid=(l+r)&gt;&gt;1;
+    solve(l,mid,p&lt;&lt;1),solve(mid+1,r,p&lt;&lt;1|1);
+    Montagem_Pitty(tl[p],tl[p&lt;&lt;1],tl[p&lt;&lt;1|1]);
+    Montagem_Pitty(tr[p],tr[p&lt;&lt;1],tr[p&lt;&lt;1|1]);
+
+    Anti_Utopia(tl[p&lt;&lt;1], tr[p&lt;&lt;1|1]);
+    tl[p&lt;&lt;1].abandon(), tl[p&lt;&lt;1|1].abandon();
+    tr[p&lt;&lt;1].abandon(), tr[p&lt;&lt;1|1].abandon();
+}
+vector&lt;ll&gt; max_area(vector&lt;int&gt; H){
+    n=H.size();
+    for(int i=1;i&lt;=n;i++)h[i]=H[i-1];
+    for(int i=1;i&lt;=n;i++)f[0][i]=i;
+    for(int i=1;(1&lt;&lt;i)&lt;=n;i++)
+        for(int j=1;j&lt;=n-(1&lt;&lt;i)+1;j++)
+            f[i][j]=get(f[i-1][j],f[i-1][j+(1&lt;&lt;i-1)]);
+
+    for(int i=1;i&lt;=n;i++)sl[i]=sr[i]={{0,0}};
+    int p=build(1,n);
+    solve(1,n,1);
+
+    sort(tot.v.begin(),tot.v.end(),[](const pair&lt;ll,ll&gt; &amp;A,const pair&lt;ll,ll&gt; &amp;B){
+        if(A.fi!=B.fi)return A.fi&lt;B.fi;
+        else return A.se&gt;B.se;
+    });
+
+    tot.simplify();
+    sort(glo.begin(),glo.end(),greater&lt;pair&lt;ll,ll&gt;&gt;());
+
+    vector&lt;pair&lt;ll,ll&gt;&gt;hh=tot.v;
+
+    int pt=0;
+
+    auto calc = [&amp;](ll u,ll v,int i){ return v+hh[i].se-u*hh[i].fi; };
+    for(auto [u,v]:glo){
+        while(pt+1&lt;hh.size()&amp;&amp;calc(u,v,pt)&lt;calc(u,v,pt+1)) pt++;
+        chkmax(ans3,calc(u,v,pt));
+    }
+    return {a1[p],max(a1[p],a2[p]),max({a1[p],a2[p],a3[p],ans3})};
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

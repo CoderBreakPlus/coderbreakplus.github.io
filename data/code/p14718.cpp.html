@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p14718.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p14718.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p14718.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-05-12
+
+#include&lt;bits/stdc++.h&gt;
+#define lc (u&lt;&lt;1)
+#define rc (lc|1)
+#define mid ((l+r)&gt;&gt;1)
+#define Lc lc,l,mid
+#define Rc rc,mid+1,r
+using namespace std;
+const int N=2010;
+const int M=N*(N+1)/2;
+struct SG
+{
+    short w[N&lt;&lt;2],p[N&lt;&lt;2],tag[N&lt;&lt;2];
+    void pushup(int u) {w[u]=min(w[lc],w[rc]),p[u]=p[w[u]==w[lc]?lc:rc];}
+    void pt(int u,int x) {tag[u]+=x,w[u]+=x;}
+    void pushdown(int u) {if(tag[u]) pt(lc,tag[u]),pt(rc,tag[u]),tag[u]=0;}
+    void build(int u,int l,int r,int R)
+    {
+        if(l==r) {w[u]=R-l+1,p[u]=l; return;}
+        build(Lc,R),build(Rc,R),pushup(u);
+    }
+    void update(int u,int l,int r,int R)
+    {
+        if(r&lt;=R) {pt(u,-1); return;}
+        pushdown(u);
+        if(R&lt;=mid) update(Lc,R);
+        else pt(lc,-1),update(Rc,R);
+        pushup(u);
+    }
+}T[N];
+int n,m,cc,lim[N]; short l[M],r[M]; long long res;
+struct nod{int x,l,r;}a[N];
+bool cmp(nod A,nod B) {return A.l&lt;B.l;}
+priority_queue &lt;pair&lt;int,int&gt; &gt; Q;
+void ini()
+{
+    lim[n+1]=n+1;
+    for(int i=n;i;i--) lim[i]=min(lim[i+1],T[i].w[1]?n+1:T[i].p[1]);
+}
+void solve(int tn,vector&lt;vector&lt;int&gt;&gt; A,long long&amp; answer,vector&lt;int&gt;&amp; solution)
+{
+    n=tn,m=n*(n+1)/2;
+    for(int i=1;i&lt;=n;i++)
+    {
+        T[i].build(1,1,i,i);
+        for(int j=1,x;j&lt;=i;j++) x=A[i-1][j-1],l[x]=j,r[x]=i;
+    }
+    ini();
+    for(int i=m;i;i--) if(lim[r[i]]&gt;l[i]) 
+    {
+        for(int j=r[i];j&lt;=n;j++) T[j].update(1,1,j,l[i]);
+        ini(),res+=i,a[++cc]={i,l[i],r[i]};
+    }
+    answer=res,sort(a+1,a+1+cc,cmp),solution.clear();
+    for(int i=1,tp=1;i&lt;=n;i++)
+    {
+        while(tp&lt;=cc&amp;&amp;a[tp].l==i) Q.push({-a[tp].r,a[tp].x}),tp++;
+        solution.push_back(Q.top().second),Q.pop();
+    }
+}
+</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2665.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2665.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../soj2665.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-09-08 09:32:09
+#include&lt;bits/stdc++.h&gt;
+// #include&quot;grader.cpp&quot;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+void init(int c,int t){
+
+}
+
+int n;
+ull a[500005];
+
+const int B = 63;
+
+bool mp[1000005], mp2[1000005];
+
+pair&lt;ll,ll&gt; brute(int m){
+	// map&lt;ull,int&gt;mp,mp2;
+	for(int i=0;i&lt;=m;i++) mp[i]=mp2[i]=0;
+
+	ll cnt=0,sum=0,hv=0;
+	ull fuck=0;
+
+	int demand=-1;
+	// cout&lt;&lt;&quot;bruting&quot;&lt;&lt;endl;
+	for(int x=B;x&gt;=0;x--){
+		ull f0=(1ull&lt;&lt;x)-1;
+		ull exp=0;
+		// cout&lt;&lt;&quot;solving x=&quot;&lt;&lt;x&lt;&lt;endl;
+		for(int j=1;j&lt;=m &amp;&amp; j&lt;=(1ull&lt;&lt;x);j++){
+			// cout&lt;&lt;&quot;j=&quot;&lt;&lt;j&lt;&lt;endl;
+			ull val=(1ull&lt;&lt;x)-j;
+
+			// cout&lt;&lt;&quot;j = &quot;&lt;&lt;j&lt;&lt;&quot; dec: &quot;&lt;&lt;(a[j]^a[j-1])&lt;&lt;endl;
+			// assert(!((a[j]^a[j-1])&gt;&gt;x&amp;1));
+			if(((a[j]^a[j-1])&gt;&gt;x&amp;1)^mp[j]){
+				// cout&lt;&lt;&quot;shabi&quot;&lt;&lt;endl;
+				if(x&lt;B &amp;&amp; val+m&gt;=(1ull&lt;&lt;x+1)) return {-1,-1};
+				fuck^=val;
+				mp[j]^=1;
+				demand=-1;
+				cnt++, addmod(sum += val%mod);
+			}
+		}
+		if(m&gt;(1ull&lt;&lt;x))
+			if(((a[m]^a[m-1])&gt;&gt;x&amp;1)!=((a[m-(1ull&lt;&lt;x)]^a[m-(1ull&lt;&lt;x)-1])&gt;&gt;x&amp;1))
+				return {-1,-1};
+
+		if(((fuck^a[0])&gt;&gt;x)&amp;1){
+			fuck^=(1ull&lt;&lt;x);
+			// cout&lt;&lt;&quot;modify at &quot;&lt;&lt;x&lt;&lt;endl;
+			if(x==B) {
+				addmod(sum += (1ull&lt;&lt;x)%mod);
+			}else{
+				demand=x;
+				addmod(sum += (1ull&lt;&lt;x)%mod);
+			}
+		}
+		
+		if(x){
+			if((1ull&lt;&lt;x-1)&lt;m)
+			for(int i=(1ull&lt;&lt;x-1)+1;i&lt;=m;i++)
+				mp[i-(1ull&lt;&lt;x-1)]^=mp[i];
+		}
+	}
+	if(~demand){
+		if(m &lt; (1ull&lt;&lt;demand))
+			cnt+=2;
+		else
+			return {-1,-1};
+	}
+	return {max(hv,cnt), sum};
+}
+vector&lt;pair&lt;ll,ll&gt;&gt; seq(int N, vector&lt;ull&gt; A){
+	n=N;
+	for(int i=0;i&lt;=n;i++)a[i]=A[i];
+
+	// for(int i=1;i&lt;=n;i++) cout&lt;&lt;a[i]&lt;&lt;&quot; &quot;; cout&lt;&lt;endl;
+
+	vector&lt;pair&lt;ll,ll&gt;&gt;ret(n,{-1,-1});
+	ret[n-1]=brute(n);
+	return ret;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

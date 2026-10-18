@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qoj18306.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>qoj18306.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../qoj18306.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-06-04 07:41:49
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 1e9+7;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+const int B=17,N=1e5+5;
+int n,f[N][B+1],g[N][B+1],dp[N];
+vector&lt;int&gt;E[N];
+
+void dfs(int x,int fa){
+	if(fa)E[x].erase(find(E[x].begin(),E[x].end(),fa));
+	// calc f
+	f[x][0]=1;
+	for(int y:E[x]){
+		// cout&lt;&lt;&quot;here &quot;&lt;&lt;y&lt;&lt;endl;
+		dfs(y,x);
+		f[x][0]=(ull)f[x][0]*dp[y]%mod;
+	}
+	for(int i=1;i&lt;B;i++){
+		int f0=1,f1=0,f2=0;
+		for(int y:E[x]){
+			f2=((ull)f2*dp[y]+(ull)f1*f[y][i-1])%mod;
+			f1=((ull)f1*dp[y]+(ull)f0*f[y][i-1])%mod;
+			f0=(ull)f0*dp[y]%mod;
+		}
+		f[x][i]=f2;
+		g[x][i-1]=f1;
+	}
+	// calc g
+	for(int i=0;i&lt;B;i++){
+		int f0=1,f1=0,f2=0,f3=0;
+		for(int y:E[x]){
+			f3=((ull)f3*dp[y]+(ull)f1*g[y][i+1]+(ull)f2*f[y][i])%mod;
+			f1=((ull)f1*dp[y]+(ull)f0*f[y][i])%mod;
+			f2=((ull)f2*dp[y]+(ull)f0*g[y][i+1])%mod;
+			f0=(ull)f0*dp[y]%mod;
+		}
+		addmod(g[x][i]+=f3);
+	}
+	// calc dp
+	for(int i=0;i&lt;B;i++) addmod(dp[x]+=f[x][i]);
+	{
+		int f0=1,f1=0;
+		for(int y:E[x]){
+			f1=((ull)f1*dp[y]+(ull)f0*g[y][0])%mod;
+			f0=(ull)f0*dp[y]%mod;
+		}
+		addmod(dp[x]+=f1);
+	}
+	for(int i=1;i&lt;B;i++){
+		int f00=1,f01=0,f02=0,f10=0,f11=0,f12=0;
+		for(int y:E[x]){
+			f12=((ull)f12*dp[y]+(ull)f11*f[y][i-1]+(ull)f02*g[y][i])%mod;
+			f11=((ull)f11*dp[y]+(ull)f10*f[y][i-1]+(ull)f01*g[y][i])%mod;
+			f10=((ull)f10*dp[y]+(ull)f00*g[y][i])%mod;
+
+			f02=((ull)f02*dp[y]+(ull)f01*f[y][i-1])%mod;
+			f01=((ull)f01*dp[y]+(ull)f00*f[y][i-1])%mod;
+			f00=(ull)f00*dp[y]%mod;
+		}
+		addmod(dp[x]+=f12);
+	}
+}
+void procedure(){
+	n=read();
+	for(int i=1;i&lt;=n;i++){
+		E[i].clear();
+		memset(f[i],0,sizeof(f[i])),memset(g[i],0,sizeof(g[i]));
+		dp[i]=0;
+	}
+	for(int i=1;i&lt;n;i++){
+		int u=read(),v=read();
+		E[u].pb(v),E[v].pb(u);
+	}
+	dfs(1,0);
+	printf(&quot;%d\n&quot;, dp[1]);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=read();
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

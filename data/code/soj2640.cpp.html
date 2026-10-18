@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2640.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2640.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../soj2640.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-08-16
+#include&lt;vector&gt;
+#pragma GCC optimize(3,&quot;inline&quot;)
+#pragma GCC optimize(&quot;Ofast,unroll-loops&quot;)
+#pragma GCC target(&quot;avx,avx2&quot;)
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+const int mod = 998244353;
+inline void addmod(int &amp;x){ if(x&gt;=mod)x-=mod; }
+int c,n,m,a[305][305],ia[305][305],vis[305],cur[305];
+vector&lt;int&gt;p,q,r;
+
+int ans;
+
+bool f0[305][305][305],f1[305][305][305];
+int dp[305][305][305];
+
+void dfs(int x){
+	if(x==n){
+		addmod(ans+=1);
+		return;
+	}
+	if(*min_element(r.begin(),r.end())){
+		addmod(dp[r[0]][p[0]][q[0]]+=1);
+		return;
+	}
+	for(int i=1;i&lt;=n;i++){
+		if(vis[i]) continue;
+		vector&lt;int&gt;P=p,Q=q,R=r;
+		
+		bool flg=1;
+		for(int j=0;j&lt;m;j++){
+			if(r[j]) flg&amp;=vis[a[j][ia[j][i]-1]],(ia[j][i]&gt;=r[j]?++q[j]:++p[j]);
+			else{
+				if(!vis[a[j][ia[j][i]-1]]) q[j]=r[j]=ia[j][i];
+				else ++p[j];
+			}
+		}
+		if(flg){
+			vis[i]=1,cur[x+1]=i,dfs(x+1);
+			vis[i]=0;
+		}		
+		p=P,q=Q,r=R;
+	}
+}
+int qz[305][305];
+int b[305];
+
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	scanf(&quot;%d%d%d&quot;,&amp;c,&amp;n,&amp;m);
+	p.resize(m,0),q.resize(m,0),r.resize(m,0);
+	vis[n+1]=1;
+	for(int i=0;i&lt;m;i++){
+		for(int j=1;j&lt;=n;j++)
+			scanf(&quot;%d&quot;,&amp;a[i][j]),ia[i][a[i][j]]=j;
+		a[i][0]=n+1;
+	}
+	for(int i=0;i&lt;m;i++) qz[0][a[i][1]]++;
+	for(int r=1;r&lt;=n;r++){
+		for(int z=1;z&lt;=n;z++) qz[r][z]=qz[r-1][z];
+		for(int i=0;i&lt;m;i++){
+			int pos=ia[i][a[0][r]]+1;
+			if(pos&lt;=n) qz[r][a[i][pos]]++;
+		}
+	}
+	for(int z=2;z&lt;=n;z++){
+		for(int i=1;i&lt;=n;i++)b[i]=0;
+		for(int y=z-1;y&lt;=n;y++){
+			if(y&gt;=z)
+				for(int i=0;i&lt;m;i++){
+					int pos=ia[i][a[0][y]]+1;
+					if(pos&lt;=n) b[a[i][pos]]++;
+				}
+			for(int x=0;x&lt;z;x++){
+				bool f0=(x+1&lt;z),f1=(y&lt;n);
+				int v0=a[0][x+1],v1=a[0][y+1];
+				f0&amp;=(qz[x][v0]+b[v0]==m);
+				f1&amp;=(qz[x][v1]+b[v1]==m);
+				::f0[z][x][y]=f0;
+				::f1[z][x][y]=f1;
+			}
+		}
+	}
+	dfs(0);
+	for(int z=2;z&lt;=n;z++){
+		for(int x=0;x&lt;z;x++)for(int y=z-1;y&lt;=n;y++){
+			if(f0[z][x][y])addmod(dp[z][x+1][y]+=dp[z][x][y]);
+			if(f1[z][x][y])addmod(dp[z][x][y+1]+=dp[z][x][y]);
+		}
+		addmod(ans+=dp[z][z-1][n]);
+	}
+	printf(&quot;%d\n&quot;,ans);
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

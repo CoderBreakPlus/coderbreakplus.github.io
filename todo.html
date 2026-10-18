@@ -6,7 +6,7 @@
     <title>Todo - 题目整理</title>
     <style>
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; scroll-behavior: smooth; }
         .container { width: 100%; max-width: 1400px; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
         h1 { color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }
         h2 { color: #0f172a; font-weight: 700; margin-bottom: 12px; }
@@ -31,27 +31,26 @@
         
         thead { background: var(--panel-bg); }
         th { color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
-        td { border-bottom: 1px solid var(--border); }
+        td { border-bottom: 1px solid var(--border); transition: background-color 0.3s; }
         th:not(:last-child), td:not(:last-child) { border-right: 1px solid var(--border); }
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background-color: #f8fafc; }
         .matrix-table th, .matrix-table td { text-align: center; }
-        .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; }
+        .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; position: relative; }
         
         .remark-col { display: none; }
+        table[id*="-trash-"] .remark-col { display: table-cell !important; }
         
-        /* 💡 新增的 CSS 序号计数器 */
         .normal-table tbody { counter-reset: row-num; }
-        .normal-table tbody tr .row-index::before { counter-increment: row-num; content: counter(row-num); }
+        .normal-table tbody tr:not([style*="display: none"]) .row-index::before { counter-increment: row-num; content: counter(row-num); }
         
-        /* 更新列宽以适应左侧序号 */
-        .normal-table th:nth-child(1) { width: 5%; text-align: center; } /* 序号 (稍微收紧一点) */
-        .normal-table th:nth-child(2) { width: 35%; } /* 题目与来源 (增加宽度) */
-        .normal-table th:nth-child(3) { width: 16%; } /* 标签 */
-        .normal-table th:nth-child(4) { width: 9%; }  /* 难度 */
-        .normal-table th:nth-child(5) { width: 9%; }  /* 日期 */
-        .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } /* 备注 */
-        .normal-table th:last-child { width: 7%; }    /* 文件 (大幅压缩，由于图标紧凑，8%足够) */
+        .normal-table th:nth-child(1) { width: 5%; text-align: center; } 
+        .normal-table th:nth-child(2) { width: 34%; } 
+        .normal-table th:nth-child(3) { width: 16%; } 
+        .normal-table th:nth-child(4) { width: 9%; }  
+        .normal-table th:nth-child(5) { width: 9%; }  
+        .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
+        .normal-table th:last-child { width: 8%; }    
         
         .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
         .matrix-table th.remark-col { width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
@@ -63,17 +62,9 @@
         .diff-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }
         .diff-circle { width: 12px; height: 12px; display: inline-block; }
         .mini-version-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }
-        .mini-tag { font-size: 0.7em; padding: 2px 5px; border-radius: 4px; font-weight: bold; line-height: 1; }
-        .mini-tag-easy { background: #dcfce7; color: #166534; }
-        .mini-tag-hard { background: #fee2e2; color: #991b1b; }
-        .mini-file-link { text-decoration: none; display: inline-block; transition: transform 0.2s; }
-        .mini-file-link:hover { transform: scale(1.15); }
-        .version-row { margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
         .file-link:hover { transform: scale(1.1); }
         
-        .add-file-btn { display: none; opacity: 0.4; transition: opacity 0.2s; }
-        .add-file-btn:hover { opacity: 1; }
         
         .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
         .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
@@ -93,6 +84,28 @@
         .blog-item:hover { background: #f8fafc; }
         .blog-item-title { font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
         .blog-item-date { color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+        
+        .highlight-row td { background-color: #fef08a !important; border-top: 2px solid #eab308; border-bottom: 2px solid #eab308; transition: background-color 0.5s; }
+        .cid-badge { font-size: 0.8em; color: #64748b; background: #f1f5f9; padding: 2px 6px; border-radius: 6px; border: 1px solid #e2e8f0; white-space: nowrap; }
+        .c-anchor { color: #cbd5e1; text-decoration: none; font-size: 1.1em; transition: color 0.2s; margin-right: 6px; }
+        .c-anchor:hover { color: var(--primary); }
+
+        a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            .container { padding: 18px; }
+            .plist-grid { grid-template-columns: 1fr; }
+            .list-filter-bar input { min-width: 0 !important; max-width: 100%; box-sizing: border-box; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+        }
+        .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
+        .pagination-btn { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
+        .pagination-btn:hover:not(:disabled) { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .pagination-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .pagination-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .pagination-info { color: var(--text-muted); font-size: 0.9em; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -101,8 +114,8 @@
             <a href="index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
             <a href="Summary.html">📚 Summary</a>
-            <a href="todo.html">🎯 Todo</a>
-            <a href="plist/index.html">📋 题单</a>
+            <a href="Plan.html">🎯 Plan</a>
+            <a href="plist/index.html">📋 List</a>
             <a href="Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
@@ -110,62 +123,69 @@
             <button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">📝 显示备注</button>
         </div>
         <h1>Todo</h1>
-        <div class="stats-bar"><div class="stats-info" id="stats-info-todo-table"><span>📁 独立题目: 2</span><span>📝 有代码: 0</span><span>💡 有题解: 0</span></div></div>
+        
         
     <div class="list-filter-bar">
         <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
         <div style="position: relative; display: inline-block;">
-            <input type="text" id="filter-tag-todo-table" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('todo-table')" style="min-width: 220px; padding-right: 30px;">
-            <span onclick="clearTagFilter('todo-table')" id="clear-btn-todo-table" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
+            <input type="text" id="filter-tag-plan-table-todo-legacy" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('plan-table-todo-legacy')" style="min-width: 220px; padding-right: 30px;">
+            <span onclick="clearTagFilter('plan-table-todo-legacy')" id="clear-btn-plan-table-todo-legacy" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
         </div>
         
         <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
-        <input type="number" id="filter-diff-min-todo-table" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('todo-table')" onchange="filterListTable('todo-table')">
+        <input type="number" id="filter-diff-min-plan-table-todo-legacy" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-legacy')" onchange="filterListTable('plan-table-todo-legacy')">
         <span style="color:var(--border);">-</span>
-        <input type="number" id="filter-diff-max-todo-table" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('todo-table')" onchange="filterListTable('todo-table')">
+        <input type="number" id="filter-diff-max-plan-table-todo-legacy" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-legacy')" onchange="filterListTable('plan-table-todo-legacy')">
         
         <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📅 日期:</span>
-        <input type="date" id="filter-date-start-todo-table" onchange="filterListTable('todo-table')">
+        <input type="date" id="filter-date-start-plan-table-todo-legacy" onchange="filterListTable('plan-table-todo-legacy')">
         <span style="color:var(--border);">-</span>
-        <input type="date" id="filter-date-end-todo-table" onchange="filterListTable('todo-table')">
+        <input type="date" id="filter-date-end-plan-table-todo-legacy" onchange="filterListTable('plan-table-todo-legacy')">
+        
+        <label style="color:var(--text-muted); margin-left: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="filter-has-md-plan-table-todo-legacy" onchange="filterListTable('plan-table-todo-legacy')">
+            仅看有题解 💡
+        </label>
     </div>
-    
+
     <div style="overflow-x: auto;">
-        <table class="normal-table" id="todo-table">
+        <table class="normal-table" id="plan-table-todo-legacy">
             <thead>
                 <tr>
                     <th style="text-align:center;">序号</th>
                     <th>题目与来源</th>
                     <th>标签</th>
-                    <th onclick="sortListTable('todo-table', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
-                    <th onclick="sortListTable('todo-table', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
+                    <th onclick="sortListTable('plan-table-todo-legacy', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                    <th onclick="sortListTable('plan-table-todo-legacy', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
                     <th class="remark-col">备注</th>
                     <th>文件</th>
                 </tr>
             </thead>
             <tbody>
     
-        <tr data-tags="math" data-diff="3500.0" data-date="未知" data-base="agc016d" data-has-code="0" data-has-md="0">
+        <tr data-tags="combinatorics ds" data-diff="2600.0" data-date="2026-09-24" data-base="qoj7992" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="https://atcoder.jp/contests/agc016/tasks/agc016_d" target="_blank" style="color:var(--primary); text-decoration:none;"><b>agc016d</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">AtCoder - AGC016</span></td>
-            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('math', 'todo-table')" title="点击筛选/取消">math</span></td>
-            <td><span class="diff-indicator" title="难度: 3500.0"><span class="diff-circle" style="background: linear-gradient(to right, #FFD700, #DAA520); border: 1px solid #DAA520; border-radius: 50%;"></span> 3500</span></td>
-            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
+            <td style="padding-left: 20px;"><a href="https://qoj.ac/problem/7992" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7992</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'plan-table-todo-legacy')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'plan-table-todo-legacy')" title="点击筛选/取消">ds</span></td>
+            <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-09-24</td>
             <td class="remark-col">-</td>
-            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/agc016d.conf" data-editor-href="editor.html?file=data/agc016d.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="editor.html?file=data/agc016d.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/agc016d.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7992.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="data/code/qoj7992.cpp.html" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span></div></td>
         </tr>
-        <tr data-tags="combinatorics counting dp" data-diff="3000.0" data-date="未知" data-base="cf1152" data-has-code="0" data-has-md="0">
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="soj2507" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
-            <td style="padding-left: 20px;"><a href="" target="_blank" style="color:var(--primary); text-decoration:none;"><b>cf1152</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
-            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'todo-table')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('counting', 'todo-table')" title="点击筛选/取消">counting</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('dp', 'todo-table')" title="点击筛选/取消">dp</span></td>
-            <td><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></td>
+            <td style="padding-left: 20px;"><a href="http://47.114.34.42:8080/problem/2507" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2507</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十四）</span></td>
+            <td></td>
+            <td>-</td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
             <td class="remark-col">-</td>
-            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf1152.conf" data-editor-href="editor.html?file=data/cf1152.conf" target="_blank" class="file-link" title="配置" style="text-decoration:none;">⚙️</a><a href="editor.html?file=data/cf1152.cpp&action=create" target="_blank" class="file-link add-file-btn" title="新建代码" style="text-decoration:none;">➕📝</a><a href="editor.html?file=data/cf1152.md&action=create" target="_blank" class="file-link add-file-btn" title="新建题解" style="text-decoration:none;">➕💡</a></span></div></td>
-        </tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-08-27 21:16:35 | Algorithm Platform Generator</div>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span></div></td>
+        </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-todo-legacy" class="pagination-controls" style="display: none;"></div>
+        <div class="footer">最后构建: 2026-10-18 20:44:36 | Algorithm Platform Generator</div>
     </div>
     <script>
+        const ENABLE_PAGINATION = false; 
+
         let isDiffVisible = true;
         function toggleDiff() {
             isDiffVisible = !isDiffVisible;
@@ -203,7 +223,14 @@
                 if (!tbody) return;
                 const rows = Array.from(tbody.querySelectorAll('tr'));
                 rows.sort((a, b) => {
-                    if (type === 'count') {
+                    if (type === 'cid-asc' || type === 'cid-desc') {
+                        const idA = /^[0-9]+$/.test(a.dataset.cid || '') ? Number(a.dataset.cid) : NaN;
+                        const idB = /^[0-9]+$/.test(b.dataset.cid || '') ? Number(b.dataset.cid) : NaN;
+                        // Contests without a number always come last.
+                        if (Number.isNaN(idA) !== Number.isNaN(idB)) return Number.isNaN(idA) ? 1 : -1;
+                        if (!Number.isNaN(idA) && idA !== idB) return (idA - idB) * (type === 'cid-asc' ? 1 : -1);
+                        return a.dataset.name.localeCompare(b.dataset.name, undefined, {numeric: true});
+                    } else if (type === 'count') {
                         return parseInt(b.dataset.count) - parseInt(a.dataset.count);
                     } else {
                         return b.dataset.name.localeCompare(a.dataset.name, undefined, {numeric: true});
@@ -212,6 +239,61 @@
                 rows.forEach(r => tbody.appendChild(r));
             });
         }
+
+        function filterMatrixTable(inputEl, tableId) {
+            const val = inputEl.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+            rows.forEach(row => {
+                const cname = (row.getAttribute('data-name') || '').toLowerCase();
+                const cid = (row.getAttribute('data-cid') || '').toLowerCase();
+                if (cname.includes(val) || cid === val || 'c-' + cid === val || '#c-' + cid === val || '#' + cid === val) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        let selectedContest = null;
+        function centerContest(target, smooth=true) {
+            if (!target || !target.getClientRects().length) return;
+            // Supply only the extra space required at the document boundaries.
+            document.body.style.paddingTop = '';
+            document.body.style.paddingBottom = '';
+            const style = getComputedStyle(document.body);
+            const topPadding = parseFloat(style.paddingTop) || 0;
+            const bottomPadding = parseFloat(style.paddingBottom) || 0;
+            const rect = target.getBoundingClientRect();
+            const center = rect.top + window.scrollY + rect.height / 2;
+            const half = window.innerHeight / 2;
+            const extraTop = Math.max(0, half - center);
+            const extraBottom = Math.max(0, center + half - document.documentElement.scrollHeight);
+            document.body.style.paddingTop = (topPadding + extraTop) + 'px';
+            document.body.style.paddingBottom = (bottomPadding + extraBottom) + 'px';
+            const behavior = smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant';
+            window.scrollTo({top: center + extraTop - half, behavior});
+        }
+        function highlightContest(cid_id, updateUrl=true) {
+            const target = document.getElementById(cid_id);
+            if (!target || !target.matches('.matrix-table tbody tr')) return;
+            document.querySelectorAll('.highlight-row').forEach(tr => tr.classList.remove('highlight-row'));
+            const tab = target.closest('.atcoder-tab-content');
+            if (tab && getComputedStyle(tab).display === 'none') {
+                const btn = Array.from(document.querySelectorAll('.atcoder-tab-btn')).find(b => b.dataset.target === tab.id);
+                if (btn) switchAtCoderTab(tab.id, btn, updateUrl);
+            }
+            target.style.display = '';
+            target.classList.add('highlight-row');
+            selectedContest = target;
+            centerContest(target);
+            if (updateUrl) {
+                const url = new URL(window.location.href);
+                url.hash = cid_id;
+                window.history.replaceState(null, '', url);
+            }
+        }
+        window.addEventListener('hashchange', () => highlightContest(decodeURIComponent(window.location.hash.slice(1)), false));
+        window.addEventListener('resize', () => centerContest(selectedContest, false));
 
         function addTagToFilter(tag, tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
@@ -230,6 +312,9 @@
             if (input) { input.value = ''; filterListTable(tableId); input.focus(); }
         }
 
+        let currentPages = {};
+        const itemsPerPage = 20;
+
         function filterListTable(tableId) {
             const input = document.getElementById('filter-tag-' + tableId);
             const tagVal = input ? input.value.toLowerCase().trim() : '';
@@ -245,27 +330,30 @@
             const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
             const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
 
-            if (tableId === 'summary-table' || tableId === 'todo-table') {
+            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
+            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
+
+            const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+            const requireMd = mdCheckbox ? mdCheckbox.checked : false;
+
+            if (tableId === 'summary-table' || tableId.startsWith('plan-table-') || tableId.startsWith('plist-')) {
                 const url = new URL(window.location);
                 if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
                 if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
                 if (maxStr) url.searchParams.set('max', maxStr); else url.searchParams.delete('max');
+                if (requireMd) url.searchParams.set('has_md', '1'); else url.searchParams.delete('has_md');
                 window.history.replaceState({}, '', url);
             }
 
-            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
-            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
-
             const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+            const visibleRows = [];
             
-            // 💡 动态统计数据
-            let vCount = 0, cCount = 0, mCount = 0;
-
             rows.forEach(row => {
                 const tags = (row.getAttribute('data-tags') || '').toLowerCase();
                 const baseName = (row.getAttribute('data-base') || '').toLowerCase();
                 const diffStr = row.getAttribute('data-diff');
                 const rDate = row.getAttribute('data-date');
+                const hasMd = row.getAttribute('data-has-md') === '1';
                 const diff = diffStr && diffStr !== 'None' ? parseFloat(diffStr) : NaN;
 
                 let matchTag = true;
@@ -278,21 +366,21 @@
                 let matchDate = true;
                 if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
                 if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
+                let matchMd = !requireMd || hasMd;
 
-                if (matchTag && matchDiff && matchDate) {
-                    row.style.display = '';
-                    vCount++;
-                    if (row.getAttribute('data-has-code') === '1') cCount++;
-                    if (row.getAttribute('data-has-md') === '1') mCount++;
+                if (matchTag && matchDiff && matchDate && matchMd) {
+                    row.style.display = ''; 
+                    visibleRows.push(row);
                 } else {
                     row.style.display = 'none';
                 }
             });
-
-            // 💡 更新统计栏
-            const statsInfo = document.getElementById('stats-info-' + tableId);
-            if (statsInfo) {
-                statsInfo.innerHTML = `<span>📁 独立题目: ${vCount}</span><span>📝 有代码: ${cCount}</span><span>💡 有题解: ${mCount}</span>`;
+            
+            if (ENABLE_PAGINATION) {
+                updatePagination(tableId, visibleRows);
+            } else {
+                const controls = document.getElementById('pagination-controls-bottom-' + tableId);
+                if (controls) controls.style.display = 'none';
             }
         }
 
@@ -332,9 +420,113 @@
                 return res;
             });
             rows.forEach(r => tbody.appendChild(r));
+            
+            if (ENABLE_PAGINATION) {
+                filterListTable(tableId);
+            }
         }
 
-        function switchAtCoderTab(targetId, btn) {
+        function updatePagination(tableId, allVisibleRows) {
+            if (!ENABLE_PAGINATION) return;
+            const totalItems = allVisibleRows.length;
+            const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+            
+            if (!currentPages[tableId] || currentPages[tableId] > totalPages) {
+                currentPages[tableId] = 1;
+            }
+
+            renderPaginationControls(tableId, totalPages);
+            displayPageItems(tableId, allVisibleRows, currentPages[tableId]);
+        }
+
+        function renderPaginationControls(tableId, totalPages) {
+            const container = document.getElementById('pagination-controls-bottom-' + tableId);
+            if (!container) return;
+            
+            if (totalPages <= 1) { 
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'flex';
+            container.innerHTML = ''; 
+            
+            const currentPage = currentPages[tableId];
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pagination-btn';
+            prevBtn.innerText = '« 上一页';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => changePage(tableId, currentPage - 1);
+            container.appendChild(prevBtn);
+
+            const pageWindow = 2; 
+            let startPage = Math.max(1, currentPage - pageWindow);
+            let endPage = Math.min(totalPages, currentPage + pageWindow);
+
+            if (startPage > 1) {
+                container.appendChild(createPageButton(tableId, 1, currentPage));
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.innerText = '...';
+                    ellipsis.className = 'pagination-info';
+                    container.appendChild(ellipsis);
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                container.appendChild(createPageButton(tableId, i, currentPage));
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.innerText = '...';
+                    ellipsis.className = 'pagination-info';
+                    container.appendChild(ellipsis);
+                }
+                container.appendChild(createPageButton(tableId, totalPages, currentPage));
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pagination-btn';
+            nextBtn.innerText = '下一页 »';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => changePage(tableId, currentPage + 1);
+            container.appendChild(nextBtn);
+
+            const pageInfo = document.createElement('span');
+            pageInfo.className = 'pagination-info';
+            pageInfo.innerText = '第 ' + currentPage + ' / ' + totalPages + ' 页';
+            container.appendChild(pageInfo);
+        }
+
+        function createPageButton(tableId, pageNum, currentPage) {
+            const btn = document.createElement('button');
+            btn.className = 'pagination-btn ' + (pageNum === currentPage ? 'active' : '');
+            btn.innerText = pageNum;
+            btn.onclick = () => changePage(tableId, pageNum);
+            return btn;
+        }
+
+        function changePage(tableId, newPage) {
+            currentPages[tableId] = newPage;
+            filterListTable(tableId); 
+        }
+
+        function displayPageItems(tableId, allVisibleRows, page) {
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            allVisibleRows.forEach((row, index) => {
+                if (index >= startIndex && index < endIndex) {
+                    row.style.display = ''; 
+                } else {
+                    row.style.display = 'none'; 
+                }
+            });
+        }
+
+        function switchAtCoderTab(targetId, btn, updateUrl=true) {
             document.querySelectorAll('.atcoder-tab-content').forEach(el => el.style.display = 'none');
             document.getElementById(targetId).style.display = 'block';
             document.querySelectorAll('.atcoder-tab-btn').forEach(el => {
@@ -345,6 +537,47 @@
             btn.style.background = 'var(--primary)';
             btn.style.color = '#fff';
             btn.style.borderColor = 'var(--primary)';
+            
+            if (updateUrl) {
+                const url = new URL(window.location);
+                url.searchParams.set('tab', targetId.replace('tab-', ''));
+                url.searchParams.delete('sub'); 
+                window.history.replaceState({}, '', url);
+            }
+            
+            const currentTableId = document.querySelector(`#${targetId} .plan-sub-content[style*="display: block"] .normal-table`)?.id 
+                                || document.querySelector(`#${targetId} .normal-table`)?.id;
+            if (currentTableId) filterListTable(currentTableId);
+        }
+        
+        function switchPlanSubTable(targetId, btn, updateUrl=true) {
+            const parentTab = btn.closest('.atcoder-tab-content');
+            if (!parentTab) return;
+            
+            parentTab.querySelectorAll('.plan-sub-content').forEach(el => el.style.display = 'none');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) targetEl.style.display = 'block';
+            
+            parentTab.querySelectorAll('.plan-sub-btn').forEach(el => {
+                el.style.background = '#fff';
+                el.style.color = '#334155';
+                el.style.borderColor = '#e2e8f0';
+            });
+            btn.style.background = 'var(--primary)';
+            btn.style.color = '#fff';
+            btn.style.borderColor = 'var(--primary)';
+
+            if (updateUrl) {
+                const url = new URL(window.location);
+                const parts = targetId.split('-');
+                if (parts.length >= 2) {
+                    url.searchParams.set('sub', parts[1]); 
+                    window.history.replaceState({}, '', url);
+                }
+            }
+
+            const currentTableId = document.querySelector(`#${targetId} .normal-table`)?.id;
+            if (currentTableId) filterListTable(currentTableId);
         }
         
         function filterPList() {
@@ -359,25 +592,53 @@
             const q = urlParams.get('q');
             const min = urlParams.get('min');
             const max = urlParams.get('max');
+            const hasMdParam = urlParams.get('has_md');
+            const tabParam = urlParams.get('tab');
+            const subParam = urlParams.get('sub');
+
+            if (tabParam) {
+                const btn = document.querySelector(`button[data-target="tab-${tabParam}"]`);
+                if (btn) switchAtCoderTab(`tab-${tabParam}`, btn, false);
+            }
+
+            if (subParam) {
+                const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
+                if (activeTab) {
+                    const targetIdPrefix = `sub-${subParam}-`;
+                    const subBtn = Array.from(activeTab.querySelectorAll('.plan-sub-btn')).find(b => b.getAttribute('onclick').includes(targetIdPrefix));
+                    if (subBtn) {
+                        const match = subBtn.getAttribute('onclick').match(/'([^']+)'/);
+                        if (match) switchPlanSubTable(match[1], subBtn, false);
+                    }
+                }
+            }
+
             const input = document.querySelector('input[id^="filter-tag-"]');
-            if (input && (input.id === 'filter-tag-summary-table' || input.id === 'filter-tag-todo-table')) {
+            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-') || input.id.startsWith('filter-tag-plist-'))) {
                 const tableId = input.id.replace('filter-tag-', '');
                 if (q) input.value = q + ' ';
                 const minInput = document.getElementById('filter-diff-min-' + tableId);
                 if (minInput && min) minInput.value = min;
                 const maxInput = document.getElementById('filter-diff-max-' + tableId);
                 if (maxInput && max) maxInput.value = max;
-                if (q || min || max) { filterListTable(tableId); }
+                
+                const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+                if (mdCheckbox && hasMdParam === '1') mdCheckbox.checked = true;
+                
+                filterListTable(tableId); 
+            }
+
+            document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {
+                filterListTable(table.id);
+            });
+            if (document.getElementById('summary-table')) {
+                filterListTable('summary-table');
             }
             
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                document.querySelectorAll('.add-file-btn').forEach(el => el.style.display = 'inline-block');
-                document.querySelectorAll('.file-link').forEach(el => {
-                    if (el.hasAttribute('data-editor-href')) {
-                        el.href = el.getAttribute('data-editor-href');
-                    }
-                });
+            if(window.location.hash && window.location.hash.startsWith('#c-')) {
+                requestAnimationFrame(() => highlightContest(decodeURIComponent(window.location.hash.substring(1)), false));
             }
+
         });
     </script>
 </body>

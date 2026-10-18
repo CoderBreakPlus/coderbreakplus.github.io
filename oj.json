@@ -1,0 +1,100 @@
+{
+  "sites": {
+    "soj": {
+      "base_url": "http://47.114.34.42:8080",
+      "prefixes": [
+        "soj"
+      ],
+      "problem": "/problem/{id}",
+      "contest": "/contest/{id}",
+      "legacy_base_urls": [
+        "http://121.196.149.251:8080",
+        "http://47.114.34.42:8080"
+      ]
+    },
+    "zr": {
+      "base_url": "https://zhengruioi.com",
+      "prefixes": [
+        "zr"
+      ],
+      "problem": "/problem/{id}",
+      "contest": "/contest/{id}",
+      "legacy_base_urls": [
+        "https://zhengruioi.com"
+      ]
+    },
+    "qoj": {
+      "base_url": "https://qoj.ac",
+      "prefixes": [
+        "qoj"
+      ],
+      "problem": "/problem/{id}",
+      "contest": "/contest/{id}"
+    },
+    "uoj": {
+      "base_url": "https://uoj.ac",
+      "prefixes": [
+        "uoj"
+      ],
+      "problem": "/problem/{id}",
+      "contest": "/contest/{id}"
+    },
+    "luogu": {
+      "base_url": "https://www.luogu.com.cn",
+      "prefixes": [
+        "p"
+      ],
+      "problem": "/problem/P{id}",
+      "contest": "/contest/{id}"
+    },
+    "luogu_user": {
+      "base_url": "https://www.luogu.com.cn",
+      "prefixes": [
+        "u"
+      ],
+      "problem": "/problem/U{id}",
+      "contest": "/contest/{id}"
+    },
+    "loj": {
+      "base_url": "https://loj.ac",
+      "prefixes": [
+        "loj"
+      ],
+      "problem": "/p/{id}",
+      "contest": "/c/{id}"
+    },
+    "hdu": {
+      "base_url": "https://acm.hdu.edu.cn",
+      "prefixes": [
+        "hdu"
+      ],
+      "problem": "/showproblem.php?pid={id}",
+      "contest": "/contest/problems?cid={id}",
+      "contest_problem": "/contest/problem?cid={contest}&pid={id}"
+    },
+    "codeforces": {
+      "base_url": "https://codeforces.com",
+      "problem": "/problemset/problem/{contest}/{task}",
+      "contest": "/contest/{id}"
+    },
+    "atcoder": {
+      "base_url": "https://atcoder.jp",
+      "problem": "/contests/{contest}/tasks/{task}",
+      "contest": "/contests/{id}"
+    },
+    "xsy": {
+      "base_url": "http://xsy.gdgzez.com.cn",
+      "problem": "/JudgeOnline/problem.php?id={id}",
+      "contest": "/JudgeOnline/contest.php?cid={id}",
+      "legacy_base_urls": [
+        "http://xsy.gdgzez.com.cn"
+      ]
+    }
+  },
+  "atcoder_contest_aliases": {
+    "fps_24": "fps-24",
+    "jsc2023_final": "jsc2023-final",
+    "awtf2025": "awtf2025algo"
+  },
+  "problem_overrides": {}
+}

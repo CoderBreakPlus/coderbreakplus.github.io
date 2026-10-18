@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf1149e.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf1149e.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../cf1149e.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-09-21 09:53:46
+#include&lt;iostream&gt;
+#include&lt;cstdio&gt;
+#include&lt;queue&gt;
+#include&lt;map&gt;
+#define maxn 200005
+#define ll long long
+using namespace std;
+int n,m,u,v,deg[maxn]; ll mmax,a[maxn],sg[maxn],xxor[maxn]; queue&lt;int&gt; q; map&lt;int,int&gt; mp[maxn];
+struct node{int to,nex;}g[maxn],g2[maxn]; int head[maxn],head2[maxn],cnt=0,cnt2=0;
+void add(int from,int to){g[++cnt].to=to; g[cnt].nex=head[from]; head[from]=cnt;}
+void add2(int from,int to){g2[++cnt2].to=to; g2[cnt2].nex=head2[from]; head2[from]=cnt2;}
+int main(){
+	scanf(&quot;%d%d&quot;,&amp;n,&amp;m); for(int i=1;i&lt;=n;i++) scanf(&quot;%lld&quot;,&amp;a[i]);
+	for(int i=1;i&lt;=m;i++){scanf(&quot;%d%d&quot;,&amp;u,&amp;v); add(v,u); add2(u,v); deg[u]++;}
+        for(int i=1;i&lt;=n;i++) if(deg[i]==0) q.push(i);
+	while(!q.empty()){
+		int top=q.front(); q.pop(); for(int i=0;;i++) if(!mp[top][i]){sg[top]=i; break;}
+		for(int i=head[top];i;i=g[i].nex)
+                        {deg[g[i].to]--; mp[g[i].to][sg[top]]=1; if(!deg[g[i].to]) q.push(g[i].to);}
+	}
+	for(int i=1;i&lt;=n;i++){xxor[sg[i]]^=a[i]; mmax=max(mmax,sg[i]);}
+	for(int i=mmax;i&gt;=0;i--){
+		if(xxor[i]){
+			for(int j=1;j&lt;=n;j++) if(sg[j]==i&amp;&amp;((a[j]^xxor[i])&lt;a[j])){
+				a[j]^=xxor[i]; xxor[i]=0;
+				for(int k=head2[j];k;k=g2[k].nex) if(xxor[sg[g2[k].to]])
+					{a[g2[k].to]^=xxor[sg[g2[k].to]]; xxor[sg[g2[k].to]]=0;} break;
+			}
+			printf(&quot;WIN\n&quot;); for(int i=1;i&lt;=n;i++) printf(&quot;%lld &quot;,a[i]); return 0;
+		}
+		if(i==0){printf(&quot;LOSE&quot;); return 0;}
+	}
+	return 0;
+}
+</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
