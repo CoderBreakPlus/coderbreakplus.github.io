@@ -1060,17 +1060,27 @@ def apply_categories_and_links(groups, data_dir, contest_dir=None):
                 
                 c_name, cat, c_link = lines[0], normalize_category(lines[1]), LINKS.resolve(lines[2])
                 remark = ""
+                solution = ""
                 probs = []
                 for line in lines[3:]:
                     if not line: continue
                     parts = line.split()
-                    if len(parts) == 2 and re.match(r'^[A-Za-z0-9_]+$', parts[0]):
+                    if len(parts) == 2 and parts[0].casefold() == 'sol':
+                        solution = LINKS.resolve(parts[1])
+                        # Also allow arbitrary paths on configurable OJ hosts.
+                        portable = re.match(r'^(soj|zr):(.*)$', solution, re.IGNORECASE)
+                        if portable:
+                            site = LINKS.sites[portable[1].lower()]
+                            solution = site['base_url'].rstrip('/') + '/' + portable[2].lstrip('/')
+                        if urllib.parse.urlsplit(solution).scheme.lower() not in ('', 'http', 'https'):
+                            raise ValueError('sol 题解链接不支持该协议')
+                    elif len(parts) == 2 and re.match(r'^[A-Za-z0-9_]+$', parts[0]):
                         probs.append((parts[0], parts[1]))
                     else:
                         remark = line
                 
                 if cat and c_name:
-                    contest_info[cat][c_name] = {'link': c_link, 'remark': remark, 'cid': cid}
+                    contest_info[cat][c_name] = {'link': c_link, 'remark': remark, 'cid': cid, 'sol': solution}
                     for pid, base_name in probs:
                         custom_apps[base_name.lower()].append((cat, c_name, pid))
             except (OSError, ValueError) as error:
@@ -1157,7 +1167,10 @@ def apply_categories_and_links(groups, data_dir, contest_dir=None):
             if not v.appearances:
                 v.appearances.append(('Summary', '', ''))
                 
-            if not primary_link or primary_link == "#":
+            if re.fullmatch(r'(?:zr|soj)\d+', group.base_name, re.IGNORECASE):
+                # These OJs change hosts: configured site rules override stale per-task URLs.
+                primary_link = get_auto_link(group.base_name)
+            elif not primary_link or primary_link == "#":
                 primary_link = get_auto_link(v.base_filename)
 
             if is_cf and has_local_files:
@@ -1232,9 +1245,10 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
 
     html += f'<div style="overflow-x: auto;"><table class="matrix-table" id="{table_id}"><thead><tr><th style="text-align: left; width: {first_col_width}%; padding-left: 20px;">比赛名称</th>'
     
-    col_width = (100 - first_col_width - 7) / max(1, len(sorted_pids))
+    col_width = (100 - first_col_width - 7 - 4) / max(1, len(sorted_pids))
     for pid in sorted_pids: html += f'<th style="width: {col_width}%;">{pid}</th>'
     
+    html += '<th class="solution-col" style="width:48px; padding:8px 4px; white-space:nowrap;" title="Overall Editorial">题解</th>'
     if not is_official:
         html += '<th class="remark-col" style="text-align: left;">比赛备注</th>'
         
@@ -1258,6 +1272,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         c_info = contest_info_dict.get(contest, {})
         c_link = c_info.get('link', '')
         c_remark = c_info.get('remark', '')
+        c_solution = c_info.get('sol', '')
         c_id = c_info.get('cid', '')
         
         row_id = f"c-{c_id}" if c_id else f"c-{contest.replace(' ', '_')}"
@@ -1296,6 +1311,8 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
                             html += '</div>'
             html += '</td>'
             
+        sol_html = f'<a href="{escape(c_solution, quote=True)}" target="_blank" rel="noopener noreferrer" title="Overall Editorial">[sol]</a>' if c_solution else ''
+        html += f'<td class="solution-col" style="padding:8px 4px; white-space:nowrap;">{sol_html}</td>'
         if not is_official:
             html += f'<td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;">{c_remark}</td>'
             
@@ -1646,10 +1663,10 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url="", dat
         <table class="plist-table" id="{table_id}">
             <thead>
                 <tr>
-                    <th style="width: 20%; padding-left:20px;">题目</th>
-                    <th style="width: 18%;">标签</th>
+                    <th style="width: 49%; padding-left:20px;">题目</th>
+                    <th style="width: 22%;">题目备注</th>
+                    <th style="width: 12%;">标签</th>
                     <th style="width: 17%;">文件</th>
-                    <th style="width: 45%;">题目备注</th>
                 </tr>
             </thead>
             <tbody>
@@ -1669,13 +1686,13 @@ def build_single_plist_page(name, versions, out_path, rel_path, base_url="", dat
         content_html += f"""
         <tr data-index="{i}" data-base="{v.base_filename}" data-tags="{escape(tags_str, quote=True)}" data-remark="{remark}" data-has-md="{has_m_flag}">
             <td style="padding-left:20px;">{name_html}</td>
+            <td style="white-space: pre-wrap; overflow-wrap: anywhere;">{remark}</td>
             <td>{tags_html}</td>
             <td>
                 <div class="version-row" style="flex-wrap: nowrap;">
                     <span style="white-space: nowrap; display: inline-flex; gap: 6px;">{"".join(links)}</span>
                 </div>
             </td>
-            <td style="white-space: pre-wrap; overflow-wrap: anywhere;">{remark}</td>
         </tr>"""
         
     content_html += "</tbody></table></div>"
