@@ -1061,6 +1061,7 @@ def apply_categories_and_links(groups, data_dir, contest_dir=None):
                 c_name, cat, c_link = lines[0], normalize_category(lines[1]), LINKS.resolve(lines[2])
                 remark = ""
                 solution = ""
+                solutions = []
                 probs = []
                 for line in lines[3:]:
                     if not line: continue
@@ -1074,13 +1075,15 @@ def apply_categories_and_links(groups, data_dir, contest_dir=None):
                             solution = site['base_url'].rstrip('/') + '/' + portable[2].lstrip('/')
                         if urllib.parse.urlsplit(solution).scheme.lower() not in ('', 'http', 'https'):
                             raise ValueError('sol 题解链接不支持该协议')
+                        if solution not in solutions:
+                            solutions.append(solution)
                     elif len(parts) == 2 and re.match(r'^[A-Za-z0-9_]+$', parts[0]):
                         probs.append((parts[0], parts[1]))
                     else:
                         remark = line
                 
                 if cat and c_name:
-                    contest_info[cat][c_name] = {'link': c_link, 'remark': remark, 'cid': cid, 'sol': solution}
+                    contest_info[cat][c_name] = {'link': c_link, 'remark': remark, 'cid': cid, 'sol': solutions[0] if solutions else '', 'sols': solutions}
                     for pid, base_name in probs:
                         custom_apps[base_name.lower()].append((cat, c_name, pid))
             except (OSError, ValueError) as error:
@@ -1245,14 +1248,15 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
 
     html += f'<div style="overflow-x: auto;"><table class="matrix-table" id="{table_id}"><thead><tr><th style="text-align: left; width: {first_col_width}%; padding-left: 20px;">比赛名称</th>'
     
-    col_width = (100 - first_col_width - 7 - 4) / max(1, len(sorted_pids))
-    for pid in sorted_pids: html += f'<th style="width: {col_width}%;">{pid}</th>'
+    n_columns = max(1, len(sorted_pids))
+    col_width = f'calc({(100 - first_col_width) / n_columns}% - {144 / n_columns}px)'
+    for pid in sorted_pids: html += f'<th style="width: {col_width};">{pid}</th>' 
     
-    html += '<th class="solution-col" style="width:48px; padding:8px 4px; white-space:nowrap;" title="Overall Editorial">题解</th>'
+    html += '<th class="solution-col" style="width:72px; padding:8px 4px; white-space:nowrap;" title="Overall Editorial">题解</th>'
     if not is_official:
         html += '<th class="remark-col" style="text-align: left;">比赛备注</th>'
         
-    html += '<th class="contest-id-col" style="width: 7%;">比赛编号</th></tr></thead><tbody>'
+    html += '<th class="contest-id-col" style="width:72px; padding:8px 4px; white-space:nowrap;">比赛编号</th></tr></thead><tbody>'
     
     def v_sort_key(vn):
         if vn == 'Normal': return 0
@@ -1273,6 +1277,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
         c_link = c_info.get('link', '')
         c_remark = c_info.get('remark', '')
         c_solution = c_info.get('sol', '')
+        c_solutions = c_info.get('sols') or ([c_solution] if c_solution else [])
         c_id = c_info.get('cid', '')
         
         row_id = f"c-{c_id}" if c_id else f"c-{contest.replace(' ', '_')}"
@@ -1311,13 +1316,13 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
                             html += '</div>'
             html += '</td>'
             
-        sol_html = f'<a href="{escape(c_solution, quote=True)}" target="_blank" rel="noopener noreferrer" title="Overall Editorial">link</a>' if c_solution else ''
+        sol_html = '<br>'.join(f'<a href="{escape(url, quote=True)}" target="_blank" rel="noopener noreferrer" title="Overall Editorial {idx + 1}">link</a>' for idx, url in enumerate(c_solutions))
         html += f'<td class="solution-col" style="padding:8px 4px; white-space:nowrap;">{sol_html}</td>'
         if not is_official:
             html += f'<td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;">{c_remark}</td>'
             
         id_html = f'<span class="cid-badge">#{c_id}</span>' if c_id else '—'
-        html += f'<td class="contest-id-col">{id_html}</td></tr>'
+        html += f'<td class="contest-id-col" style="padding:8px 4px; white-space:nowrap;">{id_html}</td></tr>'
     html += '</tbody></table></div>'
     return html
 
