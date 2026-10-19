@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📁 List: soj2539 - 题目整理</title>
+    <style>
+        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; scroll-behavior: smooth; }
+        .container { width: 100%; max-width: none; margin: 10px auto 30px; padding: 30px; background: #fff; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); box-sizing: border-box; }
+        h1 { color: #0f172a; font-size: 2.2em; font-weight: 800; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.5px; }
+        h2 { color: #0f172a; font-weight: 700; margin-bottom: 12px; }
+        .nav-bar { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .nav-bar a { color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+        .nav-bar a:hover { color: var(--primary-hover); text-decoration: underline; }
+        .btn { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
+        .btn:hover { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .toggle-diff-btn { margin-left: auto; color: var(--primary); border-color: #bfdbfe; }
+        .toggle-diff-btn:hover { background: #eff6ff; }
+        .toggle-remark-btn { color: #475569; border-color: #e2e8f0; background: #f8fafc; margin-left: 10px; }
+        .toggle-remark-btn:hover { background: #f1f5f9; }
+        .stats-bar { display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; box-sizing: border-box; }
+        .page-heading { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 18px; }
+        .page-heading h1 { margin: 0; font-size: 1.8em; }
+        .page-heading .stats-bar { flex: 1; margin: 0; padding: 0; background: none; border: 0; gap: 12px; }
+        .page-heading .stats-info span { margin-right: 0; }
+        .sort-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .page-heading .sort-btns button { margin-left: 0; }
+        .nav-bar { margin-bottom: 18px; padding-bottom: 12px; gap: 12px; }
+        .stats-info span { margin-right: 18px; font-size: 0.95em; color: #334155; font-weight: 600; display: inline-block; }
+        .sort-btns button { margin-left: 8px; color: var(--primary); }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; word-wrap: break-word; overflow-wrap: break-word; }
+        th, td { padding: 12px 14px; box-sizing: border-box; text-align: left; vertical-align: middle; }
+        
+        .matrix-table, .normal-table, .plist-table { background: #fff; margin-bottom: 30px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .normal-table, .plist-table { min-width: 800px; }
+        .matrix-table { min-width: 600px; }
+        
+        thead { background: var(--panel-bg); }
+        th { color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
+        td { border-bottom: 1px solid var(--border); transition: background-color 0.3s; }
+        th:not(:last-child), td:not(:last-child) { border-right: 1px solid var(--border); }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background-color: #f8fafc; }
+        .matrix-table th, .matrix-table td { text-align: center; }
+        .contest-name-cell { text-align: left !important; font-weight: 600; color: #0f172a; background: #fff; position: relative; }
+        
+        .remark-col { display: none; }
+        table[id*="-trash-"] .remark-col { display: table-cell !important; }
+        
+        .normal-table tbody { counter-reset: row-num; }
+        .normal-table tbody tr:not([style*="display: none"]) .row-index::before { counter-increment: row-num; content: counter(row-num); }
+        
+        .normal-table th:nth-child(1) { width: 5%; text-align: center; } 
+        .normal-table th:nth-child(2) { width: 34%; } 
+        .normal-table th:nth-child(3) { width: 16%; } 
+        .normal-table th:nth-child(4) { width: 9%; }  
+        .normal-table th:nth-child(5) { width: 9%; }  
+        .normal-table th.remark-col { width: 19%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
+        .normal-table th:last-child { width: 8%; }    
+        
+        .normal-table td.remark-col { color: var(--text-muted); font-size: 0.9em; }
+        .matrix-table th.remark-col { width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; } 
+        
+        .prob-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; }
+        .prob-link-wrap { font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #f1f5f9; padding: 4px 12px; border-radius: 12px; flex-wrap: nowrap; white-space: nowrap; }
+        .prob-link-wrap a { color: var(--primary); text-decoration: none; font-weight: 700; }
+        .prob-link-wrap a:hover { text-decoration: underline; }
+        .diff-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: bold; font-size: 0.9em; }
+        .diff-circle { width: 12px; height: 12px; display: inline-block; }
+        .mini-version-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.1em; flex-wrap: wrap; }
+        .file-link { color: var(--primary); text-decoration: none; font-size: 1.05em; white-space: nowrap; transition: transform 0.2s; display: inline-block; }
+        .file-link:hover { transform: scale(1.1); }
+        
+        
+        .tag-pill { background: #f1f5f9; color: #475569; font-size: 0.85em; padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin: 2px; border: 1px solid #e2e8f0; transition: all 0.2s; }
+        .tag-pill:hover { background: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+        .list-filter-bar { background: #fff; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; box-sizing: border-box; }
+        .list-filter-bar input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.95em; transition: border-color 0.2s; color: var(--text-main); }
+        .list-filter-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: #94a3b8; font-size: 0.85em; }
+        
+        .plist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        .plist-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; }
+        .plist-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }
+        .plist-card h3 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.3em; }
+        .plist-card .count { font-size: 0.95em; color: var(--text-muted); background: #f8fafc; display: inline-block; padding: 4px 10px; border-radius: 8px; font-weight: 500; border: 1px solid var(--border); }
+        
+        .blog-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; text-decoration: none; color: inherit; transition: background 0.2s; }
+        .blog-item:last-child { border-bottom: none; }
+        .blog-item:hover { background: #f8fafc; }
+        .blog-item-title { font-weight: 600; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
+        .blog-item-date { color: #64748b; font-size: 0.95em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+        
+        .highlight-row td { background-color: #fef08a !important; border-top: 2px solid #eab308; border-bottom: 2px solid #eab308; transition: background-color 0.5s; }
+        .cid-badge { font-size: 0.8em; color: #64748b; background: #f1f5f9; padding: 2px 6px; border-radius: 6px; border: 1px solid #e2e8f0; white-space: nowrap; }
+        .c-anchor { color: #cbd5e1; text-decoration: none; font-size: 1.1em; transition: color 0.2s; margin-right: 6px; }
+        .c-anchor:hover { color: var(--primary); }
+
+        a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            .container { padding: 18px; }
+            .plist-grid { grid-template-columns: 1fr; }
+            .list-filter-bar input { min-width: 0 !important; max-width: 100%; box-sizing: border-box; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+        }
+        .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
+        .pagination-btn { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; color: var(--text-main); }
+        .pagination-btn:hover:not(:disabled) { background: var(--panel-bg); border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .pagination-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .pagination-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .pagination-info { color: var(--text-muted); font-size: 0.9em; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <a href="../index.html">🏠 Dashboard</a>
+            <span style="color:#cbd5e1;">|</span>
+            <a href="../Summary.html">📚 Summary</a>
+            <a href="../Plan.html">🎯 Plan</a>
+            <a href="../plist/index.html">📋 List</a>
+            <a href="../Blog.html">✍️ Blog</a>
+            <span style="color:#cbd5e1;">|</span>
+            <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
+            <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
+            
+        </div>
+        <header class="page-heading"><h1>📁 List: soj2539</h1>
+        <div class="stats-bar"><div class="stats-info"><span>共 1 题</span></div></div></header>
+        
+    <div class="list-filter-bar">
+        <input type="text" id="filter-tag-plist-soj2539" placeholder="搜索本 List 题目..." onkeyup="filterListTable('plist-soj2539')">
+        <label style="color:var(--text-muted); margin-left: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="filter-has-md-plist-soj2539" onchange="filterListTable('plist-soj2539')">
+            仅看有题解 💡
+        </label>
+    </div>
+    <div style="overflow-x: auto;">
+        <table class="plist-table" id="plist-soj2539">
+            <thead>
+                <tr>
+                    <th style="width: 20%; padding-left:20px;">题目</th>
+                    <th style="width: 18%;">标签</th>
+                    <th style="width: 17%;">文件</th>
+                    <th style="width: 45%;">题目备注</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+        <tr data-index="0" data-base="template" data-tags="" data-remark="fwt" data-has-md="0">
+            <td style="padding-left:20px;"><b>template</b></td>
+            <td></td>
+            <td>
+                <div class="version-row" style="flex-wrap: nowrap;">
+                    <span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span>
+                </div>
+            </td>
+            <td style="white-space: pre-wrap; overflow-wrap: anywhere;">fwt</td>
+        </tr></tbody></table></div>
+        <div class="footer">最后构建: 2026-10-19 13:57:11 | Algorithm Platform Generator</div>
+    </div>
+    <script>
+        const ENABLE_PAGINATION = false; 
+
+        let isDiffVisible = true;
+        function toggleDiff() {
+            isDiffVisible = !isDiffVisible;
+            const btn = document.querySelector('.toggle-diff-btn');
+            if (isDiffVisible) {
+                btn.innerHTML = '🌕 隐藏难度';
+                btn.style.color = 'var(--primary)';
+                btn.style.borderColor = '#bfdbfe';
+                btn.style.background = '#fff';
+            } else {
+                btn.innerHTML = '🌑 显示难度';
+                btn.style.color = '#475569';
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = '#f8fafc';
+            }
+            document.querySelectorAll('.diff-indicator').forEach(el => { el.style.display = isDiffVisible ? 'inline-flex' : 'none'; });
+        }
+        
+        let isRemarkVisible = false;
+        function toggleRemark() {
+            isRemarkVisible = !isRemarkVisible;
+            document.querySelectorAll('.remark-col').forEach(el => { el.style.display = isRemarkVisible ? 'table-cell' : 'none'; });
+            document.querySelectorAll('.toggle-remark-btn').forEach(btn => {
+                btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
+                btn.style.color = isRemarkVisible ? '#475569' : '#059669';
+                btn.style.borderColor = isRemarkVisible ? '#e2e8f0' : '#a7f3d0';
+                btn.style.background = isRemarkVisible ? '#f8fafc' : '#fff';
+            });
+        }
+
+        function sortContests(type) {
+            const tables = document.querySelectorAll('.matrix-table');
+            tables.forEach(table => {
+                const tbody = table.querySelector('tbody');
+                if (!tbody) return;
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort((a, b) => {
+                    if (type === 'cid-asc' || type === 'cid-desc') {
+                        const idA = /^[0-9]+$/.test(a.dataset.cid || '') ? Number(a.dataset.cid) : NaN;
+                        const idB = /^[0-9]+$/.test(b.dataset.cid || '') ? Number(b.dataset.cid) : NaN;
+                        // Contests without a number always come last.
+                        if (Number.isNaN(idA) !== Number.isNaN(idB)) return Number.isNaN(idA) ? 1 : -1;
+                        if (!Number.isNaN(idA) && idA !== idB) return (idA - idB) * (type === 'cid-asc' ? 1 : -1);
+                        return a.dataset.name.localeCompare(b.dataset.name, undefined, {numeric: true});
+                    } else if (type === 'count') {
+                        return parseInt(b.dataset.count) - parseInt(a.dataset.count);
+                    } else {
+                        return b.dataset.name.localeCompare(a.dataset.name, undefined, {numeric: true});
+                    }
+                });
+                rows.forEach(r => tbody.appendChild(r));
+            });
+        }
+
+        function filterMatrixTable(inputEl, tableId) {
+            const val = inputEl.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+            rows.forEach(row => {
+                const cname = (row.getAttribute('data-name') || '').toLowerCase();
+                const cid = (row.getAttribute('data-cid') || '').toLowerCase();
+                if (cname.includes(val) || cid === val || 'c-' + cid === val || '#c-' + cid === val || '#' + cid === val) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        let selectedContest = null;
+        function centerContest(target, smooth=true) {
+            if (!target || !target.getClientRects().length) return;
+            // Supply only the extra space required at the document boundaries.
+            document.body.style.paddingTop = '';
+            document.body.style.paddingBottom = '';
+            const style = getComputedStyle(document.body);
+            const topPadding = parseFloat(style.paddingTop) || 0;
+            const bottomPadding = parseFloat(style.paddingBottom) || 0;
+            const rect = target.getBoundingClientRect();
+            const center = rect.top + window.scrollY + rect.height / 2;
+            const half = window.innerHeight / 2;
+            const extraTop = Math.max(0, half - center);
+            const extraBottom = Math.max(0, center + half - document.documentElement.scrollHeight);
+            document.body.style.paddingTop = (topPadding + extraTop) + 'px';
+            document.body.style.paddingBottom = (bottomPadding + extraBottom) + 'px';
+            const behavior = smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant';
+            window.scrollTo({top: center + extraTop - half, behavior});
+        }
+        function highlightContest(cid_id, updateUrl=true) {
+            const target = document.getElementById(cid_id);
+            if (!target || !target.matches('.matrix-table tbody tr')) return;
+            document.querySelectorAll('.highlight-row').forEach(tr => tr.classList.remove('highlight-row'));
+            const tab = target.closest('.atcoder-tab-content');
+            if (tab && getComputedStyle(tab).display === 'none') {
+                const btn = Array.from(document.querySelectorAll('.atcoder-tab-btn')).find(b => b.dataset.target === tab.id);
+                if (btn) switchAtCoderTab(tab.id, btn, updateUrl);
+            }
+            target.style.display = '';
+            target.classList.add('highlight-row');
+            selectedContest = target;
+            centerContest(target);
+            if (updateUrl) {
+                const url = new URL(window.location.href);
+                url.hash = cid_id;
+                window.history.replaceState(null, '', url);
+            }
+        }
+        window.addEventListener('hashchange', () => highlightContest(decodeURIComponent(window.location.hash.slice(1)), false));
+        window.addEventListener('resize', () => centerContest(selectedContest, false));
+
+        function addTagToFilter(tag, tableId) {
+            const input = document.getElementById('filter-tag-' + tableId);
+            if (!input) return;
+            let terms = input.value.trim().split(/\s+/).filter(t => t);
+            const lowerTag = tag.toLowerCase();
+            const index = terms.findIndex(t => t.toLowerCase() === lowerTag);
+            if (index === -1) { terms.push(tag); } else { terms.splice(index, 1); }
+            input.value = terms.length > 0 ? terms.join(' ') + ' ' : '';
+            filterListTable(tableId);
+            input.focus();
+        }
+
+        function clearTagFilter(tableId) {
+            const input = document.getElementById('filter-tag-' + tableId);
+            if (input) { input.value = ''; filterListTable(tableId); input.focus(); }
+        }
+
+        let currentPages = {};
+        const itemsPerPage = 20;
+
+        function filterListTable(tableId) {
+            const input = document.getElementById('filter-tag-' + tableId);
+            const tagVal = input ? input.value.toLowerCase().trim() : '';
+            const searchTerms = tagVal.split(/\s+/).filter(t => t);
+            
+            const clearBtn = document.getElementById('clear-btn-' + tableId);
+            if (clearBtn) { clearBtn.style.display = tagVal.length > 0 ? 'block' : 'none'; }
+            
+            const minInput = document.getElementById('filter-diff-min-' + tableId);
+            const maxInput = document.getElementById('filter-diff-max-' + tableId);
+            const minStr = minInput ? minInput.value : '';
+            const maxStr = maxInput ? maxInput.value : '';
+            const minVal = minStr !== '' ? parseFloat(minStr) : -Infinity;
+            const maxVal = maxStr !== '' ? parseFloat(maxStr) : Infinity;
+
+            const dateStart = document.getElementById('filter-date-start-' + tableId) ? document.getElementById('filter-date-start-' + tableId).value : '';
+            const dateEnd = document.getElementById('filter-date-end-' + tableId) ? document.getElementById('filter-date-end-' + tableId).value : '';
+
+            const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+            const requireMd = mdCheckbox ? mdCheckbox.checked : false;
+
+            if (tableId === 'summary-table' || tableId.startsWith('plan-table-') || tableId.startsWith('plist-')) {
+                const url = new URL(window.location);
+                if (tagVal) url.searchParams.set('q', tagVal); else url.searchParams.delete('q');
+                if (minStr) url.searchParams.set('min', minStr); else url.searchParams.delete('min');
+                if (maxStr) url.searchParams.set('max', maxStr); else url.searchParams.delete('max');
+                if (requireMd) url.searchParams.set('has_md', '1'); else url.searchParams.delete('has_md');
+                window.history.replaceState({}, '', url);
+            }
+
+            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+            const visibleRows = [];
+            
+            rows.forEach(row => {
+                const tags = (row.getAttribute('data-tags') || '').toLowerCase();
+                const baseName = ((row.getAttribute('data-base') || '') + ' ' + (row.getAttribute('data-remark') || '')).toLowerCase();
+                const diffStr = row.getAttribute('data-diff');
+                const rDate = row.getAttribute('data-date');
+                const hasMd = row.getAttribute('data-has-md') === '1';
+                const diff = diffStr && diffStr !== 'None' ? parseFloat(diffStr) : NaN;
+
+                let matchTag = true;
+                if (searchTerms.length > 0) { matchTag = searchTerms.every(term => tags.includes(term) || baseName.includes(term)); }
+                let matchDiff = true;
+                if (minStr !== '' || maxStr !== '') {
+                    if (isNaN(diff)) matchDiff = false;
+                    else if (diff < minVal || diff > maxVal) matchDiff = false;
+                }
+                let matchDate = true;
+                if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
+                if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
+                let matchMd = !requireMd || hasMd;
+
+                if (matchTag && matchDiff && matchDate && matchMd) {
+                    row.style.display = ''; 
+                    visibleRows.push(row);
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            if (ENABLE_PAGINATION) {
+                updatePagination(tableId, visibleRows);
+            } else {
+                const controls = document.getElementById('pagination-controls-bottom-' + tableId);
+                if (controls) controls.style.display = 'none';
+            }
+        }
+
+        let sortDirection = {};
+        function sortListTable(tableId, col) {
+            if (!sortDirection[tableId]) sortDirection[tableId] = { 'diff': 1, 'date': 1, 'index': 1 };
+            const tbody = document.querySelector('#' + tableId + ' tbody');
+            if (!tbody) return;
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            sortDirection[tableId][col] *= -1;
+            const dir = sortDirection[tableId][col];
+            
+            rows.sort((a, b) => {
+                let res = 0;
+                if (col === 'diff') {
+                    let v1 = parseFloat(a.dataset.diff);
+                    let v2 = parseFloat(b.dataset.diff);
+                    if (isNaN(v1)) v1 = -Infinity;
+                    if (isNaN(v2)) v2 = -Infinity;
+                    res = (v1 - v2) * dir;
+                } else if (col === 'date') {
+                    let d1 = a.dataset.date;
+                    let d2 = b.dataset.date;
+                    if (d1 === '未知') d1 = '';
+                    if (d2 === '未知') d2 = '';
+                    res = d1.localeCompare(d2) * dir;
+                } else if (col === 'index') {
+                    let i1 = parseInt(a.dataset.index) || 0;
+                    let i2 = parseInt(b.dataset.index) || 0;
+                    res = (i1 - i2) * dir;
+                }
+                if (res === 0) {
+                    let baseA = a.dataset.base || '';
+                    let baseB = b.dataset.base || '';
+                    return baseA.localeCompare(baseB, undefined, {numeric: true});
+                }
+                return res;
+            });
+            rows.forEach(r => tbody.appendChild(r));
+            
+            if (ENABLE_PAGINATION) {
+                filterListTable(tableId);
+            }
+        }
+
+        function updatePagination(tableId, allVisibleRows) {
+            if (!ENABLE_PAGINATION) return;
+            const totalItems = allVisibleRows.length;
+            const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+            
+            if (!currentPages[tableId] || currentPages[tableId] > totalPages) {
+                currentPages[tableId] = 1;
+            }
+
+            renderPaginationControls(tableId, totalPages);
+            displayPageItems(tableId, allVisibleRows, currentPages[tableId]);
+        }
+
+        function renderPaginationControls(tableId, totalPages) {
+            const container = document.getElementById('pagination-controls-bottom-' + tableId);
+            if (!container) return;
+            
+            if (totalPages <= 1) { 
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'flex';
+            container.innerHTML = ''; 
+            
+            const currentPage = currentPages[tableId];
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pagination-btn';
+            prevBtn.innerText = '« 上一页';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => changePage(tableId, currentPage - 1);
+            container.appendChild(prevBtn);
+
+            const pageWindow = 2; 
+            let startPage = Math.max(1, currentPage - pageWindow);
+            let endPage = Math.min(totalPages, currentPage + pageWindow);
+
+            if (startPage > 1) {
+                container.appendChild(createPageButton(tableId, 1, currentPage));
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.innerText = '...';
+                    ellipsis.className = 'pagination-info';
+                    container.appendChild(ellipsis);
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                container.appendChild(createPageButton(tableId, i, currentPage));
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.innerText = '...';
+                    ellipsis.className = 'pagination-info';
+                    container.appendChild(ellipsis);
+                }
+                container.appendChild(createPageButton(tableId, totalPages, currentPage));
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pagination-btn';
+            nextBtn.innerText = '下一页 »';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => changePage(tableId, currentPage + 1);
+            container.appendChild(nextBtn);
+
+            const pageInfo = document.createElement('span');
+            pageInfo.className = 'pagination-info';
+            pageInfo.innerText = '第 ' + currentPage + ' / ' + totalPages + ' 页';
+            container.appendChild(pageInfo);
+        }
+
+        function createPageButton(tableId, pageNum, currentPage) {
+            const btn = document.createElement('button');
+            btn.className = 'pagination-btn ' + (pageNum === currentPage ? 'active' : '');
+            btn.innerText = pageNum;
+            btn.onclick = () => changePage(tableId, pageNum);
+            return btn;
+        }
+
+        function changePage(tableId, newPage) {
+            currentPages[tableId] = newPage;
+            filterListTable(tableId); 
+        }
+
+        function displayPageItems(tableId, allVisibleRows, page) {
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            allVisibleRows.forEach((row, index) => {
+                if (index >= startIndex && index < endIndex) {
+                    row.style.display = ''; 
+                } else {
+                    row.style.display = 'none'; 
+                }
+            });
+        }
+
+        function switchAtCoderTab(targetId, btn, updateUrl=true) {
+            document.querySelectorAll('.atcoder-tab-content').forEach(el => el.style.display = 'none');
+            document.getElementById(targetId).style.display = 'block';
+            document.querySelectorAll('.atcoder-tab-btn').forEach(el => {
+                el.style.background = '#fff';
+                el.style.color = '#334155';
+                el.style.borderColor = '#e2e8f0';
+            });
+            btn.style.background = 'var(--primary)';
+            btn.style.color = '#fff';
+            btn.style.borderColor = 'var(--primary)';
+            
+            if (updateUrl) {
+                const url = new URL(window.location);
+                url.searchParams.set('tab', targetId.replace('tab-', ''));
+                url.searchParams.delete('sub'); 
+                window.history.replaceState({}, '', url);
+            }
+            
+            const currentTableId = document.querySelector(`#${targetId} .plan-sub-content[style*="display: block"] .normal-table`)?.id 
+                                || document.querySelector(`#${targetId} .normal-table`)?.id;
+            if (currentTableId) filterListTable(currentTableId);
+        }
+        
+        function switchPlanSubTable(targetId, btn, updateUrl=true) {
+            const parentTab = btn.closest('.atcoder-tab-content');
+            if (!parentTab) return;
+            
+            parentTab.querySelectorAll('.plan-sub-content').forEach(el => el.style.display = 'none');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) targetEl.style.display = 'block';
+            
+            parentTab.querySelectorAll('.plan-sub-btn').forEach(el => {
+                el.style.background = '#fff';
+                el.style.color = '#334155';
+                el.style.borderColor = '#e2e8f0';
+            });
+            btn.style.background = 'var(--primary)';
+            btn.style.color = '#fff';
+            btn.style.borderColor = 'var(--primary)';
+
+            if (updateUrl) {
+                const url = new URL(window.location);
+                const parts = targetId.split('-');
+                if (parts.length >= 2) {
+                    url.searchParams.set('sub', parts[1]); 
+                    window.history.replaceState({}, '', url);
+                }
+            }
+
+            const currentTableId = document.querySelector(`#${targetId} .normal-table`)?.id;
+            if (currentTableId) filterListTable(currentTableId);
+        }
+        
+        function filterPList() {
+            const val = document.getElementById('plist-search').value.toLowerCase();
+            document.querySelectorAll('.plist-card').forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(val) ? '' : 'none';
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const q = urlParams.get('q');
+            const min = urlParams.get('min');
+            const max = urlParams.get('max');
+            const hasMdParam = urlParams.get('has_md');
+            const tabParam = urlParams.get('tab');
+            const subParam = urlParams.get('sub');
+
+            if (tabParam) {
+                const btn = document.querySelector(`button[data-target="tab-${tabParam}"]`);
+                if (btn) switchAtCoderTab(`tab-${tabParam}`, btn, false);
+            }
+
+            if (subParam) {
+                const activeTab = document.querySelector('.atcoder-tab-content[style*="display: block"]');
+                if (activeTab) {
+                    const targetIdPrefix = `sub-${subParam}-`;
+                    const subBtn = Array.from(activeTab.querySelectorAll('.plan-sub-btn')).find(b => b.getAttribute('onclick').includes(targetIdPrefix));
+                    if (subBtn) {
+                        const match = subBtn.getAttribute('onclick').match(/'([^']+)'/);
+                        if (match) switchPlanSubTable(match[1], subBtn, false);
+                    }
+                }
+            }
+
+            const input = document.querySelector('input[id^="filter-tag-"]');
+            if (input && (input.id === 'filter-tag-summary-table' || input.id.startsWith('filter-tag-plan-table-') || input.id.startsWith('filter-tag-plist-'))) {
+                const tableId = input.id.replace('filter-tag-', '');
+                if (q) input.value = q + ' ';
+                const minInput = document.getElementById('filter-diff-min-' + tableId);
+                if (minInput && min) minInput.value = min;
+                const maxInput = document.getElementById('filter-diff-max-' + tableId);
+                if (maxInput && max) maxInput.value = max;
+                
+                const mdCheckbox = document.getElementById('filter-has-md-' + tableId);
+                if (mdCheckbox && hasMdParam === '1') mdCheckbox.checked = true;
+                
+                filterListTable(tableId); 
+            }
+
+            document.querySelectorAll('.plan-sub-content[style*="display: block"] .normal-table').forEach(table => {
+                filterListTable(table.id);
+            });
+            if (document.getElementById('summary-table')) {
+                filterListTable('summary-table');
+            }
+            
+            if(window.location.hash && window.location.hash.startsWith('#c-')) {
+                requestAnimationFrame(() => highlightContest(decodeURIComponent(window.location.hash.substring(1)), false));
+            }
+
+        });
+    </script>
+</body>
+</html>
