@@ -134,7 +134,7 @@
         
     <div class="list-filter-bar" style="padding: 12px 18px; margin-bottom: 15px;">
         <strong style="color: var(--primary); font-size: 1.05em;">🔍 检索比赛</strong>
-        <input type="text" oninput="filterMatrixTable(this, 'matrix-main')" placeholder="输入名称或编号查找..." style="min-width: 250px;">
+        <input type="text" data-matrix-table="matrix-main" oninput="filterMatrixTable(this, 'matrix-main')" placeholder="输入名称或编号查找..." style="min-width: 250px;">
     </div>
     <div style="overflow-x: auto;"><table class="matrix-table" id="matrix-main"><thead><tr><th style="text-align: left; width: 16%; padding-left: 20px;">比赛名称</th><th style="width: calc(9.333333333333334% - 16.0px);">A</th><th style="width: calc(9.333333333333334% - 16.0px);">B</th><th style="width: calc(9.333333333333334% - 16.0px);">C</th><th style="width: calc(9.333333333333334% - 16.0px);">D</th><th style="width: calc(9.333333333333334% - 16.0px);">E</th><th style="width: calc(9.333333333333334% - 16.0px);">F</th><th style="width: calc(9.333333333333334% - 16.0px);">G</th><th style="width: calc(9.333333333333334% - 16.0px);">H</th><th style="width: calc(9.333333333333334% - 16.0px);">I</th><th class="solution-col" style="width:72px; padding:8px 4px; white-space:nowrap;" title="Overall Editorial">题解</th><th class="contest-id-col" style="width:72px; padding:8px 4px; white-space:nowrap;">比赛编号</th></tr></thead><tbody><tr id="c-Codeforces_Round_2260" data-name="Codeforces Round 2260" data-cid="" data-count="1"><td class="contest-name-cell" style="padding-left: 15px;"><a href="#c-Codeforces_Round_2260" class="c-anchor" onclick="event.preventDefault(); highlightContest('c-Codeforces_Round_2260')" title="定位比赛并更新地址栏链接">🔗</a><a href="https://codeforces.com/contest/2260" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">Codeforces Round 2260</a> <br><span style="font-size:0.85em; color:var(--text-muted); font-weight:normal; margin-left: 30px;">(1 题)</span></td><td></td><td></td><td></td><td></td><td></td><td></td><td>
     <div class="prob-cell" style="margin-bottom:8px;">
@@ -813,7 +813,7 @@
         <div class="prob-link-wrap"><a href="https://codeforces.com/problemset/problem/464/E" target="_blank">E</a><span class="diff-indicator" title="难度: 3000.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF0000 50.0%, transparent 50.0%); border: 1px solid #FF0000; border-radius: 50%;"></span> 3000</span></div>
         <div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/cf464e.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="data/code/cf464e.cpp.html" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span></div>
     </div></td><td></td><td></td><td></td><td></td><td class="solution-col" style="padding:8px 4px; white-space:nowrap;"></td><td class="contest-id-col" style="padding:8px 4px; white-space:nowrap;">—</td></tr></tbody></table></div>
-        <div class="footer">最后构建: 2026-10-19 15:23:41 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-19 15:25:23 | Algorithm Platform Generator</div>
     </div>
     <script>
         const ENABLE_PAGINATION = false; 
@@ -872,9 +872,21 @@
             });
         }
 
-        function filterMatrixTable(inputEl, tableId) {
-            const val = inputEl.value.toLowerCase().trim();
-            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+        function filterMatrixTable(inputEl, tableId, updateUrl=true) {
+            const query = inputEl.value.trim();
+            const val = query.toLowerCase();
+            // Use one search across tabs, so the shared URL has a single q parameter.
+            document.querySelectorAll('input[data-matrix-table]').forEach(input => {
+                input.value = inputEl.value;
+            });
+            if (updateUrl) {
+                const url = new URL(window.location);
+                if (query) url.searchParams.set('q', query); else url.searchParams.delete('q');
+                const tab = inputEl.closest('.atcoder-tab-content');
+                if (tab) url.searchParams.set('tab', tab.id.replace('tab-', ''));
+                window.history.replaceState({}, '', url);
+            }
+            const rows = document.querySelectorAll('.matrix-table tbody tr');
             rows.forEach(row => {
                 const cname = (row.getAttribute('data-name') || '').toLowerCase();
                 const cid = (row.getAttribute('data-cid') || '').toLowerCase();
@@ -1219,6 +1231,17 @@
             });
         }
 
+        window.addEventListener('popstate', () => {
+            const input = document.querySelector('input[data-matrix-table]');
+            if (!input) return;
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+            const btn = tab && document.querySelector(`button[data-target="tab-${tab}"]`);
+            if (btn) switchAtCoderTab(`tab-${tab}`, btn, false);
+            input.value = params.get('q') || '';
+            filterMatrixTable(input, input.dataset.matrixTable, false);
+        });
+
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const q = urlParams.get('q');
@@ -1243,6 +1266,12 @@
                         if (match) switchPlanSubTable(match[1], subBtn, false);
                     }
                 }
+            }
+
+            const matrixInput = document.querySelector('input[data-matrix-table]');
+            if (matrixInput) {
+                matrixInput.value = q || '';
+                filterMatrixTable(matrixInput, matrixInput.dataset.matrixTable, false);
             }
 
             const input = document.querySelector('input[id^="filter-tag-"]');

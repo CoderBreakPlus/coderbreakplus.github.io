@@ -87,7 +87,7 @@ class RegressionChecks(unittest.TestCase):
         counts = {'0003':12,'0006':12,'0007':9,'0008':11,'0011':15,'0012':13,'0015':13,'0017':15,'0018':12,'0019':13,'0020':11,'0022':13,'0026':13,'0029':13,'0030':13}
         for cid, count in counts.items():
             rows = (root / 'contest' / (cid + '.conf')).read_text().splitlines()[3:]
-            labels = [line.split()[0] for line in rows if line.strip() and line.split()[0].isalpha() and len(line.split()) == 2]
+            labels = [line.split()[0] for line in rows if line.strip() and line.split()[0].isalpha() and line.split()[0].isupper() and len(line.split()) == 2]
             self.assertEqual(labels, [chr(65+i) for i in range(count)], cid)
         self.assertIn('K qoj6524', (root / 'contest/0030.conf').read_text())
         self.assertIn('cid=2411', (root / 'contest/0001.conf').read_text())

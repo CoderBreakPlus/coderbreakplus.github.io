@@ -246,9 +246,21 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
-        function filterMatrixTable(inputEl, tableId) {{
-            const val = inputEl.value.toLowerCase().trim();
-            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+        function filterMatrixTable(inputEl, tableId, updateUrl=true) {{
+            const query = inputEl.value.trim();
+            const val = query.toLowerCase();
+            // Use one search across tabs, so the shared URL has a single q parameter.
+            document.querySelectorAll('input[data-matrix-table]').forEach(input => {{
+                input.value = inputEl.value;
+            }});
+            if (updateUrl) {{
+                const url = new URL(window.location);
+                if (query) url.searchParams.set('q', query); else url.searchParams.delete('q');
+                const tab = inputEl.closest('.atcoder-tab-content');
+                if (tab) url.searchParams.set('tab', tab.id.replace('tab-', ''));
+                window.history.replaceState({{}}, '', url);
+            }}
+            const rows = document.querySelectorAll('.matrix-table tbody tr');
             rows.forEach(row => {{
                 const cname = (row.getAttribute('data-name') || '').toLowerCase();
                 const cid = (row.getAttribute('data-cid') || '').toLowerCase();
@@ -593,6 +605,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }});
         }}
 
+        window.addEventListener('popstate', () => {{
+            const input = document.querySelector('input[data-matrix-table]');
+            if (!input) return;
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+            const btn = tab && document.querySelector(`button[data-target="tab-${{tab}}"]`);
+            if (btn) switchAtCoderTab(`tab-${{tab}}`, btn, false);
+            input.value = params.get('q') || '';
+            filterMatrixTable(input, input.dataset.matrixTable, false);
+        }});
+
         window.addEventListener('DOMContentLoaded', () => {{
             const urlParams = new URLSearchParams(window.location.search);
             const q = urlParams.get('q');
@@ -617,6 +640,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         if (match) switchPlanSubTable(match[1], subBtn, false);
                     }}
                 }}
+            }}
+
+            const matrixInput = document.querySelector('input[data-matrix-table]');
+            if (matrixInput) {{
+                matrixInput.value = q || '';
+                filterMatrixTable(matrixInput, matrixInput.dataset.matrixTable, false);
             }}
 
             const input = document.querySelector('input[id^="filter-tag-"]');
@@ -1242,7 +1271,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
     html = f"""
     <div class="list-filter-bar" style="padding: 12px 18px; margin-bottom: 15px;">
         <strong style="color: var(--primary); font-size: 1.05em;">🔍 检索比赛</strong>
-        <input type="text" oninput="filterMatrixTable(this, '{table_id}')" placeholder="输入名称或编号查找..." style="min-width: 250px;">
+        <input type="text" data-matrix-table="{table_id}" oninput="filterMatrixTable(this, '{table_id}')" placeholder="输入名称或编号查找..." style="min-width: 250px;">
     </div>
     """
 

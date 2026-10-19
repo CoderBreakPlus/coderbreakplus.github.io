@@ -5696,7 +5696,7 @@
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj20726.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="data/code/qoj20726.cpp.html" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span></div></td>
         </tr></tbody></table></div><div id="pagination-controls-bottom-summary-table" class="pagination-controls" style="display: none;"></div>
-        <div class="footer">最后构建: 2026-10-19 15:23:41 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-19 15:25:23 | Algorithm Platform Generator</div>
     </div>
     <script>
         const ENABLE_PAGINATION = false; 
@@ -5755,9 +5755,21 @@
             });
         }
 
-        function filterMatrixTable(inputEl, tableId) {
-            const val = inputEl.value.toLowerCase().trim();
-            const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+        function filterMatrixTable(inputEl, tableId, updateUrl=true) {
+            const query = inputEl.value.trim();
+            const val = query.toLowerCase();
+            // Use one search across tabs, so the shared URL has a single q parameter.
+            document.querySelectorAll('input[data-matrix-table]').forEach(input => {
+                input.value = inputEl.value;
+            });
+            if (updateUrl) {
+                const url = new URL(window.location);
+                if (query) url.searchParams.set('q', query); else url.searchParams.delete('q');
+                const tab = inputEl.closest('.atcoder-tab-content');
+                if (tab) url.searchParams.set('tab', tab.id.replace('tab-', ''));
+                window.history.replaceState({}, '', url);
+            }
+            const rows = document.querySelectorAll('.matrix-table tbody tr');
             rows.forEach(row => {
                 const cname = (row.getAttribute('data-name') || '').toLowerCase();
                 const cid = (row.getAttribute('data-cid') || '').toLowerCase();
@@ -6102,6 +6114,17 @@
             });
         }
 
+        window.addEventListener('popstate', () => {
+            const input = document.querySelector('input[data-matrix-table]');
+            if (!input) return;
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+            const btn = tab && document.querySelector(`button[data-target="tab-${tab}"]`);
+            if (btn) switchAtCoderTab(`tab-${tab}`, btn, false);
+            input.value = params.get('q') || '';
+            filterMatrixTable(input, input.dataset.matrixTable, false);
+        });
+
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const q = urlParams.get('q');
@@ -6126,6 +6149,12 @@
                         if (match) switchPlanSubTable(match[1], subBtn, false);
                     }
                 }
+            }
+
+            const matrixInput = document.querySelector('input[data-matrix-table]');
+            if (matrixInput) {
+                matrixInput.value = q || '';
+                filterMatrixTable(matrixInput, matrixInput.dataset.matrixTable, false);
             }
 
             const input = document.querySelector('input[id^="filter-tag-"]');
