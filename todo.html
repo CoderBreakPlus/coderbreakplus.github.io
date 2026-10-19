@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo - é¢˜ç›®æ•´ç†</title>
+    <title>Todo - 题目整理</title>
     <style>
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f4f5f8; --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --panel-bg: #f8fafc; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; overflow-x: hidden; scroll-behavior: smooth; }
@@ -118,40 +118,40 @@
 <body>
     <div class="container">
         <div class="nav-bar">
-            <a href="index.html">ðŸ  Dashboard</a>
+            <a href="index.html">🏠 Dashboard</a>
             <span style="color:#cbd5e1;">|</span>
-            <a href="Summary.html">ðŸ“š Summary</a>
-            <a href="Plan.html">ðŸŽ¯ Plan</a>
-            <a href="plist/index.html">ðŸ“‹ List</a>
-            <a href="Blog.html">âœï¸ Blog</a>
+            <a href="Summary.html">📚 Summary</a>
+            <a href="Plan.html">🎯 Plan</a>
+            <a href="plist/index.html">📋 List</a>
+            <a href="Blog.html">✍️ Blog</a>
             <span style="color:#cbd5e1;">|</span>
             <span style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">Archive Matrix</span>
-            <button class="btn toggle-diff-btn" onclick="toggleDiff()">ðŸŒ• éšè—éš¾åº¦</button>
-            <button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">ðŸ“ æ˜¾ç¤ºå¤‡æ³¨</button>
+            <button class="btn toggle-diff-btn" onclick="toggleDiff()">🌕 隐藏难度</button>
+            <button class="btn toggle-remark-btn" onclick="toggleRemark()" style="color: #059669; border-color: #a7f3d0; background: #fff;">📝 显示备注</button>
         </div>
         <header class="page-heading"><h1>Todo</h1>
         </header>
         
     <div class="list-filter-bar">
-        <strong style="color: var(--primary); font-size: 1.1em;">ðŸ” ç­›é€‰</strong>
+        <strong style="color: var(--primary); font-size: 1.1em;">🔍 筛选</strong>
         <div style="position: relative; display: inline-block;">
-            <input type="text" id="filter-tag-plan-table-todo-legacy" placeholder="æ ‡ç­¾/åç§° (ç©ºæ ¼åˆ†éš”)..." onkeyup="filterListTable('plan-table-todo-legacy')" style="min-width: 220px; padding-right: 30px;">
-            <span onclick="clearTagFilter('plan-table-todo-legacy')" id="clear-btn-plan-table-todo-legacy" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="æ¸…ç©ºç­›é€‰">âœ–</span>
+            <input type="text" id="filter-tag-plan-table-todo-legacy" placeholder="标签/名称 (空格分隔)..." onkeyup="filterListTable('plan-table-todo-legacy')" style="min-width: 220px; padding-right: 30px;">
+            <span onclick="clearTagFilter('plan-table-todo-legacy')" id="clear-btn-plan-table-todo-legacy" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 14px; display: none;" title="清空筛选">✖</span>
         </div>
         
-        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">ðŸ“Š éš¾åº¦:</span>
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📊 难度:</span>
         <input type="number" id="filter-diff-min-plan-table-todo-legacy" placeholder="Min" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-legacy')" onchange="filterListTable('plan-table-todo-legacy')">
         <span style="color:var(--border);">-</span>
         <input type="number" id="filter-diff-max-plan-table-todo-legacy" placeholder="Max" style="width: 70px;" onkeyup="filterListTable('plan-table-todo-legacy')" onchange="filterListTable('plan-table-todo-legacy')">
         
-        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">ðŸ“… æ—¥æœŸ:</span>
+        <span style="color:var(--text-muted); margin-left: 10px; font-weight: 500;">📅 日期:</span>
         <input type="date" id="filter-date-start-plan-table-todo-legacy" onchange="filterListTable('plan-table-todo-legacy')">
         <span style="color:var(--border);">-</span>
         <input type="date" id="filter-date-end-plan-table-todo-legacy" onchange="filterListTable('plan-table-todo-legacy')">
         
         <label style="color:var(--text-muted); margin-left: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">
             <input type="checkbox" id="filter-has-md-plan-table-todo-legacy" onchange="filterListTable('plan-table-todo-legacy')">
-            ä»…çœ‹æœ‰é¢˜è§£ ðŸ’¡
+            仅看有题解 💡
         </label>
     </div>
 
@@ -159,13 +159,13 @@
         <table class="normal-table" id="plan-table-todo-legacy">
             <thead>
                 <tr>
-                    <th style="text-align:center;">åºå·</th>
-                    <th>é¢˜ç›®ä¸Žæ¥æº</th>
-                    <th>æ ‡ç­¾</th>
-                    <th onclick="sortListTable('plan-table-todo-legacy', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="ç‚¹å‡»æŒ‰éš¾åº¦åŒå‘æŽ’åº">éš¾åº¦ â†•</th>
-                    <th onclick="sortListTable('plan-table-todo-legacy', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="ç‚¹å‡»æŒ‰æ—¥æœŸåŒå‘æŽ’åº">æ·»åŠ æ—¥æœŸ â†•</th>
-                    <th class="remark-col">å¤‡æ³¨</th>
-                    <th>æ–‡ä»¶</th>
+                    <th style="text-align:center;">序号</th>
+                    <th>题目与来源</th>
+                    <th>标签</th>
+                    <th onclick="sortListTable('plan-table-todo-legacy', 'diff')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按难度双向排序">难度 ↕</th>
+                    <th onclick="sortListTable('plan-table-todo-legacy', 'date')" style="cursor:pointer; user-select:none; color: var(--primary);" title="点击按日期双向排序">添加日期 ↕</th>
+                    <th class="remark-col">备注</th>
+                    <th>文件</th>
                 </tr>
             </thead>
             <tbody>
@@ -173,22 +173,22 @@
         <tr data-tags="combinatorics ds" data-diff="2600.0" data-date="2026-09-24" data-base="qoj7992" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
             <td style="padding-left: 20px;"><a href="https://qoj.ac/problem/7992" target="_blank" style="color:var(--primary); text-decoration:none;"><b>qoj7992</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">Summary</span></td>
-            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'plan-table-todo-legacy')" title="ç‚¹å‡»ç­›é€‰/å–æ¶ˆ">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'plan-table-todo-legacy')" title="ç‚¹å‡»ç­›é€‰/å–æ¶ˆ">ds</span></td>
-            <td><span class="diff-indicator" title="éš¾åº¦: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
+            <td><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('combinatorics', 'plan-table-todo-legacy')" title="点击筛选/取消">combinatorics</span><span class="tag-pill" style="cursor:pointer;" onclick="addTagToFilter('ds', 'plan-table-todo-legacy')" title="点击筛选/取消">ds</span></td>
+            <td><span class="diff-indicator" title="难度: 2600.0"><span class="diff-circle" style="background: linear-gradient(to top, #FF8000 50.0%, transparent 50.0%); border: 1px solid #FF8000; border-radius: 50%;"></span> 2600</span></td>
             <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">2026-09-24</td>
             <td class="remark-col">-</td>
-            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7992.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="é…ç½®">âš™ï¸</a><a href="data/code/qoj7992.cpp.html" target="_blank" rel="noopener noreferrer" class="file-link" title="ä»£ç ">ðŸ“</a></span></div></td>
+            <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"><a href="data/qoj7992.conf" target="_blank" rel="noopener noreferrer" class="file-link" title="配置">⚙️</a><a href="data/code/qoj7992.cpp.html" target="_blank" rel="noopener noreferrer" class="file-link" title="代码">📝</a></span></div></td>
         </tr>
-        <tr data-tags="" data-diff="None" data-date="æœªçŸ¥" data-base="soj2507" data-has-md="0">
+        <tr data-tags="" data-diff="None" data-date="未知" data-base="soj2507" data-has-md="0">
             <td class="row-index" style="text-align:center; color:var(--text-muted); font-weight:bold; font-size:0.95em;"></td>
             <td style="padding-left: 20px;"><a href="http://47.114.34.42:8080/problem/2507" target="_blank" style="color:var(--primary); text-decoration:none;"><b>soj2507</b></a><br><span style="font-size:0.85em; color:var(--text-muted); line-height: 1.4; display: inline-block; margin-top: 4px;">OI - GZOI-NOI2026模拟赛（十四）</span></td>
             <td></td>
             <td>-</td>
-            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">æœªçŸ¥</td>
+            <td style="font-size: 0.9em; color: var(--text-muted); font-weight: 500;">未知</td>
             <td class="remark-col">-</td>
             <td><div class="version-row" style="flex-wrap: nowrap;"><span style="white-space: nowrap; display: inline-flex; gap: 6px;"></span></div></td>
         </tr></tbody></table></div><div id="pagination-controls-bottom-plan-table-todo-legacy" class="pagination-controls" style="display: none;"></div>
-        <div class="footer">æœ€åŽæž„å»º: 2026-10-19 13:47:22 | Algorithm Platform Generator</div>
+        <div class="footer">最后构建: 2026-10-19 13:47:51 | Algorithm Platform Generator</div>
     </div>
     <script>
         const ENABLE_PAGINATION = false; 
@@ -198,12 +198,12 @@
             isDiffVisible = !isDiffVisible;
             const btn = document.querySelector('.toggle-diff-btn');
             if (isDiffVisible) {
-                btn.innerHTML = 'ðŸŒ• éšè—éš¾åº¦';
+                btn.innerHTML = '🌕 隐藏难度';
                 btn.style.color = 'var(--primary)';
                 btn.style.borderColor = '#bfdbfe';
                 btn.style.background = '#fff';
             } else {
-                btn.innerHTML = 'ðŸŒ‘ æ˜¾ç¤ºéš¾åº¦';
+                btn.innerHTML = '🌑 显示难度';
                 btn.style.color = '#475569';
                 btn.style.borderColor = '#e2e8f0';
                 btn.style.background = '#f8fafc';
@@ -216,7 +216,7 @@
             isRemarkVisible = !isRemarkVisible;
             document.querySelectorAll('.remark-col').forEach(el => { el.style.display = isRemarkVisible ? 'table-cell' : 'none'; });
             document.querySelectorAll('.toggle-remark-btn').forEach(btn => {
-                btn.innerHTML = isRemarkVisible ? 'ðŸš« éšè—å¤‡æ³¨' : 'ðŸ“ æ˜¾ç¤ºå¤‡æ³¨';
+                btn.innerHTML = isRemarkVisible ? '🚫 隐藏备注' : '📝 显示备注';
                 btn.style.color = isRemarkVisible ? '#475569' : '#059669';
                 btn.style.borderColor = isRemarkVisible ? '#e2e8f0' : '#a7f3d0';
                 btn.style.background = isRemarkVisible ? '#f8fafc' : '#fff';
@@ -371,8 +371,8 @@
                     else if (diff < minVal || diff > maxVal) matchDiff = false;
                 }
                 let matchDate = true;
-                if (dateStart && (rDate === 'æœªçŸ¥' || rDate < dateStart)) matchDate = false;
-                if (dateEnd && (rDate === 'æœªçŸ¥' || rDate > dateEnd)) matchDate = false;
+                if (dateStart && (rDate === '未知' || rDate < dateStart)) matchDate = false;
+                if (dateEnd && (rDate === '未知' || rDate > dateEnd)) matchDate = false;
                 let matchMd = !requireMd || hasMd;
 
                 if (matchTag && matchDiff && matchDate && matchMd) {
@@ -411,8 +411,8 @@
                 } else if (col === 'date') {
                     let d1 = a.dataset.date;
                     let d2 = b.dataset.date;
-                    if (d1 === 'æœªçŸ¥') d1 = '';
-                    if (d2 === 'æœªçŸ¥') d2 = '';
+                    if (d1 === '未知') d1 = '';
+                    if (d2 === '未知') d2 = '';
                     res = d1.localeCompare(d2) * dir;
                 } else if (col === 'index') {
                     let i1 = parseInt(a.dataset.index) || 0;
@@ -461,7 +461,7 @@
 
             const prevBtn = document.createElement('button');
             prevBtn.className = 'pagination-btn';
-            prevBtn.innerText = 'Â« ä¸Šä¸€é¡µ';
+            prevBtn.innerText = '« 上一页';
             prevBtn.disabled = currentPage === 1;
             prevBtn.onclick = () => changePage(tableId, currentPage - 1);
             container.appendChild(prevBtn);
@@ -496,14 +496,14 @@
 
             const nextBtn = document.createElement('button');
             nextBtn.className = 'pagination-btn';
-            nextBtn.innerText = 'ä¸‹ä¸€é¡µ Â»';
+            nextBtn.innerText = '下一页 »';
             nextBtn.disabled = currentPage === totalPages;
             nextBtn.onclick = () => changePage(tableId, currentPage + 1);
             container.appendChild(nextBtn);
 
             const pageInfo = document.createElement('span');
             pageInfo.className = 'pagination-info';
-            pageInfo.innerText = 'ç¬¬ ' + currentPage + ' / ' + totalPages + ' é¡µ';
+            pageInfo.innerText = '第 ' + currentPage + ' / ' + totalPages + ' 页';
             container.appendChild(pageInfo);
         }
 
