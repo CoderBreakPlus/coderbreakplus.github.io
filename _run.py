@@ -1311,7 +1311,7 @@ def build_matrix_table(groups_dict, contest_info_dict, rel_path, is_official=Fal
                             html += '</div>'
             html += '</td>'
             
-        sol_html = f'<a href="{escape(c_solution, quote=True)}" target="_blank" rel="noopener noreferrer" title="Overall Editorial">[sol]</a>' if c_solution else ''
+        sol_html = f'<a href="{escape(c_solution, quote=True)}" target="_blank" rel="noopener noreferrer" title="Overall Editorial">link</a>' if c_solution else ''
         html += f'<td class="solution-col" style="padding:8px 4px; white-space:nowrap;">{sol_html}</td>'
         if not is_official:
             html += f'<td class="remark-col" style="text-align: left; font-size:0.9em; color:var(--text-muted); line-height: 1.4;">{c_remark}</td>'
