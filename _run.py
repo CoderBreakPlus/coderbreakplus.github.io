@@ -116,9 +116,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         
         .normal-table th:nth-child(4), .normal-table td:nth-child(4),
         .normal-table th:nth-child(5), .normal-table td:nth-child(5),
-        .normal-table th:last-child, .normal-table td:last-child {{ padding-left: 6px; padding-right: 6px; text-align: center; }}
-        .normal-table td:last-child .version-row, .plist-table td:last-child .version-row {{ display: flex; justify-content: center; align-items: center; }}
-        .plist-table th:last-child, .plist-table td:last-child {{ text-align: center; }}
+        .normal-table th:last-child, .normal-table td:last-child {{ padding-left: 6px; padding-right: 6px; text-align: left; }}
+        .normal-table td:last-child .version-row, .plist-table td:last-child .version-row {{ display: flex; justify-content: flex-start; align-items: center; }}
+        .plist-table th:last-child, .plist-table td:last-child {{ text-align: left; }}
         .normal-table td:nth-child(4), .normal-table td:nth-child(5) {{ white-space: nowrap; }}
         .normal-table td.remark-col {{ color: var(--text-muted); font-size: 0.9em; }}
         .matrix-table th.remark-col {{ width: 14%; color: var(--text-muted); font-weight: 500; font-size: 0.95em; }} 
