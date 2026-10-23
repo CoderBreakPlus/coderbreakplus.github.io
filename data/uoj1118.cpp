@@ -1,4 +1,3 @@
-
 // created time: 2026-10-23 07:56:16
 #include<bits/stdc++.h>
 #include"range.h"
