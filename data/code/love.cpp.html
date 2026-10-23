@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>love.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>love.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../love.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair&lt;ll,ll&gt; P;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const ll mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; char ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+inline void addmod(int &amp;x){ if(x &gt;= mod) x -= mod; }
+inline void addmod(ll &amp;x){ if(x &gt;= mod) x -= mod; }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+int n,m,c,sum,b[55],qz[55];
+
+inline void upd(int &amp;a,ull b){ a=(a+b)%mod; }
+const int N = 500000;
+int fac[N+5],inv[N+5];
+void math_init(){
+	fac[0]=inv[0]=1;
+	for(int i=1;i&lt;=N;i++) fac[i]=1ll*fac[i-1]*i%mod;
+	inv[N]=qpow(fac[N],mod-2);
+	for(int i=N-1;i&gt;=1;i--) inv[i]=1ll*inv[i+1]*(i+1)%mod;
+}
+inline int binom(int x,int y){
+	if(x&lt;0 || y&lt;0 || x&lt;y) return 0;
+	return 1ll*fac[x]*inv[y]%mod*inv[x-y]%mod;
+}
+inline int perm(int x,int y){
+	if(x&lt;0 || y&lt;0 || x&lt;y) return 0;
+	return 1ll*fac[x]*inv[x-y]%mod;
+}
+
+namespace brute{
+	int f[2][1&lt;&lt;20][55];
+
+	int main(){
+		f[0][0][0]=1;
+		for(int i=1,op=1;i&lt;=n;i++,op^=1){
+			memset(f[op],0,sizeof(f[op]));
+			int up=(1&lt;&lt;min(m,n-i+1)),down=(1&lt;&lt;max(0,m-i+1));
+
+			if(down&gt;1){
+				for(int j=0;j&lt;up;j+=down){
+					for(int k=0;k&lt;=n;k++){
+						int val=f[op^1][j][k];
+						if(!val) continue;
+						upd(f[op][j&gt;&gt;1][k], 1ull*val*k);
+						upd(f[op][j&gt;&gt;1][k+1], 1ull*val*qz[i]%mod*(c-k));
+					}
+				}
+			}else{
+				for(int j=0;j&lt;up;j+=2){
+					for(int k=0;k&lt;=n;k++){
+						int val=f[op^1][j][k];
+						if(!val) continue;
+						upd(f[op][j&gt;&gt;1][k], 1ull*val*k);
+						upd(f[op][j&gt;&gt;1][k+1], 1ull*val*qz[i]%mod*(c-k));
+					}
+				}
+				for(int j=1;j&lt;up;j+=2){
+					for(int k=0;k&lt;=n;k++){
+						int val=f[op^1][j][k];
+						addmod(f[op][j&gt;&gt;1][k]+=val);
+					}
+				}
+			}
+			if(i+m&lt;=n){
+				if(up&gt;1) up&gt;&gt;=1;
+				if(down&gt;1) down&gt;&gt;=1;
+				for(int j=0;j&lt;up;j+=down){
+					for(int k=0;k&lt;=n;k++){
+						int val=f[op][j][k]; if(!val) continue;
+						upd(f[op][j|(1&lt;&lt;m-1)][k],1ull*(mod-val)*k);
+						upd(f[op][j|(1&lt;&lt;m-1)][k+1],1ull*(mod-val)*qz[i]%mod*(c-k));
+					}
+				}
+			}
+		}
+		int ivs=INV(sum);
+		int ans=0;
+		for(int k=0;k&lt;=n&amp;&amp;k&lt;=c;k++) ans=(ans+1ull*f[n&amp;1][0][k]*qpow(ivs,k))%mod;
+		return ans;
+	}
+}
+namespace sol{
+	int f[55][55][55],c0[55][55],c1[55][55],ans[55];
+	int main(){
+		for(int i=1;i&lt;=m;i++)
+		for(int j=0;j&lt;=n;j++){
+			if(i&lt;=n-m+1)
+				c0[i][j]=(ull)inv[j]*qpow(b[i],j)%mod;
+			else
+				c0[i][j]=(j==0);
+		}
+		for(int i=1;i&lt;=m;i++)
+			for(int j=0;j&lt;=n;j++){
+				if(i+m&lt;=n-m+1)
+					c1[i][j]=(ull)inv[j]*qpow(b[i+m],j)%mod;
+				else
+					c1[i][j]=(j==0);
+			}
+		for(int C=0;C&lt;=n;C++){
+			for(int p=0,q=C;p&lt;=C;p++,q--){
+				if(2*m&gt;n &amp;&amp; q) continue;
+				memset(f,0,sizeof(f));
+
+				for(int i=0;i&lt;=p;i++)
+					for(int j=0;j&lt;=min(q,C-i);j++)if(C-i-j==0||m+1&lt;=n)
+						f[1][i][j]=(ull)i*(m+1&lt;=n?C-i-j:1)*(2*m+1&lt;=n?j:1)*c0[1][i]%mod*c1[1][q-j]%mod;
+
+				for(int x=2;x&lt;m;x++){
+					if(2*m+x&lt;=n){
+						for(int i=p;i&gt;=0;i--)
+						for(int j=0;j&lt;=q;j++)
+						for(int k=i+1;k&lt;=p;k++)
+							upd(f[x-1][k][j],(ull)f[x-1][i][j]*c0[x][k-i]);
+
+						for(int i=p;i&gt;=0;i--)
+						for(int j=0;j&lt;=q;j++)
+						for(int l=min(q,j);l&gt;=0;l--)
+							upd(f[x][i][l],(ull)f[x-1][i][j]*c1[x][j-l]);
+
+						for(int k=0;k&lt;=p;k++)
+							for(int l=0;l&lt;=q;l++)
+								f[x][k][l]=(ull)f[x][k][l]*k*l*(C-k-l)%mod;
+						continue;
+					}else{
+						for(int i=0;i&lt;=p;i++)
+						for(int j=0;j&lt;=min(q,C-i);j++)
+
+						for(int k=i,l=0;k&lt;=C;k++)
+							if(C-k-l==0||m+x&lt;=n)
+							upd(f[x][k][l],(ull)f[x-1][i][j]
+							*k*(m+x&lt;=n?C-k-l:1)%mod*(2*m+x&lt;=n?l:1)%mod*c0[x][k-i]%mod*c1[x][j-l]);
+					}
+				}
+
+				for(int i=0;i&lt;=p;i++)
+					for(int j=0;j&lt;=q;j++){
+						upd(ans[C],(ull)f[m-1][i][j]*p*(2*m&lt;=n?q:1)%mod*c0[m][p-i]%mod*c1[m][j]);
+					}
+			}
+			ans[C]=(ull)ans[C]*fac[C]%mod;
+			ans[C]=(ull)ans[C]*qpow(INV(sum),C)%mod;
+		}
+
+		int out=0;
+		for(int i=0;i&lt;=n;i++){
+			int cf=ans[i];
+			for(int j=0;j&lt;=n;j++)if(j!=i) cf=(ull)cf*(c-j+mod)%mod;
+			for(int j=0;j&lt;=n;j++)if(j!=i) cf=(ull)cf*INV(i-j+mod)%mod;
+			addmod(out+=cf);
+		}
+		return out;
+	}
+}
+void procedure(){
+	n=read(),m=read(),c=read();
+
+	for(int i=1;i&lt;=n-m+1;i++) b[i]=read();
+	for(int i=1;i&lt;=n;i++) addmod(qz[i]=qz[i-1]+b[i]);
+	sum=qz[n];
+	if(3*m-1&gt;=n) printf(&quot;%d\n&quot;,sol::main());
+	else printf(&quot;%d\n&quot;,brute::main());
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	math_init();
+	// NTT::init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
