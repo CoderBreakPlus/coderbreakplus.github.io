@@ -13,14 +13,14 @@
       ]
     },
     "zr": {
-      "base_url": "https://zhengruioi.com",
+      "base_url": "https://www.zhengruioi.com",
       "prefixes": [
         "zr"
       ],
       "problem": "/problem/{id}",
       "contest": "/contest/{id}",
       "legacy_base_urls": [
-        "https://zhengruioi.com"
+        "https://www.zhengruioi.com"
       ]
     },
     "qoj": {
