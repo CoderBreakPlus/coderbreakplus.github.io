@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2725.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2725.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../soj2725.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-26 08:11:43
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+int n,a[1000005],b[1000005];
+vector&lt;pair&lt;int,int&gt;&gt;E[1000005];
+int up[1000005],down[1000005];
+
+bool fail=0;
+
+pair&lt;int,int&gt; dfs(int x,int fa,int j){
+	map&lt;int,int&gt;mp;
+	for(auto [y,i]:E[x])if(y!=fa){
+		auto [a,b]=dfs(y,x,i);
+		if(a==-1||b==-1)return {-1,-1};
+		mp[a]++,mp[b]--;
+	}
+	mp[a[x]]++,mp[b[x]]--;
+	vector&lt;int&gt;add,del;
+	for(auto [w,cnt]:mp)if(cnt){
+		if(cnt&gt;0)while(cnt--)del.pb(w);
+		else{
+			cnt=-cnt;
+			while(cnt--)add.pb(w);
+		}
+	}
+	if(!j){
+		if(add.size()||del.size()){fail=1;return{-1,-1};}
+		return {0,0};
+	}else{
+		if(add.empty()&amp;&amp;del.empty()){
+			up[j]=down[j]=0;
+			return {0,0};
+		}else{
+			if(add.size()&gt;1||del.size()&gt;1){
+				fail=1;return{-1,-1};
+			}
+			up[j]=add[0],down[j]=del[0];
+			return {down[j],up[j]};
+		}
+	}
+}
+
+vector&lt;int&gt;fuck[1000005];
+bool buc[1000005];
+
+namespace Graph{
+	int fa[1000005];
+	int deg[1000005];
+	int u[1000005],v[1000005],sz;
+	void addedge(int x,int y){
+		u[++sz]=x,v[sz]=y;
+		deg[x]++,deg[y]++;
+	}
+	void clear(){
+		while(sz){
+			deg[u[sz]]=deg[v[sz]]=0;
+			sz--;
+		}
+	}
+	int find(int x){ if(x!=fa[x])fa[x]=find(fa[x]); return fa[x]; }
+	bool solve(int x,int y){
+		if(!sz)return x==y;
+		if(!deg[x]||!deg[y])return 0;
+
+		deg[x]++,deg[y]++;
+		for(int i=1;i&lt;=sz;i++) fa[u[i]]=u[i],fa[v[i]]=v[i];
+		for(int i=1;i&lt;=sz;i++){
+			fa[find(u[i])]=find(v[i]);
+		}
+
+		for(int i=1;i&lt;=sz;i++){
+			if(find(u[i])!=find(u[1])) return 0;
+			if(deg[u[i]]%2||deg[v[i]]%2) return 0;
+		}
+		return 1;
+	}
+}
+bool check(int x,int fa,int j){
+	fuck[x].clear();
+	vector&lt;int&gt;chk;
+	for(auto [y,i]:E[x]){
+		if(y!=fa){
+			if(!check(y,x,i)) return 0;
+			if(up[i]==down[i]){
+				chk.pb(y);
+				continue;
+			}
+		}
+	}
+	Graph::clear();
+	for(auto [y,i]:E[x]){
+		if(up[i]!=down[i]){
+			Graph::addedge(up[i],down[i]);
+			fuck[x].pb(up[i]),fuck[x].pb(down[i]);
+		}
+	}
+	if(!Graph::solve(a[x],b[x])){
+		return 0;
+	}
+	bool flg=1;
+	fuck[x].pb(a[x]),fuck[x].pb(b[x]);
+	for(int w:fuck[x]) buc[w]=1;
+	for(int y:chk){
+		bool hv=0;
+		for(int z:fuck[y])hv|=buc[z];
+		flg&amp;=hv;
+	}
+	for(int w:fuck[x]) buc[w]=0;
+	return flg;
+}
+void procedure(int testcase){
+	n=read();fail=0;
+	for(int i=1;i&lt;=n;i++)a[i]=read(),E[i].clear();
+	for(int i=1;i&lt;=n;i++)b[i]=read();
+	if(testcase==92){
+		cerr&lt;&lt;n&lt;&lt;endl;
+	}
+	if(n==1){ puts(&quot;YES&quot;); return; }
+	for(int i=1;i&lt;n;i++){
+		up[i]=down[i]=0;
+		int u=read(),v=read();
+		E[u].pb(v,i),E[v].pb(u,i);
+	}
+	dfs(1,0,0);
+	if(fail){ puts(&quot;NO&quot;);return; }
+	puts(check(1,0,0)?&quot;YES&quot;:&quot;NO&quot;);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=read();
+	// math_init();
+	for(int i=1;i&lt;=T;i++) procedure(i);
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
