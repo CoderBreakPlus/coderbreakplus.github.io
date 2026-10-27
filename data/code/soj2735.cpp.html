@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>soj2735.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>soj2735.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../soj2735.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-27 09:59:07
+// #pragma GCC optimize(3,&quot;inline&quot;)
+// #pragma GCC optimize(&quot;Ofast,unroll-loops&quot;)
+// #pragma GCC target(&quot;avx,avx2&quot;)
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+const int N=8005;
+int L,c[N],n,x[N];
+
+namespace DP{
+	const int M=8005;
+	int f[2][M][M],g[M][M],h[M][M];
+	vector&lt;int&gt;v2[M];
+
+	void main(){
+		for(int i=1;i&lt;=L;i++)v2[i].pb(0),c[i]=min(c[i],n+1);
+		for(int i=1;i&lt;=n;i++)v2[x[i]+1].pb(i);
+		for(int i=1;i&lt;=L;i++)v2[i].pb(n+1);
+
+		for(int i=1;i&lt;=L;i++){
+			int cnt=(int)v2[i].size()-2;
+			if(i&lt;L)cnt+=(int)v2[i+1].size()-2;
+			c[i]=min(c[i],cnt+1);
+		}
+
+		for(int i=0;i&lt;=c[1];i++)
+			memset(f[1][i],0xc0,sizeof(int)*2);
+		f[1][0][0]=0;
+		f[1][c[1]][1]=0;
+
+		for(int i=2,o=0;i&lt;=L;i++,o^=1){
+			int sz=(int)v2[i].size()-1;
+			for(int j=0;j&lt;=c[i];j++){
+				memset(f[o][j],0xc0,sizeof(int)*(sz+2));
+				memset(g[j],0xc0,sizeof(int)*(sz+2));
+				memset(h[j],0xc0,sizeof(int)*(sz+2));
+			}
+			for(int j=0;j&lt;=c[i-1];j++){
+				int low=v2[i-1].size();
+				int ptl=1,ptr=0;
+				for(int k=0;k&lt;low;k++){
+					if(f[o^1][j][k]&lt;-1e9)continue;
+					int l=k?v2[i-1][k-1]:0,r=k?v2[i-1][k]-1:0;
+
+					while(ptr&lt;=sz&amp;&amp;v2[i][ptr+1]&lt;=r)ptr++;
+					while(ptl&lt;=sz&amp;&amp;v2[i][ptl]&lt;=l)ptl++;
+
+					int cnt=sz-ptl;
+					if(cnt&lt;j)continue;
+
+					chkmax(f[o][0][0],f[o^1][j][k]);
+					int mx=min(ptr,sz-j);
+					chkmax(g[max(0,c[i]-sz+mx+j)][mx],f[o^1][j][k]+mx-1);
+
+					for(int x=ptl;x&lt;=min(sz-j,ptr+1);x++){
+						int t=v2[i][x];
+						chkmax(h[max(c[i]-sz+x+j,0)][x],f[o^1][j][k]+x-1);
+					}
+				}
+			}
+			for(int j=c[i];j&gt;=0;j--)
+				for(int k=sz;k&gt;=1;k--){
+					chkmax(f[o][j][k],g[j][k]);
+					if(k&gt;1)chkmax(g[max(j-1,0)][k-1],g[j][k]-1);
+				}
+			for(int j=0;j&lt;c[i];j++)
+				for(int k=0;k&lt;=sz;k++)chkmax(h[j+1][k],h[j][k]);
+			for(int j=0;j&lt;=c[i];j++)
+				for(int k=0;k&lt;=sz-c[i]+j;k++){
+					chkmax(f[o][j][k],h[j][k]);
+					if(k&lt;sz)chkmax(h[j][k+1],h[j][k]);
+				}
+		}
+		int ans=0;
+		for(int k=0;k&lt;(int)v2[L].size();k++)
+			chkmax(ans,f[L&amp;1][0][k]);
+		printf(&quot;%d\n&quot;,ans);
+	}
+}
+void procedure(){
+	L=read();
+	for(int i=1;i&lt;=L;i++) c[i]=read();
+	n=read();
+	for(int i=1;i&lt;=n;i++) x[i]=read();
+	reverse(x+1,x+n+1);
+	DP::main();
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
