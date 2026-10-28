@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>aalc001_x.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>aalc001_x.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../aalc001_x.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-10-28 07:39:35
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+int n,q,a[200005],g[200005],d[200005];
+
+struct Info{
+	int v,mn,mx;
+	Info(){}
+	Info(int a,int b,int c){v=a,mn=b,mx=c;}
+};
+Info operator+ (const Info &amp;A,const Info &amp;B){
+	if(A.v==B.v) return Info(A.v,min(A.mn,B.mn),max(A.mx,B.mx));
+	else return A.v&lt;B.v?A:B;
+}
+#define mid ((l+r)&gt;&gt;1)
+struct sgt{
+	int tag[800005];
+	Info t[800005];
+	void upd(int p,int v){ t[p].v+=v,tag[p]+=v; }
+	void pushup(int p){ t[p]=t[p&lt;&lt;1]+t[p&lt;&lt;1|1]; }
+	void pushdown(int p){
+		upd(p&lt;&lt;1,tag[p]),upd(p&lt;&lt;1|1,tag[p]);
+		tag[p]=0;
+	}
+	void update(int l,int r,int ql,int qr,int v,int p){
+		if(r&lt;ql||qr&lt;l)return;
+		if(ql&lt;=l&amp;&amp;r&lt;=qr){upd(p,v);return;}
+		pushdown(p);
+		update(l,mid,ql,qr,v,p&lt;&lt;1),update(mid+1,r,ql,qr,v,p&lt;&lt;1|1);
+		pushup(p);
+	}
+	void build(int l,int r,int p){
+		if(l==r){ t[p]=Info(d[l],l,l); return; }
+		build(l,mid,p&lt;&lt;1),build(mid+1,r,p&lt;&lt;1|1);
+		pushup(p);
+	}
+}s0,s1;
+
+struct zkw{
+	int m,t[800005],op;
+	int get(int x,int y){
+		if(!x||!y)return x^y;
+		if(!op)return a[x]&lt;a[y]?x:y;
+		else return a[x]&gt;a[y]?x:y;
+	}
+	void pushup(int p){ t[p]=get(t[p&lt;&lt;1],t[p&lt;&lt;1|1]); }
+	void init(){
+		m=1;
+		while(m&lt;=n+1)m&lt;&lt;=1;
+		for(int i=1;i&lt;=n;i++)t[m+i]=i;
+		for(int i=m-1;i&gt;=1;i--)pushup(i);
+	}
+	void upd(int x,int w){
+		for(t[x+=m]=w;x&gt;1;) pushup(x&gt;&gt;=1);
+	}
+	int qry(int l,int r){
+		int ret=0;
+		for(l+=m-1,r+=m+1;l+1&lt;r;l&gt;&gt;=1,r&gt;&gt;=1){
+			if(~l&amp;1) ret=get(ret,t[l^1]);
+			if( r&amp;1) ret=get(ret,t[r^1]);
+		}
+		return ret;
+	}
+}t0,t1;
+
+int w[200005]; ll ans;
+vector&lt;pair&lt;int,int&gt;&gt;vec;
+
+void perm_upd(int x,int v){
+	t0.upd(x,0),t1.upd(x,0);
+	w[x]+=v,ans+=v*a[x],s0.update(1,n,1,x,v,1),s1.update(1,n,1,x,-v,1);
+	if(w[x]&gt;-g[x]) t0.upd(x,x);
+	if(w[x]&lt;g[x]) t1.upd(x,x);
+}
+void temp_upd(int x,int v){ perm_upd(x,v),vec.pb(x,-v); }
+void clear(){
+	while(!vec.empty()){
+		auto [x,v]=vec.back();
+		perm_upd(x,v);
+		vec.pop_back();
+	}
+}
+void solve(int x,bool f=0){
+	int ori=w[x];
+	ll best=ans; int val=ori; 
+	for(int v=ori+1;v&lt;=g[x];v++){
+		temp_upd(x,1);
+		int L=1,R=f?x:n;		
+		
+		if(s1.t[1].v==-1) chkmax(L,s1.t[1].mx);
+		if(s0.t[1].v==0) chkmin(R,s0.t[1].mn-1);
+		int pos=t0.qry(L,R);if(!pos) break;
+		temp_upd(pos,-1);
+		if(ans&gt;best)best=ans,val=v;
+	}
+	clear();
+	for(int v=ori-1;v&gt;=-g[x];v--){
+		temp_upd(x,-1);
+		int L=1,R=f?x:n;		
+		if(s0.t[1].v==-1) chkmax(L,s0.t[1].mx);
+		if(s1.t[1].v==0) chkmin(R,s1.t[1].mn-1);
+		int pos=t1.qry(L,R);if(!pos) break;
+		temp_upd(pos,1);
+		if(ans&gt;best)best=ans,val=v;
+	}
+	clear();
+
+	if(ori==val)return;
+	if(ori&lt;val){
+		for(int v=ori+1;v&lt;=val;v++){
+			perm_upd(x,1);
+			int L=1,R=f?x:n;		
+			if(s1.t[1].v==-1) chkmax(L,s1.t[1].mx);
+			if(s0.t[1].v==0) chkmin(R,s0.t[1].mn-1);
+			int pos=t0.qry(L,R);assert(pos);
+			perm_upd(pos,-1);
+		}
+	}else{
+		for(int v=ori-1;v&gt;=val;v--){
+			perm_upd(x,-1);
+			int L=1,R=f?x:n;		
+			if(s0.t[1].v==-1) chkmax(L,s0.t[1].mx);
+			if(s1.t[1].v==0) chkmin(R,s1.t[1].mn-1);
+			int pos=t1.qry(L,R);assert(pos);
+			perm_upd(pos,1);
+		}
+	}
+}
+void procedure(){
+	n=read(),q=read();
+	for(int i=1;i&lt;=n;i++)a[i]=read();
+	for(int i=1;i&lt;=n;i++)g[i]=read();
+	d[1]=1e9;
+	for(int i=2;i&lt;=n;i++)d[i]=read();
+	s1.build(1,n,1);
+	s0.build(1,n,1);
+
+	t1.op=1; t0.init(),t1.init();
+
+	for(int i=1;i&lt;=n;i++)solve(i,1);
+	while(q--){
+		int i=read(),x=read();
+		ans-=a[i]*w[i]; a[i]=x; ans+=a[i]*w[i];
+		solve(i);
+		printf(&quot;%lld\n&quot;,ans);
+	}
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}
+/*
+可以。将第 \(i\) 种后缀操作定义为对 \([i+1,N]\) 加上 \(r_i-s_i\)，其中 \(p_i,q_i,r_i,s_i\ge0\)。设最终所有元素都等于自由变量 \(t\)，则原问题为
+
+\[
+\begin{aligned}
+\min\quad&amp;
+\sum_{j=1}^N g_j(p_j+q_j)
++\sum_{i=1}^{N-1}d_i(r_i+s_i)\\
+\text{s.t.}\quad&amp;
+B_j+p_j-q_j+\sum_{i&lt;j}(r_i-s_i)-t=0
+\qquad(1\le j\le N).
+\end{aligned}
+\]
+
+给第 \(j\) 个等式分配一个**不限制正负**的对偶变量 \(y_j\)。拉格朗日函数是
+
+\[
+\begin{aligned}
+L={}&amp;\sum_{j=1}^N B_jy_j-t\sum_{j=1}^Ny_j\\
+&amp;+\sum_{j=1}^N\bigl[(g_j+y_j)p_j+(g_j-y_j)q_j\bigr]\\
+&amp;+\sum_{i=1}^{N-1}
+\left[
+\left(d_i+\sum_{j=i+1}^Ny_j\right)r_i+
+\left(d_i-\sum_{j=i+1}^Ny_j\right)s_i
+\right].
+\end{aligned}
+\]
+
+要使它对原变量的下确界不是 \(-\infty\)，必须满足：
+
+- \(t\) 自由，因此 \(\sum_jy_j=0\)；
+- \(p_j,q_j\ge0\)，因此 \(-g_j\le y_j\le g_j\)；
+- \(r_i,s_i\ge0\)，因此 \(-d_i\le\sum_{j=i+1}^Ny_j\le d_i\)。
+
+所以**对偶问题**为
+
+\[
+\boxed{
+\begin{aligned}
+\max\quad&amp;\sum_{j=1}^NB_jy_j\\
+\text{s.t.}\quad&amp;
+\sum_{j=1}^Ny_j=0,\\
+&amp;|y_j|\le g_j &amp;&amp;(1\le j\le N),\\
+&amp;\left|\sum_{j=i+1}^Ny_j\right|\le d_i
+&amp;&amp;(1\le i&lt;N).
+\end{aligned}}
+\]
+
+进一步令前缀和
+\[
+z_i=\sum_{j=1}^iy_j,\qquad z_0=z_N=0.
+\]
+由于总和为零，后缀和限制就是 \(|z_i|\le d_i\)。目标函数分部求和得到
+
+\[
+\sum_{j=1}^NB_jy_j
+=\sum_{i=1}^{N-1}(B_i-B_{i+1})z_i.
+\]
+
+于是可以写成更简洁的形式：
+
+\[
+\boxed{
+\begin{aligned}
+f(B)=\max\quad&amp;
+\sum_{i=1}^{N-1}(B_i-B_{i+1})z_i\\
+\text{s.t.}\quad&amp;
+z_0=z_N=0,\\
+&amp;|z_i|\le d_i &amp;&amp;(1\le i&lt;N),\\
+&amp;|z_i-z_{i-1}|\le g_i &amp;&amp;(1\le i\le N).
+\end{aligned}}
+\]
+
+也就是：**选择一条高度受 \(d_i\) 限制、相邻高度差受 \(g_i\) 限制的折线，最大化相邻差分 \(B_i-B_{i+1}\) 对高度的加权和。**
+
+整数限制不会造成对偶间隙：原问题的等式相邻作差、消去 \(t\) 后，系数矩阵是全幺模的，因此整数 \(B\) 下线性规划松弛存在整数最优解。以上默认 \(d_i\ge0\)；若有负数，对偶会不可行，原问题也可能无下界。
+*/</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
