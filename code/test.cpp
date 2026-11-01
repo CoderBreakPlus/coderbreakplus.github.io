@@ -1,4 +1,4 @@
-// created time: 2026-10-22 08:04:48
+// created time: 2026-10-30 08:01:53
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,51 +29,23 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-const int N = 500000;
-int fac[N+5],inv[N+5];
-void math_init(){
-	fac[0]=inv[0]=1;
-	for(int i=1;i<=N;i++) fac[i]=1ll*fac[i-1]*i%mod;
-	inv[N]=qpow(fac[N],mod-2);
-	for(int i=N-1;i>=1;i--) inv[i]=1ll*inv[i+1]*(i+1)%mod;
-}
-inline int binom(int x,int y){
-	if(x<0 || y<0 || x<y) return 0;
-	return 1ll*fac[x]*inv[y]%mod*inv[x-y]%mod;
-}
-inline int perm(int x,int y){
-	if(x<0 || y<0 || x<y) return 0;
-	return 1ll*fac[x]*inv[x-y]%mod;
-}
 
-int n,p[45],a[45],b[45],ans;
-
-void dfs(int x){
-	if(x==n+1){
-		bool flg=1;
-		for(int i=1;i<=n;i++)b[i]=i;
-		for(int i=1;i<=n;i++)
-			swap(b[a[i]],b[i]);
-		for(int i=1;i<=n;i++)
-			flg&=(b[i]==p[i]);
-		ans+=flg;
-		if(flg){
-			for(int i=1;i<=n;i++) cout<<a[i]<<" "; cout<<endl;
-		}
-		return;
-	}
-	for(int i=1;i<=n;i++){
-		a[x]=i;
-		dfs(x+1);
-	}
-}
+int n = 6;
+int a[55],p[55];
+map<vector<int>,int>mp;
 void procedure(){
-	n=read();
-	for(int i=1;i<=n;i++)p[i]=read();
-	dfs(1);
-	printf("%d\n",ans);
-	// int iv=qpow(INV(n),n);
-	// printf("%d\n",(ull)ans*iv%mod);
+	for(int i=1;i<=n;i++)p[i]=i;
+	do{
+		for(int i=1;i<=n;i++)a[i]=i;
+		for(int i=1;i<=n;i++)
+			swap(a[p[i]],a[p[i]%n+1]);
+		mp[vector<int>(a+1,a+n+1)]++;
+		// for(int i=1;i<=n;i++)cout<<a[i]<<" ";cout<<endl;
+	}while(next_permutation(p+1,p+n+1));
+	for(auto [v,cnt]:mp){
+		for(int x:v) cout<<x<<" ";
+		cout<<"cnt="<<cnt<<endl;
+	}
 }
 int main(){
 	#ifdef LOCAL
@@ -81,7 +53,7 @@ int main(){
 		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
-	math_init();
+	// math_init();
 	while(T--) procedure();
 	return 0;
 }
