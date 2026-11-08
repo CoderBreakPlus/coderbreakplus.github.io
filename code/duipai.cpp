@@ -1,4 +1,4 @@
-// created time: 2026-11-06 16:05:22
+// created time: 2026-11-08 14:28:43
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,20 +29,18 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
-int n = 6;
+
 void procedure(){
-	cout<<n<<endl;
-	for(int i=1;i<=n;i++) cout<<rng(1,10)<<" "; cout<<endl;
-	for(int i=1;i<=n;i++) cout<<rng(1,10)<<" "; cout<<endl;
+	
 }
 int main(){
-	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
-	#endif
-	ll T=1;
-	// math_init();
-	while(T--) procedure();
-	return 0;
+	int T=10000;
+	while(T--){
+		system("./gen");
+		if(system("./agc036e")){
+			cout<<"WA"<<endl;
+			exit(0);
+		}
+		cout<<"AC"<<endl;
+	}
 }

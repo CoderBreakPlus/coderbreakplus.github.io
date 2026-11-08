@@ -1,4 +1,4 @@
-// created time: 2026-11-07 07:40:45
+// created time: 2026-11-08 13:56:59
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -9,16 +9,11 @@ typedef unsigned long long ull;
 #define pb emplace_back
 #define popcnt __builtin_popcountll
 const int mod = 998244353;
-char ibuf[1<<22],*ip=ibuf,*ie=ibuf;
-int gc(){
-    if(ip==ie){ie=ibuf+fread(ibuf,1,1<<22,stdin);ip=ibuf;if(ip==ie)return -1;}
-    return *ip++;
-}
-int read(){
-    int x=0;char c=gc();
-    while(c<'0'||c>'9')c=gc();
-    while(c>='0'&&c<='9')x=x*10+(c-'0'),c=gc();
-    return x;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
+	while(ch>='0' && ch<='9') x=x*10+ch-'0', ch=getchar();
+	return x*f;
 }
 inline int lg2(int x){ return 31^__builtin_clz(x); }
 inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
@@ -34,31 +29,24 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-
-int n,h[5000005],c[5000005];
-ll dp[5000005];
+int n;
+const int N = 35;
+bool dp[N][N][N][N][3];
 
 void procedure(){
-	n=read();
-	for(int i=1;i<=n;i++)h[i]=read();
-	for(int i=1;i<=n;i++)c[i]=read();
-	for(int i=1;i<=n;i++){
-		dp[i]=dp[i-1];
-		int mx=h[i];
-		for(int j=i-1;j>=1;j--){
-			chkmax(mx,h[j]);
-			if(max(h[i],h[j])==mx)
-				chkmin(dp[i],dp[j-1]+c[j]);
-		}
-		dp[i]+=c[i];
-		// cout<<"at "<<i<<" dp="<<dp[i]<<endl;
+	scanf("%s",s+1);n=strlen(s+1);
+	dp[0][0][0][0][0]=1;
+	dp[0][0][0][0][1]=1;
+	dp[0][0][0][0][2]=1;
+	
+	for(int i=0;i<n;i++){
+		for(int a=0;a<=i;a++)for(int b=0;a+b<=i;b++)
 	}
-	printf("%lld\n",dp[n]);
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.ans","w",stdout));
+		assert(freopen("test.out","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();
