@@ -38,7 +38,7 @@ int main(){
 	while(T--){
 		system("./gen");
 		system("./brute");
-		system("./agc040e");
+		system("./a");
 		if(system("diff -Zq test.out test.ans")){
 			cout<<"WA"<<endl;
 			exit(0);

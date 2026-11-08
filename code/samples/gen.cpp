@@ -1,4 +1,4 @@
-// created time: 2026-11-06 20:23:13
+// created time: 2026-11-06 16:05:22
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,28 +29,17 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-
-const int n=9;
-int a[n+5];
-
+mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
+ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+int n = 6;
 void procedure(){
-	for(int i=0;i<(1<<n-1);i++){
-		a[0]=0;
-		for(int j=0;j<n-1;j++)
-			a[j+1]=(a[j]+1+((i>>j)&1))%3;
-
-		int cnt[3]={0,0,0};
-		for(int j=0;j<n;j++)cnt[a[j]]++;
-		if(cnt[0]==cnt[1]&&cnt[1]==cnt[2]){
-			for(int j=0;j<n-1;j++) cout<<((i>>j)&1);
-			cout<<endl;
-		}
-	}	
+	cout<<n<<endl;
+	for(int i=1;i<=n;i++) cout<<rng(1,10)<<" "; cout<<endl;
+	for(int i=1;i<=n;i++) cout<<rng(1,10)<<" "; cout<<endl;
 }
 int main(){
 	#ifdef LOCAL
-		assert(freopen("test.in","r",stdin));
-		assert(freopen("test.out","w",stdout));
+		assert(freopen("test.in","w",stdout));
 	#endif
 	ll T=1;
 	// math_init();

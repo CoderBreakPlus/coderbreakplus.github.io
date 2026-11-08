@@ -1,4 +1,4 @@
-// created time: 2026-11-06 15:23:45
+// created time: 2026-11-07 07:40:45
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -9,11 +9,16 @@ typedef unsigned long long ull;
 #define pb emplace_back
 #define popcnt __builtin_popcountll
 const int mod = 998244353;
-inline ll read(){
-	ll x=0, f=1; int ch=getchar();
-	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
-	while(ch>='0' && ch<='9') x=x*10+ch-'0', ch=getchar();
-	return x*f;
+char ibuf[1<<22],*ip=ibuf,*ie=ibuf;
+int gc(){
+    if(ip==ie){ie=ibuf+fread(ibuf,1,1<<22,stdin);ip=ibuf;if(ip==ie)return -1;}
+    return *ip++;
+}
+int read(){
+    int x=0;char c=gc();
+    while(c<'0'||c>'9')c=gc();
+    while(c>='0'&&c<='9')x=x*10+(c-'0'),c=gc();
+    return x;
 }
 inline int lg2(int x){ return 31^__builtin_clz(x); }
 inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
@@ -30,35 +35,25 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-int n,a[200005],hz[200005];
-int b[200005],c[200005],ans;
+int n,h[5000005],c[5000005];
+ll dp[5000005];
 
-void dfs(int i){
-	if(i==n+1){
-		int tmp=0;
-
-		int pt=n;while(pt>=1&&!b[pt])pt--;
-		for(int i=1;i<=pt;i++)tmp+=(b[i]>b[i+1]);
-
-		pt=1;while(pt<=n&&!c[pt])pt++;
-		for(int i=pt;i<=n;i++)tmp+=(c[i]>c[i-1]);
-
-		chkmin(ans,tmp);
-		// if(tmp==2){
-		// 	for(int i=1;i<=n;i++) cout<<b[i]<<" "; cout<<endl;
-		// 	for(int i=1;i<=n;i++) cout<<c[i]<<" "; cout<<endl;
-		// }
-
-		return;
-	}
-	for(b[i]=0,c[i]=a[i];b[i]<=a[i];b[i]++,c[i]--)
-		dfs(i+1);
-}
 void procedure(){
-	n=ans=read();
-	for(int i=1;i<=n;i++)a[i]=read();
-	dfs(1);
-	printf("%d\n",ans);
+	n=read();
+	for(int i=1;i<=n;i++)h[i]=read();
+	for(int i=1;i<=n;i++)c[i]=read();
+	for(int i=1;i<=n;i++){
+		dp[i]=dp[i-1];
+		int mx=h[i];
+		for(int j=i-1;j>=1;j--){
+			chkmax(mx,h[j]);
+			if(max(h[i],h[j])==mx)
+				chkmin(dp[i],dp[j-1]+c[j]);
+		}
+		dp[i]+=c[i];
+		// cout<<"at "<<i<<" dp="<<dp[i]<<endl;
+	}
+	printf("%lld\n",dp[n]);
 }
 int main(){
 	#ifdef LOCAL
