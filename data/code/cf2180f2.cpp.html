@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cf2180f2.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>cf2180f2.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../cf2180f2.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-11-09 09:57:27
+using namespace std;
+
+using ll = long long;
+const int mod = 1000000007;
+const int K = 3 * 50 + 1;
+
+int qpow(ll a, ll b) {
+    ll ans = 1;
+    for (; b; b &gt;&gt;= 1, a = a * a % mod)
+        if (b &amp; 1) ans = ans * a % mod;
+    return ans;
+}
+
+const int Q1 = (mod + 1) / 4;
+const int Q2 = 2 * Q1, Q3 = 3 * Q1;
+const int down00 = 1ll * Q3 * Q2 % mod;
+const int down10 = 1ll * Q1 * (1 + Q1) % mod;
+const int down11 = 1ll * Q1 * Q1 % mod;
+const int downDown = 1ll * Q3 * Q3 % mod;
+const int right10 = 1ll * Q3 * Q1 % mod;
+
+using Vec = array&lt;int, K&gt;;
+struct Mat {
+    int a[K][K]{};
+};
+
+inline void addmod(int &amp;x, ll y) {
+    x = (x + y) % mod;
+}
+
+// Each row stores dp[1][1], dp[1][0], dp[0][0], in that order.
+// The omitted dp[0][1] is dp[0][0] / 2.
+void finishColumn(Vec &amp;v, int s) {
+    for (int i = 0; i + 3 &lt; s; i += 3) {
+        int down = v[i + 2];
+        addmod(v[i + 3], 1ll * down * down11);
+        addmod(v[i + 4], 1ll * down * down10);
+        addmod(v[i + 5], 1ll * down * downDown);
+    }
+    addmod(v[s], 1ll * v[s - 1] * (1 + Q2));
+}
+
+Vec nextColumn(const Vec &amp;v, int s) {
+    Vec w{};
+    w[s] = v[s];
+    for (int i = 0; i &lt; s; i += 3) {
+        w[i] = 1ll * v[i] * right10 % mod;
+        w[i + 1] = (1ll * v[i] * down00 + 1ll * v[i + 1] * right10) % mod;
+        w[i + 2] = 1ll * v[i + 1] * Q2 % mod;
+    }
+    finishColumn(w, s);
+    return w;
+}
+
+Mat square(const Mat &amp;a, int s) {
+    Mat b;
+    for (int i = 0; i &lt;= s; ++i)
+        for (int k = i; k &lt;= s; ++k) {
+            int x = a.a[i][k];
+            if (!x) continue;
+            for (int j = k; j &lt;= s; ++j)
+                addmod(b.a[i][j], 1ll * x * a.a[k][j]);
+        }
+    return b;
+}
+
+Vec multiply(const Vec &amp;v, const Mat &amp;a, int s) {
+    Vec w{};
+    for (int i = 0; i &lt;= s; ++i)
+        for (int j = i; j &lt;= s; ++j)
+            addmod(w[j], 1ll * v[i] * a.a[i][j]);
+    return w;
+}
+
+void procedure() {
+    int n;
+    ll m;
+    cin &gt;&gt; n &gt;&gt; m;
+    int s = 3 * n;
+
+    Vec v{};
+    v[0] = 1ll * Q3 * down11 % mod;
+    v[1] = 1ll * Q3 * down10 % mod;
+    v[2] = down00;
+    finishColumn(v, s);
+
+    Mat a;
+    for (int i = 0; i &lt;= s; ++i) {
+        Vec unit{};
+        unit[i] = 1;
+        Vec row = nextColumn(unit, s);
+        copy_n(row.begin(), s + 1, a.a[i]);
+    }
+
+    for (ll e = m - 1; e; ) {
+        if (e &amp; 1) v = multiply(v, a, s);
+        e &gt;&gt;= 1;
+        if (e) a = square(a, s);
+    }
+
+    int escape = v[s];
+    for (int i = 0; i &lt; s; i += 3)
+        addmod(escape, v[i] + v[i + 1]);
+    cout &lt;&lt; (mod + 1ll - escape) * qpow(4, (n + 1) * (m + 1)) % mod &lt;&lt; &#x27;\n&#x27;;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int T;
+    cin &gt;&gt; T;
+    while (T--) procedure();
+    return 0;
+}
+</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
