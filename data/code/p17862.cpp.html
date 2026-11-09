@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p17862.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p17862.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p17862.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-11-09 13:51:20
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+int n,m,k,mod;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+struct Barrett {
+	using u32 = uint32_t;
+	using u64 = uint64_t;
+	using u128 = __uint128_t;
+	u32 mod; u64 inv;
+	explicit Barrett(u32 p) : mod(p), inv(UINT64_MAX / p) {}
+	inline u32 reduce(u64 x) const {
+		u64 q = (u128)x * inv &gt;&gt; 64;
+		u64 r = x - q * mod;
+		return r &gt;= mod ? r - mod : r;
+	}
+	inline u32 mul(u32 a, u32 b) const {
+		return reduce((u64)a * b);
+	}
+}node(998244353);
+const int N=805;
+int inv[N],C[N][N];
+pair&lt;int,int&gt; pairs[N];
+inline void add(int &amp;a,ull b){ a=node.reduce(a+b); }
+void poly_exp(int *A,int *b,int n){
+	int a[N];
+	copy(A,A+n+1,a);
+	b[0]=1;
+	for(int i=1;i&lt;=n;i++){
+		__uint128_t now=0;
+		for(int j=1;j&lt;=i;j++)
+			now+=(ull)node.mul(C[i-1][j-1],a[j])*b[i-j];
+		b[i]=now%mod;
+	}
+}
+void poly_ln(int *A,int *b,int n){
+	int a[N];
+	copy(A,A+n+1,a);
+	b[0]=0;
+	for(int i=1;i&lt;=n;i++){
+		__uint128_t now=a[i];
+		for(int j=1;j&lt;i;j++)
+			now+=(ull)node.mul(mod-C[i-1][j-1],b[j])*a[i-j];
+		b[i]=now%mod;
+	}
+}
+void poly_mul(int *a,int *b,int *c,int n){
+	for(int i=n;i&gt;=0;i--){
+		__uint128_t s=0;
+		for(int j=0;j&lt;=i;j++)
+			s+=(ull)node.mul(C[i][j],a[j])*b[i-j];
+		c[i]=s%mod;
+	}
+}
+int c[N],cf[5][N],pcf[5][10][N],cur[N],fa[20],fac[N];
+inline int find(int x){ if(x!=fa[x])fa[x]=find(fa[x]);return fa[x]; }
+
+map&lt;array&lt;int,5&gt;,int&gt;mp;
+
+int calc(array&lt;int,5&gt; a){
+	if(mp.count(a))return mp[a];
+	memset(cur,0,sizeof(cur));
+	cur[0]=1;
+	for(int j=0;j&lt;=k;j++)
+		poly_mul(cur,pcf[j][a[j]],cur,m);
+	return mp[a]=cur[m];
+}
+int ff[1&lt;&lt;6][1&lt;&lt;4][4],fg[1&lt;&lt;4][20],cnt[1&lt;&lt;4];
+void procedure(){
+	n=read(),m=read(),mod=read();
+	node=Barrett(mod);
+	if(mod==1){puts(&quot;0&quot;);return;}
+	for(int i=0;i&lt;=m;i++){
+		C[i][0]=1;
+		for(int j=1;j&lt;=i;j++)
+			addmod(C[i][j]=C[i-1][j-1]+C[i-1][j]);
+	}
+	c[0]=1;
+	for(int i=1;i&lt;=m;i++)
+		c[i]=qpow(2,i-1)*c[i-1]%mod;
+	poly_ln(c,c,m);
+
+	k=n-m;
+	int e=0;
+	for(int x=0;x&lt;k;x++)
+		for(int y=x+1;y&lt;k;y++)
+			pairs[e++]={x,y};
+	for(int i=0;i&lt;=k;i++){
+		for(int j=1;j&lt;=m;j++)
+			cf[i][j]=(ull)c[j]*qpow(qpow(2,j)+mod-1,i)%mod;
+		poly_exp(cf[i],cf[i],m);
+		cf[i][0]=0;
+
+		pcf[i][0][0]=1;
+		for(int t=1;t&lt;=6;t++)
+			poly_mul(pcf[i][t-1],cf[i],pcf[i][t],m);
+	}
+	int ans=0;
+	int shabi=0;
+
+	vector&lt;int&gt;ord;
+	for(int t=1;t&lt;(1&lt;&lt;k);t++)ord.pb(t);
+	sort(ord.begin(),ord.end(),[](int x,int y){ return __builtin_popcount(x)&lt;__builtin_popcount(y); });
+	
+	for(int s=0;s&lt;(1&lt;&lt;e);s++){
+		for(int t:ord){
+			int now=0;
+			for(int i=0;i&lt;k;i++)fa[i]=i;
+			for(int x=0;x&lt;k;x++)
+				for(int y=x+1;y&lt;k;y++)if(s&gt;&gt;now++&amp;(t&gt;&gt;x)&amp;(t&gt;&gt;y)&amp;1)
+					fa[find(x)]=find(y);
+			for(int i=0;i&lt;k;i++)ff[s][t][i]=fa[i];
+		}
+	}
+	for(int i=0;i&lt;(1&lt;&lt;(1&lt;&lt;k));i+=2){
+		array&lt;int,5&gt;buc={0,0,0,0,0};
+		for(int j=0;j&lt;(1&lt;&lt;k);j++)
+			if((i&gt;&gt;j)&amp;1)buc[__builtin_popcount(j)]++;
+		int val=calc(buc);
+
+		for(int t:ord){
+			int cnt=k;
+			for(int x=0;x&lt;k;x++)fa[x]=x;
+			int fuck=i;
+			while(fuck){
+				int j=__builtin_ctz(fuck);
+				fa[cnt]=cnt;
+				int damn=j&amp;t;
+				while(damn){
+					int w=__builtin_ctz(damn);
+					fa[find(w)]=find(cnt);
+					damn^=(1&lt;&lt;w);
+				}
+				++cnt;
+				fuck^=(1&lt;&lt;j);
+			}
+			for(int x=0;x&lt;cnt;x++)fg[t][x]=fa[x];
+			::cnt[t]=cnt;
+		}
+		for(int s=0;s&lt;(1&lt;&lt;e);s++){
+			int tmp=0;
+			for(int t:ord){
+				int cnt=::cnt[t];
+				for(int x=0;x&lt;cnt;x++)fa[x]=fg[t][x];
+				for(int x=0;x&lt;k;x++) fa[find(ff[s][t][x])]=find(x);
+				bool flg=1;
+				int tt=__builtin_ctz(t);
+				for(int i=0;i&lt;cnt;i++)
+					if(i&gt;=k||(t&gt;&gt;i&amp;1))flg&amp;=(find(i)==find(tt));
+				if(flg){
+					tmp=__builtin_popcount(t);
+					break;
+				}
+			}
+			if(tmp)add(ans,(ull)val*(m-1+tmp));
+		}
+	}
+	int side1=(ull)c[m]*qpow(2,k*(k-1)/2)%mod;
+	int side2=(mod+m-qpow(2,m*k))%mod;
+	add(ans,(ull)side1*side2);
+
+	printf(&quot;%d\n&quot;,ans);
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
