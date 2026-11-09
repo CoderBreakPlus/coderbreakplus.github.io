@@ -1,4 +1,4 @@
-// created time: 2026-11-08 13:56:59
+// created time: 2026-11-09 07:51:52
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -29,18 +29,30 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-int n;
-const int N = 35;
-bool dp[N][N][N][N][3];
+int p[105],fa[105];
+int find(int x){ if(x!=fa[x])fa[x]=find(fa[x]);return fa[x]; }
 
+void solve(int n){
+	vector<int>buc(n+1,0);
+	for(int i=0;i<(1<<n-1);i++){
+		int L=0,R=n+1;
+		for(int j=0;j<n-1;j++){
+			if((~i>>j)&1)p[++L]=j+1;
+			else p[--R]=j+1;
+		}
+		p[++L]=n;
+		for(int j=1;j<=n;j++)fa[j]=j;
+		for(int j=1;j<=n;j++)fa[find(p[j])]=find(j);
+		int cnt=0;
+		for(int j=1;j<=n;j++)cnt+=(find(j)==j);
+		buc[cnt]++;
+	}
+	for(int i=1;i<=n;i++)printf("%d ",buc[i]);
+	puts("");fflush(stdout);
+}
 void procedure(){
-	scanf("%s",s+1);n=strlen(s+1);
-	dp[0][0][0][0][0]=1;
-	dp[0][0][0][0][1]=1;
-	dp[0][0][0][0][2]=1;
-	
-	for(int i=0;i<n;i++){
-		for(int a=0;a<=i;a++)for(int b=0;a+b<=i;b++)
+	for(int n=1;n<=27;n++){
+		solve(n);
 	}
 }
 int main(){
