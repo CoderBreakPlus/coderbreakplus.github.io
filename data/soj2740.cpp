@@ -1,4 +1,4 @@
-// created time: 2026-06-09 13:54:23
+// created time: 2026-11-09 19:44:03
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -8,7 +8,7 @@ typedef unsigned long long ull;
 #define mkp make_pair
 #define pb emplace_back
 #define popcnt __builtin_popcountll
-const int mod = 1e9+7;
+const int mod = 998244353;
 inline ll read(){
 	ll x=0, f=1; int ch=getchar();
 	while(ch<'0' || ch>'9') { if(ch=='-') f=-1; ch=getchar(); }
@@ -29,25 +29,32 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-
+const int M=60;
 int n;
+ull a[1000005];
 
-struct Node{
-	int cl,vl,cr,vr,len;
-	ll val;
-	Node(int len,int c){
-		if(len==vl) 
+ull val[64];
+int pos[64],pos2[64];
+
+void procedure(){
+	n=read();
+	for(int i=1;i<=n;i++)a[i]=read();
+
+	for(int i=1;i<=n;i++){
+		for(int x=M-1;x>=0;x--){
+			if((~a[i]>>x)&1)continue;
+
+			
+		}
 	}
-}t[10000005];
-int lc[10000005],rc[10000005];
-
-inline void merge(const &Node A,const &Node B,Node &C){
-	
 }
-void pushup(int x,int l,int r){
-	int mid=(l+r)>>1;
-	t[]
-}
-int maintenance_costs_sum(vector<int>u,vector<int>v,vector<int>w){
-	
+int main(){
+	#ifdef LOCAL
+		assert(freopen("test.in","r",stdin));
+		assert(freopen("test.out","w",stdout));
+	#endif
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
 }
