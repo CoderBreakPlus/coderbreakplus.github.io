@@ -1,4 +1,4 @@
-// created time: 2026-11-09 19:44:03
+// created time: 2026-11-10 18:43:26
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,23 +30,70 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 const int M=60;
-int n;
-ull a[1000005];
 
-ull val[64];
-int pos[64],pos2[64];
+int n,ord[M+5],buc[M+5];
+ull a[1000005],b[M+5],msk[M+5];
+int pos[M+5],id[M+5],vid[M+5];
 
+int pre[1000005];
 void procedure(){
 	n=read();
-	for(int i=1;i<=n;i++)a[i]=read();
-
+	ll ans=0;
+	int lst=0,tl=0;
 	for(int i=1;i<=n;i++){
-		for(int x=M-1;x>=0;x--){
-			if((~a[i]>>x)&1)continue;
-
-			
+		a[i]=read();
+		if(!a[i]){
+			ans+=(++lst);
+			continue;
 		}
+		int x=-1,p=0;
+		for(int o=0;o<=M;o++)
+			if(!buc[o]){ x=o;break; }
+
+		ull val=a[i],_msk=(1ull<<x);
+		ord[++tl]=i; buc[x]=i;
+
+		// msk: 所代表的线性基编号集合
+		// pos: 上一个代替位置
+		// id: 当前点集对应的集合的最小编号点
+		// buc[id[o]] 对应的是原序列真实位置 
+
+		bool ins=0;
+		for(int o=0;o<=M;o++){
+			if((~val>>o)&1)continue;
+			if(!b[o]){
+				b[o]=val,msk[o]=_msk,id[o]=x,pos[o]=p;
+				ins=1; break;
+			}else{
+				if(buc[x]>buc[id[o]])
+					swap(b[o],val),swap(msk[o],_msk),swap(id[o],x),swap(pos[o],p);
+				val^=b[o],_msk^=msk[o];
+			}
+		}
+		if(!ins){
+			for(int o=0;o<=M;o++)
+				if(msk[o]>>x&1) msk[o]^=_msk;
+			_msk^=(1ull<<x);
+			for(int o=0;o<=M;o++)
+				if(b[o]) vid[id[o]]=o;
+			for(int o=0;o<=M;o++)if(_msk>>o&1)
+				chkmax(pos[vid[o]],buc[x]);
+			remove(ord+1,ord+tl+1,buc[x]); tl--;
+			buc[x]=0;
+		}
+		for(int o=0;o<=M;o++)if(b[o]){
+			pre[buc[id[o]]]=pos[o];
+		}
+
+		int mx=i; lst=0;
+		for(int j=tl;j>=1;j--){
+			int x=ord[j],y=pre[x];
+			chkmin(mx,y);
+			lst+=max(0,mx-ord[j-1]);
+		}
+		ans+=lst;
 	}
+	printf("%lld\n",ans);
 }
 int main(){
 	#ifdef LOCAL
