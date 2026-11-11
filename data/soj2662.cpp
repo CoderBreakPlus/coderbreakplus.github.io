@@ -1,5 +1,9 @@
-// created time: 2026-11-08 14:24:52
+// created time: 2026-11-11 08:52:20
 #include<bits/stdc++.h>
+#include"basis.h"
+#ifdef LOCAL
+	#include"grader.cpp"
+#endif
 using namespace std;
 typedef long long ll;
 typedef unsigned long long ull;
@@ -29,21 +33,41 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
-ll rng(ll x,ll y){ return x+rnd()%(y-x+1); }
+const int B=8,V=64;
+const int M=V/B;
 
-int n = rng(10,20);
+ull b[V];
 
-void procedure(){	
-	for(int i=1;i<=n;i++)putchar(rng('A','C'));
-	puts("");	
+ull pre[M][1<<B];
+int bit[M][1<<B];
+void build(int x){
+	for(int i=0;i<(1<<B);i++){
+		bit[x][i]=-1;
+		ull val=(ull)i<<(B*x);
+		while(val){
+			int j=__builtin_ctzll(val);
+			if(j>=B*(x+1))break;
+			if(!b[j]){ bit[x][i]=j; break; }
+			val^=b[j];
+		}
+		pre[x][i]=val^(ull)i<<(B*x);
+	}
 }
-int main(){
-	#ifdef LOCAL
-		assert(freopen("test.in","w",stdout));
-	#endif
-	ll T=1;
-	// math_init();
-	while(T--) procedure();
+void init_basis(){
+	for(int i=0;i<V;i++)b[i]=0;
+	for(int x=0;x<M;x++)build(x);
+}
+bool insert_number(ull v){
+	if(!v) return 0;
+	#pragma GCC unroll 8
+	for(int x=0;x<M;x++){
+		int ins=(v>>(B*x))&((1<<B)-1);
+		v^=pre[x][ins];
+		if(~bit[x][ins]){
+			b[bit[x][ins]]=v;
+			build(x);
+			return 1;
+		}
+	}
 	return 0;
 }
