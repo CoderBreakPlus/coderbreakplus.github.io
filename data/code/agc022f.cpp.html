@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>agc022f.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>agc022f.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../agc022f.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-11-11 20:30:32
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+#define ll long long
+#define MP make_pair
+mt19937 rnd(time(0));
+const int MAXN=55;
+const int MOD=1e9+7; 
+ll ksm(ll a,int b){ll r=1;while(b){if(b&amp;1)r=r*a%MOD;a=a*a%MOD,b&gt;&gt;=1;}return r;} 
+ll fac[MAXN],inf[MAXN];
+ll f[MAXN][MAXN][MAXN];
+int n;
+int main(){
+	ios::sync_with_stdio(false);
+	cin&gt;&gt;n;
+	fac[0]=inf[0]=1;
+	for(int i=1;i&lt;MAXN;i++) inf[i]=ksm(fac[i]=fac[i-1]*i%MOD,MOD-2);
+	auto add=[&amp;](ll &amp;x,ll y){x+=y;if(x&gt;=MOD)x-=MOD;}; 
+	for(int i=n;i&gt;=0;i--){
+		f[i][0][0]=1;
+		for(int a=0;a&lt;=n;a++)
+			for(int b=0;b&lt;=n;b++)if(a+b&gt;0&amp;&amp;i!=0||a+b==1&amp;&amp;i==0){
+				for(int j=0;a+b+j&lt;=n;j++)
+					for(int k=0;k&lt;=j;k++)if(f[i+1][j][k]){
+						if(k&lt;=b){
+							int A=a+k,B=b-k;
+							if(A&gt;=B) add(f[i][j+a+b][A-B],f[i+1][j][k]*inf[a]%MOD*inf[b]%MOD); 
+						}
+						if(k&amp;&amp;k&lt;=a){
+							int A=a-k,B=b+k;
+							if(A&gt;=B) add(f[i][j+a+b][A-B],f[i+1][j][k]*inf[a]%MOD*inf[b]%MOD);   
+						} 
+					}
+			}
+	}
+	cout&lt;&lt;f[0][n][1]*fac[n]%MOD;
+	return 0;	
+}
+/* brute code:
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+#define ll long long
+#define MP make_pair
+mt19937 rnd(time(0));
+const int MAXN=55;
+const int MOD=1e9+7;
+ll ksm(ll a,int b){ll r=1;while(b){if(b&amp;1)r=r*a%MOD;a=a*a%MOD,b&gt;&gt;=1;}return r;} 
+ll fac[MAXN],inf[MAXN];
+int n;ll ans=0;
+int c[MAXN][2],d[MAXN][2];
+void check(int m){
+	ll cse=fac[n];
+	memcpy(d,c,sizeof(c));
+	for(int i=0;i&lt;=m;i++) cse=cse*inf[d[i][0]]%MOD*inf[d[i][1]]%MOD;
+	for(int i=m;i&gt;=1;i--){
+		int t=min(d[i][0],d[i][1]);
+		d[i][0]-=t,d[i][1]-=t;
+		if(d[i][0]&gt;d[i-1][0]||d[i][1]&gt;d[i-1][1]) return;
+		if(d[i][0]){
+			d[i-1][0]-=d[i][0];d[i-1][1]+=d[i][0];
+		}else{
+			d[i-1][1]-=d[i][1];d[i-1][0]+=d[i][1];
+		}
+	}
+	ans+=cse;
+}
+void dfs(int p,int les){
+	if(les==0) {check(p-1);return;} 
+	for(int i=0;i&lt;=les;i++)
+		for(int j=0;j&lt;=les;j++)
+			if(i+j&lt;=les&amp;&amp;(i+j!=0&amp;&amp;p||!p&amp;&amp;i+j==1)){
+				c[p][0]=i;c[p][1]=j;
+				dfs(p+1,les-i-j);
+			}
+	return;
+}
+int main(){
+	ios::sync_with_stdio(false);
+	fac[0]=inf[0]=1;
+	for(int i=1;i&lt;MAXN;i++) inf[i]=ksm(fac[i]=fac[i-1]*i%MOD,MOD-2);
+	cin&gt;&gt;n;
+	if(n&gt;=15) assert(0);
+	dfs(0,n);
+	cout&lt;&lt;ans%MOD*ksm(2,MOD-2)%MOD&lt;&lt;endl;
+	return 0;
+}
+
+
+*/</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
