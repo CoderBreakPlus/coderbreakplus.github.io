@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>zr3712.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>zr3712.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../zr3712.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define pb emplace_back
+const int mod=1e9+7,N=1e6;
+
+int fac[1000005],inv[1000005];
+inline int qpow(int a,int b){
+	int ans=1,base=a;
+	while(b){
+		if(b&amp;1)ans=(ull)ans*base%mod;
+		base=(ull)base*base%mod;
+		b&gt;&gt;=1;
+	}
+	return ans;
+}
+void icantwait(){
+	fac[0]=1;
+	for(int i=1;i&lt;=N;i++)fac[i]=(ull)fac[i-1]*i%mod;
+	inv[N]=qpow(fac[N],mod-2);
+	for(int i=N-1;i&gt;=0;i--)inv[i]=(ull)inv[i+1]*(i+1)%mod;
+}
+inline int binom(int x,int y){
+	if(x&lt;0||y&lt;0||x&lt;y)return 0;
+	return (ull)fac[x]*inv[x-y]%mod*inv[y]%mod;
+}
+inline ll read(){
+	ll x;scanf(&quot;%lld&quot;,&amp;x);return x;
+}
+template&lt;typename T&gt;void chkmax(T &amp;A,const T &amp;B){ A=max(A,B); }
+template&lt;typename T&gt;void addmod(T &amp;A){ if(A&gt;=mod)A-=mod; }
+
+int n,vis[500005],son[500005],sz[500005];
+int cs[500005][3],ct[500005][3];
+int ds[500005][3],dt[500005][3];
+
+int ts[3],tt[3];
+
+vector&lt;int&gt; E[500005];
+char s[500005],t[500005];
+
+void dfs(int x,int fa){
+	sz[x]=1;
+	for(int y:E[x])if(y!=fa){
+		vis[y]=vis[x]^1;
+		dfs(y,x);
+		sz[x]+=sz[y];
+		if(sz[y]&gt;sz[son[x]])son[x]=y;
+	}
+}
+int tot;
+int v1,v2,iv2;
+int orig_H(int c1,int c2){
+	int ans=0;
+	for(int i=0;i&lt;=c1;i++)
+		ans=(ans+(ull)binom(c2,i)*binom(v2-c2,v1-i))%mod;
+	return ans;
+}
+struct Node{
+	int c1,c2,ans;
+	void init(){
+		c1=c2=0;
+		ans=orig_H(c1,c2);
+	}
+	void add_c1(){
+		c1++;
+		ans=(ans+(ull)binom(c2,c1)*binom(v2-c2,v1-c1))%mod;
+	}
+	void del_c1(){
+		ans=(ans+(ull)(mod-binom(c2,c1))*binom(v2-c2,v1-c1))%mod;
+		c1--;
+	}
+	void add_c2(){
+		ans=(ans+(ull)(mod-binom(c2,c1))*binom(v2-c2-1,v1-c1-1))%mod;
+		c2++;
+	}
+	void del_c2(){
+		c2--;
+		ans=(ans+(ull)binom(c2,c1)*binom(v2-c2-1,v1-c1-1))%mod;
+	}
+	int qry(int x,int y){
+		while(c1&lt;x)add_c1();
+		while(c1&gt;x)del_c1();
+		while(c2&lt;y)add_c2();
+		while(c2&gt;y)del_c2();
+		return ans;
+	}
+}DS;
+void solve(int x,int fa){
+	cs[x][s[x]-&#x27;0&#x27;]++;
+	ct[x][t[x]-&#x27;0&#x27;]++;
+	for(int y:E[x])if(y!=fa&amp;&amp;y!=son[x]){
+		solve(y,x);
+		for(int o:{0,1,2})
+			cs[x][o]+=cs[y][o],ct[x][o]+=ct[y][o];
+	}
+	if(son[x]){
+		int y=son[x];
+		solve(y,x);
+		for(int o:{0,1,2})
+			cs[x][o]+=cs[y][o],ct[x][o]+=ct[y][o];
+	}
+	for(int o:{0,1,2})
+		ds[x][o]=ts[o]-cs[x][o],
+		dt[x][o]=tt[o]-ct[x][o];
+	if(fa){
+		int c2=cs[x][2]+ct[x][2],c1=ct[x][2]-cs[x][1]+ct[x][1];
+		int cf1=((ull)v1*c2+(ull)(mod-v2)*(c1+mod))%mod*(binom(v2,v1)+2ull*(mod-DS.qry(c1,c2)))%mod;
+		int cf2=2ull*(c2+mod-c1)*(v1+mod-c1)%mod*binom(c2,c1)%mod*binom(v2-c2,v1-c1)%mod;
+		tot=(tot+(ull)(cf1+cf2)*iv2)%mod;
+	}
+}
+void solve2(int x,int fa){
+	cs[x][s[x]-&#x27;0&#x27;]++;
+	ct[x][t[x]-&#x27;0&#x27;]++;
+	for(int y:E[x])if(y!=fa){
+		solve2(y,x);
+		for(int o:{0,1,2})
+			cs[x][o]+=cs[y][o],ct[x][o]+=ct[y][o];
+	}
+	int d=cs[x][0]-ct[x][0];
+	addmod(tot+=max(d,-d));
+}
+void procedure(){
+	n=read();
+	for(int i=1;i&lt;n;i++){
+		int u=read(),v=read();
+		E[u].pb(v),E[v].pb(u);
+	}
+	scanf(&quot;%s&quot;,s+1);
+	scanf(&quot;%s&quot;,t+1);
+	dfs(1,0);
+	for(int i=1;i&lt;=n;i++){
+		if(s[i]!=&#x27;?&#x27;)s[i]^=vis[i];else s[i]=&#x27;2&#x27;;
+		if(t[i]!=&#x27;?&#x27;)t[i]^=vis[i];else t[i]=&#x27;2&#x27;;
+		ts[s[i]-&#x27;0&#x27;]++;
+		tt[t[i]-&#x27;0&#x27;]++;
+	}
+	v2=ts[2]+tt[2];
+	iv2=qpow(v2,mod-2);
+	v1=tt[2]-ts[1]+tt[1];
+	DS.init();
+	if(v2){
+		solve(1,0);
+	}else{
+		if(ts[0]!=tt[0]||ts[1]!=tt[1]){
+			puts(&quot;0&quot;);
+			return;
+		}
+		solve2(1,0);
+	}
+	printf(&quot;%d\n&quot;,tot);
+}
+int main(){
+	assert(freopen(&quot;putao.in&quot;,&quot;r&quot;,stdin));
+	assert(freopen(&quot;putao.out&quot;,&quot;w&quot;,stdout));
+	icantwait(); // I can&#x27;t wait!!!!
+	procedure();
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
