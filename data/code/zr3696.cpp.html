@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>zr3696.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>zr3696.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../zr3696.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-11-10 09:10:14
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+const int N=500005;
+int n,q,a[N],fa[N],zero[N];
+vector&lt;int&gt;E[N];
+pair&lt;ll,int&gt;f[N],g[N];
+
+int val(int x){ return zero[x]?0:f[x].se; }
+int factor(int y){
+	int v=val(y)+(f[y].fi==0);
+	addmod(v);return v;
+}
+void link(int x,int y){
+	if(f[y].fi&lt;0) return;
+	f[x].fi+=f[y].fi;
+	int v=factor(y);
+	if(v==0) ++zero[x];
+	else f[x].se=(ull)f[x].se*v%mod;
+}
+void cut(int x,int y){
+	if(f[y].fi&lt;0) return;
+	f[x].fi-=f[y].fi;
+	int v=factor(y);
+	if(v==0) --zero[x];
+	else if(v!=1) f[x].se=(ull)f[x].se*INV(v)%mod;
+}
+void dfs(int x,int fa){
+	f[x]={a[x],1}; ::fa[x]=fa;
+	for(int y:E[x])if(y!=fa){
+		dfs(y,x);
+		link(x,y);
+	}
+}
+void dfs2(int x){
+	for(int y:E[x])if(y!=fa[x])cut(x,y);
+	g[x]={f[x].fi,val(x)};
+	for(int y:E[x])if(y!=fa[x])link(x,y);
+	for(int y:E[x])if(y!=fa[x]){
+		cut(x,y),link(y,x);
+		dfs2(y);
+		cut(y,x),link(x,y);
+	}
+}
+int m,lsh[N],tot;
+struct Node{
+	ll b;
+	int k,lc,rc,val;
+}t[N*20];
+#define mid ((l+r)&gt;&gt;1)
+void pushup(int p){
+	t[p].b=t[t[p].lc].b+t[t[p].rc].b;
+	t[p].k=t[t[p].lc].k+t[t[p].rc].k;
+}
+int merge(int p,int q,int l,int r){
+	if(!p||!q) return p|q;
+	if(l==r){
+		t[p].b+=t[q].b;
+		t[p].k+=t[q].k;
+		t[p].val=(ull)t[p].val*t[q].val%mod;
+	}else{
+		t[p].lc=merge(t[p].lc,t[q].lc,l,mid);
+		t[p].rc=merge(t[p].rc,t[q].rc,mid+1,r);
+		pushup(p);
+	}
+	return p;
+}
+int getval(int p,int pos){
+	int l=1,r=m;
+	while(p &amp;&amp; l&lt;r){
+		if(pos&lt;=mid) p=t[p].lc,r=mid;
+		else p=t[p].rc,l=mid+1;
+	}
+	return t[p].val;
+}
+int solve(int p,int l,int r,ll b,int k){
+	if(!p){
+		p=++tot;
+		t[p].val=1;
+	}
+	if(l==r){
+		t[p].b+=b,t[p].k+=k;
+		ll val=t[p].b+(ll)t[p].k*lsh[l];
+		if(val&lt;0) return 0;
+		else if(val==0) addmod(t[p].val+=1);
+		return p;
+	}
+	ll mb=b+t[t[p].lc].b;
+	int mk=k+t[t[p].lc].k;
+	if(mb+(ll)mk*lsh[mid]&gt;=0) t[p].lc=solve(t[p].lc,l,mid,b,k);
+	else{
+		t[p].lc=0;
+		t[p].rc=solve(t[p].rc,mid+1,r,mb,mk);
+	}
+	pushup(p);
+	return p;
+}
+vector&lt;pair&lt;int,int&gt;&gt; qry[N];
+int ans[N];
+int dfs3(int x){
+	int rt=0;
+	for(int y:E[x])if(y!=fa[x])
+		rt=merge(rt,dfs3(y),1,m);
+	for(auto [w,id]:qry[x]){
+		int pos=lower_bound(lsh+1,lsh+m+1,w)-lsh;
+		ans[id]=(ull)g[x].se*getval(rt,pos)%mod;
+	}
+	return solve(rt,1,m,a[x],1);
+}
+void procedure(){
+	n=read(),q=read();
+	for(int i=1;i&lt;=n;i++)a[i]=read();
+	for(int i=1;i&lt;n;i++){
+		int u=read(),v=read();
+		E[u].pb(v),E[v].pb(u);
+	}
+	dfs(1,0);
+	dfs2(1);
+
+	for(int i=1;i&lt;=q;i++){
+		int u=read(),x=read();
+		qry[u].pb(x,i);
+		lsh[i]=x;
+	}
+	sort(lsh+1,lsh+q+1);
+	m=unique(lsh+1,lsh+q+1)-lsh-1;
+
+	t[0].val=1;
+	dfs3(1);
+	for(int i=1;i&lt;=q;i++) printf(&quot;%d\n&quot;,ans[i]);
+}
+int main(){
+	assert(freopen(&quot;subsidy.in&quot;,&quot;r&quot;,stdin));
+	assert(freopen(&quot;subsidy.out&quot;,&quot;w&quot;,stdout));
+	ll T=1;
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}
+</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
