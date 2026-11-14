@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p3705.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p3705.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p3705.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-11-14 14:35:00
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef unsigned long long ull;
+const int mod=100003;
+int n,k,a[100005],dp[100005];
+inline int qpow(int a,int b){
+    int ans=1,base=a;
+    while(b){
+        if(b&amp;1)ans=(ull)ans*base%mod;
+        base=(ull)base*base%mod;
+        b&gt;&gt;=1;
+    }
+    return ans;
+}
+int K[100005],B[100005];
+int main(){
+    freopen(&quot;test.in&quot;,&quot;r&quot;,stdin);
+    freopen(&quot;test.out&quot;,&quot;w&quot;,stdout);
+    ios::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    cin&gt;&gt;n&gt;&gt;k;
+    for(int i=1;i&lt;=n;i++)cin&gt;&gt;a[i];
+    for(int i=n;i&gt;=1;i--)
+        for(int j=2*i;j&lt;=n;j+=i)a[i]^=a[j];
+    int cnt=0,ans;
+    for(int i=1;i&lt;=n;i++)cnt+=a[i];
+    if(cnt&lt;=k){
+        ans=cnt;
+    }else{
+        K[n]=1,B[n]=1;
+        for(int i=n-1;i&gt;k;i--){
+            int iv=qpow((n+(ull)(mod-n+i)*K[i+1])%mod, mod-2);
+            K[i]=(ull)i*iv%mod;
+            B[i]=(n+(ull)(n-i)*B[i+1]%mod)*iv%mod;
+        }
+        dp[k]=k;
+        for(int i=k+1;i&lt;=cnt;i++){
+            dp[i]=((ull)dp[i-1]*K[i]+B[i])%mod;
+        }
+        ans=dp[cnt];
+    }
+    for(int i=1;i&lt;=n;i++) ans=(ull)ans*i%mod;
+    printf(&quot;%d\n&quot;,ans);
+    return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
