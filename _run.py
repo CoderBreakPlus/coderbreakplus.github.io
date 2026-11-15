@@ -1658,7 +1658,25 @@ def scan_problem_lists(plist_dir, groups):
     return scan_named_lists(plist_dir, groups, with_remarks=True)
 
 
+def normalize_plan_configs(plan_dir):
+    """将计划配置中的英文字母转为小写，保留 AT_ 开头的标识符。"""
+    if not os.path.isdir(plan_dir):
+        return
+    for path in sorted(Path(plan_dir).rglob('*.conf')):
+        # 按字节处理，保留 UTF-8 BOM、中文和原有换行格式。
+        original = path.read_bytes()
+        normalized = re.sub(
+            rb'[A-Za-z0-9_]+',
+            lambda m: m.group(0) if m.group(0).startswith(b'AT_') else m.group(0).lower(),
+            original,
+        )
+        if normalized != original:
+            path.write_bytes(normalized)
+            print(f"✅ 已规范化 Plan 配置: {path}")
+
+
 def scan_plans(plan_dir, groups):
+    normalize_plan_configs(plan_dir)
     return scan_named_lists(plan_dir, groups)
 
 def build_problem_lists_index(plists, out_path, base_url=""):
