@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p9623.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p9623.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p9623.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-11-16 07:44:16
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define fi first
+#define se second
+#define mkp make_pair
+#define pb emplace_back
+#define popcnt __builtin_popcountll
+const int mod = 998244353;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+inline int lg2(int x){ return 31^__builtin_clz(x); }
+inline ll lg2(ll x){ return 63^__builtin_clzll(x); }
+template&lt;typename T&gt;inline void addmod(T &amp;x){ if(x &gt;= mod) x -= mod; }
+template&lt;typename T&gt;inline void chkmax(T &amp;a,T b){ a=max(a,b); }
+template&lt;typename T&gt;inline void chkmin(T &amp;a,T b){ a=min(a,b); }
+inline ll qpow(ll a,ll b){
+	ll ans=1, base=a;
+	while(b){
+		if(b&amp;1) ans=ans*base%mod;
+		base=base*base%mod; b&gt;&gt;=1;
+	}
+	return ans;
+}
+inline ll INV(ll x){ return qpow(x, mod-2); }
+
+int n,m,q,l[50005],r[50005],k[50005];
+char s[50005];
+
+int sa[50005],rk[50005],x[50005],y[50005],buc[50005];
+int ht[50005];
+
+void getsa(){
+	m=127;
+	memset(buc,0,sizeof(buc));
+	for(int i=1;i&lt;=n;i++)buc[x[i]=s[i]]++;
+	for(int i=1;i&lt;=m;i++)buc[i]+=buc[i-1];
+	for(int i=n;i&gt;=1;i--)sa[buc[x[i]]--]=i;
+
+	for(int p=1;p&lt;n;p&lt;&lt;=1){
+		int w=0;
+		for(int i=n-p+1;i&lt;=n;i++) y[++w]=i;
+		for(int i=1;i&lt;=n;i++)
+			if(sa[i]&gt;p) y[++w]=sa[i]-p;
+		memset(buc,0,sizeof(buc));
+		for(int i=1;i&lt;=n;i++)buc[x[i]]++;
+		for(int i=1;i&lt;=m;i++)buc[i]+=buc[i-1];
+
+		for(int i=n;i&gt;=1;i--) sa[buc[x[y[i]]]--]=y[i];
+		swap(x,y);
+		x[sa[1]]=m=1;
+		for(int i=2;i&lt;=n;i++){
+			if(max(sa[i],sa[i-1])+p&lt;=n&amp;&amp;y[sa[i]]==y[sa[i-1]]&amp;&amp;y[sa[i]+p]==y[sa[i-1]+p])
+				x[sa[i]]=m;
+			else
+				x[sa[i]]=++m;
+		}
+	}
+	for(int i=1;i&lt;=n;i++)rk[sa[i]]=i;
+	for(int i=1,k=0;i&lt;=n;i++){
+		if(rk[i]==1){
+			ht[1]=k=0;
+			continue;
+		}
+		if(k) k--;
+		while(s[i+k]==s[sa[rk[i]-1]+k])k++;
+		ht[rk[i]]=k;
+	}
+}
+
+int st[16][50005];
+inline int lcp(int a,int b){
+	if(a==b)return n-a+1;
+	int l=rk[a],r=rk[b];
+	if(l&gt;r)swap(l,r);
+	int k=lg2(r-l++);
+	return min(st[k][l],st[k][r-(1&lt;&lt;k)+1]);
+}
+namespace Border{
+	int B,id[50005];
+	vector&lt;tuple&lt;int,int,int&gt;&gt; v[50005];
+
+	void init(){
+		B=max(2,(int)sqrt(n));
+		for(int i=1;i&lt;=n;i++)st[0][i]=ht[i];
+		for(int k=1;k&lt;=lg2(n);k++)
+			for(int i=1;i+(1&lt;&lt;k)-1&lt;=n;i++)
+				st[k][i]=min(st[k-1][i],st[k-1][i+(1&lt;&lt;(k-1))]);
+
+		int c=0;
+		for(int i=1;i&lt;=n;i++){
+			v[i].clear();
+			if(i==1||ht[i]&lt;B)c++;
+			if(sa[i]+B-1&lt;=n)id[sa[i]]=c;
+		}
+		for(int i=1;i+B-1&lt;=n;i++){
+			auto &amp;a=v[id[i]];
+			if(a.empty()||i-get&lt;1&gt;(a.back())&gt;B/2)
+				a.pb(i,i,0);
+			else{
+				auto &amp;[l,r,d]=a.back();
+				d=i-r;
+				r=i;
+			}
+		}
+	}
+	inline void append(vector&lt;tuple&lt;int,int,int&gt;&gt; &amp;ans,int a,int d,int c){
+		if(c&lt;=0)return;
+		if(c==1)d=0;
+		if(!ans.empty()){
+			auto &amp;[pa,pd,pc]=ans.back();
+			int gap=a-pa-pd*(pc-1);
+			if(pc==1&amp;&amp;(c==1||gap==d)){
+				pd=gap;
+				pc+=c;
+				return;
+			}
+			if(pc&gt;1&amp;&amp;gap==pd&amp;&amp;(c==1||d==pd)){
+				pc+=c;
+				return;
+			}
+		}
+		ans.pb(a,d,c);
+	}
+	vector&lt;tuple&lt;int,int,int&gt;&gt; query(int l,int r){
+		vector&lt;tuple&lt;int,int,int&gt;&gt; ans;
+
+		for(int k=1;k&lt;B&amp;&amp;k&lt;r-l+1;k++)
+			if(lcp(l,r-k+1)&gt;=k)
+				append(ans,k,0,1);
+
+		if(r-l+1&lt;=B)return ans;
+
+		auto &amp;a=v[id[l]];
+		for(int i=(int)a.size()-1;i&gt;=0;i--){
+			auto [x,y,d]=a[i];
+			if(y&lt;=l)break;
+			if(x&gt;r-B+1)continue;
+
+			if(d){
+				if(x&lt;l+1)x+=(l+1-x+d-1)/d*d;
+				if(y&gt;r-B+1)y-=(y-(r-B+1)+d-1)/d*d;
+			}
+			if(x&gt;y)continue;
+
+			if(x==y){
+				if(lcp(l,x)&gt;=r-x+1)
+					append(ans,r-x+1,0,1);
+				continue;
+			}
+
+			int len=d+lcp(l,l+d);
+			int ed=x+d+lcp(x,x+d)-1;
+			if(r&lt;=ed){
+				int need=r-len+1;
+				if(x&lt;need)x+=(need-x+d-1)/d*d;
+				if(x&lt;=y)
+					append(ans,r-y+1,d,(y-x)/d+1);
+			}else{
+				int j=ed-len+1;
+				if(x&lt;=j&amp;&amp;j&lt;=y&amp;&amp;(j-x)%d==0&amp;&amp;lcp(l,j)&gt;=r-j+1)
+					append(ans,r-j+1,0,1);
+			}
+		}
+		return ans;
+	}
+}
+
+char t[50005];
+int c,f[50005];
+
+vector&lt;pair&lt;int,int&gt;&gt;qr[50005];
+int ans[50005];
+
+struct BIT{
+	int c[50005];
+	void upd(int x,int w){
+		while(x&lt;=n){
+			c[x]+=w;
+			x+=(x&amp;-x);
+		}
+	}
+	int qry(int x){
+		int ret=0;
+		while(x){
+			ret+=c[x];
+			x-=(x&amp;-x);
+		}
+		return ret;
+	}
+}b;
+
+const int B = 224;
+vector&lt;pair&lt;int,int&gt;&gt;q2[B][50005];
+
+void procedure(){
+	n=read(),q=read();
+	for(int i=0;i&lt;=n;i++)qr[i].clear();
+	memset(b.c,0,sizeof(b.c));
+
+	for(int i=1;i&lt;=min(B-1,n);i++)
+		for(int j=1;j&lt;=n;j++)q2[i][j].clear();
+
+	scanf(&quot;%s&quot;,s+1);
+	getsa();
+	Border::init();
+	for(int i=1;i&lt;=q;i++){
+		int l=read(),r=read(),k=read();
+		int pos=rk[k],len=r-k+1,L=pos;
+		while(ht[L]&gt;=len)L--;
+
+		ans[i]=1;
+		qr[l-1].pb(L-1,-i);
+		qr[k-1].pb(L-1,i);
+		qr[k].pb(pos-1,-i);
+		qr[r].pb(pos-1,i);
+
+		vector&lt;tuple&lt;int,int,int&gt;&gt;tmp=Border::query(k,r);
+		for(auto [a,d,c]: tmp){
+			if(!d)d=1;
+			if(d&gt;=B){
+				for(int j=0;j&lt;c;j++)
+					ans[i]+=(rk[r+1-a-d*j]&gt;pos);
+			}else{
+				int L=r+1-a-d*c,R=r+1-a;
+				if(L&gt;0)q2[d][L].pb(pos,-i);
+				q2[d][R].pb(pos,i);
+			}
+		}
+	}
+	for(int i=1;i&lt;=min(B-1,n);i++){
+		for(int x=1;x&lt;=i;x++){
+			int cnt=0;
+			for(int y=x;y&lt;=n;y+=i){
+				b.upd(rk[y],1),cnt++;
+				for(auto [a,id]:q2[i][y]){
+					if(id&lt;0)ans[-id]-=(cnt-b.qry(a));
+					else ans[id]+=(cnt-b.qry(a));
+				}
+			}
+			for(int y=x;y&lt;=n;y+=i)
+				b.upd(rk[y],-1);
+		}
+	}
+	for(int i=1;i&lt;=n;i++){
+		b.upd(rk[i],1);
+		for(auto [x,y]:qr[i]){
+			if(y&lt;0)ans[-y]-=b.qry(x);
+			else ans[y]+=b.qry(x);
+		}
+	}
+	for(int i=1;i&lt;=q;i++){
+		printf(&quot;%d\n&quot;,ans[i]);
+	}
+}
+int main(){
+	#ifdef LOCAL
+		assert(freopen(&quot;test.in&quot;,&quot;r&quot;,stdin));
+		assert(freopen(&quot;test.out&quot;,&quot;w&quot;,stdout));
+	#endif
+	ll T=read();
+	// math_init();
+	while(T--) procedure();
+	return 0;
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
