@@ -1,4 +1,4 @@
-// created time: 2026-11-15 14:14:59
+// created time: 2026-11-17 07:38:18
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -30,18 +30,49 @@ inline ll qpow(ll a,ll b){
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
 
-const int n=12;
+int n,fa[1000005];
+vector<int>E[1000005],G[1000005];
+int dp[1000005];
+
+void dfs(int x,int fa){
+	for(int y:E[x])if(y!=fa){
+		dfs(y,x);
+		G[x].pb(y);
+	}
+}
 void procedure(){
-	for(int i=0;i<n;i++)p[i]=i;
-	do{
-	}while(next_permutation(p,p+n));
+	n=read();
+	for(int i=1;i<=n;i++)E[i].clear(),G[i].clear(),dp[i]=fa[i]=0;
+	for(int i=1;i<n;i++){
+		int u=read(),v=read();
+		E[u].pb(v),E[v].pb(u);
+	}
+	dfs(1,0);
+	priority_queue<int,vector<int>,greater<int>>S;
+	S.push(1);
+	dp[1]=1;
+
+	int sig=0;
+	for(int i=1;i<=n;i++){
+		bool have=0;
+		while(!S.empty() && S.top()<=i){
+			int x=S.top();S.pop();
+			addmod(dp[x]+=sig);
+			have|=(x==i);
+			for(int y:G[x])S.push(y),dp[y]=mod-sig;
+		}
+		if(have){
+			addmod(sig+=dp[i]);
+		}
+	}
+	printf("%d\n",dp[n]);
 }
 int main(){
 	#ifdef LOCAL
 		assert(freopen("test.in","r",stdin));
 		assert(freopen("test.out","w",stdout));
 	#endif
-	ll T=1;
+	ll T=read();
 	// math_init();
 	while(T--) procedure();
 	return 0;
