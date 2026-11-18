@@ -12,7 +12,7 @@ pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-s
 :focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
 </style></head><body><main><header><h1>qoj23682.cpp</h1><span id="status" role="status"></span>
 <button id="copy" type="button">复制代码</button><a href="../qoj23682.cpp" download>下载原文件</a></header>
-<pre><code id="source" class="language-cpp">// created time: 2026-11-12 16:16:39
+<pre><code id="source" class="language-cpp">// created time: 2026-11-18 09:38:29
 #include&lt;bits/stdc++.h&gt;
 using namespace std;
 typedef long long ll;
@@ -43,46 +43,60 @@ inline ll qpow(ll a,ll b){
 	return ans;
 }
 inline ll INV(ll x){ return qpow(x, mod-2); }
-char s[200005],t[200005],sz;
-int q,l[200005],r[200005];
 
-const int INF=1e9;
-int brute(char* s,int len){
-	auto dfs=[&amp;](auto&amp;&amp; dfs,string t)-&gt;int{
-		int ans=-1,n=t.size();
-		for(int i=0;i+1&lt;n;i++){
-			if((t[i]==&#x27;:&#x27;&amp;&amp;t[i+1]==&#x27;(&#x27;)||(t[i]==&#x27;)&#x27;&amp;&amp;t[i+1]==&#x27;:&#x27;)){
-				string u=t.substr(0,i)+t.substr(i+2);
-				ans=max(ans,dfs(dfs,u));
-			}
-		}
-		if(ans!=-1)return ans;
-		ans=0;
-		for(int i=0;i+1&lt;n;i++)
-			if((t[i]==&#x27;:&#x27;&amp;&amp;t[i+1]==&#x27;)&#x27;)||(t[i]==&#x27;(&#x27;&amp;&amp;t[i+1]==&#x27;:&#x27;))
-				ans++;
-		return ans;
-	};
-	return dfs(dfs,string(s,len));
+const int N = 200005;
+int n,m;
+char s[N];
+int sum[N],nxt[N],cnt[N];
+int f[20][N],bit[2][2*N];
+
+void modify(int *t,int x,int v){
+	for(;x&lt;=m;x+=x&amp;-x) chkmin(t[x],v);
 }
-void procedure(){
-	scanf(&quot;%s&quot;,s+1); q=read();
-	for(int i=1;i&lt;=q;i++){
-		l[i]=read(),r[i]=read();
+int query(int *t,int x){
+	int ans=n+1;
+	for(;x;x-=x&amp;-x) chkmin(ans,t[x]);
+	return ans;
+}
 
-		int x=l[i];
-		// &#x27;&#x27; &#x27;:&#x27; &#x27;(&#x27; &#x27;)&#x27;
-		// 0   1   2   3
-		int sz=0;
-		for(int j=l[i];j&lt;=r[i];j++){
-			t[++sz]=s[j];
-			if(sz&gt;=2&amp;&amp;t[sz]==&#x27;(&#x27;&amp;&amp;t[sz-1]==&#x27;:&#x27;)sz-=2;
-			if(sz&gt;=2&amp;&amp;t[sz]==&#x27;:&#x27;&amp;&amp;t[sz-1]==&#x27;)&#x27;)sz-=2;
-		}
-		int w=0,ans=0;
-		for(int j=2;j&lt;=sz;j++){
-			ans+=(t[j]==&#x27;)&#x27;&amp;&amp;t[j-1]==&#x27;:&#x27;)||(t[j]==&#x27;:&#x27;&amp;&amp;t[j-1]==&#x27;(&#x27;);
-		}
+void procedure(){
+	scanf(&quot;%s&quot;,s+1);
+	n=strlen(s+1);
+	m=2*n+1;
+	sum[0]=n;
+	for(int i=1;i&lt;=n;i++)
+		sum[i]=sum[i-1]+(s[i]==&#x27;:&#x27;?1:-1);
+
+	fill(bit[0],bit[0]+m+1,n+1);
+	fill(bit[1],bit[1]+m+1,n+1);
+	nxt[n+1]=n+1;
+	for(int i=n;i&gt;=0;i--){
+		int x=sum[i];
+		// &#x27;(&#x27; 要 sum[j]&lt;x，&#x27;)&#x27; 要 sum[j]&gt;=x。
+		nxt[i]=min(query(bit[0],x),query(bit[1],m-x));
+		if(s[i]==&#x27;(&#x27;) modify(bit[0],x+1,i);
+		if(s[i]==&#x27;)&#x27;) modify(bit[1],m-x,i);
+	}
+	for(int i=n;i&gt;=1;i--){
+		int j=nxt[i];
+		cnt[i]=(j&lt;=n?cnt[j]+(s[i]!=s[j]):0);
+	}
+
+	for(int i=0;i&lt;=n+1;i++) f[0][i]=nxt[i];
+	int p=lg2(n);
+	for(int k=1;k&lt;=p;k++)
+		for(int i=0;i&lt;=n+1;i++)
+			f[k][i]=f[k-1][f[k-1][i]];
+
+	int q=read();
+	while(q--){
+		int l=read(),r=read();
+		int st=nxt[l-1],x=st;
+		if(st&gt;r){ puts(&quot;0&quot;); continue; }
+		for(int k=p;k&gt;=0;k--)
+			if(f[k][x]&lt;=r) x=f[k][x];
+		int ans=1+cnt[st]-cnt[x];
+		if(s[x]==&#x27;(&#x27; ? sum[x]&gt;=sum[r] : sum[x]&lt;sum[r]) ans--;
 		printf(&quot;%d\n&quot;,ans);
 	}
 }
@@ -95,7 +109,8 @@ int main(){
 	// math_init();
 	while(T--) procedure();
 	return 0;
-}</code></pre></main>
+}
+</code></pre></main>
 <script src="../../assets/highlight.min.js"></script><script>
 const source=document.getElementById('source');
 const rawCode=source.textContent;
