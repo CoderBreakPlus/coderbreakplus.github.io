@@ -1,31 +1,10 @@
-find interval 30->31
-find interval 29->31
-find interval 28->31
-find interval 27->31
-find interval 26->31
-find interval 25->26
-find interval 24->26
-find interval 23->24
-find interval 22->24
-find interval 21->24
-find interval 20->24
-find interval 19->24
-find interval 18->19
-find interval 17->19
-find interval 16->19
-find interval 15->16
-find interval 14->16
-find interval 13->16
-find interval 12->16
-find interval 11->16
-find interval 10->16
-find interval 9->16
-find interval 8->16
-find interval 7->14
-find interval 6->14
-find interval 5->6
-find interval 4->6
-find interval 3->6
-find interval 2->6
-find interval 1->6
+8
+6
 2
+3
+5
+2
+4
+2
+2
+1
