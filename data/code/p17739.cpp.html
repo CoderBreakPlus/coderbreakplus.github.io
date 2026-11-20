@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p17739.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p17739.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p17739.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-11-20 16:14:57
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+typedef long long ll;
+inline ll read(){
+	ll x=0, f=1; int ch=getchar();
+	while(ch&lt;&#x27;0&#x27; || ch&gt;&#x27;9&#x27;) { if(ch==&#x27;-&#x27;) f=-1; ch=getchar(); }
+	while(ch&gt;=&#x27;0&#x27; &amp;&amp; ch&lt;=&#x27;9&#x27;) x=x*10+ch-&#x27;0&#x27;, ch=getchar();
+	return x*f;
+}
+int n;
+struct Node{
+	int a,b,i;
+}s[300005];
+
+int stk[300005],tp,prv[300005],nxt[300005];
+int val[300005],ans[300005];
+
+pair&lt;int,int&gt; p[600005];
+#define mid ((l+r)&gt;&gt;1)
+namespace ds{
+	const int M=1e7;
+	int sum[M],lc[M],rc[M],cnt;
+	void update(int b,int &amp;p,int l,int r,int x){
+		sum[p=++cnt]=sum[b]+1;
+		if(l==r)return;
+		lc[p]=lc[b],rc[p]=rc[b];
+		if(x&lt;=mid)update(lc[b],lc[p],l,mid,x);
+		else update(rc[b],rc[p],mid+1,r,x);
+	}
+	int query(int p,int l,int r,int k){
+		if(l==r) return l;
+		if(sum[lc[p]]&gt;=k) return query(lc[p],l,mid,k);
+		else return query(rc[p],mid+1,r,k-sum[lc[p]]);
+	}
+}
+int rt[300005];
+int calc(int o,int k){
+	auto [i,j]=p[o];
+	if(i-1&lt;k)return 2.1e9;
+	int sb=ds::query(rt[i-1],0,n,k);
+	int ret=max(s[j].a-s[i].b,max(s[i].a,val[sb])-s[j].b);
+	return ret;
+}
+void solve(int l,int r,int ql,int qr){
+	if(l&gt;r)return;
+	ans[mid]=2.1e9;
+	int jc=-1;
+	for(int i=ql;i&lt;=qr;i++){
+		int tmp=calc(i,mid);
+		if(tmp&lt;=ans[mid]){
+			ans[mid]=tmp;
+			jc=i;
+		}
+	}
+	solve(l,mid-1,ql,jc);
+	solve(mid+1,r,jc,qr);
+}
+int main(){
+	n=read();
+	for(int i=1;i&lt;=n;i++){
+		int a=read(),b=read();
+		s[i]={a,b};
+	}
+	sort(s+1,s+n+1,[](Node A,Node B){ return A.a&lt;B.a; });
+	for(int i=1;i&lt;=n;i++)s[i].i=i,val[i]=s[i].a;
+	sort(s+1,s+n+1,[](Node A,Node B){ return A.b&lt;B.b; });
+
+	for(int i=1;i&lt;=n;i++)
+		ds::update(rt[i-1],rt[i],0,n,s[i].i);
+		
+	for(int i=1;i&lt;=n;i++){
+		#define v(x) s[x].i
+		while(tp&amp;&amp;v(stk[tp])&gt;v(i)) nxt[stk[tp--]]=i;
+		if(tp)prv[i]=stk[tp];
+		stk[++tp]=i;
+		#undef v
+	}
+
+	int m=0;
+	for(int i=1;i&lt;=n;i++){
+		if(nxt[i])p[++m]={i,nxt[i]};
+		if(prv[i])p[++m]={prv[i],i};
+	}
+	sort(p+1,p+m+1);
+	solve(0,n-2,1,m);
+	for(int i=0;i&lt;=n-2;i++)
+		printf(&quot;%d\n&quot;,ans[n-2-i]);
+}</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>

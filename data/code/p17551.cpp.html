@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p17551.cpp · 代码</title><link rel="stylesheet" href="../../assets/highlight-github.min.css">
+<style>
+body{margin:0;background:#f4f5f8;color:#1e293b;font-family:system-ui,sans-serif}
+main{max-width:1400px;margin:24px auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:20px;margin:0 auto 0 0;overflow-wrap:anywhere}
+button,a{border:1px solid #cbd5e1;border-radius:8px;padding:8px 14px;background:#fff;color:#2563eb;font:inherit;text-decoration:none;cursor:pointer}
+pre{margin:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:auto;padding:20px;line-height:1.6}
+pre code.hljs{padding:0}code{font-family:Consolas,monospace;font-size:14px;tab-size:4}
+:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}#status{font-size:14px;color:#64748b}
+</style></head><body><main><header><h1>p17551.cpp</h1><span id="status" role="status"></span>
+<button id="copy" type="button">复制代码</button><a href="../p17551.cpp" download>下载原文件</a></header>
+<pre><code id="source" class="language-cpp">// created time: 2026-11-20 20:03:01
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+const int mod = 998244353;
+void add(int &amp;a, int b) {
+    a += b;
+    if (a &gt;= mod) a -= mod;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    string s;
+    cin &gt;&gt; s;
+    int n = s.size(), k = n / 3, m = k + 1;
+    vector&lt;vector&lt;int&gt;&gt; f(m, vector&lt;int&gt;(m)), g = f;
+    f[0][0] = 1;
+    for (char c : s) {
+        vector&lt;vector&lt;int&gt;&gt; nf(m, vector&lt;int&gt;(m)), ng = nf;
+        for (int a = 0; a &lt;= k; ++a) {
+            for (int b = 0; a + b &lt;= k; ++b) if (f[a][b]) {
+                if (c != &#x27;B&#x27;) add(nf[a + (a + b &lt; k)][b], f[a][b]);
+                if (c != &#x27;A&#x27;) {
+                    if (a) add(nf[a - 1][b + 1], f[a][b]);
+                    else add(nf[a][b], f[a][b]);
+                }
+            }
+        }
+        for (int r = 0; r &lt; k; ++r) {
+            for (int b = 0; b &lt;= r; ++b) if (g[r][b]) {
+                if (c != &#x27;A&#x27;) add(ng[r][min(r, b + 1)], g[r][b]);
+                if (c != &#x27;B&#x27; &amp;&amp; b) add(ng[r - 1][b - 1], g[r][b]);
+            }
+        }
+        if (c != &#x27;B&#x27;) {
+            for (int b = 1; b &lt;= k; ++b) {
+                int suffix = 0;
+                for (int t = k; t &gt;= 1; --t) {
+                    if (t &gt;= b) add(suffix, f[t - b][b]);
+                    add(ng[t - 1][min(t - 1, b - 1)], suffix);
+                }
+            }
+        }
+        f.swap(nf);
+        g.swap(ng);
+    }
+    cout &lt;&lt; g[0][0] &lt;&lt; &#x27;\n&#x27;;
+}
+</code></pre></main>
+<script src="../../assets/highlight.min.js"></script><script>
+const source=document.getElementById('source');
+const rawCode=source.textContent;
+if(window.hljs)hljs.highlightElement(source);
+document.getElementById('copy').addEventListener('click',async()=>{
+ const status=document.getElementById('status');
+ try{
+  if(navigator.clipboard && window.isSecureContext)await navigator.clipboard.writeText(rawCode);
+  else{
+   const input=document.createElement('textarea');input.value=rawCode;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();
+   const copied=document.execCommand('copy');input.remove();if(!copied)throw new Error('copy');
+  }
+  status.textContent='已复制';
+ }catch(error){status.textContent='复制失败，请选中代码手动复制';}
+});
+</script></body></html>
